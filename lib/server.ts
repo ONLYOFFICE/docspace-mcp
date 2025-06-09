@@ -39,6 +39,7 @@ import {
 	GetFolderInfoInputSchema,
 	GetFolderInputSchema,
 	GetFoldersInputSchema,
+	GetMyFolderInputSchema,
 	GetRoomInfoInputSchema,
 	GetRoomSecurityInfoInputSchema,
 	GetRoomsFolderInputSchema,
@@ -147,7 +148,7 @@ export class Server {
 				{
 					name: "files_get_my_folder",
 					description: "Get the 'My Documents' folder.",
-					inputSchema: toInputSchema(z.object({})),
+					inputSchema: toInputSchema(GetMyFolderInputSchema),
 				},
 				{
 					name: "files_copy_batch_items",
@@ -285,7 +286,7 @@ export class Server {
 				cr = await this.files.renameFolder(extra.signal, req.params.arguments)
 				break
 			case "files_get_my_folder":
-				cr = await this.files.getMyFolder(extra.signal)
+				cr = await this.files.getMyFolder(extra.signal, req.params.arguments)
 				break
 			case "files_copy_batch_items":
 				cr = await this.files.copyBatchItems(extra.signal, req.params.arguments)

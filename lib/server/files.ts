@@ -19,6 +19,21 @@
 import * as z from "zod"
 import type {Result} from "../../util/result.ts"
 import {error, ok} from "../../util/result.ts"
+import {
+	CreateFolderFiltersSchema,
+	CreateRoomFiltersSchema,
+	GetFileInfoFiltersSchema,
+	GetFolderFiltersSchema,
+	GetFolderInfoFiltersSchema,
+	GetFoldersFiltersSchema,
+	GetMyFolderFiltersSchema,
+	GetRoomInfoFiltersSchema,
+	GetRoomSecurityFiltersSchema,
+	GetRoomsFolderFiltersSchema,
+	RenameFolderFiltersSchema,
+	SetRoomSecurityFiltersSchema,
+	UpdateRoomFiltersSchema,
+} from "../client/internal/schemas.ts"
 import type {
 	CopyBatchItemsOptions,
 	CreateFolderOptions,
@@ -34,7 +49,7 @@ import type {
 	UpdateRoomOptions,
 } from "../client.ts"
 import type {Server} from "../server.ts"
-import {FiltersSchema, RoomInvitationAccessSchema, RoomTypeSchema} from "./internal/schemas.ts"
+import {RoomInvitationAccessSchema, RoomTypeSchema} from "./internal/schemas.ts"
 
 export const DeleteFileInputSchema = z.object({
 	fileId: z.number().describe("The ID of the file to delete."),
@@ -42,6 +57,7 @@ export const DeleteFileInputSchema = z.object({
 
 export const GetFileInfoInputSchema = z.object({
 	fileId: z.number().describe("The ID of the file to get info for."),
+	filters: GetFileInfoFiltersSchema.optional().describe("The filters to apply to the file info. Use them to reduce the size of the response."),
 })
 
 export const UpdateFileInputSchema = z.object({
@@ -52,6 +68,7 @@ export const UpdateFileInputSchema = z.object({
 export const CreateFolderInputSchema = z.object({
 	parentId: z.number().describe("The ID of the room or folder to create the folder in."),
 	title: z.string().describe("The title of the folder to create."),
+	filters: CreateFolderFiltersSchema.optional().describe("The filters to apply to the folder creation. Use them to reduce the size of the response."),
 })
 
 export const DeleteFolderInputSchema = z.object({
@@ -60,20 +77,27 @@ export const DeleteFolderInputSchema = z.object({
 
 export const GetFolderInputSchema = z.object({
 	folderId: z.number().describe("The ID of the folder to get."),
-	filters: FiltersSchema.optional().default({count: 30}).describe("The filters to apply to the contents of the folder."),
+	filters: GetFolderFiltersSchema.optional().default({count: 30}).describe("The filters to apply to the contents of the folder. Use them to reduce the size of the response."),
 })
 
 export const GetFolderInfoInputSchema = z.object({
 	folderId: z.number().describe("The ID of the folder to get info for."),
+	filters: GetFolderInfoFiltersSchema.optional().describe("The filters to apply to the folder info. Use them to reduce the size of the response."),
 })
 
 export const GetFoldersInputSchema = z.object({
 	folderId: z.number().describe("The ID of the folder to get subfolders for."),
+	filters: GetFoldersFiltersSchema.optional().describe("The filters to apply to the subfolders. Use them to reduce the size of the response."),
 })
 
 export const RenameFolderInputSchema = z.object({
 	folderId: z.number().describe("The ID of the folder to rename."),
 	title: z.string().describe("The new title of the folder to set."),
+	filters: RenameFolderFiltersSchema.optional().describe("The filters to apply to the folder renaming. Use them to reduce the size of the response."),
+})
+
+export const GetMyFolderInputSchema = z.object({
+	filters: GetMyFolderFiltersSchema.optional().describe("The filters to apply to the My Documents folder. Use them to reduce the size of the response."),
 })
 
 export const CopyBatchItemsInputSchema = z.object({
@@ -121,15 +145,18 @@ export const MoveBatchItemsInputSchema = z.object({
 export const CreateRoomInputSchema = z.object({
 	title: z.string().describe("The title of the room to create."),
 	roomType: RoomTypeSchema.optional().default("PublicRoom").describe("The type of the room to create."),
+	filters: CreateRoomFiltersSchema.optional().describe("The filters to apply to the room creation."),
 })
 
 export const GetRoomInfoInputSchema = z.object({
 	roomId: z.number().describe("The ID of the room to get info for."),
+	filters: GetRoomInfoFiltersSchema.optional().describe("The filters to apply to the room info."),
 })
 
 export const UpdateRoomInputSchema = z.object({
 	roomId: z.number().describe("The ID of the room to update."),
 	title: z.string().optional().describe("The new title of the room to set."),
+	filters: UpdateRoomFiltersSchema.optional().describe("The filters to apply to the room update."),
 })
 
 export const ArchiveRoomInputSchema = z.object({
@@ -178,14 +205,16 @@ export const SetRoomSecurityInputSchema = z.object({
 		string().
 		optional().
 		describe("The languages to use for the invitation."),
+	filters: SetRoomSecurityFiltersSchema.optional().default({count: 30}).describe("The filters to apply to the room security info."),
 })
 
 export const GetRoomSecurityInfoInputSchema = z.object({
 	roomId: z.number().describe("The ID of the room to get a list of users with their access level for."),
+	filters: GetRoomSecurityFiltersSchema.optional().default({count: 30}).describe("The filters to apply to the room security info."),
 })
 
 export const GetRoomsFolderInputSchema = z.object({
-	filters: FiltersSchema.optional().default({count: 30}).describe("The filters to apply to the rooms folder."),
+	filters: GetRoomsFolderFiltersSchema.optional().default({count: 30}).describe("The filters to apply to the rooms folder."),
 })
 
 export class FilesToolset {
@@ -233,7 +262,7 @@ export class FilesToolset {
 			return error(new Error("Parsing input.", {cause: pr.error}))
 		}
 
-		let gr = await this.s.client.files.getFileInfo(signal, pr.data.fileId)
+		let gr = await this.s.client.files.getFileInfo(signal, pr.data.fileId, pr.data.filters)
 		if (gr.err) {
 			return error(new Error("Getting file info.", {cause: gr.err}))
 		}
@@ -279,7 +308,7 @@ export class FilesToolset {
 			title: pr.data.title,
 		}
 
-		let cr = await this.s.client.files.createFolder(signal, pr.data.parentId, co)
+		let cr = await this.s.client.files.createFolder(signal, pr.data.parentId, co, pr.data.filters)
 		if (cr.err) {
 			return error(new Error("Creating folder.", {cause: cr.err}))
 		}
@@ -346,7 +375,7 @@ export class FilesToolset {
 			return error(new Error("Parsing input.", {cause: pr.error}))
 		}
 
-		let gr = await this.s.client.files.getFolderInfo(signal, pr.data.folderId)
+		let gr = await this.s.client.files.getFolderInfo(signal, pr.data.folderId, pr.data.filters)
 		if (gr.err) {
 			return error(new Error("Getting folder info.", {cause: gr.err}))
 		}
@@ -388,7 +417,7 @@ export class FilesToolset {
 			title: pr.data.title,
 		}
 
-		let rr = await this.s.client.files.renameFolder(signal, pr.data.folderId, ro)
+		let rr = await this.s.client.files.renameFolder(signal, pr.data.folderId, ro, pr.data.filters)
 		if (rr.err) {
 			return error(new Error("Renaming folder.", {cause: rr.err}))
 		}
@@ -401,8 +430,13 @@ export class FilesToolset {
 	/**
 	 * {@link FilesService.getMyFolder}
 	 */
-	async getMyFolder(signal: AbortSignal): Promise<Result<Response, Error>> {
-		let gr = await this.s.client.files.getMyFolder(signal)
+	async getMyFolder(signal: AbortSignal, p: unknown): Promise<Result<Response, Error>> {
+		let pr = GetMyFolderInputSchema.safeParse(p)
+		if (!pr.success) {
+			return error(new Error("Parsing input.", {cause: pr.error}))
+		}
+
+		let gr = await this.s.client.files.getMyFolder(signal, pr.data.filters)
 		if (gr.err) {
 			return error(new Error("Getting my folder.", {cause: gr.err}))
 		}
@@ -508,7 +542,7 @@ export class FilesToolset {
 			roomType: pr.data.roomType,
 		}
 
-		let cr = await this.s.client.files.createRoom(signal, co)
+		let cr = await this.s.client.files.createRoom(signal, co, pr.data.filters)
 		if (cr.err) {
 			return error(new Error("Creating room.", {cause: cr.err}))
 		}
@@ -527,7 +561,7 @@ export class FilesToolset {
 			return error(new Error("Parsing input.", {cause: pr.error}))
 		}
 
-		let gr = await this.s.client.files.getRoomInfo(signal, pr.data.roomId)
+		let gr = await this.s.client.files.getRoomInfo(signal, pr.data.roomId, pr.data.filters)
 		if (gr.err) {
 			return error(new Error("Getting room info.", {cause: gr.err}))
 		}
@@ -550,7 +584,7 @@ export class FilesToolset {
 			title: pr.data.title,
 		}
 
-		let ur = await this.s.client.files.updateRoom(signal, pr.data.roomId, uo)
+		let ur = await this.s.client.files.updateRoom(signal, pr.data.roomId, uo, pr.data.filters)
 		if (ur.err) {
 			return error(new Error("Updating room.", {cause: ur.err}))
 		}
@@ -599,7 +633,7 @@ export class FilesToolset {
 			message: pr.data.message,
 		}
 
-		let sr = await this.s.client.files.setRoomSecurity(signal, pr.data.roomId, so)
+		let sr = await this.s.client.files.setRoomSecurity(signal, pr.data.roomId, so, pr.data.filters)
 		if (sr.err) {
 			return error(new Error("Setting room security.", {cause: sr.err}))
 		}
@@ -618,7 +652,7 @@ export class FilesToolset {
 			return error(new Error("Parsing input.", {cause: pr.error}))
 		}
 
-		let gr = await this.s.client.files.getRoomSecurityInfo(signal, pr.data.roomId)
+		let gr = await this.s.client.files.getRoomSecurityInfo(signal, pr.data.roomId, pr.data.filters)
 		if (gr.err) {
 			return error(new Error("Getting room security info.", {cause: gr.err}))
 		}

@@ -19,16 +19,16 @@
 import * as z from "zod"
 import type {Result} from "../../util/result.ts"
 import {error, ok} from "../../util/result.ts"
+import {GetAllFiltersSchema} from "../client/internal/schemas.ts"
 // eslint-disable-next-line import-newlines/enforce
 import type {
 	PeopleService, // eslint-disable-line typescript/no-unused-vars
 	Response,
 } from "../client.ts"
 import type {Server} from "../server.ts"
-import {FiltersSchema} from "./internal/schemas.ts"
 
 export const GetAllInputSchema = z.object({
-	filters: FiltersSchema.optional().default({count: 30}).describe("The filters to apply to the list of people."),
+	filters: GetAllFiltersSchema.optional().default({count: 30}).describe("The filters to apply to the list of people. Use them to reduce the size of the response."),
 })
 
 export class PeopleToolset {

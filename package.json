@@ -41,7 +41,7 @@
 		"zod-to-json-schema": "3.24.5"
 	},
 	"devDependencies": {
-		"@modelcontextprotocol/inspector": "0.7.0",
+		"@modelcontextprotocol/inspector": "0.14.1",
 		"@types/node": "22.13.16",
 		"@types/web": "0.0.216",
 		"@vanyauhalin/eslint-config": "0.0.9",

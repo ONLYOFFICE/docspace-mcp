@@ -38,7 +38,7 @@
 		"test": "c8 --config c8.config.json node --test"
 	},
 	"devDependencies": {
-		"@modelcontextprotocol/inspector": "0.14.0",
+		"@modelcontextprotocol/inspector": "0.16.1",
 		"@modelcontextprotocol/sdk": "1.15.1",
 		"@types/node": "24.0.3",
 		"@types/web": "0.0.242",

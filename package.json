@@ -39,7 +39,7 @@
 		"test": "c8 --config c8.config.json node --test"
 	},
 	"devDependencies": {
-		"@modelcontextprotocol/inspector": "0.16.1",
+		"@modelcontextprotocol/inspector": "0.16.6",
 		"@modelcontextprotocol/sdk": "1.16.0",
 		"@types/express": "5.0.3",
 		"@types/logfmt": "1.2.6",

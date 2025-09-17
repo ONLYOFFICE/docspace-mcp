@@ -1,9 +1,5 @@
 name: Stage
 
-permissions:
-  actions: write
-  contents: read
-
 on:
   push:
     branches:

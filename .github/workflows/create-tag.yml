@@ -1,8 +1,5 @@
 name: Create Tag
 
-permissions:
-  contents: write
-
 on:
   push:
     branches:
@@ -16,6 +13,8 @@ on:
 jobs:
   create-tag:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v4

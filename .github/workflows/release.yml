@@ -141,6 +141,9 @@ jobs:
 
     - name: Update Docker Hub Description
       uses: peter-evans/dockerhub-description@v4
+      # Skip errors, until action is not supported OAT auth
+      # https://github.com/peter-evans/dockerhub-description/issues/294
+      continue-on-error: true
       with:
         username: ${{secrets.DOCKERHUB_USERNAME}}
         password: ${{secrets.DOCKERHUB_TOKEN}}

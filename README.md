@@ -37,7 +37,7 @@ provides an MCP server for [ONLYOFFICE DocSpace].
 - **Request-level configuration** - Configure authentication and tool selection
   during session initialization using custom HTTP headers.
 - **Various distribution formats** - Available as Docker image, Docker MCP
-  Server, Desktop Extension, and Node.js application.
+  Server, MCP bundle, and Node.js application.
 
 ## Documentation
 

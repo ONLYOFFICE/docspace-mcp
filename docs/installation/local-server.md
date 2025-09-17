@@ -8,7 +8,7 @@ run on your machine.
 - [Quick Install](#quick-install)
 - [Docker Image](#docker-image)
 - [Docker MCP Server](#docker-mcp-server)
-- [Desktop Extension](#desktop-extension)
+- [MCP Bundle](#mcp-bundle)
 - [Node.js Application](#nodejs-application)
 - [References](#references)
 
@@ -69,17 +69,17 @@ system and the [Docker MCP Toolkit] to be enabled. See the
 
 3. Configure the server through the Docker Desktop interface.
 
-## Desktop Extension
+## MCP Bundle
 
-Running the Desktop Extension requires [Node.js] version 18 or higher to be
-installed on your system.
+Running the MCP bundle requires [Node.js] version 18 or higher to be installed
+on your system.
 
-1. Download the latest Desktop Extension from [GitHub Releases].
+1. Download the latest MCP bundle from [GitHub Releases].
 
-2. Install the Desktop Extension in your desktop application by following the
-  application's extension installation procedure.
+2. Install the MCP bundle in an application by following the application's MCP
+  bundles installation procedure.
 
-3. Configure the extension through the application's interface.
+3. Configure the server through the application's interface.
 
 ## Node.js Application
 
@@ -108,7 +108,7 @@ configuration to your client's configuration file:
 
 - [Docker Docs: What is an image?]
 - [Docker Docs: MCP Catalog and Toolkit]
-- [GitHub Anthropic: Desktop Extensions]
+- [GitHub Anthropic: MCP Bundles]
 - [MCP: Connect to Local MCP Servers]
 - [MCP: Example Clients]
 - [Docker MCP: Distribution]
@@ -128,7 +128,7 @@ configuration to your client's configuration file:
 
 [Docker Docs: What is an image?]: https://docs.docker.com/get-started/docker-concepts/the-basics/what-is-an-image/
 [Docker Docs: MCP Catalog and Toolkit]: https://docs.docker.com/ai/mcp-catalog-and-toolkit/
-[GitHub Anthropic: Desktop Extensions]: https://github.com/anthropics/dxt/
+[GitHub Anthropic: MCP Bundles]: https://github.com/anthropics/mcpb/
 
 [MCP: Connect to Local MCP Servers]: https://modelcontextprotocol.io/quickstart/user
 [MCP: Example Clients]: https://modelcontextprotocol.io/clients

@@ -5,27 +5,27 @@ GitHub releases.
 
 ## Contents
 
-- [Desktop Extension](#desktop-extension)
+- [MCP Bundle](#mcp-bundle)
 - [Node.js Application](#nodejs-application)
 
-## Desktop Extension
+## MCP Bundle
 
-Running the Desktop Extension requires [Node.js] version 18 or higher to be
-installed on your system.
+Running the MCP bundle requires [Node.js] version 18 or higher to be installed
+on your system.
 
 1. Download the latest release from GitHub:
 
   ```sh
-  VERSION=2.0.0 curl --location --output docspace-mcp.dxt https://github.com/ONLYOFFICE/docspace-mcp/releases/v$VERSION/download/onlyoffice-docspace-mcp-$VERSION.dxt
+  VERSION=2.0.0 curl --location --output docspace-mcp.mcpb https://github.com/ONLYOFFICE/docspace-mcp/releases/v$VERSION/download/onlyoffice-docspace-mcp-$VERSION.mcpb
   ```
 
   To download a specific version:
 
   ```sh
-  VERSION=<version> curl --location --output docspace-mcp.dxt https://github.com/ONLYOFFICE/docspace-mcp/releases/v$VERSION/download/onlyoffice-docspace-mcp-$VERSION.dxt
+  VERSION=<version> curl --location --output docspace-mcp.mcpb https://github.com/ONLYOFFICE/docspace-mcp/releases/v$VERSION/download/onlyoffice-docspace-mcp-$VERSION.mcpb
   ```
 
-2. Use the downloaded `.dxt` file in your desktop application.
+2. Use the downloaded `.mcpb` file in an application that supports MCP bundles.
 
 ## Node.js Application
 
@@ -65,7 +65,7 @@ installed on your system.
 ## References
 
 - [GitHub Docs: About Releases]
-- [GitHub Anthropic: Desktop Extensions]
+- [GitHub Anthropic: MCP Bundles]
 - [GitHub ONLYOFFICE: DocSpace MCP Server Releases]
 
 <!-- Footnotes -->
@@ -73,5 +73,5 @@ installed on your system.
 [Node.js]: https://nodejs.org/
 
 [GitHub Docs: About Releases]: https://docs.github.com/en/repositories/releasing-projects-on-github/about-releases
-[GitHub Anthropic: Desktop Extensions]: https://github.com/anthropics/dxt/
+[GitHub Anthropic: MCP Bundles]: https://github.com/anthropics/mcpb/
 [GitHub ONLYOFFICE: DocSpace MCP Server Releases]: https://github.com/ONLYOFFICE/docspace-mcp/releases/

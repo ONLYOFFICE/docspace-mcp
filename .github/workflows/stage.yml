@@ -33,8 +33,8 @@ jobs:
     - name: Archive Package
       run: pnpm pack
 
-    - name: Archive Desktop Extension
-      run: pnpm build-dxt
+    - name: Build MCP Bundle
+      run: pnpm build-mcpb
 
     - name: Upload Package
       uses: actions/upload-artifact@v4
@@ -43,11 +43,11 @@ jobs:
         path: "*.tgz"
         if-no-files-found: error
 
-    - name: Upload Desktop Extension
+    - name: Upload MCP Bundle
       uses: actions/upload-artifact@v4
       with:
-        name: desktop-extension
-        path: "*.dxt"
+        name: mcp-bundle
+        path: "*.mcpb"
         if-no-files-found: error
 
   docker:

@@ -22,13 +22,7 @@ import * as result from "../../lib/util/result.ts"
 import type * as types from "../../lib/util/types.ts"
 import * as zod from "../../lib/util/zod.ts"
 import * as tools from "./tools.ts"
-
-const availableTransports: McpTransport[] = [
-	"stdio",
-	"sse",
-	"streamable-http",
-	"http",
-]
+import * as transports from "./transports.ts"
 
 export interface Config {
 	internal: boolean
@@ -40,7 +34,7 @@ export interface Config {
 }
 
 export interface Mcp {
-	transport: McpTransport
+	transport: transports.Transport
 	dynamic: boolean
 	toolsets: string[]
 	tools: string[]
@@ -48,12 +42,6 @@ export interface Mcp {
 	disabledTools: string[]
 	session: McpSession
 }
-
-export type McpTransport =
-	"stdio" |
-	"sse" |
-	"streamable-http" |
-	"http"
 
 export interface McpSession {
 	ttl: number
@@ -143,7 +131,7 @@ export const ConfigSchema = z.
 		DOCSPACE_TRANSPORT: z.
 			string().
 			default("stdio").
-			transform(zod.envUnion([...availableTransports])),
+			transform(zod.envUnion([...transports.availableTransports])),
 
 		DOCSPACE_DYNAMIC: z.
 			string().

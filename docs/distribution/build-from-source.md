@@ -7,7 +7,7 @@ different formats.
 
 - [Docker Image](#docker-image)
 - [Node.js Application](#nodejs-application)
-- [Desktop Extension](#desktop-extension)
+- [MCP Bundle](#mcp-bundle)
 - [References](#references)
 
 ## Docker Image
@@ -87,13 +87,13 @@ or similar, you will find this familiar.
   ./bin/onlyoffice-docspace-mcp
   ```
 
-## Desktop Extension
+## MCP Bundle
 
-Building the Desktop Extension requires [Node.js] version 24 or higher and
-[pnpm] version 10 or higher to be installed on your system.
+Building the MCP bundle requires [Node.js] version 24 or higher and [pnpm]
+version 10 or higher to be installed on your system.
 
-Running the Desktop Extension requires [Node.js] version 18 or higher to be
-installed on your system.
+Running the MCP bundle requires [Node.js] version 18 or higher to be installed
+on your system.
 
 This project uses [mise], a polyglot tool version manager, to manage development
 tool versions. If you have experience with tools like [asdf], [nvm], [nodenv],
@@ -117,19 +117,19 @@ or similar, you will find this familiar.
   cd docspace-mcp
   ```
 
-3. Build the Desktop Extension:
+3. Build the MCP Bundle:
 
   ```sh
-  pnpm build-dxt
+  pnpm build-mcpb
   ```
 
-4. Use the built `.dxt` file from the root of the project directory in your
-  desktop application.
+4. Use the built `.mcpb` file from the root of the project directory in an
+  application that supports MCP bundles.
 
 ## References
 
 - [Docker Docs: What is an image?]
-- [GitHub Anthropic: Desktop Extensions]
+- [GitHub Anthropic: MCP Bundles]
 - [GitHub ONLYOFFICE: DocSpace MCP Server]
 
 <!-- Footnotes  -->
@@ -143,5 +143,5 @@ or similar, you will find this familiar.
 [pnpm]: https://pnpm.io/
 
 [Docker Docs: What is an image?]: https://docs.docker.com/get-started/docker-concepts/the-basics/what-is-an-image/
-[GitHub Anthropic: Desktop Extensions]: https://github.com/anthropics/dxt/
+[GitHub Anthropic: MCP Bundles]: https://github.com/anthropics/mcpb/
 [GitHub ONLYOFFICE: DocSpace MCP Server]: https://github.com/ONLYOFFICE/docspace-mcp/

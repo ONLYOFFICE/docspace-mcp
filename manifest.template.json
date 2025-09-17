@@ -1,0 +1,48 @@
+{
+	"$schema": "vendor/mcpb-manifest.schema.json",
+	"manifest_version": "0.1",
+	"name": "onlyoffice-docspace",
+	"display_name": "ONLYOFFICE DocSpace",
+	"version": "",
+	"description": "A room-based collaborative platform",
+	"long_description": "ONLYOFFICE DocSpace is a room-based collaborative platform which allows organizing a clear file structure depending on users' needs or project goals.",
+	"author": {
+		"name": "Ascensio System SIA",
+		"email": "integration@onlyoffice.com",
+		"url": "https://onlyoffice.com/"
+	},
+	"homepage": "https://github.com/onlyoffice/docspace-mcp/",
+	"documentation": "https://github.com/onlyoffice/docspace-mcp/blob/v{{version}}/README.md",
+	"support": "https://github.com/onlyoffice/docspace-mcp/issues/",
+	"icon": "docs/icon.png",
+	"server": {
+		"type": "node",
+		"entry_point": "bin/onlyoffice-docspace-mcp.js",
+		"mcp_config": {
+			"command": "node",
+			"args": ["${__dirname}/bin/onlyoffice-docspace-mcp.js"],
+			"env": {}
+		}
+	},
+	"tools": [],
+	"compatibility": {
+		"platforms": [
+			"darwin",
+			"win32",
+			"linux"
+		],
+		"runtimes": {
+			"node": ">=18.0.0"
+		}
+	},
+	"user_config": {},
+	"keywords": [
+		"onlyoffice",
+		"docspace"
+	],
+	"license": "Apache-2.0",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/onlyoffice/docspace-mcp.git"
+	}
+}

@@ -30,6 +30,7 @@
 	"files": ["bin"],
 	"scripts": {
 		"build-app": "node scripts/build-app.ts",
+		"build-detail": "node scripts/build-detail.ts",
 		"build-docs": "node scripts/build-docs.ts",
 		"build-mcpb": "node scripts/build-mcpb.ts",
 		"check": "tsc",

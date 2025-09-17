@@ -27,24 +27,34 @@ jobs:
     - name: Build Application
       run: pnpm build-app
 
-    - name: Archive Package
-      run: pnpm pack
-
     - name: Build MCP Bundle
       run: pnpm build-mcpb
 
-    - name: Upload Package
-      uses: actions/upload-artifact@v4
-      with:
-        name: package
-        path: "*.tgz"
-        if-no-files-found: error
+    - name: Build Server Detail
+      run: pnpm build-detail
+
+    - name: Archive Package
+      run: pnpm pack
 
     - name: Upload MCP Bundle
       uses: actions/upload-artifact@v4
       with:
         name: mcp-bundle
         path: "*.mcpb"
+        if-no-files-found: error
+
+    - name: Upload Server Detail
+      uses: actions/upload-artifact@v4
+      with:
+        name: server-detail
+        path: server.json
+        if-no-files-found: error
+
+    - name: Upload Package
+      uses: actions/upload-artifact@v4
+      with:
+        name: package
+        path: "*.tgz"
         if-no-files-found: error
 
   npm:
@@ -146,6 +156,26 @@ jobs:
         password: ${{secrets.DOCKERHUB_TOKEN}}
         repository: ${{env.DOCKERHUB_NAMESPACE}}/${{env.DOCKERHUB_REPOSITORY}}
 
+  mcp:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+    steps:
+    - name: Download Server Detail
+      uses: actions/download-artifact@v4
+      with:
+        name: server-detail
+
+    - name: Install MCP Publisher
+      run: curl -L "https://github.com/modelcontextprotocol/registry/releases/download/v1.0.0/mcp-publisher_1.0.0_$(uname -s | tr '[:upper:]' '[:lower:]')_$(uname -m | sed 's/x86_64/amd64/;s/aarch64/arm64/').tar.gz" | tar xz mcp-publisher
+
+    - name: Login to MCP Registry
+      run: ./mcp-publisher login github-oidc
+
+    - name: Publish to MCP Registry
+      run: ./mcp-publisher publish
+
   gh:
     needs: [build, npm, docker]
     runs-on: ubuntu-latest
@@ -160,7 +190,7 @@ jobs:
     - name: Download Artifacts
       uses: actions/download-artifact@v4
       with:
-        pattern: "*"
+        pattern: "*.{mcpb,tgz}"
         merge-multiple: true
 
     - name: Create Release
@@ -169,8 +199,8 @@ jobs:
           --title "v${{needs.build.outputs.version}}" \
           --notes "See ${{github.server_url}}/${{github.repository}}/blob/main/CHANGELOG.md/"
 
-    - name: Upload Package
-      run: gh release upload "v${{needs.build.outputs.version}}" *.tgz
-
     - name: Upload MCP Bundle
       run: gh release upload "v${{needs.build.outputs.version}}" *.mcpb
+
+    - name: Upload Package
+      run: gh release upload "v${{needs.build.outputs.version}}" *.tgz

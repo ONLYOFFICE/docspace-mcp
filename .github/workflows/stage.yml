@@ -26,24 +26,34 @@ jobs:
     - name: Build Application
       run: pnpm build-app
 
-    - name: Archive Package
-      run: pnpm pack
-
     - name: Build MCP Bundle
       run: pnpm build-mcpb
 
-    - name: Upload Package
-      uses: actions/upload-artifact@v4
-      with:
-        name: package
-        path: "*.tgz"
-        if-no-files-found: error
+    - name: Build Server Detail
+      run: pnpm build-detail
+
+    - name: Archive Package
+      run: pnpm pack
 
     - name: Upload MCP Bundle
       uses: actions/upload-artifact@v4
       with:
         name: mcp-bundle
         path: "*.mcpb"
+        if-no-files-found: error
+
+    - name: Upload Server Detail
+      uses: actions/upload-artifact@v4
+      with:
+        name: server-detail
+        path: server.json
+        if-no-files-found: error
+
+    - name: Upload Package
+      uses: actions/upload-artifact@v4
+      with:
+        name: package
+        path: "*.tgz"
         if-no-files-found: error
 
   docker:

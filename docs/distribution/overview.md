@@ -8,7 +8,7 @@ distribution sources for the DocSpace MCP server.
 - [Available Formats](#available-formats)
 	- [Docker Image](#docker-image)
 	- [Docker MCP Server](#docker-mcp-server)
-	- [Desktop Extension](#desktop-extension)
+	- [MCP Bundle](#mcp-bundle)
 	- [Node.js Application](#nodejs-application)
 - [Distribution Matrix](#distribution-matrix)
 - [References](#references)
@@ -25,10 +25,9 @@ A containerized version of the DocSpace MCP server.
 
 An MCP server available through Docker's MCP Catalog and Toolkit.
 
-### Desktop Extension
+### MCP Bundle
 
-A packaged extension for desktop applications that support the Desktop Extension
-format.
+A bundled MCP server for applications that support the MCP Bundles format.
 
 ### Node.js Application
 
@@ -39,25 +38,25 @@ A standalone application that can be run on systems with Node.js.
 The following table shows which formats are available from each distribution
 source:
 
-| Distribution Source | Docker Image | Docker MCP Server | Desktop Extension | Node.js Application |
-| ------------------- | :----------: | :---------------: | :---------------: | :-----------------: |
-| [Build From Source] |      +       |         -         |         +         |          +          |
-| [Docker Hub]        |      +       |         -         |         -         |          -          |
-| [Docker MCP]        |      -       |         +         |         -         |          -          |
-| [GitHub Releases]   |      -       |         -         |         +         |          +          |
-| [npm Registry]      |      -       |         -         |         -         |          +          |
+| Distribution Source | Docker Image | Docker MCP Server | MCP Bundle | Node.js Application |
+| ------------------- | :----------: | :---------------: | :--------: | :-----------------: |
+| [Build From Source] |      +       |         -         |     +      |          +          |
+| [Docker Hub]        |      +       |         -         |     -      |          -          |
+| [Docker MCP]        |      -       |         +         |     -      |          -          |
+| [GitHub Releases]   |      -       |         -         |     +      |          +          |
+| [npm Registry]      |      -       |         -         |     -      |          +          |
 
 ## References
 
 - [Docker Docs: What is an image?]
 - [Docker Docs: MCP Catalog and Toolkit]
-- [GitHub Anthropic: Desktop Extensions]
+- [GitHub Anthropic: MCP Bundles]
 
 <!-- Footnotes -->
 
 [Docker Docs: What is an image?]: https://docs.docker.com/get-started/docker-concepts/the-basics/what-is-an-image/
 [Docker Docs: MCP Catalog and Toolkit]: https://docs.docker.com/ai/mcp-catalog-and-toolkit/
-[GitHub Anthropic: Desktop Extensions]: https://github.com/anthropics/dxt/
+[GitHub Anthropic: MCP Bundles]: https://github.com/anthropics/mcpb/
 
 [Build From Source]: ./build-from-source.md
 [Docker Hub]: ./docker-hub.md

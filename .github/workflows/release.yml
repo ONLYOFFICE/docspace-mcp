@@ -1,8 +1,5 @@
 name: Release
 
-permissions:
-  contents: write
-
 on:
   push:
     tags:
@@ -152,6 +149,8 @@ jobs:
   gh:
     needs: [build, npm, docker]
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     env:
       GH_TOKEN: ${{github.token}}
     steps:

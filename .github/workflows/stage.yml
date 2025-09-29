@@ -106,6 +106,7 @@ jobs:
         tags: |
           type=sha,format=short
           type=sha,format=long
+          type=raw,value=latest
 
     - name: Publish Image
       uses: docker/build-push-action@v6

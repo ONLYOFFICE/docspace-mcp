@@ -303,24 +303,33 @@ class AuthServer {
 export function authServer(config: AuthServerConfig): express.Router {
 	let s = new AuthServer(config)
 
-	let g = express.Router()
-	g.use(express.json())
-
-	let m = express.Router()
-	m.use(s.metadataCors())
-	m.use(allowedMethods.allowedMethods(["GET"]))
-	m.use(s.metadataRateLimit())
-	m.get("/", s.metadata.bind(s))
-
 	let r = express.Router()
-	r.use(s.registerCors())
-	r.use(allowedMethods.allowedMethods(["POST"]))
-	r.use(s.registerRateLimit())
-	r.use(utilExpress.noCache())
-	r.post("/", s.register.bind(s))
 
-	g.get("/.well-known/oauth-authorization-server", m)
-	g.post("/register", r)
+	r.use("/.well-known/oauth-authorization-server", (() => {
+		let r = express.Router()
 
-	return g
+		r.use(s.metadataCors())
+		r.use(allowedMethods.allowedMethods(["GET"]))
+		r.use(s.metadataRateLimit())
+
+		r.get("/", s.metadata.bind(s))
+
+		return r
+	})())
+
+	r.use("/register", (() => {
+		let r = express.Router()
+
+		r.use(express.json())
+		r.use(s.registerCors())
+		r.use(allowedMethods.allowedMethods(["POST"]))
+		r.use(s.registerRateLimit())
+		r.use(utilExpress.noCache())
+
+		r.post("/", s.register.bind(s))
+
+		return r
+	})())
+
+	return r
 }

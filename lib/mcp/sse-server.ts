@@ -218,17 +218,37 @@ class SseServer {
 	}
 }
 
-export function sseServer(c: SseServerConfig): express.Router {
-	let s = new SseServer(c)
+export function sseServer(
+	config: SseServerConfig,
+	...handlers: express.RequestHandler[]
+): express.Router {
+	let s = new SseServer(config)
 
 	let r = express.Router()
-	r.use(express.json())
 
-	r.use(s.cors())
-	r.use(s.rateLimit())
+	r.use("/sse", ...handlers, (() => {
+		let r = express.Router()
 
-	r.get("/sse", s.sse.bind(s))
-	r.post("/messages", s.messages.bind(s))
+		r.use(express.json())
+		r.use(s.cors())
+		r.use(s.rateLimit())
+
+		r.get("/", s.sse.bind(s))
+
+		return r
+	})())
+
+	r.use("/messages", ...handlers, (() => {
+		let r = express.Router()
+
+		r.use(express.json())
+		r.use(s.cors())
+		r.use(s.rateLimit())
+
+		r.post("/", s.messages.bind(s))
+
+		return r
+	})())
 
 	return r
 }

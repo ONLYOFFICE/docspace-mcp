@@ -176,13 +176,6 @@ export function envUrl(): (v: string, c: z.RefinementCtx) => string | never {
 			return z.NEVER
 		}
 
-		if (r.v.protocol !== "http:" && r.v.protocol !== "https:") {
-			c.addIssue({
-				code: z.ZodIssueCode.custom,
-				message: `Expected a URL with http or https protocol, but got ${v}`,
-			})
-		}
-
 		return r.v.toString()
 	}
 }
@@ -212,13 +205,6 @@ export function envBaseUrl(): (v: string, c: z.RefinementCtx) => string | never 
 				fatal: true,
 			})
 			return z.NEVER
-		}
-
-		if (r.v.protocol !== "http:" && r.v.protocol !== "https:") {
-			c.addIssue({
-				code: z.ZodIssueCode.custom,
-				message: `Expected a URL with http or https protocol, but got ${v}`,
-			})
 		}
 
 		if (r.v.search) {
@@ -260,13 +246,6 @@ export function envUrlList(): (v: string, c: z.RefinementCtx) => string[] | neve
 					message: `Expected a valid URL, but got ${u}`,
 				})
 				continue
-			}
-
-			if (r.v.protocol !== "http:" && r.v.protocol !== "https:") {
-				c.addIssue({
-					code: z.ZodIssueCode.custom,
-					message: `Expected a URL with http or https protocol, but got ${u}`,
-				})
 			}
 
 			let s = r.v.toString()

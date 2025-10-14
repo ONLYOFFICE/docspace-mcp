@@ -48,7 +48,7 @@ interface Oauth {
 
 interface Mcp {
 	sessions: mcp.Sessions
-	server: express.Router
+	server(...handlers: express.RequestHandler[]): express.Router
 }
 
 interface App {
@@ -441,11 +441,11 @@ function createSse(
 		rc.corsExposedHeaders.push("WWW-Authenticate")
 	}
 
-	let r = mcp.sseServer(rc)
-
 	let m: Mcp = {
 		sessions: s,
-		server: r,
+		server(...handlers) {
+			return mcp.sseServer(rc, ...handlers)
+		},
 	}
 
 	return m
@@ -487,11 +487,11 @@ function createStreamable(
 		rc.corsExposedHeaders.push("WWW-Authenticate")
 	}
 
-	let r = mcp.streamableServer(rc)
-
 	let m: Mcp = {
 		sessions: s,
-		server: r,
+		server(...handlers) {
+			return mcp.streamableServer(rc, ...handlers)
+		},
 	}
 
 	return m
@@ -514,25 +514,20 @@ function createExpress(
 		e.use(c.oauth.resource)
 		e.use(c.oauth.server)
 
-		let r = express.Router()
-		r.use(c.oauth.middleware)
-
 		if (c.sse) {
-			r.use("/", c.sse.server)
+			e.use(c.sse.server(c.oauth.middleware))
 		}
 
 		if (c.streamable) {
-			r.use("/", c.streamable.server)
+			e.use(c.streamable.server(c.oauth.middleware))
 		}
-
-		e.use(r)
 	} else {
 		if (c.sse) {
-			e.use(c.sse.server)
+			e.use(c.sse.server())
 		}
 
 		if (c.streamable) {
-			e.use(c.streamable.server)
+			e.use(c.streamable.server())
 		}
 	}
 

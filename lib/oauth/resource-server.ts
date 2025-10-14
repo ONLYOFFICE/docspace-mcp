@@ -143,15 +143,16 @@ class ResourceServer {
 export function resourceServer(config: ResourceServerConfig): express.Router {
 	let s = new ResourceServer(config)
 
-	let g = express.Router()
+	let r = express.Router()
 
-	let m = express.Router()
-	m.use(s.metadataCors())
-	m.use(allowedMethods.allowedMethods(["GET"]))
-	m.use(s.metadataRateLimit())
-	m.get("/", s.metadata.bind(s))
+	r.use("/.well-known/oauth-protected-resource", (() => {
+		let r = express.Router()
+		r.use(s.metadataCors())
+		r.use(allowedMethods.allowedMethods(["GET"]))
+		r.use(s.metadataRateLimit())
+		r.get("/", s.metadata.bind(s))
+		return r
+	})())
 
-	g.get("/.well-known/oauth-protected-resource", m)
-
-	return g
+	return r
 }

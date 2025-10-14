@@ -315,18 +315,27 @@ class StreamableServer {
 	}
 }
 
-export function streamableServer(c: StreamableServerConfig): express.Router {
-	let s = new StreamableServer(c)
+export function streamableServer(
+	config: StreamableServerConfig,
+	...handlers: express.RequestHandler[]
+): express.Router {
+	let s = new StreamableServer(config)
 
 	let r = express.Router()
-	r.use(express.json())
 
-	r.use(s.cors())
-	r.use(s.rateLimit())
+	r.use("/mcp", ...handlers, (() => {
+		let r = express.Router()
 
-	r.post("/mcp", s.post.bind(s))
-	r.get("/mcp", s.get.bind(s))
-	r.delete("/mcp", s.delete.bind(s))
+		r.use(express.json())
+		r.use(s.cors())
+		r.use(s.rateLimit())
+
+		r.post("/", s.post.bind(s))
+		r.get("/", s.get.bind(s))
+		r.delete("/", s.delete.bind(s))
+
+		return r
+	})())
 
 	return r
 }

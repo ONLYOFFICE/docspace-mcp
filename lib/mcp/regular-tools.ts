@@ -346,7 +346,7 @@ export const GetRoomSecurityInfoInputSchema = z.object({
 })
 
 export const GetRoomSecurityInfoOutputSchema = SuccessApiResponseSchema.extend({
-	response: FileShareDtoSchema.describe("The room security information."),
+	response: z.array(FileShareDtoSchema).describe("The room security information."),
 })
 
 export const GetRoomsFolderInputSchema = z.object({

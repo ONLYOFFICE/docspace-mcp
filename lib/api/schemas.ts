@@ -911,7 +911,7 @@ export const GetRoomSecurityFiltersSchema = z.object({
 	count: z.number().min(1).max(50).default(30).describe("The number of items to be retrieved or processed."),
 	startIndex: z.number().optional().describe("The starting index of the items to retrieve in a paginated request."),
 	filterValue: z.string().optional().describe("The text filter value used for filtering room security information."),
-	fields: z.array(stringUnionToEnum(RoomSecurityDtoFieldSchema, "The fields to include in the response.")),
+	fields: z.array(stringUnionToEnum(FileShareDtoFieldSchema, "The fields to include in the response.")),
 })
 
 /**

@@ -39,7 +39,9 @@ This document records all notable changes to the project, following the [Keep a 
 - For all options with the boolean type, the empty string value resolves to the `false` value ([428ee1c]);
 - For all options with the number type, the empty string value resolves to the `0` value ([428ee1c]);
 - For the `copy_batch_items` and `move_batch_items` tools, change the conflict resolution behavior from skipping files to duplicating them ([b2588f3]);
-- For the `get_file_info` and `update_file` tools, fix the type of the `folderId` field in the response ([2cde131]).
+- For the `get_file_info` and `update_file` tools, fix the type of the `folderId` field in the response ([2cde131]);
+- Fix returning value from the `get_room_security_info` tool ([8dd2099]);
+- Fix acceptable fields for the `get_room_security_info` tool ([a5f79c1]).
 
 ## [2.0.0] - 2025-07-23
 
@@ -183,6 +185,8 @@ This document records all notable changes to the project, following the [Keep a 
 [0.1.1]: https://github.com/onlyoffice/docspace-mcp/compare/v0.1.0...v0.1.1/
 [0.1.0]: https://github.com/onlyoffice/docspace-mcp/releases/tag/v0.1.0/
 
+[a5f79c1]: https://github.com/onlyoffice/docspace-mcp/commit/a5f79c1714fb173a076c61d1bede3d799765a51a/
+[8dd2099]: https://github.com/onlyoffice/docspace-mcp/commit/8dd2099cbdd546454a4d2a7087308589f1fe11ff/
 [2cde131]: https://github.com/onlyoffice/docspace-mcp/commit/2cde131e7fa0dbb90c90f155f93e86faef0754cb/
 [b2588f3]: https://github.com/onlyoffice/docspace-mcp/commit/b2588f37b0e2826c9811e6cec6efbca873e31a87/
 [ce30d96]: https://github.com/onlyoffice/docspace-mcp/commit/ce30d9638886433444b8da2d6fc6525bfc0bca5e/

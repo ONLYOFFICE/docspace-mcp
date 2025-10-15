@@ -37,7 +37,8 @@ This document records all notable changes to the project, following the [Keep a 
 - The `DOCSPACE_PORT` option with the `0` value selects a random port ([428ee1c]);
 - Allow the `65535` value for the `DOCSPACE_PORT` option ([428ee1c]);
 - For all options with the boolean type, the empty string value resolves to the `false` value ([428ee1c]);
-- For all options with the number type, the empty string value resolves to the `0` value ([428ee1c]).
+- For all options with the number type, the empty string value resolves to the `0` value ([428ee1c]);
+- For the `copy_batch_items` and `move_batch_items` tools, change the conflict resolution behavior from skipping files to duplicating them ([b2588f3]).
 
 ## [2.0.0] - 2025-07-23
 
@@ -181,6 +182,7 @@ This document records all notable changes to the project, following the [Keep a 
 [0.1.1]: https://github.com/onlyoffice/docspace-mcp/compare/v0.1.0...v0.1.1/
 [0.1.0]: https://github.com/onlyoffice/docspace-mcp/releases/tag/v0.1.0/
 
+[b2588f3]: https://github.com/onlyoffice/docspace-mcp/commit/b2588f37b0e2826c9811e6cec6efbca873e31a87/
 [ce30d96]: https://github.com/onlyoffice/docspace-mcp/commit/ce30d9638886433444b8da2d6fc6525bfc0bca5e/
 [6ac1d59]: https://github.com/onlyoffice/docspace-mcp/commit/6ac1d59639248efcbbffca1edb82328ba349fddb/
 [785f5dc]: https://github.com/onlyoffice/docspace-mcp/commit/785f5dc2dd435150ff7ce4309700d041aa0621a1/

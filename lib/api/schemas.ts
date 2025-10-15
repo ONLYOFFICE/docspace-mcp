@@ -244,10 +244,20 @@ export const DeleteSchema = z.object({
 })
 
 /**
+ * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/products/ASC.Files/Core/Services/WCFService/FileOperations/FileConflictResolveType.cs/#L31 | DocSpace Reference}
+ */
+export const FileConflictResolveTypeSchema = z.union([
+	z.literal(0).describe("Skip"),
+	z.literal(1).describe("Overwrite"),
+	z.literal(2).describe("Duplicate"),
+])
+
+/**
  * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/products/ASC.Files/Core/ApiModels/RequestDto/BatchModelRequestDto.cs/#L127 | DocSpace Reference}
  */
 export const BatchRequestDtoSchema = BaseBatchRequestDtoSchema.extend({
 	destFolderId: JsonElementSchema.optional(),
+	contentResolveType: FileConflictResolveTypeSchema.optional(),
 	deleteAfter: z.boolean().optional(),
 })
 

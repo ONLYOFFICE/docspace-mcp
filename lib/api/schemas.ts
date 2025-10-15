@@ -401,8 +401,8 @@ export const FileTypeSchema = z.union([
  */
 export const FileEntryDtoSchema = z.
 	object({
-		id: z.unknown().optional().describe("The file entry ID."),
-		rootFolderId: z.unknown().optional().describe("The root folder ID of the file entry."),
+		id: JsonElementSchema.optional().describe("The file entry ID."),
+		rootFolderId: JsonElementSchema.optional().describe("The root folder ID of the file entry."),
 		canShare: z.boolean().optional().describe("Specifies if the file entry can be shared or not."),
 		security: z.unknown().optional().describe("The actions that can be performed with the file entry."),
 		title: z.string().optional().describe("The file entry title."),
@@ -451,7 +451,7 @@ export const FileEntryDtoFieldSchema = z.union([
  */
 export const FileDtoSchema = FileEntryDtoSchema.
 	extend({
-		folderId: z.string().optional().describe("The folder ID where the file is located."),
+		folderId: JsonElementSchema.optional().describe("The folder ID where the file is located."),
 		fileType: numberUnionToEnum(FileTypeSchema, "The file type.").optional(),
 		fileExst: z.string().optional().describe("The file extension."),
 		comment: z.string().optional().describe("The comment to the file."),
@@ -620,7 +620,7 @@ export const FilesSettingsDtoSchema = z.
  */
 export const FolderDtoSchema = z.
 	object({
-		parentId: z.unknown().optional().describe("The parent folder ID of the folder."),
+		parentId: JsonElementSchema.optional().describe("The parent folder ID of the folder."),
 		filesCount: z.number().optional().describe("The number of files that the folder contains."),
 		foldersCount: z.number().optional().describe("The number of folders that the folder contains."),
 		isShareable: z.boolean().optional().describe("Specifies if the folder can be shared or not."),
@@ -839,7 +839,7 @@ export const CreateFolderFiltersSchema = z.object({
 export const GetFolderFiltersSchema = z.object({
 	userIdOrGroupId: z.string().uuid().optional().describe("The user or group ID."),
 	filterType: numberUnionToEnum(FilterTypeSchema, "The filter type.").optional(),
-	roomId: z.number().optional().describe("The room ID."),
+	roomId: JsonElementSchema.optional().describe("The room ID."),
 	excludeSubject: z.boolean().optional().describe("Specifies whether to exclude search by user or group ID."),
 	applyFilterOption: ApplyFilterOptionSchema.optional().describe("Specifies whether to return only files, only folders or all elements from the specified folder."),
 	extension: z.string().optional().describe("Specifies whether to search for the specific file extension."),

@@ -47,24 +47,6 @@ export const NumericSortOrderSchema = z.union([
 ])
 
 /**
- * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.2.1-server/common/ASC.Api.Core/Core/ApiDateTime.cs/#L36 | DocSpace Reference}
- */
-export const ApiDateTimeSchema = z.
-	object({
-		utcTime: z.string().optional().describe("The time in UTC format."),
-	}).
-	passthrough()
-
-/**
- * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.2.1-server/common/ASC.Api.Core/Core/ApiDateTime.cs/#L36 | DocSpace Reference}
- */
-// @ts-ignore
-export const ApiDateTimeFieldSchema = z.union([
-	z.literal("utcTime").describe("The time in UTC format."),
-	// z.literal("timeZoneOffset").describe("The time zone offset."),
-])
-
-/**
  * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/common/ASC.Api.Core/Middleware/CommonApiResponse.cs/#L31 | DocSpace Reference}
  */
 export const CommonApiResponseSchema = z.object({
@@ -169,14 +151,13 @@ export const EmployeeFullDtoFieldSchema = z.union([
 	// z.literal("userName").describe("The user username."),
 	z.literal("email").describe("The user email."),
 	// ...wrapUnion(ContentFieldSchema, "contacts").options,
-	// @ts-ignore
-	...wrapUnion(ApiDateTimeFieldSchema, "birthday").options,
+	z.literal("birthday").describe("The user birthday."),
 	// z.literal("sex").describe("The user sex."),
 	z.literal("status").describe("The user status."),
 	// z.literal("activationStatus").describe("The user activation status."),
-	// ...wrapUnion(ApiDateTimeFieldSchema, "terminated").options,
+	// z.literal("terminated"),
 	z.literal("department").describe("The user department."),
-	// ...wrapUnion(ApiDateTimeFieldSchema, "workFrom").options,
+	// z.literal("workFrom"),
 	// ...wrapUnion(GroupSummaryDtoFieldSchema, "groups").options,
 	// z.literal("location").describe("The user location."),
 	// z.literal("notes").describe("The user notes."),
@@ -199,7 +180,7 @@ export const EmployeeFullDtoFieldSchema = z.union([
 	// z.literal("isCustomQuota").describe("Specifies if the user has a custom quota or not."),
 	// z.literal("loginEventId").describe("The current login event ID."),
 	// ...wrapUnion(EmployeeDtoFieldSchema, "createdBy").options,
-	// ...wrapUnion(ApiDateTimeFieldSchema, "registrationDate").options,
+	// z.literal("registrationDate"),
 	// z.literal("hasPersonalFolder").describe("Specifies if the user has a personal folder or not."),
 	// eslint-disable-next-line stylistic/max-len
 	// z.literal("tfaAppEnabled").describe("Indicates whether the user has enabled two-factor authentication (TFA) using an authentication app."),
@@ -418,7 +399,7 @@ export const FileEntryDtoSchema = z.
 		title: z.string().optional().describe("The file entry title."),
 		access: z.unknown().optional().describe("The access rights to the file entry."),
 		shared: z.boolean().optional().describe("Specifies if the file entry is shared or not."),
-		created: ApiDateTimeSchema.optional().describe("The date and time when the file entry was created."),
+		created: z.string().optional().describe("The date and time when the file entry was created."),
 		createdBy: EmployeeDtoSchema.optional().describe("The user who created the file entry."),
 		fileEntityType: numberUnionToEnum(FileEntityTypeSchema, "The file entry type.").optional(),
 	}).
@@ -440,11 +421,10 @@ export const FileEntryDtoFieldSchema = z.union([
 	z.literal("title").describe("The file entry title."),
 	z.literal("access").describe("The access rights to the file entry."),
 	z.literal("shared").describe("Specifies if the file entry is shared or not."),
-	// @ts-ignore
-	...wrapUnion(ApiDateTimeFieldSchema, "created").options,
+	z.literal("created").describe("The creation date and time of the file entry."),
 	...wrapUnion(EmployeeDtoFieldSchema, "createdBy").options,
-	// ...wrapUnion(ApiDateTimeFieldSchema, "updated").options,
-	// ...wrapUnion(ApiDateTimeFieldSchema, "autoDelete").options,
+	// z.literal("updated"),
+	// z.literal("autoDelete"),
 	// z.literal("rootFolderType").describe("The root folder type of the file entry."),
 	// z.literal("parentRoomType").describe("The parent room type of the file entry."),
 	// ...wrapUnion(EmployeeDtoFieldSchema, "updatedBy").options,
@@ -516,8 +496,8 @@ export const FileDtoFieldSchema = z.union([
 	// ...wrapUnion(DraftLocationFieldSchema, "draftLocation").options,
 	// z.literal("viewAccessibility").describe("The file accessibility."),
 	// z.literal("availableExternalRights").describe("The available external rights of the file."),
-	// ...wrapUnion(ApiDateTimeFieldSchema, "lastOpened").options,
-	// ...wrapUnion(ApiDateTimeFieldSchema, "expired").options,
+	// z.literal("lastOpened"),
+	// z.literal("expired"),
 ])
 
 /**

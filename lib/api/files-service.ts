@@ -753,7 +753,7 @@ export class FilesService {
 	/**
 	 * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/products/ASC.Files/Server/Api/VirtualRoomsController.cs/#L349 | DocSpace Reference}
 	 */
-	async getRoomSecurityInfo(s: AbortSignal, id: number, filters?: GetRoomSecurityFilters): Promise<Result<[GetRoomSecurityInfoResponse, Response], Error>> {
+	async getRoomSecurityInfo(s: AbortSignal, id: number, filters?: GetRoomSecurityFilters): Promise<Result<[GetRoomSecurityInfoResponse[], Response], Error>> {
 		let u = this.c.createSharedUrl(`api/2.0/files/rooms/${id}/share`, filters)
 		if (u.err) {
 			return error(new Error("Creating URL.", {cause: u.err}))
@@ -771,7 +771,7 @@ export class FilesService {
 
 		let [p, res] = f.v
 
-		let e = FileShareDtoSchema.safeParse(p)
+		let e = z.array(FileShareDtoSchema).safeParse(p)
 		if (!e.success) {
 			return error(new Error("Parsing response.", {cause: e.error}))
 		}

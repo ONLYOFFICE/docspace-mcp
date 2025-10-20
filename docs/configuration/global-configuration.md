@@ -20,6 +20,7 @@ are organized by their functional area.
 		- [DOCSPACE_USER_AGENT](#docspace_user_agent)
 	- [API Shared Options](#api-shared-options)
 		- [DOCSPACE_BASE_URL](#docspace_base_url)
+		- [DOCSPACE_AUTHORIZATION](#docspace_authorization)
 		- [DOCSPACE_API_KEY](#docspace_api_key)
 		- [DOCSPACE_AUTH_TOKEN](#docspace_auth_token)
 		- [DOCSPACE_USERNAME](#docspace_username))
@@ -59,6 +60,7 @@ are organized by their functional area.
 		- [DOCSPACE_SERVER_RATE_LIMITS_OAUTH_REGISTER_CAPACITY](#docspace_server_rate_limits_oauth_register_capacity)
 		- [DOCSPACE_SERVER_RATE_LIMITS_OAUTH_REGISTER_WINDOW](#docspace_server_rate_limits_oauth_register_window)
 	- [Request General Options](#request-general-options)
+		- [DOCSPACE_REQUEST_AUTHORIZATION_HEADER](#docspace_request_authorization_header)
 		- [DOCSPACE_REQUEST_HEADER_PREFIX](#docspace_request_header_prefix)
 - [Examples](#examples)
 	- [stdio with API key](#stdio-with-api-key)
@@ -243,8 +245,9 @@ The base URL of the DocSpace instance for API requests.
 The base URL must use HTTP or HTTPS scheme without search parameters or hash
 fragments.
 
-This option is required if either [`DOCSPACE_API_KEY`], [`DOCSPACE_AUTH_TOKEN`],
-or the [`DOCSPACE_USERNAME`]/[`DOCSPACE_PASSWORD`] pair is set.
+This option is required if either [`DOCSPACE_AUTHORIZATION`],
+[`DOCSPACE_API_KEY`], [`DOCSPACE_AUTH_TOKEN`], or the
+[`DOCSPACE_USERNAME`]/[`DOCSPACE_PASSWORD`] pair is set.
 
 ##### Signature
 
@@ -253,17 +256,45 @@ or the [`DOCSPACE_USERNAME`]/[`DOCSPACE_PASSWORD`] pair is set.
 - Example: `https://your-instance.onlyoffice.com/`
 - Transports: `stdio`, `sse`, `streamable-http`, `http`
 
+#### DOCSPACE_AUTHORIZATION
+
+The raw value to include in the `Authorization` header for DocSpace API
+requests.
+
+This option is required if [`DOCSPACE_TRANSPORT`] is set to `stdio` and neither
+[`DOCSPACE_API_KEY`], [`DOCSPACE_AUTH_TOKEN`], nor the
+[`DOCSPACE_USERNAME`]/[`DOCSPACE_PASSWORD`] pair is set.
+
+This option is mutually exclusive with [`DOCSPACE_API_KEY`],
+[`DOCSPACE_AUTH_TOKEN`], the [`DOCSPACE_USERNAME`]/[`DOCSPACE_PASSWORD`] pair,
+and [`DOCSPACE_OAUTH_CLIENT_ID`] if [`DOCSPACE_TRANSPORT`] is set to `sse`,
+`streamable-http`, or `http`.
+
+##### Signature
+
+- Type: string
+- Attributes: sensitive, trimmable
+- Example: `Bearer sk-a499e...`
+- Transports: `stdio`, `sse`, `streamable-http`, `http`
+
+##### References
+
+- [DocSpace API: API Keys]
+- [DocSpace API: Personal Access Tokens]
+- [DocSpace API: Basic Authentication]
+- [DocSpace MCP: Authentication Resolution]
+
 #### DOCSPACE_API_KEY
 
 The API key for accessing the DocSpace API.
 
 This option is required if [`DOCSPACE_TRANSPORT`] is set to `stdio` and neither
-[`DOCSPACE_AUTH_TOKEN`] nor the [`DOCSPACE_USERNAME`]/[`DOCSPACE_PASSWORD`] pair
-is set.
+[`DOCSPACE_AUTHORIZATION`], [`DOCSPACE_AUTH_TOKEN`], nor the
+[`DOCSPACE_USERNAME`]/[`DOCSPACE_PASSWORD`] pair is set.
 
-This option is mutually exclusive with [`DOCSPACE_AUTH_TOKEN`], the
-[`DOCSPACE_USERNAME`]/[`DOCSPACE_PASSWORD`] pair, and
-[`DOCSPACE_OAUTH_CLIENT_ID`] if [`DOCSPACE_TRANSPORT`] is set to `sse`,
+This option is mutually exclusive with [`DOCSPACE_AUTHORIZATION`],
+[`DOCSPACE_AUTH_TOKEN`], the [`DOCSPACE_USERNAME`]/[`DOCSPACE_PASSWORD`] pair,
+and [`DOCSPACE_OAUTH_CLIENT_ID`] if [`DOCSPACE_TRANSPORT`] is set to `sse`,
 `streamable-http`, or `http`.
 
 ##### Signature
@@ -283,11 +314,11 @@ This option is mutually exclusive with [`DOCSPACE_AUTH_TOKEN`], the
 The Personal Access Token (PAT) for accessing the DocSpace API.
 
 This option is required if [`DOCSPACE_TRANSPORT`] is set to `stdio` and neither
-[`DOCSPACE_API_KEY`] nor the [`DOCSPACE_USERNAME`]/[`DOCSPACE_PASSWORD`] pair is
-set.
+[`DOCSPACE_AUTHORIZATION`], [`DOCSPACE_API_KEY`], nor the
+[`DOCSPACE_USERNAME`]/[`DOCSPACE_PASSWORD`] pair is set.
 
-This option is mutually exclusive with [`DOCSPACE_API_KEY`], the
-[`DOCSPACE_USERNAME`]/[`DOCSPACE_PASSWORD`] pair, and
+This option is mutually exclusive with [`DOCSPACE_AUTHORIZATION`],
+[`DOCSPACE_API_KEY`], the [`DOCSPACE_USERNAME`]/[`DOCSPACE_PASSWORD`] pair, and
 [`DOCSPACE_OAUTH_CLIENT_ID`] if [`DOCSPACE_TRANSPORT`] is set to `sse`,
 `streamable-http`, or `http`.
 
@@ -310,11 +341,12 @@ The username for accessing the DocSpace API using basic authentication.
 This option is used in conjunction with [`DOCSPACE_PASSWORD`].
 
 This option is required if [`DOCSPACE_TRANSPORT`] is set to `stdio` and neither
-[`DOCSPACE_API_KEY`] nor [`DOCSPACE_AUTH_TOKEN`] is set.
+[`DOCSPACE_AUTHORIZATION`], [`DOCSPACE_API_KEY`], nor [`DOCSPACE_AUTH_TOKEN`] is
+set.
 
-This option is mutually exclusive with [`DOCSPACE_API_KEY`],
-[`DOCSPACE_AUTH_TOKEN`], and [`DOCSPACE_OAUTH_CLIENT_ID`] if
-[`DOCSPACE_TRANSPORT`] is set to `sse`, `streamable-http`, or `http`.
+This option is mutually exclusive with [`DOCSPACE_AUTHORIZATION`],
+[`DOCSPACE_API_KEY`], [`DOCSPACE_AUTH_TOKEN`], and [`DOCSPACE_OAUTH_CLIENT_ID`]
+if [`DOCSPACE_TRANSPORT`] is set to `sse`, `streamable-http`, or `http`.
 
 ##### Signature
 
@@ -335,11 +367,12 @@ The password for accessing the DocSpace API using basic authentication.
 This option is used in conjunction with [`DOCSPACE_USERNAME`].
 
 This option is required if [`DOCSPACE_TRANSPORT`] is set to `stdio` and neither
-[`DOCSPACE_API_KEY`] nor [`DOCSPACE_AUTH_TOKEN`] is set.
+[`DOCSPACE_AUTHORIZATION`], [`DOCSPACE_API_KEY`], nor [`DOCSPACE_AUTH_TOKEN`] is
+set.
 
-This option is mutually exclusive with [`DOCSPACE_API_KEY`],
-[`DOCSPACE_AUTH_TOKEN`], and [`DOCSPACE_OAUTH_CLIENT_ID`] if
-[`DOCSPACE_TRANSPORT`] is set to `sse`, `streamable-http`, or `http`.
+This option is mutually exclusive with [`DOCSPACE_AUTHORIZATION`],
+[`DOCSPACE_API_KEY`], [`DOCSPACE_AUTH_TOKEN`], and [`DOCSPACE_OAUTH_CLIENT_ID`]
+if [`DOCSPACE_TRANSPORT`] is set to `sse`, `streamable-http`, or `http`.
 
 ##### Signature
 
@@ -450,9 +483,10 @@ The list of redirect URIs for the OAuth client.
 
 The client ID for the OAuth client.
 
-This option is mutually exclusive with [`DOCSPACE_API_KEY`],
-[`DOCSPACE_AUTH_TOKEN`], and the [`DOCSPACE_USERNAME`]/[`DOCSPACE_PASSWORD`]
-pair if [`DOCSPACE_TRANSPORT`] is set to `sse`, `streamable-http`, or `http`.
+This option is mutually exclusive with [`DOCSPACE_AUTHORIZATION`],
+[`DOCSPACE_API_KEY`], [`DOCSPACE_AUTH_TOKEN`], and the
+[`DOCSPACE_USERNAME`]/[`DOCSPACE_PASSWORD`] pair if [`DOCSPACE_TRANSPORT`] is
+set to `sse`, `streamable-http`, or `http`.
 
 ##### Signature
 
@@ -847,6 +881,20 @@ The `0` is a special value that disables the rate limit.
 The following options are used to configure the request behavior for the
 DocSpace MCP server.
 
+#### DOCSPACE_REQUEST_AUTHORIZATION_HEADER
+
+The flag that indicates whether the DocSpace MCP server should check for the
+`Authorization` header in incoming requests.
+
+##### Signature
+
+- Type: boolean
+- Variants (true): `yes`, `y`, `true`, `1`
+- Variants (false): `no`, `n`, `false`, `0`
+- Attributes: trimmable, case-insensitive
+- Default: `1` (true)
+- Transports: `sse`, `streamable-http`, `http`
+
 #### DOCSPACE_REQUEST_HEADER_PREFIX
 
 The prefix to use with custom configuration headers for the DocSpace MCP server.
@@ -1014,6 +1062,7 @@ DOCSPACE_SERVER_RATE_LIMITS_OAUTH_REGISTER_WINDOW=7200000 # 2 hours
 [`DOCSPACE_TOOLSETS`]: #docspace_toolsets
 [`DOCSPACE_ENABLED_TOOLS`]: #docspace_enabled_tools
 [`DOCSPACE_DISABLED_TOOLS`]: #docspace_disabled_tools
+[`DOCSPACE_AUTHORIZATION`]: #docspace_authorization
 [`DOCSPACE_API_KEY`]: #docspace_api_key
 [`DOCSPACE_AUTH_TOKEN`]: #docspace_auth_token
 [`DOCSPACE_USERNAME`]: #docspace_username

@@ -363,6 +363,18 @@ export const options: Option[] = [
 		sensitive: false,
 	},
 	{
+		env: "DOCSPACE_SERVER_PROXY_HOPS",
+		header: "",
+		title: "Server Proxy Hops",
+		description: "The number of proxy servers between the DocSpace MCP server and the client.",
+		transports: ["sse", "streamable-http"],
+		distribution: ["js", "oci"],
+		type: "number",
+		choices: [],
+		default: 0,
+		sensitive: false,
+	},
+	{
 		env: "DOCSPACE_SERVER_CORS_MCP_ORIGIN",
 		header: "",
 		title: "Server CORS MCP Origin",

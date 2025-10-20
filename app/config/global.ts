@@ -91,8 +91,13 @@ export interface Server {
 	baseUrl: string
 	host: string
 	port: number
+	proxy: Proxy
 	cors: Cors
 	rateLimits: RateLimits
+}
+
+export interface Proxy {
+	hops: number
 }
 
 export interface Cors {
@@ -266,6 +271,12 @@ export const ConfigSchema = z.
 			transform(zod.envNumber()).
 			pipe(z.number().min(0).max(65535)),
 
+		DOCSPACE_PROXY_HOPS: z.
+			string().
+			default("0").
+			transform(zod.envNumber()).
+			pipe(z.number().min(0)),
+
 		DOCSPACE_SERVER_CORS_MCP_ORIGIN: z.
 			string().
 			default("*").
@@ -389,6 +400,9 @@ export const ConfigSchema = z.
 				baseUrl: o.DOCSPACE_SERVER_BASE_URL,
 				host: o.DOCSPACE_HOST,
 				port: o.DOCSPACE_PORT,
+				proxy: {
+					hops: o.DOCSPACE_PROXY_HOPS,
+				},
 				cors: {
 					mcp: {
 						origin: o.DOCSPACE_SERVER_CORS_MCP_ORIGIN,
@@ -478,6 +492,9 @@ export const ConfigSchema = z.
 					baseUrl: "",
 					host: c.server.host,
 					port: c.server.port,
+					proxy: {
+						hops: 0,
+					},
 					cors: {
 						mcp: {
 							origin: [],
@@ -544,6 +561,9 @@ export const ConfigSchema = z.
 					baseUrl: "",
 					host: "",
 					port: 0,
+					proxy: {
+						hops: 0,
+					},
 					cors: {
 						mcp: {
 							origin: [],

@@ -42,6 +42,8 @@ are organized by their functional area.
 		- [DOCSPACE_SERVER_BASE_URL](#docspace_server_base_url)
 		- [DOCSPACE_HOST](#docspace_host)
 		- [DOCSPACE_PORT](#docspace_port)
+	- [Server Proxy Options](#server-proxy-options)
+		- [DOCSPACE_SERVER_PROXY_HOPS](#docspace_server_proxy_hops)
 	- [Server CORS Options](#server-cors-options)
 		- [DOCSPACE_SERVER_CORS_MCP_ORIGIN](#docspace_server_cors_mcp_origin)
 		- [DOCSPACE_SERVER_CORS_MCP_MAX\_AGE](#docspace_server_cors_mcp_max_age)
@@ -597,6 +599,30 @@ The `0` is a special value that causes the server to bind to a random port.
 - Default: `8080`
 - Transports: `sse`, `streamable-http`, `http`
 
+### Server Proxy Options
+
+The following options are used to configure the proxy behavior for the DocSpace
+MCP server.
+
+#### DOCSPACE_SERVER_PROXY_HOPS
+
+The number of proxy servers between the DocSpace MCP server and the client.
+
+The `0` is a special value that indicates no proxy servers are used.
+
+##### Signature
+
+- Type: number
+- Attributes: trimmable
+- Minimum: `0`
+- Default: `0`
+- Transports: `sse`, `streamable-http`, `http`
+
+##### References
+
+- [Express.js: Express Behind Proxies]
+- [express-rate-limit: Troubleshooting Proxy Issues]
+
 ### Server CORS Options
 
 The following options are used to configure the CORS behavior for the DocSpace
@@ -959,6 +985,9 @@ DOCSPACE_SERVER_RATE_LIMITS_OAUTH_REGISTER_WINDOW=7200000 # 2 hours
 [MDN: Access-Control-Allow-Origin Header]: https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Access-Control-Allow-Origin
 [MDN: Access-Control-Max-Age Header]: https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Access-Control-Max-Age
 [MDN: User-Agent Header]: https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/User-Agent
+
+[Express.js: Express Behind Proxies]: https://expressjs.com/en/guide/behind-proxies.html
+[express-rate-limit: Troubleshooting Proxy Issues]: https://express-rate-limit.mintlify.app/guides/troubleshooting-proxy-issues
 
 [MCP: Transports]: https://modelcontextprotocol.io/specification/2025-06-18/basic/transports/
 [MCP: Session Management]: https://modelcontextprotocol.io/specification/2025-06-18/basic/transports/#session-management

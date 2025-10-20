@@ -13,7 +13,8 @@ This document records all notable changes to the project, following the [Keep a 
 - Add the implementation of Streamable HTTP transport ([b1fe294], [2504af1], [d63057b]);
 - Add the implementation of OAuth2 protocol ([b1fe294]);
 - Add the ability to configure using HTTP headers ([785f5dc]);
-- Add support for the logging capability ([ce30d96]).
+- Add support for the logging capability ([ce30d96]);
+- Add the `DOCSPACE_AUTHORIZATION` option ([6b41eeb]).
 
 ### Changed
 
@@ -186,6 +187,7 @@ This document records all notable changes to the project, following the [Keep a 
 [0.1.1]: https://github.com/onlyoffice/docspace-mcp/compare/v0.1.0...v0.1.1/
 [0.1.0]: https://github.com/onlyoffice/docspace-mcp/releases/tag/v0.1.0/
 
+[6b41eeb]: https://github.com/onlyoffice/docspace-mcp/commit/6b41eebd8b65d3592568880e1966b88bd02a3522/
 [cbfa539]: https://github.com/onlyoffice/docspace-mcp/commit/cbfa539d56f4dae66b3888204d1b11ab8a3bcc70/
 [a5f79c1]: https://github.com/onlyoffice/docspace-mcp/commit/a5f79c1714fb173a076c61d1bede3d799765a51a/
 [8dd2099]: https://github.com/onlyoffice/docspace-mcp/commit/8dd2099cbdd546454a4d2a7087308589f1fe11ff/

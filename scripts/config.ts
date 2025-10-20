@@ -531,6 +531,18 @@ export const options: Option[] = [
 		sensitive: false,
 	},
 	{
+		env: "DOCSPACE_REQUEST_QUERY",
+		header: "",
+		title: "Request Query",
+		description: "The flag that indicates whether the DocSpace MCP server should accept configuration via query parameters in incoming requests.",
+		transports: ["sse", "streamable-http"],
+		distribution: ["js", "oci"],
+		type: "boolean",
+		choices: [],
+		default: true,
+		sensitive: false,
+	},
+	{
 		env: "DOCSPACE_REQUEST_AUTHORIZATION_HEADER",
 		header: "",
 		title: "Request Authorization Header",

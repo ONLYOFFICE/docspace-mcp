@@ -56,6 +56,7 @@ export interface Api {
 
 export interface ApiShared {
 	baseUrl: string
+	authorization: string
 	apiKey: string
 	pat: string
 	username: string
@@ -123,6 +124,7 @@ export interface RateLimit {
 }
 
 export interface Request {
+	authorizationHeader: boolean
 	headerPrefix: string
 }
 
@@ -179,6 +181,11 @@ export const ConfigSchema = z.
 			string().
 			default("").
 			transform(zod.envBaseUrl()),
+
+		DOCSPACE_AUTHORIZATION: z.
+			string().
+			trim().
+			default(""),
 
 		DOCSPACE_API_KEY: z.
 			string().
@@ -346,6 +353,11 @@ export const ConfigSchema = z.
 			transform(zod.envNumber()).
 			pipe(z.number().min(0)),
 
+		DOCSPACE_REQUEST_AUTHORIZATION_HEADER: z.
+			string().
+			default("1").
+			transform(zod.envBoolean()),
+
 		DOCSPACE_REQUEST_HEADER_PREFIX: z.
 			string().
 			trim().
@@ -371,6 +383,7 @@ export const ConfigSchema = z.
 				userAgent: o.DOCSPACE_USER_AGENT,
 				shared: {
 					baseUrl: o.DOCSPACE_BASE_URL,
+					authorization: o.DOCSPACE_AUTHORIZATION,
 					apiKey: o.DOCSPACE_API_KEY,
 					pat: o.DOCSPACE_AUTH_TOKEN,
 					username: o.DOCSPACE_USERNAME,
@@ -433,6 +446,7 @@ export const ConfigSchema = z.
 				},
 			},
 			request: {
+				authorizationHeader: o.DOCSPACE_REQUEST_AUTHORIZATION_HEADER,
 				headerPrefix: o.DOCSPACE_REQUEST_HEADER_PREFIX,
 			},
 		}
@@ -463,6 +477,7 @@ export const ConfigSchema = z.
 					userAgent: c.api.userAgent,
 					shared: {
 						baseUrl: "",
+						authorization: "",
 						apiKey: "",
 						pat: "",
 						username: "",
@@ -525,6 +540,7 @@ export const ConfigSchema = z.
 					},
 				},
 				request: {
+					authorizationHeader: false,
 					headerPrefix: "",
 				},
 			}
@@ -594,6 +610,7 @@ export const ConfigSchema = z.
 					},
 				},
 				request: {
+					authorizationHeader: false,
 					headerPrefix: "",
 				},
 			}
@@ -617,29 +634,30 @@ export const ConfigSchema = z.
 		}
 
 		if (o.mcp.transport === "stdio") {
-			let a = Boolean(o.api.shared.apiKey)
-			let b = Boolean(o.api.shared.pat)
-			let c = Boolean(o.api.shared.username) && Boolean(o.api.shared.password)
-			let u = Number(a) + Number(b) + Number(c)
+			let a = Boolean(o.api.shared.authorization)
+			let b = Boolean(o.api.shared.apiKey)
+			let c = Boolean(o.api.shared.pat)
+			let d = Boolean(o.api.shared.username) && Boolean(o.api.shared.password)
+			let u = Number(a) + Number(b) + Number(c) + Number(d)
 
 			if (u === 0) {
 				ctx.addIssue({
 					code: z.ZodIssueCode.custom,
-					message: "Expected at least one of API key, PAT, or (username and password) to be set for stdio transport",
+					message: "Expected at least one of Authorization header, API key, PAT, or (username and password) to be set for stdio transport",
 				})
 			}
 
 			if (u !== 0 && u !== 1) {
 				ctx.addIssue({
 					code: z.ZodIssueCode.custom,
-					message: "Expected only one of API key, PAT, or (username and password) to be set for stdio transport",
+					message: "Expected only one of Authorization header, API key, PAT, or (username and password) to be set for stdio transport",
 				})
 			}
 
-			if ((a || b || c) && !o.api.shared.baseUrl) {
+			if ((a || b || c || d) && !o.api.shared.baseUrl) {
 				ctx.addIssue({
 					code: z.ZodIssueCode.custom,
-					message: "API base URL is required for stdio transport with API key, PAT, or (username and password)",
+					message: "API base URL is required for stdio transport with Authorization header, API key, PAT, or (username and password)",
 				})
 			}
 		}
@@ -662,34 +680,35 @@ export const ConfigSchema = z.
 				break
 			}
 
-			let a = Boolean(o.api.shared.apiKey)
-			let b = Boolean(o.api.shared.pat)
-			let c = Boolean(o.api.shared.username) && Boolean(o.api.shared.password)
-			let d = Boolean(o.oauth.client.clientId)
-			let u = Number(a) + Number(b) + Number(c) + Number(d)
+			let a = Boolean(o.api.shared.authorization)
+			let b = Boolean(o.api.shared.apiKey)
+			let c = Boolean(o.api.shared.pat)
+			let d = Boolean(o.api.shared.username) && Boolean(o.api.shared.password)
+			let e = Boolean(o.oauth.client.clientId)
+			let u = Number(a) + Number(b) + Number(c) + Number(d) + Number(e)
 
 			if (u !== 0 && u !== 1) {
 				ctx.addIssue({
 					code: z.ZodIssueCode.custom,
-					message: `Expected only one of API key, PAT, (username and password), or OAuth client ID to be set for ${t} transport`,
+					message: `Expected only one of Authorization header, API key, PAT, (username and password), or OAuth client ID to be set for ${t} transport`,
 				})
 			}
 
-			if ((a || b || c) && !o.api.shared.baseUrl) {
+			if ((a || b || c || d) && !o.api.shared.baseUrl) {
 				ctx.addIssue({
 					code: z.ZodIssueCode.custom,
-					message: `API base URL is required for ${t} transport with API key, PAT, or (username and password)`,
+					message: `API base URL is required for ${t} transport with Authorization header, API key, PAT, or (username and password)`,
 				})
 			}
 
-			if (d && !o.api.oauth.baseUrl) {
+			if (e && !o.api.oauth.baseUrl) {
 				ctx.addIssue({
 					code: z.ZodIssueCode.custom,
 					message: `OAuth base URL is required for ${t} transport with OAuth client ID`,
 				})
 			}
 
-			if (d && !o.server.baseUrl) {
+			if (e && !o.server.baseUrl) {
 				ctx.addIssue({
 					code: z.ZodIssueCode.custom,
 					message: `Server base URL is required for ${t} transport with OAuth client ID`,
@@ -734,6 +753,11 @@ export function format(c: Config): object {
 	let server = formatServer(c.server)
 	if (Object.keys(server).length !== 0) {
 		o.server = server
+	}
+
+	let request = formatRequest(c.request)
+	if (Object.keys(request).length !== 0) {
+		o.request = request
 	}
 
 	return o
@@ -805,6 +829,10 @@ function formatApiShared(c: ApiShared): types.RecursivePartial<ApiShared> {
 
 	if (c.baseUrl) {
 		o.baseUrl = c.baseUrl
+	}
+
+	if (c.authorization) {
+		o.authorization = "***"
 	}
 
 	if (c.apiKey) {
@@ -1012,6 +1040,20 @@ function formatRateLimit(c: RateLimit): types.RecursivePartial<RateLimit> {
 
 	if (c.window) {
 		o.window = c.window
+	}
+
+	return o
+}
+
+function formatRequest(c: Request): types.RecursivePartial<Request> {
+	let o: types.RecursivePartial<Request> = {}
+
+	if (c.authorizationHeader) {
+		o.authorizationHeader = c.authorizationHeader
+	}
+
+	if (c.headerPrefix) {
+		o.headerPrefix = c.headerPrefix
 	}
 
 	return o

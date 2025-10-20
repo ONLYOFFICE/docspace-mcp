@@ -919,6 +919,11 @@ function formatServer(c: Server): types.RecursivePartial<Server> {
 		o.port = c.port
 	}
 
+	let proxy = formatProxy(c.proxy)
+	if (Object.keys(proxy).length !== 0) {
+		o.proxy = proxy
+	}
+
 	let cors = formatCors(c.cors)
 	if (Object.keys(cors).length !== 0) {
 		o.cors = cors
@@ -927,6 +932,16 @@ function formatServer(c: Server): types.RecursivePartial<Server> {
 	let rateLimits = formatRateLimits(c.rateLimits)
 	if (Object.keys(rateLimits).length !== 0) {
 		o.rateLimits = rateLimits
+	}
+
+	return o
+}
+
+function formatProxy(c: Proxy): types.RecursivePartial<Proxy> {
+	let o: types.RecursivePartial<Proxy> = {}
+
+	if (c.hops) {
+		o.hops = c.hops
 	}
 
 	return o

@@ -187,7 +187,7 @@ function createCreateServerWithOauth(
 			b.v.pathname += "/"
 		}
 
-		let m = config.request.parseMcp(g, req.headers)
+		let m = config.request.parseMcp(g, req)
 		if (m.err) {
 			return result.error(new Error("Parsing MCP config", {cause: m.err}))
 		}
@@ -237,12 +237,12 @@ function createCreateServerWithAuth(
 	l: logger.VanillaLogger,
 ): CreateServer {
 	return (req) => {
-		let a = config.request.parseApiShared(g, req.headers)
+		let a = config.request.parseApiShared(g, req)
 		if (a.err) {
 			return result.error(new Error("Parsing API shared config", {cause: a.err}))
 		}
 
-		let m = config.request.parseMcp(g, req.headers)
+		let m = config.request.parseMcp(g, req)
 		if (m.err) {
 			return result.error(new Error("Parsing MCP config", {cause: m.err}))
 		}

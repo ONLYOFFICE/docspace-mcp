@@ -74,7 +74,7 @@ export function start(
 		return [Promise.resolve(c.err), async() => undefined]
 	}
 
-	let e = createExpress(l, c.v)
+	let e = createExpress(g, l, c.v)
 
 	let a = createApp(g, c.v, e)
 
@@ -498,6 +498,7 @@ function createStreamable(
 }
 
 function createExpress(
+	g: config.global.Config,
 	l: logger.VanillaLogger,
 	c: Components,
 ): express.Express {
@@ -506,6 +507,10 @@ function createExpress(
 	e.disable("x-powered-by")
 	e.disable("etag")
 	e.set("json spaces", 2)
+
+	if (g.server.proxy.hops) {
+		e.set("trust proxy", g.server.proxy.hops)
+	}
 
 	e.use(utilExpress.context(context))
 	e.use(utilExpress.logger(context, l))

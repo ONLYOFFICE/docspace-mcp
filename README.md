@@ -56,7 +56,69 @@ Find your Claude Desktop configuration file, usually named:
 Insert the following block into the `mcpServers` section of your config:
 
 ``` json
+The DocSpace MCP Server connects AI tools directly to ONLYOFFICE DocSpace. This gives AI agents, assistants, and chatbots the ability to manage rooms, collaborate on files, handle permissions, and automate document workflows - all through natural language interactions.
+
+## Use Cases
+
+- **Room Management**: Create, update, and archive rooms. Configure room types, manage membership, and control access levels.
+- **Folder & File Operations**: Create folders, upload documents, copy or move items in batches, rename or delete content, and check file or folder details.
+- **Collaboration & Permissions**: Invite or remove users, adjust security settings, and review current access rights for rooms and shared spaces.
+- **Content Access**: Retrieve "My documents" or "Rooms" folders, get folder contents, download files as text, and monitor ongoing file operations.
+- **Storage & Tariff Control**: Check current portal quota and subscription plan before uploading or sharing large volumes of data.
+- **People Directory**: List all people in the portal to streamline invitations and access management.
+- **Localization & Settings**: Access supported languages, cultures, and time zones to adapt collaboration spaces to regional preferences.
+
+## Remote DocSpace MCP Server
+
+The remote DocSpace MCP Server is hosted by ONLYOFFICE and provides the fastest way to start using DocSpace tools inside your AI agent. You can connect instantly without deploying or configuring anything on your machine.
+
+If your MCP host does not support remote MCP servers, don’t worry - you can always run the local version of the [DocSpace MCP Server](docs/README.md) instead.
+
+### Prerequisites
+
+- *Node.js* v18+
+- *npm* or *npx* installed
+- A compatible MCP host with remote server support (Claude Desktop, etc.)
+- An active DocSpace account with valid credentials
+- Any applicable access policies enabled in your DocSpace portal
+
+### Environment requirements
+
+| Requirement          | Version               | Description                                       |
+| -------------------- | --------------------- | ------------------------------------------------- |
+| **Node.js**          | 18+                   | Required for running the server                   |
+| **NPM**              | 9+                    | For package installation                          |
+| **Operating System** | macOS, Windows, Linux | Cross-platform support                            |
+| **Network Access**   | HTTPS                 | Required for connecting to your DocSpace instance |
+
+## Connect to Claude Desktop
+
+The DocSpace MCP Server can be used directly with Claude Desktop by adding it to your `claude_desktop_config.json` file. This allows Claude to interact with your DocSpace - creating rooms, managing files, and collaborating on content via natural language.
+
+### Step 1. Locate your config file
+
+Find your Claude Desktop configuration file, usually named:
+
+- **macOS**: `~/Library/Application Support/Claude/claude_desktop_config.json`
+- **Windows**: `%APPDATA%\Claude\claude_desktop_config.json`
+- **Linux**: `~/.config/Claude/claude_desktop_config.json`
+
+### Step 2. Add the DocSpace MCP Server entry
+
+Insert the following block into the `mcpServers` section of your config:
+
+``` json
 {
+  "mcpServers": {
+    "onlyoffice-docspace": {
+      "env": {
+        "DOCSPACE_BASE_URL": "https://your-instance.onlyoffice.com",
+        "DOCSPACE_API_KEY": "your-api-key"
+      },
+      "command": "npx",
+      "args": ["--yes", "@onlyoffice/docspace-mcp"]
+    }
+  }
   "mcpServers": {
     "onlyoffice-docspace": {
       "env": {
@@ -117,8 +179,6 @@ Insert the following block into the `mcpServers` section of your config:
 - `DOCSPACE_BASE_URL` → the URL of your DocSpace instance (e.g. https://portal.onlyoffice.com).
 - `DOCSPACE_API_KEY` → your personal API key generated in DocSpace.
 
-Тут стоит указать только обязательные значения, и можно добавить ссылку на docs с остальными значениями, что бы не путать пользователя.
-
 ### Step 4. Restart Cursor
 
 Close and reopen Cursor. The DocSpace MCP Server will start automatically, and you'll be able to issue natural language commands like:
@@ -157,8 +217,6 @@ Insert the following block into the `mcpServers` section of your config:
 
 - `DOCSPACE_BASE_URL` → the URL of your DocSpace instance (e.g. https://portal.onlyoffice.com).
 - `DOCSPACE_API_KEY` → your personal API key generated in DocSpace.
-
-Тут стоит указать только обязательные значения, и можно добавить ссылку на docs с остальными значениями, что бы не путать пользователя.
 
 ### Step 4. Refresh
 
@@ -283,6 +341,42 @@ Common errors and how to fix them:
 - [DocSpace MCP: Configuration]
 - [DocSpace MCP: OAuth Authorization]
 - [DocSpace MCP: Tools]
+## Security and threats
+
+The DocSpace MCP Server follows the same authentication logic as DocSpace APIs.
+
+### Potential Threats
+
+- API key leakage — always store your API key in environment variables or vaults.
+- Unauthorized access — limit key permissions using DocSpace’s access policy settings.
+- Data exposure — avoid returning raw file data for sensitive documents.
+
+### Recommendations
+
+- Use HTTPS endpoints only
+- Rotate API keys regularly
+- Enable access logging in DocSpace
+
+## Error Handling
+
+Common errors and how to fix them:
+
+| Error                       | Cause                    | Solution                                |
+| --------------------------- | ------------------------ | --------------------------------------- |
+| `401 Unauthorized`          | Invalid API key          | Check credentials and reissue a new key |
+| `403 Forbidden`             | Insufficient permissions | Verify access policy settings           |
+| `404 Not Found`             | Missing file or room     | Check object path or ID                 |
+| `429 Too Many Requests`     | Rate limit reached       | Wait before retrying                    |
+| `500 Internal Server Error` | DocSpace service issue   | Retry later or contact admin            |
+
+
+## References
+
+- [DocSpace MCP: Distribution]
+- [DocSpace MCP: Installation on local server]
+- [DocSpace MCP: Configuration]
+- [DocSpace MCP: OAuth Authorization]
+- [DocSpace MCP: Tools]
 
 ## License
 
@@ -296,6 +390,14 @@ the [LICENSE] file.
 
 [Model Context Protocol]: https://modelcontextprotocol.io/
 [ONLYOFFICE DocSpace]: https://www.onlyoffice.com/docspace.aspx
+
+[MCP: Tools]: https://modelcontextprotocol.io/specification/2025-06-18/server/tools/
+
+[DocSpace MCP: Distribution]: ../distribution/README.md
+[DocSpace MCP: OAuth Authorization]: ../authorization/oauth.md
+[DocSpace MCP: Installation on local server]: ../installation/local-server.md
+[DocSpace MCP: Configuration]: ../configuration/README.md
+[DocSpace MCP: Tools]: ../features/tools.md
 
 [MCP: Tools]: https://modelcontextprotocol.io/specification/2025-06-18/server/tools/
 

@@ -54,6 +54,10 @@ export function start(g: config.global.Config): [shared.P, shared.Cleanup] {
 
 	let c = new api.Client(cc)
 
+	if (g.api.shared.authorization) {
+		c = c.withAuth(g.api.shared.authorization)
+	}
+
 	if (g.api.shared.apiKey) {
 		c = c.withApiKey(g.api.shared.apiKey)
 	}

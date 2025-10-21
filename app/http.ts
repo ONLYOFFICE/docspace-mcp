@@ -269,6 +269,10 @@ function createCreateServerWithAuth(
 
 		let c = new api.Client(cc)
 
+		if (a.v.authorization) {
+			c = c.withAuth(a.v.authorization)
+		}
+
 		if (a.v.apiKey) {
 			c = c.withApiKey(a.v.apiKey)
 		}

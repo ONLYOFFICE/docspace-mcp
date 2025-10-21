@@ -147,6 +147,18 @@ export const options: Option[] = [
 		sensitive: false,
 	},
 	{
+		env: "DOCSPACE_AUTHORIZATION",
+		header: "",
+		title: "Authorization",
+		description: "The raw value to include in the Authorization header for DocSpace API requests.",
+		transports: ["stdio", "sse", "streamable-http"],
+		distribution: ["js", "oci"],
+		type: "string",
+		choices: [],
+		default: "",
+		sensitive: true,
+	},
+	{
 		env: "DOCSPACE_API_KEY",
 		header: "X-Mcp-Api-Key",
 		title: "API Key",
@@ -516,6 +528,18 @@ export const options: Option[] = [
 		type: "number",
 		choices: [],
 		default: 3600000, // 1 hour
+		sensitive: false,
+	},
+	{
+		env: "DOCSPACE_REQUEST_AUTHORIZATION_HEADER",
+		header: "",
+		title: "Request Authorization Header",
+		description: "The flag that indicates whether the DocSpace MCP server should check for the Authorization header in incoming requests.",
+		transports: ["sse", "streamable-http"],
+		distribution: ["js", "oci"],
+		type: "boolean",
+		choices: [],
+		default: true,
 		sensitive: false,
 	},
 	{

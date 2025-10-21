@@ -37,6 +37,7 @@ import {
 	UploadSessionObjectSchema,
 } from "./schemas.ts"
 
+const headerAuth = "Authorization"
 const headerApiKey = "Authorization"
 const headerAuthToken = "Authorization"
 const headerBasicAuth = "Authorization"
@@ -76,6 +77,29 @@ export class Client {
 		this.files = new FilesService(this)
 		this.oauth = new OauthService(this)
 		this.people = new PeopleService(this)
+	}
+
+	withAuth(h: string): Client {
+		let c = this.copy()
+
+		let f = c.sharedBaseFetch
+
+		c.sharedBaseFetch = async function sharedBaseFetch(input, init) {
+			if (!(input instanceof Request)) {
+				throw new Error("Unsupported input type.")
+			}
+
+			input = input.clone()
+
+			let err = safeSync(input.headers.set.bind(input.headers), headerAuth, h)
+			if (err.err) {
+				throw new Error("Setting authorization header.", {cause: err.err})
+			}
+
+			return await f(input, init)
+		}
+
+		return c
 	}
 
 	withApiKey(k: string): Client {

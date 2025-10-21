@@ -34,10 +34,27 @@ export interface Mcp {
 
 export interface ApiShared {
 	baseUrl: string
+	authorization: string
 	apiKey: string
 	pat: string
 	username: string
 	password: string
+}
+
+interface PartialMcp {
+	dynamic: boolean | undefined
+	toolsets: string[] | undefined
+	enabledTools: string[] | undefined
+	disabledTools: string[] | undefined
+}
+
+interface PartialApiShared {
+	baseUrl: string | undefined
+	authorization: string | undefined
+	apiKey: string | undefined
+	pat: string | undefined
+	username: string | undefined
+	password: string | undefined
 }
 
 let McpSchema: ReturnType<typeof createMcp> | undefined
@@ -89,7 +106,12 @@ function createMcp(g: global.Config) {
 }
 
 export function parseMcp(g: global.Config, v: http.IncomingHttpHeaders): result.Result<Mcp, Error> {
-	let o: z.output<Exclude<typeof McpSchema, undefined>> | undefined
+	let o: PartialMcp = {
+		dynamic: undefined,
+		toolsets: undefined,
+		enabledTools: undefined,
+		disabledTools: undefined,
+	}
 
 	if (g.request.headerPrefix) {
 		if (!McpSchema) {
@@ -101,14 +123,10 @@ export function parseMcp(g: global.Config, v: http.IncomingHttpHeaders): result.
 			return result.error(new Error("Parsing headers", {cause: p.error}))
 		}
 
-		o = p.data
-	} else {
-		o = {
-			dynamic: undefined,
-			toolsets: undefined,
-			enabledTools: undefined,
-			disabledTools: undefined,
-		}
+		o.dynamic = p.data.dynamic
+		o.toolsets = p.data.toolsets
+		o.enabledTools = p.data.enabledTools
+		o.disabledTools = p.data.disabledTools
 	}
 
 	let c = computeMcp(g, o)
@@ -121,7 +139,7 @@ export function parseMcp(g: global.Config, v: http.IncomingHttpHeaders): result.
 	return result.ok(c)
 }
 
-function computeMcp(g: global.Config, o: z.output<Exclude<typeof McpSchema, undefined>>): Mcp {
+function computeMcp(g: global.Config, o: PartialMcp): Mcp {
 	let c: Mcp = {
 		dynamic: false,
 		toolsets: [],
@@ -228,7 +246,18 @@ function createApiShared(g: global.Config) {
 }
 
 export function parseApiShared(g: global.Config, v: http.IncomingHttpHeaders): result.Result<ApiShared, Error> {
-	let o: z.output<Exclude<typeof ApiSharedSchema, undefined>> | undefined
+	let o: PartialApiShared = {
+		baseUrl: undefined,
+		authorization: undefined,
+		apiKey: undefined,
+		pat: undefined,
+		username: undefined,
+		password: undefined,
+	}
+
+	if (g.request.authorizationHeader) {
+		o.authorization = v.authorization
+	}
 
 	if (g.request.headerPrefix) {
 		if (!ApiSharedSchema) {
@@ -240,15 +269,11 @@ export function parseApiShared(g: global.Config, v: http.IncomingHttpHeaders): r
 			return result.error(new Error("Parsing headers", {cause: p.error}))
 		}
 
-		o = p.data
-	} else {
-		o = {
-			baseUrl: undefined,
-			apiKey: undefined,
-			pat: undefined,
-			username: undefined,
-			password: undefined,
-		}
+		o.baseUrl = p.data.baseUrl
+		o.apiKey = p.data.apiKey
+		o.pat = p.data.pat
+		o.username = p.data.username
+		o.password = p.data.password
 	}
 
 	let c = computeApiShared(g, o)
@@ -261,9 +286,10 @@ export function parseApiShared(g: global.Config, v: http.IncomingHttpHeaders): r
 	return result.ok(c)
 }
 
-function computeApiShared(g: global.Config, o: z.output<Exclude<typeof ApiSharedSchema, undefined>>): ApiShared {
+function computeApiShared(g: global.Config, o: PartialApiShared): ApiShared {
 	let c: ApiShared = {
 		baseUrl: "",
+		authorization: "",
 		apiKey: "",
 		pat: "",
 		username: "",
@@ -272,6 +298,10 @@ function computeApiShared(g: global.Config, o: z.output<Exclude<typeof ApiShared
 
 	if (o.baseUrl !== undefined) {
 		c.baseUrl = o.baseUrl
+	}
+
+	if (o.authorization !== undefined) {
+		c.authorization = o.authorization
 	}
 
 	if (o.apiKey !== undefined) {
@@ -292,12 +322,14 @@ function computeApiShared(g: global.Config, o: z.output<Exclude<typeof ApiShared
 
 	if (
 		o.baseUrl === undefined &&
+		o.authorization === undefined &&
 		o.apiKey === undefined &&
 		o.pat === undefined &&
 		o.username === undefined &&
 		o.password === undefined
 	) {
 		c.baseUrl = g.api.shared.baseUrl
+		c.authorization = g.api.shared.authorization
 		c.apiKey = g.api.shared.apiKey
 		c.pat = g.api.shared.pat
 		c.username = g.api.shared.username
@@ -310,21 +342,22 @@ function computeApiShared(g: global.Config, o: z.output<Exclude<typeof ApiShared
 function validateApiShared(o: ApiShared): Error | undefined {
 	let errs: Error[] = []
 
-	let a = Boolean(o.apiKey)
-	let b = Boolean(o.pat)
-	let c = Boolean(o.username) && Boolean(o.password)
-	let u = Number(a) + Number(b) + Number(c)
+	let a = Boolean(o.authorization)
+	let b = Boolean(o.apiKey)
+	let c = Boolean(o.pat)
+	let d = Boolean(o.username) && Boolean(o.password)
+	let u = Number(a) + Number(b) + Number(c) + Number(d)
 
 	if (u === 0) {
-		errs.push(new Error("Expected at least one of API key, PAT, or (username and password) to be set"))
+		errs.push(new Error("Expected at least one of Authorization header, API key, PAT, or (username and password) to be set"))
 	}
 
-	if (u !== 1) {
-		errs.push(new Error("Expected only one of API key, PAT, or (username and password) to be set"))
+	if (u !== 0 && u !== 1) {
+		errs.push(new Error("Expected only one of Authorization header, API key, PAT, or (username and password) to be set"))
 	}
 
-	if ((a || b || c) && !o.baseUrl) {
-		errs.push(new Error("API base URL is required with API key, PAT, or (username and password)"))
+	if ((a || b || c || d) && !o.baseUrl) {
+		errs.push(new Error("API base URL is required with Authorization header, API key, PAT, or (username and password)"))
 	}
 
 	if (errs.length !== 0) {

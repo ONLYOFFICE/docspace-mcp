@@ -60,6 +60,7 @@ are organized by their functional area.
 		- [DOCSPACE_SERVER_RATE_LIMITS_OAUTH_REGISTER_CAPACITY](#docspace_server_rate_limits_oauth_register_capacity)
 		- [DOCSPACE_SERVER_RATE_LIMITS_OAUTH_REGISTER_WINDOW](#docspace_server_rate_limits_oauth_register_window)
 	- [Request General Options](#request-general-options)
+		- [DOCSPACE_REQUEST_QUERY](#docspace_request_query)
 		- [DOCSPACE_REQUEST_AUTHORIZATION_HEADER](#docspace_request_authorization_header)
 		- [DOCSPACE_REQUEST_HEADER_PREFIX](#docspace_request_header_prefix)
 - [Examples](#examples)
@@ -881,6 +882,20 @@ The `0` is a special value that disables the rate limit.
 The following options are used to configure the request behavior for the
 DocSpace MCP server.
 
+#### DOCSPACE_REQUEST_QUERY
+
+The flag that indicates whether the DocSpace MCP server should accept
+configuration via query parameters in incoming requests.
+
+##### Signature
+
+- Type: boolean
+- Variants (true): `yes`, `y`, `true`, `1`
+- Variants (false): `no`, `n`, `false`, `0`
+- Attributes: trimmable, case-insensitive
+- Default: `1` (true)
+- Transports: `sse`, `streamable-http`, `http`
+
 #### DOCSPACE_REQUEST_AUTHORIZATION_HEADER
 
 The flag that indicates whether the DocSpace MCP server should check for the
@@ -1068,3 +1083,4 @@ DOCSPACE_SERVER_RATE_LIMITS_OAUTH_REGISTER_WINDOW=7200000 # 2 hours
 [`DOCSPACE_USERNAME`]: #docspace_username
 [`DOCSPACE_PASSWORD`]: #docspace_password
 [`DOCSPACE_OAUTH_CLIENT_ID`]: #docspace_oauth_client_id
+[`DOCSPACE_REQUEST_QUERY`]: #docspace_request_query

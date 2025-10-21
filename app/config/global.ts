@@ -124,6 +124,7 @@ export interface RateLimit {
 }
 
 export interface Request {
+	query: boolean
 	authorizationHeader: boolean
 	headerPrefix: string
 }
@@ -353,6 +354,11 @@ export const ConfigSchema = z.
 			transform(zod.envNumber()).
 			pipe(z.number().min(0)),
 
+		DOCSPACE_REQUEST_QUERY: z.
+			string().
+			default("1").
+			transform(zod.envBoolean()),
+
 		DOCSPACE_REQUEST_AUTHORIZATION_HEADER: z.
 			string().
 			default("1").
@@ -446,6 +452,7 @@ export const ConfigSchema = z.
 				},
 			},
 			request: {
+				query: o.DOCSPACE_REQUEST_QUERY,
 				authorizationHeader: o.DOCSPACE_REQUEST_AUTHORIZATION_HEADER,
 				headerPrefix: o.DOCSPACE_REQUEST_HEADER_PREFIX,
 			},
@@ -453,13 +460,11 @@ export const ConfigSchema = z.
 
 		c.mcp.toolsets = tools.normalizeToolsets(c.mcp.toolsets)
 
-		let r = tools.resolveToolsetsAndTools(
+		;[c.mcp.toolsets, c.mcp.tools] = tools.resolveToolsetsAndTools(
 			c.mcp.toolsets,
 			c.mcp.enabledTools,
 			c.mcp.disabledTools,
 		)
-		c.mcp.toolsets = r[0]
-		c.mcp.tools = r[1]
 
 		if (c.internal) {
 			c = {
@@ -540,6 +545,7 @@ export const ConfigSchema = z.
 					},
 				},
 				request: {
+					query: false,
 					authorizationHeader: false,
 					headerPrefix: "",
 				},
@@ -610,6 +616,7 @@ export const ConfigSchema = z.
 					},
 				},
 				request: {
+					query: false,
 					authorizationHeader: false,
 					headerPrefix: "",
 				},

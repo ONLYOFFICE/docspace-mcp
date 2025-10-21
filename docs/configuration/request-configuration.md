@@ -1,18 +1,26 @@
 # Request Configuration
 
 This document describes how to configure the DocSpace MCP server behavior on the
-request level using custom HTTP headers. Request configuration is only available
-for HTTP-like transports.
+request level using query parameters and custom HTTP headers. Request
+configuration is only available for HTTP-like transports.
 
 ## Contents
 
-- [Options](#options)
+- [Query Options](#query-options)
 	- [MCP General Options](#mcp-general-options)
+		- [dynamic](#dynamic)
+		- [toolsets](#toolsets)
+		- [enabled_tools](#enabled_tools)
+		- [disabled_tools](#disabled_tools)
+	- [API Shared Options](#api-shared-options-1)
+		- [base_url](#base_url)
+- [Header Options](#header-options)
+	- [MCP General Options](#mcp-general-options-1)
 		- [X-Mcp-Dynamic](#x-mcp-dynamic)
 		- [X-Mcp-Toolsets](#x-mcp-toolsets)
 		- [X-Mcp-Enabled-Tools](#x-mcp-enabled-tools)
 		- [X-Mcp-Disabled-Tools](#x-mcp-disabled-tools)
-	- [API Shared Options](#api-shared-options)
+	- [API Shared Options](#api-shared-options-2)
 		- [X-Mcp-Base-Url](#x-mcp-base-url)
 		- [Authorization](#authorization)
 		- [X-Mcp-Api-Key](#x-mcp-api-key)
@@ -23,14 +31,133 @@ for HTTP-like transports.
 	- [Authentication with API Key](#authentication-with-api-key)
 	- [Custom Tool Selection](#custom-tool-selection)
 
-## Options
+## Query Options
 
-Configuration options are grouped into categories based on their purpose.
+The following options can be configured using query parameters in the request
+URL.
+
+Query parameters are only available if the DocSpace MCP server is configured
+to accept configuration via query parameters.
 
 ### MCP General Options
 
-The following options are used to configure the general behavior of the DocSpace
-MCP server at the MCP server level.
+The following query parameters are used to configure the general behavior of the
+DocSpace MCP server at the MCP server level.
+
+#### dynamic
+
+The flag that indicates whether the DocSpace MCP server should use meta tools.
+
+This option is complementary to [`toolsets`], [`enabled_tools`], and
+[`disabled_tools`].
+
+This option is mutually exclusive with [`X-Mcp-Dynamic`].
+
+##### Signature
+
+- Type: boolean
+- Variants (true): `yes`, `y`, `true`, `1`
+- Variants (false): `no`, `n`, `false`, `0`
+- Attributes: trimmable, case-insensitive
+
+##### References
+
+- [DocSpace MCP: Meta Tools]
+
+#### toolsets
+
+The list of toolsets to enable for the DocSpace MCP server.
+
+The available list of toolsets for this options depends on the DocSpace MCP
+server global configuration.
+
+This option is mutually exclusive with [`X-Mcp-Toolsets`].
+
+##### Signature
+
+- Type: comma-separated list of toolset names
+- Attributes: trimmable, case-insensitive
+- Example: `files,people`
+
+##### References
+
+- [DocSpace MCP: Toolsets]
+- [DocSpace MCP: Tools Resolution]
+
+#### enabled_tools
+
+The list of tools to enable for the DocSpace MCP server.
+
+The available list of tools for this options depends on the DocSpace MCP server
+global configuration.
+
+This option is mutually exclusive with [`X-Mcp-Enabled-Tools`].
+
+##### Signature
+
+- Type: comma-separated list of tool names
+- Attributes: trimmable, case-insensitive
+- Example: `get_file,get_all_people`
+
+##### References
+
+- [DocSpace MCP: Tools]
+- [DocSpace MCP: Tools Resolution]
+
+#### disabled_tools
+
+The list of tools to disable for the DocSpace MCP server.
+
+The available list of tools for this options depends on the DocSpace MCP server
+global configuration.
+
+This option is mutually exclusive with [`X-Mcp-Disabled-Tools`].
+
+##### Signature
+
+- Type: comma-separated list of tool names
+- Attributes: trimmable, case-insensitive
+- Example: `get_file,get_all_people`
+
+##### References
+
+- [DocSpace MCP: Tools]
+- [DocSpace MCP: Tools Resolution]
+
+### API Shared Options
+
+The following query parameters are used to configure the behavior for DocSpace
+API requests to common DocSpace services (e.g., files, people, etc.).
+
+#### base_url
+
+The base URL of the DocSpace instance for API requests.
+
+The base URL must use HTTP or HTTPS scheme without search parameters or hash
+fragments.
+
+This option is not available if the DocSpace MCP server is configured to use
+OAuth authentication.
+
+This option is mutually exclusive with [`X-Mcp-Base-Url`].
+
+##### Signature
+
+- Type: url
+- Attributes: trimmable
+- Example: `https://your-instance.onlyoffice.com/`
+
+## Header Options
+
+The following options can be configured using custom HTTP headers.
+
+HTTP headers are only available if the DocSpace MCP server is configured
+to accept configuration via HTTP headers.
+
+### MCP General Options
+
+The following HTTP headers are used to configure the general behavior of the
+DocSpace MCP server at the MCP server level.
 
 #### X-Mcp-Dynamic
 
@@ -38,6 +165,8 @@ The flag that indicates whether the DocSpace MCP server should use meta tools.
 
 This option is complementary to [`X-Mcp-Toolsets`], [`X-Mcp-Enabled-Tools`], and
 [`X-Mcp-Disabled-Tools`].
+
+This option is mutually exclusive with [`dynamic`].
 
 ##### Signature
 
@@ -57,6 +186,8 @@ The list of toolsets to enable for the DocSpace MCP server.
 The available list of toolsets for this options depends on the DocSpace MCP
 server global configuration.
 
+This option is mutually exclusive with [`toolsets`].
+
 ##### Signature
 
 - Type: comma-separated list of toolset names
@@ -74,6 +205,8 @@ The list of tools to enable for the DocSpace MCP server.
 
 The available list of tools for this options depends on the DocSpace MCP server
 global configuration.
+
+This option is mutually exclusive with [`enabled_tools`].
 
 ##### Signature
 
@@ -93,6 +226,8 @@ The list of tools to disable for the DocSpace MCP server.
 The available list of tools for this options depends on the DocSpace MCP server
 global configuration.
 
+This option is mutually exclusive with [`disabled_tools`].
+
 ##### Signature
 
 - Type: comma-separated list of tool names
@@ -106,7 +241,7 @@ global configuration.
 
 ### API Shared Options
 
-The following options are used to configure the behavior for DocSpace API
+The following HTTP headers are used to configure the behavior for DocSpace API
 requests to common DocSpace services (e.g., files, people, etc.).
 
 #### X-Mcp-Base-Url
@@ -121,6 +256,8 @@ OAuth authentication.
 
 This option is required if either [`Authorization`], [`X-Mcp-Api-Key`],
 [`X-Mcp-Auth-Token`], or the [`X-Mcp-Username`]/[`X-Mcp-Password`] pair is set.
+
+This option is mutually exclusive with [`base_url`].
 
 ##### Signature
 
@@ -305,9 +442,16 @@ X-Mcp-Disabled-Tools: delete_file,delete_folder
 [DocSpace MCP: Authentication Resolution]: ./authentication-resolution.md
 [DocSpace MCP: Tools Resolution]: ./tools-resolution.md
 
+[`dynamic`]: #dynamic
+[`toolsets`]: #toolsets
+[`enabled_tools`]: #enabled_tools
+[`disabled_tools`]: #disabled_tools
+[`base_url`]: #base_url
+[`X-Mcp-Dynamic`]: #x-mcp-dynamic
 [`X-Mcp-Toolsets`]: #x-mcp-toolsets
 [`X-Mcp-Enabled-Tools`]: #x-mcp-enabled-tools
 [`X-Mcp-Disabled-Tools`]: #x-mcp-disabled-tools
+[`X-Mcp-Base-Url`]: #x-mcp-base-url
 [`Authorization`]: #authorization
 [`X-Mcp-Api-Key`]: #x-mcp-api-key
 [`X-Mcp-Auth-Token`]: #x-mcp-auth-token

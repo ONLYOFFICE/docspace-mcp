@@ -44,12 +44,8 @@ export function start(g: config.global.Config): [shared.P, shared.Cleanup] {
 
 	let cc: api.ClientConfig = {
 		userAgent: g.api.userAgent,
-		sharedBaseUrl: g.api.shared.baseUrl,
-		sharedFetch: f,
-		oauthBaseUrl: "",
-		oauthFetch() {
-			throw new Error("Not implemented")
-		},
+		baseUrl: g.api.shared.baseUrl,
+		fetch: f,
 	}
 
 	let c = new api.Client(cc)

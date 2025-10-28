@@ -33,7 +33,7 @@ provides an MCP server for [ONLYOFFICE DocSpace].
 - **Multiple transport protocols** - Support for stdio, SSE, and Streamable HTTP
   transports.
 - **Different authentication methods** - Supports API keys, Personal Access
-  Tokens, Basic authentication, and OAuth 2.0 with dynamic client registration.
+  Tokens, and Basic authentication.
 - **Request-level configuration** - Configure authentication and tool selection
   during session initialization using custom HTTP headers.
 - **Various distribution formats** - Available as Docker image, Docker MCP

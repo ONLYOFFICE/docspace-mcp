@@ -48,23 +48,18 @@ flowchart TD
 	A --> B[Use HTTP-like transport]
 	B --> G{Check authentication methods}
 	G -->|None configured| J[Start server without authentication]
-	G -->|Exactly one configured| I{OAuth client ID configured?}
+	G -->|Exactly one configured| F[Start server with authentication]
 	G -->|Multiple configured| H[Error: Only one authentication method allowed]
-	I -->|No| Q[Start server with non-OAuth authentication]
-	I -->|Yes| P[Start server with OAuth]
 ```
 
 ### Request Configuration
 
 For HTTP-like transports, authentication can be configured on the request level
-using custom headers, unless OAuth is being used.
+using custom headers.
 
 ```mermaid
 flowchart TD
-	K[On initialization request] --> L{Does the server use OAuth?}
-	L -->|No| N[Load request configuration]
-	L -->|Yes| M[Skip: OAuth handles authentication]
-	N --> O{Check authentication methods}
+	K[On initialization request] --> O{Check authentication methods}
 	O -->|None configured| P[Error: At least one authentication method required]
 	O -->|Exactly one configured| Q[Create authenticated session]
 	O -->|Multiple configured| R[Error: Only one authentication method allowed]

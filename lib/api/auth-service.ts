@@ -46,7 +46,7 @@ export class AuthService {
 	 * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/web/ASC.Web.Api/Api/AuthenticationController.cs/#L88 | DocSpace Reference}
 	 */
 	async getIsAuthentificated(s: AbortSignal): Promise<Result<[boolean, Response], Error>> {
-		let u = this.c.createSharedUrl("api/2.0/authentication")
+		let u = this.c.createUrl("api/2.0/authentication")
 		if (u.err) {
 			return error(new Error("Creating URL.", {cause: u.err}))
 		}
@@ -56,7 +56,7 @@ export class AuthService {
 			return error(new Error("Creating request.", {cause: req.err}))
 		}
 
-		let f = await this.c.sharedFetch(req.v)
+		let f = await this.c.fetch(req.v)
 		if (f.err) {
 			return error(new Error("Fetching request.", {cause: f.err}))
 		}
@@ -75,7 +75,7 @@ export class AuthService {
 	 * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/web/ASC.Web.Api/Api/AuthenticationController.cs/#L185 | DocSpace Reference}
 	 */
 	async authenticateMe(s: AbortSignal, o: AuthenticateMeOptions): Promise<Result<[AuthenticateMeResponse, Response], Error>> {
-		let u = this.c.createSharedUrl("api/2.0/authentication")
+		let u = this.c.createUrl("api/2.0/authentication")
 		if (u.err) {
 			return error(new Error("Creating URL.", {cause: u.err}))
 		}
@@ -85,7 +85,7 @@ export class AuthService {
 			return error(new Error("Creating request.", {cause: req.err}))
 		}
 
-		let f = await this.c.sharedFetch(req.v)
+		let f = await this.c.fetch(req.v)
 		if (f.err) {
 			return error(new Error("Fetching request.", {cause: f.err}))
 		}

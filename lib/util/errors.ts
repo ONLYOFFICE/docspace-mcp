@@ -70,24 +70,6 @@ export class JsonrpcError extends Error {
 	}
 }
 
-export class OauthError extends Error {
-	name: "OauthError"
-	error: string
-
-	constructor(error: string, message: string, options?: ErrorOptions) {
-		super(message, options)
-		this.name = "OauthError"
-		this.error = error
-	}
-
-	toObject(): object {
-		return {
-			error: this.error,
-			error_description: format(this),
-		}
-	}
-}
-
 export class MessageError extends Error {
 	name: "MessageError"
 

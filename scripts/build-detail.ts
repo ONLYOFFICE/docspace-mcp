@@ -26,7 +26,6 @@ import * as config from "./config.ts"
 interface Detail {
 	$schema?: string
 	version?: string
-	websiteUrl?: string
 	packages?: Package[]
 }
 
@@ -67,10 +66,6 @@ async function main(): Promise<void> {
 		throw new Error("Manifest schema is not defined")
 	}
 
-	if (!mo.websiteUrl) {
-		throw new Error("Manifest website_url is not defined")
-	}
-
 	if (!mo.packages) {
 		throw new Error("Manifest packages is not defined")
 	}
@@ -81,7 +76,6 @@ async function main(): Promise<void> {
 	let av = aa.compile(so)
 
 	mo.version = meta.version
-	mo.websiteUrl = mo.websiteUrl.replace("{{version}}", meta.version)
 
 	let envs: Record<config.Distribution, Record<config.Transport, Value[]>> = {
 		js: {
@@ -196,7 +190,7 @@ async function main(): Promise<void> {
 			break
 
 		case "oci":
-			p.version = meta.version
+			p.identifier = p.identifier.replaceAll("{{version}}", meta.version)
 
 			p.transport = {
 				type: "stdio",

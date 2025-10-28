@@ -204,7 +204,7 @@ The user agent to include in the `User-Agent` header for DocSpace API requests.
 
 - Type: string
 - Attributes: trimmable
-- Default: `@onlyoffice/docspace-mcp v2.0.0`
+- Default: `@onlyoffice/docspace-mcp v3.0.0`
 - Transports: `stdio`, `sse`, `streamable-http`, `http`
 
 ##### References

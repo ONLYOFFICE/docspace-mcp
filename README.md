@@ -50,8 +50,8 @@ the [LICENSE] file.
 
 <!-- Footnotes -->
 
-[docs]: https://github.com/ONLYOFFICE/docspace-mcp/tree/v3.0.0/docs
-[LICENSE]: https://github.com/onlyoffice/docspace-mcp/blob/v3.0.0/LICENSE
+[docs]: https://github.com/ONLYOFFICE/docspace-mcp/tree/v3.0.1/docs
+[LICENSE]: https://github.com/onlyoffice/docspace-mcp/blob/v3.0.1/LICENSE
 
 [Model Context Protocol]: https://modelcontextprotocol.io/
 [ONLYOFFICE DocSpace]: https://www.onlyoffice.com/docspace.aspx

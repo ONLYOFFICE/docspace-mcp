@@ -1,6 +1,6 @@
 {
 	"name": "@onlyoffice/docspace-mcp",
-	"version": "3.0.0",
+	"version": "3.0.1",
 	"description": "ONLYOFFICE DocSpace Model Context Protocol Server",
 	"keywords": [
 		"onlyoffice",
@@ -63,5 +63,6 @@
 		"undici": "7.10.0",
 		"zod": "3.25.67",
 		"zod-to-json-schema": "3.24.5"
-	}
+	},
+	"mcpName": "io.github.ONLYOFFICE/docspace"
 }

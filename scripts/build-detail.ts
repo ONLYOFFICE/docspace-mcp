@@ -26,17 +26,16 @@ import * as config from "./config.ts"
 interface Detail {
 	$schema?: string
 	version?: string
-	website_url?: string
 	packages?: Package[]
 }
 
 interface Package {
-	registry_type?: string
+	registryType?: string
 	identifier?: string
 	version?: string
-	file_sha256?: string
+	fileSha256?: string
 	transport?: Transport
-	environment_variables?: Value[]
+	environmentVariables?: Value[]
 }
 
 interface Transport {
@@ -47,9 +46,9 @@ interface Transport {
 
 interface Value {
 	description?: string
-	is_required?: boolean
+	isRequired?: boolean
 	format?: "string" | "number" | "boolean"
-	is_secret?: boolean
+	isSecret?: boolean
 	default?: string
 	choices?: string[]
 	name?: string
@@ -67,10 +66,6 @@ async function main(): Promise<void> {
 		throw new Error("Manifest schema is not defined")
 	}
 
-	if (!mo.website_url) {
-		throw new Error("Manifest website_url is not defined")
-	}
-
 	if (!mo.packages) {
 		throw new Error("Manifest packages is not defined")
 	}
@@ -81,7 +76,6 @@ async function main(): Promise<void> {
 	let av = aa.compile(so)
 
 	mo.version = meta.version
-	mo.website_url = mo.website_url.replace("{{version}}", meta.version)
 
 	let envs: Record<config.Distribution, Record<config.Transport, Value[]>> = {
 		js: {
@@ -106,9 +100,9 @@ async function main(): Promise<void> {
 	for (let o of config.options) {
 		let v: Value = {
 			description: o.description,
-			is_required: false,
+			isRequired: false,
 			format: o.type,
-			is_secret: o.sensitive,
+			isSecret: o.sensitive,
 			default: o.default.toString(),
 			choices: o.choices,
 			name: o.env,
@@ -132,7 +126,7 @@ async function main(): Promise<void> {
 	let packages: Package[] = []
 
 	for (let p of mo.packages) {
-		if (!p.registry_type) {
+		if (!p.registryType) {
 			throw new Error("Package registry_type is not defined")
 		}
 
@@ -140,19 +134,19 @@ async function main(): Promise<void> {
 			throw new Error("Package identifier is not defined")
 		}
 
-		switch (p.registry_type) {
+		switch (p.registryType) {
 		case "mcpb":
-			let a = await fs.readFile("onlyoffice-docspace-mcp-3.0.0.mcpb")
+			let a = await fs.readFile("onlyoffice-docspace-mcp-3.0.1.mcpb")
 
 			p.identifier = p.identifier.replaceAll("{{version}}", meta.version)
 			p.version = meta.version
-			p.file_sha256 = crypto.createHash("sha256").update(a).digest("hex")
+			p.fileSha256 = crypto.createHash("sha256").update(a).digest("hex")
 
 			p.transport = {
 				type: "stdio",
 			}
 
-			p.environment_variables = envs.mcpb.stdio
+			p.environmentVariables = envs.mcpb.stdio
 
 			packages.push(p)
 
@@ -165,7 +159,7 @@ async function main(): Promise<void> {
 				type: "stdio",
 			}
 
-			p.environment_variables = envs.js.stdio
+			p.environmentVariables = envs.js.stdio
 
 			packages.push(p)
 
@@ -177,7 +171,7 @@ async function main(): Promise<void> {
 				headers,
 			}
 
-			p.environment_variables = envs.js.sse
+			p.environmentVariables = envs.js.sse
 
 			packages.push(p)
 
@@ -189,20 +183,20 @@ async function main(): Promise<void> {
 				headers,
 			}
 
-			p.environment_variables = envs.js["streamable-http"]
+			p.environmentVariables = envs.js["streamable-http"]
 
 			packages.push(p)
 
 			break
 
 		case "oci":
-			p.version = meta.version
+			p.identifier = p.identifier.replaceAll("{{version}}", meta.version)
 
 			p.transport = {
 				type: "stdio",
 			}
 
-			p.environment_variables = envs.oci.stdio
+			p.environmentVariables = envs.oci.stdio
 
 			packages.push(p)
 
@@ -214,7 +208,7 @@ async function main(): Promise<void> {
 				headers,
 			}
 
-			p.environment_variables = envs.oci.sse
+			p.environmentVariables = envs.oci.sse
 
 			packages.push(p)
 
@@ -226,7 +220,7 @@ async function main(): Promise<void> {
 				headers,
 			}
 
-			p.environment_variables = envs.oci["streamable-http"]
+			p.environmentVariables = envs.oci["streamable-http"]
 
 			packages.push(p)
 

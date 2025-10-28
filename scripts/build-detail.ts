@@ -136,7 +136,7 @@ async function main(): Promise<void> {
 
 		switch (p.registryType) {
 		case "mcpb":
-			let a = await fs.readFile("onlyoffice-docspace-mcp-3.0.0.mcpb")
+			let a = await fs.readFile("onlyoffice-docspace-mcp-3.0.1.mcpb")
 
 			p.identifier = p.identifier.replaceAll("{{version}}", meta.version)
 			p.version = meta.version

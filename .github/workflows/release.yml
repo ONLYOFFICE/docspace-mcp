@@ -169,7 +169,7 @@ jobs:
         name: server-detail
 
     - name: Install MCP Publisher
-      run: curl -L "https://github.com/modelcontextprotocol/registry/releases/download/v1.3.5/mcp-publisher_1.3.5_$(uname -s | tr '[:upper:]' '[:lower:]')_$(uname -m | sed 's/x86_64/amd64/;s/aarch64/arm64/').tar.gz" | tar xz mcp-publisher
+      run: curl -L "https://github.com/modelcontextprotocol/registry/releases/download/v1.3.5/mcp-publisher_$(uname -s | tr '[:upper:]' '[:lower:]')_$(uname -m | sed 's/x86_64/amd64/;s/aarch64/arm64/').tar.gz" | tar xz mcp-publisher
 
     - name: Login to MCP Registry
       run: ./mcp-publisher login github-oidc
@@ -177,32 +177,32 @@ jobs:
     - name: Publish to MCP Registry
       run: ./mcp-publisher publish
 
-  gh:
-    # needs: [build, npm, docker]
-    needs: build
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    env:
-      GH_TOKEN: ${{github.token}}
-    steps:
-    - name: Checkout Repository
-      uses: actions/checkout@v4
+  # gh:
+  #   # needs: [build, npm, docker]
+  #   needs: build
+  #   runs-on: ubuntu-latest
+  #   permissions:
+  #     contents: write
+  #   env:
+  #     GH_TOKEN: ${{github.token}}
+  #   steps:
+  #   - name: Checkout Repository
+  #     uses: actions/checkout@v4
 
-    - name: Download Artifacts
-      uses: actions/download-artifact@v4
-      with:
-        pattern: "{mcp-bundle,package}"
-        merge-multiple: true
+  #   - name: Download Artifacts
+  #     uses: actions/download-artifact@v4
+  #     with:
+  #       pattern: "{mcp-bundle,package}"
+  #       merge-multiple: true
 
-    # - name: Create Release
-    #   run: |
-    #     gh release create "v${{needs.build.outputs.version}}" \
-    #       --title "v${{needs.build.outputs.version}}" \
-    #       --notes "See ${{github.server_url}}/${{github.repository}}/blob/main/CHANGELOG.md/"
+  #   # - name: Create Release
+  #   #   run: |
+  #   #     gh release create "v${{needs.build.outputs.version}}" \
+  #   #       --title "v${{needs.build.outputs.version}}" \
+  #   #       --notes "See ${{github.server_url}}/${{github.repository}}/blob/main/CHANGELOG.md/"
 
-    - name: Upload MCP Bundle
-      run: gh release upload "v${{needs.build.outputs.version}}" *.mcpb
+  #   - name: Upload MCP Bundle
+  #     run: gh release upload "v${{needs.build.outputs.version}}" *.mcpb
 
-    - name: Upload Package
-      run: gh release upload "v${{needs.build.outputs.version}}" *.tgz
+  #   - name: Upload Package
+  #     run: gh release upload "v${{needs.build.outputs.version}}" *.tgz

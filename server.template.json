@@ -4,17 +4,17 @@
 	"description": "A room-based collaborative platform",
 	"status": "active",
 	"repository": {
-		"url": "https://github.com/onlyoffice/docspace-mcp",
+		"url": "https://github.com/ONLYOFFICE/docspace-mcp",
 		"source": "github",
 		"id": "962498237"
 	},
 	"version": "",
-	"websiteUrl": "https://github.com/onlyoffice/docspace-mcp/blob/v{{version}}/README.md",
+	"websiteUrl": "https://github.com/ONLYOFFICE/docspace-mcp/blob/v{{version}}/README.md",
 	"packages": [
 		{
 			"registryType": "mcpb",
 			"registryBaseUrl": "https://github.com",
-			"identifier": "https://github.com/onlyoffice/releases/download/v{{version}}/onlyoffice-docspace-mcp-{{version}}.mcpb",
+			"identifier": "https://github.com/ONLYOFFICE/releases/download/v{{version}}/onlyoffice-docspace-mcp-{{version}}.mcpb",
 			"version": "",
 			"fileSha256": "",
 			"transport": {},

@@ -190,7 +190,7 @@ jobs:
     - name: Download Artifacts
       uses: actions/download-artifact@v4
       with:
-        pattern: "*.{mcpb,tgz}"
+        pattern: "{mcp-bundle,package}"
         merge-multiple: true
 
     - name: Create Release

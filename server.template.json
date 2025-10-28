@@ -9,7 +9,7 @@
 		"id": "962498237"
 	},
 	"version": "",
-	"websiteUrl": "https://github.com/ONLYOFFICE/docspace-mcp/blob/v{{version}}/README.md",
+	"websiteUrl": "https://ONLYOFFICE.github.io/",
 	"packages": [
 		{
 			"registryType": "mcpb",

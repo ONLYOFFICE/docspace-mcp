@@ -13,7 +13,7 @@
 	"packages": [
 		{
 			"registryType": "mcpb",
-			"identifier": "https://github.com/ONLYOFFICE/releases/download/v{{version}}/onlyoffice-docspace-mcp-{{version}}.mcpb",
+			"identifier": "https://github.com/ONLYOFFICE/docspace-mcp/releases/download/v{{version}}/onlyoffice-docspace-mcp-{{version}}.mcpb",
 			"version": "",
 			"fileSha256": "",
 			"transport": {},

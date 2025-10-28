@@ -156,26 +156,6 @@ jobs:
         password: ${{secrets.DOCKERHUB_TOKEN}}
         repository: ${{env.DOCKERHUB_NAMESPACE}}/${{env.DOCKERHUB_REPOSITORY}}
 
-  mcp:
-    needs: build
-    runs-on: ubuntu-latest
-    permissions:
-      id-token: write
-    steps:
-    - name: Download Server Detail
-      uses: actions/download-artifact@v4
-      with:
-        name: server-detail
-
-    - name: Install MCP Publisher
-      run: curl -L "https://github.com/modelcontextprotocol/registry/releases/download/v1.3.5/mcp-publisher_$(uname -s | tr '[:upper:]' '[:lower:]')_$(uname -m | sed 's/x86_64/amd64/;s/aarch64/arm64/').tar.gz" | tar xz mcp-publisher
-
-    - name: Login to MCP Registry
-      run: ./mcp-publisher login github-oidc
-
-    - name: Publish to MCP Registry
-      run: ./mcp-publisher publish
-
   gh:
     needs: [build, npm, docker]
     runs-on: ubuntu-latest
@@ -204,3 +184,23 @@ jobs:
 
     - name: Upload Package
       run: gh release upload "v${{needs.build.outputs.version}}" *.tgz
+
+  mcp:
+    needs: gh
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+    steps:
+    - name: Download Server Detail
+      uses: actions/download-artifact@v4
+      with:
+        name: server-detail
+
+    - name: Install MCP Publisher
+      run: curl -L "https://github.com/modelcontextprotocol/registry/releases/download/v1.3.5/mcp-publisher_$(uname -s | tr '[:upper:]' '[:lower:]')_$(uname -m | sed 's/x86_64/amd64/;s/aarch64/arm64/').tar.gz" | tar xz mcp-publisher
+
+    - name: Login to MCP Registry
+      run: ./mcp-publisher login github-oidc
+
+    - name: Publish to MCP Registry
+      run: ./mcp-publisher publish

@@ -1,0 +1,42 @@
+{
+	"$schema": "https://static.modelcontextprotocol.io/schemas/2025-07-09/server.schema.json",
+	"name": "io.github.onlyoffice/docspace",
+	"description": "A room-based collaborative platform",
+	"status": "active",
+	"repository": {
+		"url": "https://github.com/onlyoffice/docspace-mcp",
+		"source": "github",
+		"id": "962498237"
+	},
+	"version": "",
+	"website_url": "https://github.com/onlyoffice/docspace-mcp/blob/v{{version}}/README.md",
+	"packages": [
+		{
+			"registry_type": "mcpb",
+			"registry_base_url": "https://github.com",
+			"identifier": "https://github.com/onlyoffice/releases/download/v{{version}}/onlyoffice-docspace-mcp-{{version}}.mcpb",
+			"version": "",
+			"file_sha256": "",
+			"transport": {},
+			"environment_variables": []
+		},
+		{
+			"registry_type": "npm",
+			"registry_base_url": "https://registry.npmjs.org",
+			"identifier": "@onlyoffice/docspace-mcp",
+			"version": "",
+			"runtime_hint": "npx",
+			"transport": {},
+			"environment_variables": []
+		},
+		{
+			"registry_type": "oci",
+			"registry_base_url": "https://docker.io",
+			"identifier": "onlyoffice/docspace-mcp",
+			"version": "",
+			"runtime_hint": "docker",
+			"transport": {},
+			"environment_variables": []
+		}
+	]
+}

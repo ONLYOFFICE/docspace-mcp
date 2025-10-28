@@ -1,21 +1,20 @@
 name: Create Tag
 
-permissions:
-  contents: write
-
 on:
   push:
     branches:
     - main
-    paths-ignore:
-    - .github/**
-    - CHANGELOG.md
-    - LICENSE
-    - README.md
+    paths:
+    - app/**
+    - lib/**
+    - package.json
+  workflow_dispatch:
 
 jobs:
   create-tag:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v4
@@ -23,10 +22,12 @@ jobs:
     - name: Setup GitHub Actions Bot
       uses: vanyauhalin/action-gh-bot@v0
 
-    - name: Store Package Version
-      run: echo "PACKAGE_VERSION=$(jq -r ".version" package.json)" >> "$GITHUB_ENV"
+    - name: Store Version
+      id: version
+      run: echo "version=$(jq --raw-output ".version" package.json)" >> "$GITHUB_OUTPUT"
 
     - name: Create Tag
-      run: |
-        git tag "v${{env.PACKAGE_VERSION}}"
-        git push origin "v${{env.PACKAGE_VERSION}}"
+      run: git tag "v${{steps.version.outputs.version}}"
+
+    - name: Publish Tag
+      run: git push origin "v${{steps.version.outputs.version}}"

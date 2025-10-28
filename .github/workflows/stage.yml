@@ -1,14 +1,17 @@
 name: Stage
 
-permissions:
-  actions: write
-  contents: read
-
 on:
+  push:
+    branches:
+    - develop
+    paths:
+    - app/**
+    - lib/**
+    - package.json
   workflow_dispatch:
 
 jobs:
-  stage:
+  build:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout Repository
@@ -20,25 +23,107 @@ jobs:
     - name: Install Dependencies
       run: pnpm install --frozen-lockfile
 
-    - name: Build Package
-      run: pnpm build
+    - name: Build Application
+      run: pnpm build-app
 
-    - name: Create Tarball
+    - name: Build MCP Bundle
+      run: pnpm build-mcpb
+
+    - name: Build Server Detail
+      run: pnpm build-detail
+
+    - name: Archive Package
       run: pnpm pack
 
-    - name: Create Desktop Extension
-      run: pnpm dxt
-
-    - name: Upload Tarball
+    - name: Upload MCP Bundle
       uses: actions/upload-artifact@v4
       with:
-        name: tarball
+        name: mcp-bundle
+        path: "*.mcpb"
+        if-no-files-found: error
+
+    - name: Upload Server Detail
+      uses: actions/upload-artifact@v4
+      with:
+        name: server-detail
+        path: server.json
+        if-no-files-found: error
+
+    - name: Upload Package
+      uses: actions/upload-artifact@v4
+      with:
+        name: package
         path: "*.tgz"
         if-no-files-found: error
 
-    - name: Upload Desktop Extension
-      uses: actions/upload-artifact@v4
+  docker:
+    needs: build
+    runs-on: ubuntu-latest
+    env:
+      DOCKERHUB_NAMESPACE: onlyoffice
+      DOCKERHUB_REPOSITORY: 4testing-docspace-mcp
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+
+    - name: Setup QEMU
+      uses: docker/setup-qemu-action@v3
+
+    - name: Setup Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Login to Docker Hub
+      uses: docker/login-action@v3
       with:
-        name: desktop-extension
-        path: "*.dxt"
-        if-no-files-found: error
+        username: ${{secrets.DOCKERHUB_USERNAME}}
+        password: ${{secrets.DOCKERHUB_TOKEN}}
+
+    - name: Extract Labels
+      id: labels
+      run: |
+        labels=""
+        while IFS= read -r c; do
+          case "$c" in
+          LABEL*)
+            c=$(echo "$c" | sed "s/^LABEL[[:space:]]*//")
+            n=$(echo "$c" | cut --delimiter="=" --fields=1)
+            v=$(echo "$c" | cut --delimiter="=" --fields=2- | sed "s/\"//g")
+            labels="$labels$n=$v\n"
+            ;;
+          esac
+        done < Dockerfile
+        if [ -n "$labels" ]; then
+          labels=$(printf "%s" "$labels" | sed "s/\\\\n$//")
+        fi
+        printf "labels<<EOF\n%b\nEOF\n" "$labels" >> "$GITHUB_OUTPUT"
+
+    - name: Extract Metadata
+      id: metadata
+      uses: docker/metadata-action@v5
+      with:
+        images: index.docker.io/${{env.DOCKERHUB_NAMESPACE}}/${{env.DOCKERHUB_REPOSITORY}}
+        labels: ${{steps.labels.outputs.labels}}
+        tags: |
+          type=sha,format=short
+          type=sha,format=long
+          type=raw,value=latest
+
+    - name: Publish Image
+      uses: docker/build-push-action@v6
+      env:
+        DOCKER_BUILD_RECORD_UPLOAD: false
+      with:
+        push: true
+        platforms: linux/amd64,linux/arm64
+        labels: ${{steps.metadata.outputs.labels}}
+        tags: ${{steps.metadata.outputs.tags}}
+
+    - name: Update Docker Hub Description
+      uses: peter-evans/dockerhub-description@v4
+      # Skip errors, until action is not supported OAT auth
+      # https://github.com/peter-evans/dockerhub-description/issues/294
+      continue-on-error: true
+      with:
+        username: ${{secrets.DOCKERHUB_USERNAME}}
+        password: ${{secrets.DOCKERHUB_TOKEN}}
+        repository: ${{env.DOCKERHUB_NAMESPACE}}/${{env.DOCKERHUB_REPOSITORY}}

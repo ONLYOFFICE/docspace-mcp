@@ -2,4 +2,8 @@
 bin
 coverage
 node_modules
+tmp
 .env
+server.json
+*.mcpb
+*.tgz

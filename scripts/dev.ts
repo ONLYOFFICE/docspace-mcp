@@ -17,39 +17,43 @@
  */
 
 import child from "node:child_process"
-import {promisify} from "node:util"
-import {load} from "./env.ts"
+import util from "node:util"
+import * as env from "./env.ts"
 
-const exec = promisify(child.exec)
+const exec = util.promisify(child.exec)
 
-load()
+async function main(): Promise<void> {
+	env.load()
 
-const args: string[] = ["run", "-it"]
+	let args: string[] = ["run", "-it"]
 
-args.push("--entrypoint", "/bin/sh")
-args.push("-e", `CLIENT_PORT=${process.env.CLIENT_PORT}`)
-args.push("-e", `SERVER_PORT=${process.env.SERVER_PORT}`)
-args.push("-w", "/srv/onlyoffice-docspace-mcp")
-args.push("-p", `${process.env.CLIENT_PORT}:${process.env.CLIENT_PORT}`)
-args.push("-p", `${process.env.SERVER_PORT}:${process.env.SERVER_PORT}`)
-args.push("-v", "./:/srv/onlyoffice-docspace-mcp")
-args.push("-v", "/srv/onlyoffice-docspace-mcp/.pnpm-store")
-args.push("-v", "/srv/onlyoffice-docspace-mcp/node_modules")
+	args.push("--entrypoint", "/bin/sh")
+	args.push("-e", `CLIENT_PORT=${process.env.CLIENT_PORT}`)
+	args.push("-e", `SERVER_PORT=${process.env.SERVER_PORT}`)
+	args.push("-w", "/srv/onlyoffice-docspace-mcp")
+	args.push("-p", `${process.env.CLIENT_PORT}:${process.env.CLIENT_PORT}`)
+	args.push("-p", `${process.env.SERVER_PORT}:${process.env.SERVER_PORT}`)
+	args.push("-v", "./:/srv/onlyoffice-docspace-mcp")
+	args.push("-v", "/srv/onlyoffice-docspace-mcp/.pnpm-store")
+	args.push("-v", "/srv/onlyoffice-docspace-mcp/node_modules")
 
-let version: string | undefined
+	let version: string | undefined
 
-try {
-	let p = await exec("mise version --json", {env: process.env})
-	let j = await JSON.parse(p.stdout)
-	version = j.version.split(" ")[0]
-} catch {
-	version = "latest"
+	try {
+		let p = await exec("mise version --json", {env: process.env})
+		let j = JSON.parse(p.stdout)
+		version = j.version.split(" ")[0]
+	} catch {
+		version = "latest"
+	}
+
+	args.push(`jdxcode/mise:${version}`)
+
+	child.spawn("docker", args, {
+		env: process.env,
+		stdio: "inherit",
+		shell: true,
+	})
 }
 
-args.push(`jdxcode/mise:${version}`)
-
-child.spawn("docker", args, {
-	env: process.env,
-	stdio: "inherit",
-	shell: true,
-})
+await main()

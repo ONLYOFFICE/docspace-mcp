@@ -10,5 +10,5 @@ trim_trailing_whitespace = true
 ; Do not specify the tab size explicitly to avoid overriding user preferences.
 ; tab_width = 2
 
-[{*.yaml,*.yml}]
+[{*.md,*.yaml,*.yml}]
 indent_style = space

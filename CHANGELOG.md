@@ -6,11 +6,52 @@ This document records all notable changes to the project, following the [Keep a 
 
 There are no noticeable changes in version [unreleased].
 
+## [3.0.0] - 2025-10-28
+
+### Add
+
+- Add partial support for output schemas ([b50a7bc]);
+- Add the implementation of SSE transport ([9b3535c], [2504af1], [d63057b]);
+- Add the implementation of Streamable HTTP transport ([b1fe294], [2504af1], [d63057b]);
+- Add the ability to configure using HTTP headers ([785f5dc]);
+- Add support for the logging capability ([ce30d96]);
+- Add the `DOCSPACE_AUTHORIZATION` option ([6b41eeb]);
+- Add the ability to configure using query parameters ([d31464e]).
+
+### Changed
+
+- In the internal Streamable HTTP transport, check `Authorization` and `Referer` headers only during the initialization request ([b6e33bf]);
+- Update `@modelcontextprotocol/sdk` to 1.17.0 ([8d3f3f3]);
+- Ignore the `DOCSPACE_TRANSPORT` option when the `DOCSPACE_INTERNAL` option is set ([d643a82]);
+- **Breaking** Remove the `DOCSPACE_ORIGIN` option ([ac33ab6]);
+- Downgrade the minimum required Node.js version to 18.0.0 ([6ac1d59]).
+
+### Fixed
+
+- Restore access to regular tools when using meta-tools ([eb84c1f]);
+- Prevent a disabled tool from being called when a regular tool is called ([eb84c1f]);
+- In the internal Streamable HTTP transport, allow the `Referer` header to be without a trailing slash ([ad70531]);
+- Require the `DOCSPACE_HOST` option to be present when the `DOCSPACE_TRANSPORT` is set to an HTTP-like transport ([428ee1c]);
+- When the `DOCSPACE_TRANSPORT` option is set to `stdio`, validate the `DOCSPACE_BASE_URL` only if `DOCSPACE_API_KEY`, `DOCSPACE_AUTH_TOKEN`, or `DOCSPACE_USERNAME`/`DOCSPACE_PASSWORD` is present ([428ee1c]);
+- Better validate the `DOCSPACE_BASE_URL` option ([428ee1c]);
+- The `DOCSPACE_SESSION_TTL` option with the `0` value prevents session expiration ([428ee1c]);
+- The `DOCSPACE_SESSION_INTERVAL` option with the `0` value disables session cleanup ([428ee1c]);
+- Make `DOCSPACE_API_KEY`, `DOCSPACE_AUTH_TOKEN`, and `DOCSPACE_USERNAME`/`DOCSPACE_PASSWORD` trimmable ([428ee1c]);
+- The `DOCSPACE_PORT` option with the `0` value selects a random port ([428ee1c]);
+- Allow the `65535` value for the `DOCSPACE_PORT` option ([428ee1c]);
+- For all options with the boolean type, the empty string value resolves to the `false` value ([428ee1c]);
+- For all options with the number type, the empty string value resolves to the `0` value ([428ee1c]);
+- For the `copy_batch_items` and `move_batch_items` tools, change the conflict resolution behavior from skipping files to duplicating them ([b2588f3]);
+- For the `get_file_info` and `update_file` tools, fix the type of the `folderId` field in the response ([2cde131]);
+- Fix returning value from the `get_room_security_info` tool ([8dd2099]);
+- Fix acceptable fields for the `get_room_security_info` tool ([a5f79c1]);
+- For tools that expect datetime fields as objects, change these fields to strings ([cbfa539]).
+
 ## [2.0.0] - 2025-07-23
 
 ### Added
 
-- Add an internal implementation of streamable HTTP transport ([ca3a432]);
+- Add an internal implementation of Streamable HTTP transport ([ca3a432]);
 - Add the ability to enable and disable tools ([74ac987]).
 
 ### Changed
@@ -135,7 +176,8 @@ There are no noticeable changes in version [unreleased].
 [Keep a Changelog]: https://keepachangelog.com/en/1.1.0/
 [Semantic Versioning]: https://semver.org/spec/v2.0.0.html
 
-[Unreleased]: https://github.com/onlyoffice/docspace-mcp/compare/v2.0.0...HEAD/
+[Unreleased]: https://github.com/onlyoffice/docspace-mcp/compare/v3.0.0...HEAD/
+[3.0.0]: https://github.com/onlyoffice/docspace-mcp/compare/v2.0.0...v3.0.0/
 [2.0.0]: https://github.com/onlyoffice/docspace-mcp/compare/v1.3.1...v2.0.0/
 [1.3.1]: https://github.com/onlyoffice/docspace-mcp/compare/v1.3.0...v1.3.1/
 [1.3.0]: https://github.com/onlyoffice/docspace-mcp/compare/v1.2.0...v1.3.0/
@@ -148,6 +190,27 @@ There are no noticeable changes in version [unreleased].
 [0.1.1]: https://github.com/onlyoffice/docspace-mcp/compare/v0.1.0...v0.1.1/
 [0.1.0]: https://github.com/onlyoffice/docspace-mcp/releases/tag/v0.1.0/
 
+[d31464e]: https://github.com/onlyoffice/docspace-mcp/commit/d31464eb9047f49d9aa63b495532a4907e8f81b9/
+[6b41eeb]: https://github.com/onlyoffice/docspace-mcp/commit/6b41eebd8b65d3592568880e1966b88bd02a3522/
+[cbfa539]: https://github.com/onlyoffice/docspace-mcp/commit/cbfa539d56f4dae66b3888204d1b11ab8a3bcc70/
+[a5f79c1]: https://github.com/onlyoffice/docspace-mcp/commit/a5f79c1714fb173a076c61d1bede3d799765a51a/
+[8dd2099]: https://github.com/onlyoffice/docspace-mcp/commit/8dd2099cbdd546454a4d2a7087308589f1fe11ff/
+[2cde131]: https://github.com/onlyoffice/docspace-mcp/commit/2cde131e7fa0dbb90c90f155f93e86faef0754cb/
+[b2588f3]: https://github.com/onlyoffice/docspace-mcp/commit/b2588f37b0e2826c9811e6cec6efbca873e31a87/
+[ce30d96]: https://github.com/onlyoffice/docspace-mcp/commit/ce30d9638886433444b8da2d6fc6525bfc0bca5e/
+[6ac1d59]: https://github.com/onlyoffice/docspace-mcp/commit/6ac1d59639248efcbbffca1edb82328ba349fddb/
+[785f5dc]: https://github.com/onlyoffice/docspace-mcp/commit/785f5dc2dd435150ff7ce4309700d041aa0621a1/
+[428ee1c]: https://github.com/onlyoffice/docspace-mcp/commit/428ee1c39f62a0d2d6a93d350187b35c1578e762/
+[ac33ab6]: https://github.com/onlyoffice/docspace-mcp/commit/ac33ab651271affc2de6293ea5e12353cd2fa3d8/
+[d643a82]: https://github.com/onlyoffice/docspace-mcp/commit/d643a8289b3d3112a15a95c4da477113bcd4f750/
+[d63057b]: https://github.com/onlyoffice/docspace-mcp/commit/d63057b57193b7a1d927f56e0da7be1755cb5366/
+[ad70531]: https://github.com/onlyoffice/docspace-mcp/commit/ad70531288788dbdea452c71217384325734bcc2/
+[2504af1]: https://github.com/onlyoffice/docspace-mcp/commit/2504af1459ce15980dc68366a8a9b3115a71948f/
+[9b3535c]: https://github.com/onlyoffice/docspace-mcp/commit/9b3535cba408919d66d36878d218b9e53a8fae4d/
+[b6e33bf]: https://github.com/onlyoffice/docspace-mcp/commit/b6e33bfeedb13673374f38f8f846a574813a7876/
+[8d3f3f3]: https://github.com/onlyoffice/docspace-mcp/commit/8d3f3f39b3cd99b1fd135881cc1bede193091a6a/
+[b50a7bc]: https://github.com/onlyoffice/docspace-mcp/commit/b50a7bc2dc0a4554475e9f8f81a08ad7653870d5/
+[eb84c1f]: https://github.com/onlyoffice/docspace-mcp/commit/eb84c1f7ebc16e5af646008b8fffacc51eb4e332/
 [90c2b72]: https://github.com/onlyoffice/docspace-mcp/commit/90c2b72b7205173eabc81270f52778f6c6f16d7e/
 [1eb7792]: https://github.com/onlyoffice/docspace-mcp/commit/1eb7792071515aba0706f8e0374c836c118b9a3f/
 [2c0f50f]: https://github.com/onlyoffice/docspace-mcp/commit/2c0f50f354cda822537759756d7eef35e621d9e8/

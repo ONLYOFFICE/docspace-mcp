@@ -136,9 +136,6 @@ The base URL of the DocSpace instance for API requests.
 The base URL must use HTTP or HTTPS scheme without search parameters or hash
 fragments.
 
-This option is not available if the DocSpace MCP server is configured to use
-OAuth authentication.
-
 This option is mutually exclusive with [`X-Mcp-Base-Url`].
 
 ##### Signature
@@ -251,9 +248,6 @@ The base URL of the DocSpace instance for API requests.
 The base URL must use HTTP or HTTPS scheme without search parameters or hash
 fragments.
 
-This option is not available if the DocSpace MCP server is configured to use
-OAuth authentication.
-
 This option is required if either [`Authorization`], [`X-Mcp-Api-Key`],
 [`X-Mcp-Auth-Token`], or the [`X-Mcp-Username`]/[`X-Mcp-Password`] pair is set.
 
@@ -273,16 +267,12 @@ requests.
 This option is not available if the DocSpace MCP server is configured to ignore
 the `Authorization` header in incoming requests.
 
-This option is not available if the DocSpace MCP server is configured to use
-OAuth authentication.
-
 This option is required if the DocSpace MCP server is configured without
 authentication, and neither [`X-Mcp-Api-Key`], [`X-Mcp-Auth-Token`], nor the
 [`X-Mcp-Username`]/[`X-Mcp-Password`] pair is set.
 
 This option is mutually exclusive with [`X-Mcp-Api-Key`], [`X-Mcp-Auth-Token`],
-and the [`X-Mcp-Username`]/[`X-Mcp-Password`] pair if the DocSpace MCP server is
-configured to use non-OAuth authentication.
+and the [`X-Mcp-Username`]/[`X-Mcp-Password`] pair.
 
 ##### Signature
 
@@ -301,16 +291,12 @@ configured to use non-OAuth authentication.
 
 The API key for accessing the DocSpace API.
 
-This option is not available if the DocSpace MCP server is configured to use
-OAuth authentication.
-
 This option is required if the DocSpace MCP server is configured without
 authentication, and neither [`Authorization`], [`X-Mcp-Auth-Token`], nor the
 [`X-Mcp-Username`]/[`X-Mcp-Password`] pair is set.
 
 This option is mutually exclusive with [`Authorization`], [`X-Mcp-Auth-Token`],
-and the [`X-Mcp-Username`]/[`X-Mcp-Password`] pair if the DocSpace MCP server is
-configured to use non-OAuth authentication.
+and the [`X-Mcp-Username`]/[`X-Mcp-Password`] pair.
 
 ##### Signature
 
@@ -327,16 +313,12 @@ configured to use non-OAuth authentication.
 
 The Personal Access Token (PAT) for accessing the DocSpace API.
 
-This option is not available if the DocSpace MCP server is configured to use
-OAuth authentication.
-
 This option is required if the DocSpace MCP server is configured without
 authentication, and neither [`Authorization`], [`X-Mcp-Api-Key`], nor the
 [`X-Mcp-Username`]/[`X-Mcp-Password`] pair is set.
 
 This option is mutually exclusive with [`Authorization`], [`X-Mcp-Api-Key`],
-and the [`X-Mcp-Username`]/[`X-Mcp-Password`] pair if the DocSpace MCP server is
-configured to use non-OAuth authentication.
+and the [`X-Mcp-Username`]/[`X-Mcp-Password`] pair.
 
 ##### Signature
 
@@ -355,16 +337,12 @@ The username for accessing the DocSpace API using basic authentication.
 
 This option is used in conjunction with [`X-Mcp-Password`].
 
-This option is not available if the DocSpace MCP server is configured to use
-OAuth authentication.
-
 This option is required if the DocSpace MCP server is configured without
 authentication, and neither [`Authorization`], [`X-Mcp-Api-Key`], nor
 [`X-Mcp-Auth-Token`] is set.
 
 This option is mutually exclusive with [`Authorization`], [`X-Mcp-Api-Key`],
-and [`X-Mcp-Auth-Token`] if the DocSpace MCP server is configured to use
-non-OAuth authentication.
+and [`X-Mcp-Auth-Token`].
 
 ##### Signature
 
@@ -383,16 +361,12 @@ The password for accessing the DocSpace API using basic authentication.
 
 This option is used in conjunction with [`X-Mcp-Username`].
 
-This option is not available if the DocSpace MCP server is configured to use
-OAuth authentication.
-
 This option is required if the DocSpace MCP server is configured without
 authentication, and neither [`Authorization`], [`X-Mcp-Api-Key`], nor
 [`X-Mcp-Auth-Token`] is set.
 
 This option is mutually exclusive with [`Authorization`], [`X-Mcp-Api-Key`],
-and [`X-Mcp-Auth-Token`] if the DocSpace MCP server is configured to use
-non-OAuth authentication.
+and [`X-Mcp-Auth-Token`].
 
 ##### Signature
 
@@ -432,7 +406,6 @@ X-Mcp-Disabled-Tools: delete_file,delete_folder
 <!-- Footnotes -->
 
 [DocSpace API: API Keys]: https://api.onlyoffice.com/docspace/api-backend/get-started/authentication/api-keys/
-[DocSpace API: OAuth]: https://api.onlyoffice.com/docspace/api-backend/get-started/authentication/oauth2/
 [DocSpace API: Basic Authentication]: https://api.onlyoffice.com/docspace/api-backend/get-started/authentication/basic-authentication/
 [DocSpace API: Personal Access Tokens]: https://api.onlyoffice.com/docspace/api-backend/get-started/authentication/personal-access-tokens/
 

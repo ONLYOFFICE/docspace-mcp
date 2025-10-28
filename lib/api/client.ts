@@ -22,12 +22,10 @@
  */
 
 import * as z from "zod"
-import * as http from "../util/http.ts"
 import type {Result} from "../util/result.ts"
 import {error, ok, safeAsync, safeNew, safeSync} from "../util/result.ts"
 import {AuthService} from "./auth-service.ts"
 import {FilesService} from "./files-service.ts"
-import {OauthAnyErrorSchema, OauthService} from "./oauth-service.ts"
 import {PeopleService} from "./people-service.ts"
 import {
 	ErrorApiResponseSchema,
@@ -48,43 +46,35 @@ const cookieAuthToken = "asc_auth_key"
 
 export interface ClientConfig {
 	userAgent: string
-	sharedBaseUrl: string
-	sharedFetch: typeof globalThis.fetch
-	oauthBaseUrl: string
-	oauthFetch: typeof globalThis.fetch
+	baseUrl: string
+	fetch: typeof globalThis.fetch
 }
 
 export class Client {
 	userAgent: string
-	sharedBaseUrl: string
-	sharedBaseFetch: typeof globalThis.fetch
-	oauthBaseUrl: string
-	oauthBaseFetch: typeof globalThis.fetch
+	baseUrl: string
+	baseFetch: typeof globalThis.fetch
 
 	auth: AuthService
 	files: FilesService
-	oauth: OauthService
 	people: PeopleService
 
 	constructor(config: ClientConfig) {
 		this.userAgent = config.userAgent
-		this.sharedBaseUrl = config.sharedBaseUrl
-		this.sharedBaseFetch = config.sharedFetch
-		this.oauthBaseUrl = config.oauthBaseUrl
-		this.oauthBaseFetch = config.oauthFetch
+		this.baseUrl = config.baseUrl
+		this.baseFetch = config.fetch
 
 		this.auth = new AuthService(this)
 		this.files = new FilesService(this)
-		this.oauth = new OauthService(this)
 		this.people = new PeopleService(this)
 	}
 
 	withAuth(h: string): Client {
 		let c = this.copy()
 
-		let f = c.sharedBaseFetch
+		let f = c.baseFetch
 
-		c.sharedBaseFetch = async function sharedBaseFetch(input, init) {
+		c.baseFetch = async function baseFetch(input, init) {
 			if (!(input instanceof Request)) {
 				throw new Error("Unsupported input type.")
 			}
@@ -105,9 +95,9 @@ export class Client {
 	withApiKey(k: string): Client {
 		let c = this.copy()
 
-		let f = c.sharedBaseFetch
+		let f = c.baseFetch
 
-		c.sharedBaseFetch = async function sharedBaseFetch(input, init) {
+		c.baseFetch = async function baseFetch(input, init) {
 			if (!(input instanceof Request)) {
 				throw new Error("Unsupported input type.")
 			}
@@ -128,9 +118,9 @@ export class Client {
 	withAuthToken(t: string): Client {
 		let c = this.copy()
 
-		let f = c.sharedBaseFetch
+		let f = c.baseFetch
 
-		c.sharedBaseFetch = async function sharedBaseFetch(input, init) {
+		c.baseFetch = async function baseFetch(input, init) {
 			if (!(input instanceof Request)) {
 				throw new Error("Unsupported input type.")
 			}
@@ -151,9 +141,9 @@ export class Client {
 	withBasicAuth(u: string, p: string): Client {
 		let c = this.copy()
 
-		let f = c.sharedBaseFetch
+		let f = c.baseFetch
 
-		c.sharedBaseFetch = async function sharedBaseFetch(input, init) {
+		c.baseFetch = async function baseFetch(input, init) {
 			if (!(input instanceof Request)) {
 				throw new Error("Unsupported input type.")
 			}
@@ -174,9 +164,9 @@ export class Client {
 	withBearerAuth(t: string): Client {
 		let c = this.copy()
 
-		let f = c.sharedBaseFetch
+		let f = c.baseFetch
 
-		c.sharedBaseFetch = async function sharedBaseFetch(input, init) {
+		c.baseFetch = async function baseFetch(input, init) {
 			if (!(input instanceof Request)) {
 				throw new Error("Unsupported input type.")
 			}
@@ -197,20 +187,18 @@ export class Client {
 	copy(): Client {
 		let config: ClientConfig = {
 			userAgent: this.userAgent,
-			sharedBaseUrl: this.sharedBaseUrl,
-			sharedFetch: this.sharedBaseFetch,
-			oauthBaseUrl: this.oauthBaseUrl,
-			oauthFetch: this.oauthBaseFetch,
+			baseUrl: this.baseUrl,
+			fetch: this.baseFetch,
 		}
 		return new Client(config)
 	}
 
-	createSharedUrl(path: string, query?: object): Result<string, Error> {
-		if (!this.sharedBaseUrl.endsWith("/")) {
-			return error(new Error(`Base URL must end with a trailing slash, but ${this.sharedBaseUrl} does not.`))
+	createUrl(path: string, query?: object): Result<string, Error> {
+		if (!this.baseUrl.endsWith("/")) {
+			return error(new Error(`Base URL must end with a trailing slash, but ${this.baseUrl} does not.`))
 		}
 
-		let u = safeNew(URL, path, this.sharedBaseUrl)
+		let u = safeNew(URL, path, this.baseUrl)
 		if (u.err) {
 			return error(new Error("Creating URL.", {cause: u.err}))
 		}
@@ -228,19 +216,6 @@ export class Client {
 			if (s) {
 				u.v.search = s
 			}
-		}
-
-		return ok(u.v.toString())
-	}
-
-	createOauthUrl(path: string): Result<string, Error> {
-		if (!this.oauthBaseUrl.endsWith("/")) {
-			return error(new Error(`Base URL must end with a trailing slash, but ${this.oauthBaseUrl} does not.`))
-		}
-
-		let u = safeNew(URL, path, this.oauthBaseUrl)
-		if (u.err) {
-			return error(new Error("Creating URL.", {cause: u.err}))
 		}
 
 		return ok(u.v.toString())
@@ -315,40 +290,8 @@ export class Client {
 		return ok(r.v)
 	}
 
-	createURLSearchParamsRequest(signal: AbortSignal, url: string, body: URLSearchParams): Result<Request, Error> {
-		let c: RequestInit = {
-			body,
-			method: "POST",
-			signal,
-		}
-
-		let r = safeNew(Request, url, c)
-		if (r.err) {
-			return error(new Error("Creating request.", {cause: r.err}))
-		}
-
-		let h = safeSync(r.v.headers.set.bind(r.v.headers), "Accept", "application/json")
-		if (h.err) {
-			return error(new Error("Setting header.", {cause: h.err}))
-		}
-
-		h = safeSync(r.v.headers.set.bind(r.v.headers), "Content-Type", "application/x-www-form-urlencoded")
-		if (h.err) {
-			return error(new Error("Setting header.", {cause: h.err}))
-		}
-
-		if (this.userAgent) {
-			let h = safeSync(r.v.headers.set.bind(r.v.headers), "User-Agent", this.userAgent)
-			if (h.err) {
-				return error(new Error("Setting header.", {cause: h.err}))
-			}
-		}
-
-		return ok(r.v)
-	}
-
-	async sharedFetch(req: Request): Promise<Result<[unknown, Response], Error>> {
-		let f = await this.sharedBareFetch(req)
+	async fetch(req: Request): Promise<Result<[unknown, Response], Error>> {
+		let f = await this.bareFetch(req)
 		if (f.err) {
 			return error(new Error("Making bare fetch.", {cause: f.err}))
 		}
@@ -361,41 +304,13 @@ export class Client {
 		return ok(p.v)
 	}
 
-	async sharedBareFetch(req: Request): Promise<Result<globalThis.Response, Error>> {
-		let f = await safeAsync(this.sharedBaseFetch, req.clone())
+	async bareFetch(req: Request): Promise<Result<globalThis.Response, Error>> {
+		let f = await safeAsync(this.baseFetch, req.clone())
 		if (f.err) {
 			return error(new Error("Fetching request.", {cause: f.err}))
 		}
 
 		let c = await checkSharedResponse(req, f.v)
-		if (c) {
-			return error(new Error("Checking response.", {cause: c}))
-		}
-
-		return ok(f.v)
-	}
-
-	async oauthFetch(req: Request): Promise<Result<[unknown, Response], Error>> {
-		let f = await this.oauthBareFetch(req)
-		if (f.err) {
-			return error(new Error("Making bare fetch.", {cause: f.err}))
-		}
-
-		let p = await parseOauthResponse(req, f.v)
-		if (p.err) {
-			return error(new Error("Parsing response.", {cause: p.err}))
-		}
-
-		return ok(p.v)
-	}
-
-	async oauthBareFetch(req: Request): Promise<Result<globalThis.Response, Error>> {
-		let f = await safeAsync(this.oauthBaseFetch, req.clone())
-		if (f.err) {
-			return error(new Error("Fetching request.", {cause: f.err}))
-		}
-
-		let c = await checkOauthResponse(req, f.v)
 		if (c) {
 			return error(new Error("Checking response.", {cause: c}))
 		}
@@ -591,63 +506,4 @@ export async function parseSharedResponse(req: Request, res: globalThis.Response
 
 	let r = new Response(req, res)
 	return ok([s.data.data, r])
-}
-
-export async function checkOauthResponse(req: Request, res: globalThis.Response): Promise<Error | undefined> {
-	if (res.status >= 200 && res.status <= 299) {
-		return
-	}
-
-	let r = new Response(req, res)
-
-	let m = `${req.method} ${req.url}: ${res.status}`
-
-	let h = res.headers.get("Content-Type")
-	if (h && http.isContentTypeJson(h)) {
-		let c = safeSync(res.clone.bind(res))
-		if (c.err) {
-			return new Error("Cloning response.", {cause: c.err})
-		}
-
-		let b = await safeAsync(c.v.json.bind(c.v))
-		if (b.err) {
-			return new Error("Parsing response body.", {cause: b.err})
-		}
-
-		let s = OauthAnyErrorSchema.safeParse(b.v)
-		if (!s.success) {
-			return new Error("Parsing OAuth error.", {cause: s.error})
-		}
-
-		switch (true) {
-		case "error" in s.data:
-			m += ` ${s.data.error} (${s.data.error_description})`
-			break
-
-		case "reason" in s.data:
-			m += ` ${s.data.reason}`
-			break
-
-		// no default
-		}
-	}
-
-	let e = new ErrorResponse(r, m)
-
-	return e
-}
-
-export async function parseOauthResponse(req: Request, res: globalThis.Response): Promise<Result<[unknown, Response], Error>> {
-	let c = safeSync(res.clone.bind(res))
-	if (c.err) {
-		return error(new Error("Cloning response.", {cause: c.err}))
-	}
-
-	let b = await safeAsync(c.v.json.bind(c.v))
-	if (b.err) {
-		return error(new Error("Parsing response body.", {cause: b.err}))
-	}
-
-	let r = new Response(req, res)
-	return ok([b.v, r])
 }

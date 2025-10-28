@@ -601,7 +601,7 @@ export class RegularTools {
 			return error(new Error("Setting header.", {cause: hr.err}))
 		}
 
-		let tr = await this.s.client.sharedBareFetch(dr.v)
+		let tr = await this.s.client.bareFetch(dr.v)
 		if (tr.err) {
 			return error(new Error("Downloading file.", {cause: tr.err}))
 		}

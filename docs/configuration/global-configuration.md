@@ -25,20 +25,6 @@ are organized by their functional area.
 		- [DOCSPACE_AUTH_TOKEN](#docspace_auth_token)
 		- [DOCSPACE_USERNAME](#docspace_username))
 		- [DOCSPACE_PASSWORD](#docspace_password)
-	- [API OAuth Options](#api-oauth-options)
-		- [DOCSPACE_OAUTH_BASE_URL](#docspace_oauth_base_url)
-	- [OAuth Protected Resource Options](#oauth-protected-resource-options)
-		- [DOCSPACE_OAUTH_SCOPES_SUPPORTED](#docspace_oauth_scopes_supported)
-		- [DOCSPACE_OAUTH_RESOURCE_NAME](#docspace_oauth_resource_name)
-		- [DOCSPACE_OAUTH_RESOURCE_DOCUMENTATION](#docspace_oauth_resource_documentation)
-	- [OAuth Client Options](#oauth-client-options)
-		- [DOCSPACE_OAUTH_REDIRECT_URIS](#docspace_oauth_redirect_uris)
-		- [DOCSPACE_OAUTH_CLIENT_ID](#docspace_oauth_client_id)
-		- [DOCSPACE_OAUTH_CLIENT_NAME](#docspace_oauth_client_name)
-		- [DOCSPACE_OAUTH_SCOPES](#docspace_oauth_scopes)
-		- [DOCSPACE_OAUTH_TOS_URI](#docspace_oauth_tos_uri)
-		- [DOCSPACE_OAUTH_POLICY_URI](#docspace_oauth_policy_uri)
-		- [DOCSPACE_OAUTH_CLIENT_SECRET](#docspace_oauth_client_secret)
 	- [Server General Options](#server-general-options)
 		- [DOCSPACE_SERVER_BASE_URL](#docspace_server_base_url)
 		- [DOCSPACE_HOST](#docspace_host)
@@ -48,17 +34,9 @@ are organized by their functional area.
 	- [Server CORS Options](#server-cors-options)
 		- [DOCSPACE_SERVER_CORS_MCP_ORIGIN](#docspace_server_cors_mcp_origin)
 		- [DOCSPACE_SERVER_CORS_MCP_MAX\_AGE](#docspace_server_cors_mcp_max_age)
-		- [DOCSPACE_SERVER_CORS_OAUTH_METADATA_ORIGIN](#docspace_server_cors_oauth_metadata_origin)
-		- [DOCSPACE_SERVER_CORS_OAUTH_METADATA_MAX_AGE](#docspace_server_cors_oauth_metadata_max_age)
-		- [DOCSPACE_SERVER_CORS_OAUTH_REGISTER_ORIGIN](#docspace_server_cors_oauth_register_origin)
-		- [DOCSPACE_SERVER_CORS_OAUTH_REGISTER_MAX_AGE](#docspace_server_cors_oauth_register_max_age)
 	- [Server Rate Limits Options](#server-rate-limits-options)
 		- [DOCSPACE_SERVER_RATE_LIMITS_MCP_CAPACITY](#docspace_server_rate_limits_mcp_capacity)
 		- [DOCSPACE_SERVER_RATE_LIMITS_MCP_WINDOW](#docspace_server_rate_limits_mcp_window)
-		- [DOCSPACE_SERVER_RATE_LIMITS_OAUTH_METADATA_CAPACITY](#docspace_server_rate_limits_oauth_metadata_capacity)
-		- [DOCSPACE_SERVER_RATE_LIMITS_OAUTH_METADATA_WINDOW](#docspace_server_rate_limits_oauth_metadata_window)
-		- [DOCSPACE_SERVER_RATE_LIMITS_OAUTH_REGISTER_CAPACITY](#docspace_server_rate_limits_oauth_register_capacity)
-		- [DOCSPACE_SERVER_RATE_LIMITS_OAUTH_REGISTER_WINDOW](#docspace_server_rate_limits_oauth_register_window)
 	- [Request General Options](#request-general-options)
 		- [DOCSPACE_REQUEST_QUERY](#docspace_request_query)
 		- [DOCSPACE_REQUEST_AUTHORIZATION_HEADER](#docspace_request_authorization_header)
@@ -69,7 +47,6 @@ are organized by their functional area.
 	- [Local HTTP Server with Meta Tools](#local-http-server-with-meta-tools)
 	- [Local HTTP Server with Session Management](#local-http-server-with-session-management)
 	- [Network-Accessible HTTP Server with CORS](#network-accessible-http-server-with-cors)
-	- [Network-Accessible HTTP Server with OAuth](#network-accessible-http-server-with-oauth)
 	- [Network-Accessible HTTP Server with Rate Limits](#network-accessible-http-server-with-rate-limits)
 
 ## Options
@@ -267,9 +244,8 @@ This option is required if [`DOCSPACE_TRANSPORT`] is set to `stdio` and neither
 [`DOCSPACE_USERNAME`]/[`DOCSPACE_PASSWORD`] pair is set.
 
 This option is mutually exclusive with [`DOCSPACE_API_KEY`],
-[`DOCSPACE_AUTH_TOKEN`], the [`DOCSPACE_USERNAME`]/[`DOCSPACE_PASSWORD`] pair,
-and [`DOCSPACE_OAUTH_CLIENT_ID`] if [`DOCSPACE_TRANSPORT`] is set to `sse`,
-`streamable-http`, or `http`.
+[`DOCSPACE_AUTH_TOKEN`], and the [`DOCSPACE_USERNAME`]/[`DOCSPACE_PASSWORD`]
+pair if [`DOCSPACE_TRANSPORT`] is set to `sse`, `streamable-http`, or `http`.
 
 ##### Signature
 
@@ -294,9 +270,8 @@ This option is required if [`DOCSPACE_TRANSPORT`] is set to `stdio` and neither
 [`DOCSPACE_USERNAME`]/[`DOCSPACE_PASSWORD`] pair is set.
 
 This option is mutually exclusive with [`DOCSPACE_AUTHORIZATION`],
-[`DOCSPACE_AUTH_TOKEN`], the [`DOCSPACE_USERNAME`]/[`DOCSPACE_PASSWORD`] pair,
-and [`DOCSPACE_OAUTH_CLIENT_ID`] if [`DOCSPACE_TRANSPORT`] is set to `sse`,
-`streamable-http`, or `http`.
+[`DOCSPACE_AUTH_TOKEN`], and the [`DOCSPACE_USERNAME`]/[`DOCSPACE_PASSWORD`]
+pair if [`DOCSPACE_TRANSPORT`] is set to `sse`, `streamable-http`, or `http`.
 
 ##### Signature
 
@@ -319,9 +294,8 @@ This option is required if [`DOCSPACE_TRANSPORT`] is set to `stdio` and neither
 [`DOCSPACE_USERNAME`]/[`DOCSPACE_PASSWORD`] pair is set.
 
 This option is mutually exclusive with [`DOCSPACE_AUTHORIZATION`],
-[`DOCSPACE_API_KEY`], the [`DOCSPACE_USERNAME`]/[`DOCSPACE_PASSWORD`] pair, and
-[`DOCSPACE_OAUTH_CLIENT_ID`] if [`DOCSPACE_TRANSPORT`] is set to `sse`,
-`streamable-http`, or `http`.
+[`DOCSPACE_API_KEY`], and the [`DOCSPACE_USERNAME`]/[`DOCSPACE_PASSWORD`] pair
+if [`DOCSPACE_TRANSPORT`] is set to `sse`, `streamable-http`, or `http`.
 
 ##### Signature
 
@@ -346,8 +320,8 @@ This option is required if [`DOCSPACE_TRANSPORT`] is set to `stdio` and neither
 set.
 
 This option is mutually exclusive with [`DOCSPACE_AUTHORIZATION`],
-[`DOCSPACE_API_KEY`], [`DOCSPACE_AUTH_TOKEN`], and [`DOCSPACE_OAUTH_CLIENT_ID`]
-if [`DOCSPACE_TRANSPORT`] is set to `sse`, `streamable-http`, or `http`.
+[`DOCSPACE_API_KEY`], and [`DOCSPACE_AUTH_TOKEN`], if [`DOCSPACE_TRANSPORT`] is
+set to `sse`, `streamable-http`, or `http`.
 
 ##### Signature
 
@@ -372,8 +346,8 @@ This option is required if [`DOCSPACE_TRANSPORT`] is set to `stdio` and neither
 set.
 
 This option is mutually exclusive with [`DOCSPACE_AUTHORIZATION`],
-[`DOCSPACE_API_KEY`], [`DOCSPACE_AUTH_TOKEN`], and [`DOCSPACE_OAUTH_CLIENT_ID`]
-if [`DOCSPACE_TRANSPORT`] is set to `sse`, `streamable-http`, or `http`.
+[`DOCSPACE_API_KEY`], and [`DOCSPACE_AUTH_TOKEN`] if [`DOCSPACE_TRANSPORT`] is
+set to `sse`, `streamable-http`, or `http`.
 
 ##### Signature
 
@@ -387,223 +361,10 @@ if [`DOCSPACE_TRANSPORT`] is set to `sse`, `streamable-http`, or `http`.
 - [DocSpace API: Basic Authentication]
 - [DocSpace MCP: Authentication Resolution]
 
-### API OAuth Options
-
-The following options are used to configure the behavior for DocSpace API
-requests to the OAuth service.
-
-#### DOCSPACE_OAUTH_BASE_URL
-
-The base URL of the DocSpace OAuth service.
-
-The base URL must use HTTP or HTTPS scheme without search parameters or hash
-fragments.
-
-This option is required if [`DOCSPACE_TRANSPORT`] is set to `sse`,
-`streamable-http`, or `http`, and [`DOCSPACE_OAUTH_CLIENT_ID`] is set.
-
-##### Signature
-
-- Type: string
-- Attributes: trimmable
-- Default: `https://oauth.onlyoffice.com/`
-- Transports: `sse`, `streamable-http`, `http`
-
-### OAuth Protected Resource Options
-
-The following options are used to configure the OAuth protected resource
-metadata for the DocSpace MCP server.
-
-#### DOCSPACE_OAUTH_SCOPES_SUPPORTED
-
-The list of scopes supported by the OAuth protected resource.
-
-##### Signature
-
-- Type: comma-separated list of scope names
-- Attributes: trimmable
-- Example: `accounts.self:read,files:read`
-- Transports: `sse`, `streamable-http`, `http`
-
-##### References
-
-- [RFC 9728: Protected Resource Metadata]
-
-#### DOCSPACE_OAUTH_RESOURCE_NAME
-
-The name of the OAuth protected resource.
-
-##### Signature
-
-- Type: string
-- Attributes: trimmable
-- Default: `@onlyoffice/docspace-mcp v2.0.0`
-- Transports: `sse`, `streamable-http`, `http`
-
-##### References
-
-- [RFC 9728: Protected Resource Metadata]
-
-#### DOCSPACE_OAUTH_RESOURCE_DOCUMENTATION
-
-The URL to the documentation for the OAuth protected resource.
-
-##### Signature
-
-- Type: url
-- Attributes: trimmable
-- Default: `https://github.com/onlyoffice/docspace-mcp/blob/v2.0.0/README.md`
-- Transports: `sse`, `streamable-http`, `http`
-
-##### References
-
-- [RFC 9728: Protected Resource Metadata]
-
-### OAuth Client Options
-
-The following options are used to configure the OAuth client metadata for the
-DocSpace MCP server.
-
-#### DOCSPACE_OAUTH_REDIRECT_URIS
-
-The list of redirect URIs for the OAuth client.
-
-##### Signature
-
-- Type: comma-separated list of urls
-- Attributes: trimmable
-- Example: `https://example.com/redirect,http://127.0.0.1:33418`
-- Transports: `sse`, `streamable-http`, `http`
-
-##### Reference
-
-- [RFC 7591: Client Metadata]
-- [DocSpace OAuth: Redirects URLs]
-
-#### DOCSPACE_OAUTH_CLIENT_ID
-
-The client ID for the OAuth client.
-
-This option is mutually exclusive with [`DOCSPACE_AUTHORIZATION`],
-[`DOCSPACE_API_KEY`], [`DOCSPACE_AUTH_TOKEN`], and the
-[`DOCSPACE_USERNAME`]/[`DOCSPACE_PASSWORD`] pair if [`DOCSPACE_TRANSPORT`] is
-set to `sse`, `streamable-http`, or `http`.
-
-##### Signature
-
-- Type: string
-- Attributes: trimmable
-- Example: `19ce4acf...`
-- Transports: `sse`, `streamable-http`, `http`
-
-##### References
-
-- [RFC 7591: Client Information Response]
-- [DocSpace API: OAuth]
-- [DocSpace MCP: Authentication Resolution]
-
-#### DOCSPACE_OAUTH_CLIENT_NAME
-
-The name of the OAuth client.
-
-##### Signature
-
-- Type: string
-- Attributes: trimmable
-- Example: `DocSpace MCP Client`
-- Transports: `sse`, `streamable-http`, `http`
-
-##### References
-
-- [RFC 7591: Client Metadata]
-- [DocSpace OAuth: App Name]
-
-#### DOCSPACE_OAUTH_SCOPES
-
-The list of scopes requested by the OAuth client.
-
-##### Signature
-
-- Type: comma-separated list of strings
-- Attributes: trimmable
-- Example: `accounts.self:read,files:read`
-- Transports: `sse`, `streamable-http`, `http`
-
-##### References
-
-- [RFC 7591: Client Metadata]
-- [DocSpace OAuth: Access Scopes]
-
-#### DOCSPACE_OAUTH_TOS_URI
-
-The URL to the Terms of Service (ToS) for the OAuth client.
-
-##### Signature
-
-- Type: url
-- Attributes: trimmable
-- Example: `https://example.com/tos`
-- Transports: `sse`, `streamable-http`, `http`
-
-##### References
-
-- [RFC 7591: Client Metadata]
-- [DocSpace OAuth: Terms of Service URL]
-
-#### DOCSPACE_OAUTH_POLICY_URI
-
-The URL to the Privacy Policy for the OAuth client.
-
-##### Signature
-
-- Type: url
-- Attributes: trimmable
-- Example: `https://example.com/privacy`
-- Transports: `sse`, `streamable-http`, `http`
-
-##### References
-
-- [RFC 7591: Client Metadata]
-- [DocSpace OAuth: Privacy Policy URL]
-
-#### DOCSPACE_OAUTH_CLIENT_SECRET
-
-The client secret for the OAuth client.
-
-##### Signature
-
-- Type: string
-- Attributes: sensitive, trimmable
-- Example: `eef4aed0...`
-- Transports: `sse`, `streamable-http`, `http`
-
-##### References
-
-- [RFC 7591: Client Information Response]
-- [DocSpace API: OAuth]
-
 ### Server General Options
 
 The following options are used to configure the general behavior of the
 DocSpace MCP server at the HTTP server level.
-
-#### DOCSPACE_SERVER_BASE_URL
-
-The base URL of the DocSpace MCP server.
-
-The base URL must use HTTP or HTTPS scheme without search parameters or hash
-fragments.
-
-This option is required if [`DOCSPACE_TRANSPORT`] is set to `sse`,
-`streamable-http`, or `http`, and [`DOCSPACE_OAUTH_CLIENT_ID`] is
-set.
-
-##### Signature
-
-- Type: url
-- Attributes: trimmable
-- Example: `https://mcp.example.com/`
-- Transports: `sse`, `streamable-http`, `http`
 
 #### DOCSPACE_HOST
 
@@ -700,86 +461,6 @@ from the response.
 
 - [MDN: Access-Control-Max-Age Header]
 
-#### DOCSPACE_SERVER_CORS_OAUTH_METADATA_ORIGIN
-
-The list of allowed origins to include in the `Access-Control-Allow-Origin`
-header for CORS requests to OAuth metadata endpoints (e.g.,
-`/.well-known/oauth-protected-resource`,
-`/.well-known/oauth-authorization-server`).
-
-##### Signature
-
-- Type: comma-separate list of origins
-- Attributes: trimmable
-- Default: `*`
-- Example: `https://example.com,https://another-example.com`
-- Transports: `sse`, `streamable-http`, `http`
-
-##### References
-
-- [MDN: Access-Control-Allow-Origin Header]
-
-#### DOCSPACE_SERVER_CORS_OAUTH_METADATA_MAX_AGE
-
-The maximum age in milliseconds to include in the `Access-Control-Max-Age`
-header for CORS requests to OAuth metadata endpoints (e.g.,
-`/.well-known/oauth-protected-resource`,
-`/.well-known/oauth-authorization-server`).
-
-The value `0` is a special value that omits the `Access-Control-Max-Age` header
-from the response.
-
-##### Signature
-
-- Type: number
-- Attributes: trimmable
-- Minimum: `0`
-- Default: `86400000` (1 day)
-- Transports: `sse`, `streamable-http`, `http`
-
-##### References
-
-- [MDN: Access-Control-Max-Age Header]
-
-#### DOCSPACE_SERVER_CORS_OAUTH_REGISTER_ORIGIN
-
-The list of allowed origins to include in the `Access-Control-Allow-Origin`
-header for CORS requests to the OAuth client registration endpoint (e.g.,
-`/register`).
-
-##### Signature
-
-- Type: comma-separate list of origins
-- Attributes: trimmable
-- Default: `*`
-- Example: `https://example.com,https://another-example.com`
-- Transports: `sse`, `streamable-http`, `http`
-
-##### References
-
-- [MDN: Access-Control-Allow-Origin Header]
-
-#### DOCSPACE_SERVER_CORS_OAUTH_REGISTER_MAX_AGE
-
-The maximum age in milliseconds to include in the `Access-Control-Max-Age`
-header for CORS requests to the OAuth client registration endpoint (e.g.,
-`/register`).
-
-The value `0` is a special value that omits the `Access-Control-Max-Age` header
-from the response.
-
-##### Signature
-
-- Type: number
-- Attributes: trimmable
-- Minimum: `0`
-- Default: `86400000` (1 day)
-- Transports: `sse`, `streamable-http`, `http`
-
-##### References
-
-- [MDN: Access-Control-Max-Age Header]
-
 ### Server Rate Limits Options
 
 The following options are used to configure the rate limits for the DocSpace
@@ -813,68 +494,6 @@ The `0` is a special value that disables the rate limit.
 - Attributes: trimmable
 - Minimum: `0`
 - Default: `1000` (1 second)
-- Transports: `sse`, `streamable-http`, `http`
-
-#### DOCSPACE_SERVER_RATE_LIMITS_OAUTH_METADATA_CAPACITY
-
-The maximum number of requests allowed per window for the OAuth metadata
-endpoints (e.g., `/.well-known/oauth-protected-resource`,
-`/.well-known/oauth-authorization-server`).
-
-The `0` is a special value that disables the rate limit.
-
-##### Signature
-
-- Type: number
-- Attributes: trimmable
-- Minimum: `0`
-- Default: `200`
-- Transports: `sse`, `streamable-http`, `http`
-
-#### DOCSPACE_SERVER_RATE_LIMITS_OAUTH_METADATA_WINDOW
-
-The time window in milliseconds for the rate limit for the OAuth metadata
-endpoints (e.g., `/.well-known/oauth-protected-resource`,
-`/.well-known/oauth-authorization-server`).
-
-The `0` is a special value that disables the rate limit.
-
-##### Signature
-
-- Type: number
-- Attributes: trimmable
-- Minimum: `0`
-- Default: `1000`
-- Transports: `sse`, `streamable-http`, `http`
-
-#### DOCSPACE_SERVER_RATE_LIMITS_OAUTH_REGISTER_CAPACITY
-
-The maximum number of requests allowed per window for the OAuth client
-registration endpoint (e.g., `/register`).
-
-The `0` is a special value that disables the rate limit.
-
-##### Signature
-
-- Type: number
-- Attributes: trimmable
-- Minimum: `0`
-- Default: `20`
-- Transports: `sse`, `streamable-http`, `http`
-
-#### DOCSPACE_SERVER_RATE_LIMITS_OAUTH_REGISTER_WINDOW
-
-The time window in milliseconds for the rate limit for the OAuth client
-registration endpoint (e.g., `/register`).
-
-The `0` is a special value that disables the rate limit.
-
-##### Signature
-
-- Type: number
-- Attributes: trimmable
-- Minimum: `0`
-- Default: `3600000` (1 hour)
 - Transports: `sse`, `streamable-http`, `http`
 
 ### Request General Options
@@ -997,48 +616,6 @@ DOCSPACE_SERVER_CORS_MCP_ORIGIN=https://example.com,https://another-example.com
 DOCSPACE_SERVER_CORS_MCP_MAX_AGE=1800000 # 30 minutes
 ```
 
-### Network-Accessible HTTP Server with OAuth
-
-This configuration uses HTTP transport with OAuth authentication. It enables
-per-user authentication where each request is associated with the authenticated
-user's credentials.
-
-```ini
-DOCSPACE_TRANSPORT=http
-DOCSPACE_SERVER_BASE_URL=https://mcp.example.com/
-DOCSPACE_HOST=0.0.0.0
-DOCSPACE_OAUTH_SCOPES_SUPPORTED=accounts.self:read,files:read,files:write
-DOCSPACE_OAUTH_REDIRECT_URIS=https://example.com/redirect,http://localhost:33418
-DOCSPACE_OAUTH_CLIENT_ID=19ce4acf...
-DOCSPACE_OAUTH_CLIENT_NAME=DocSpace MCP Client
-DOCSPACE_OAUTH_SCOPES=accounts.self:read,files:read,files:write
-DOCSPACE_OAUTH_TOS_URI=https://example.com/tos
-DOCSPACE_OAUTH_POLICY_URI=https://example.com/privacy
-DOCSPACE_OAUTH_CLIENT_SECRET=eef4aed0...
-```
-
-### Network-Accessible HTTP Server with Rate Limits
-
-This configuration uses HTTP transport with OAuth authentication and custom rate
-limits. It relaxes the rate limits for the OAuth registration endpoint to allow
-more frequent client registrations.
-
-```ini
-DOCSPACE_TRANSPORT=http
-DOCSPACE_SERVER_BASE_URL=https://mcp.example.com/
-DOCSPACE_HOST=0.0.0.0
-DOCSPACE_OAUTH_SCOPES_SUPPORTED=accounts.self:read,files:read,files:write
-DOCSPACE_OAUTH_REDIRECT_URIS=https://example.com/redirect,http://localhost:33418
-DOCSPACE_OAUTH_CLIENT_ID=19ce4acf...
-DOCSPACE_OAUTH_CLIENT_NAME=DocSpace MCP Client
-DOCSPACE_OAUTH_SCOPES=accounts.self:read,files:read,files:write
-DOCSPACE_OAUTH_TOS_URI=https://example.com/tos
-DOCSPACE_OAUTH_POLICY_URI=https://example.com/privacy
-DOCSPACE_OAUTH_CLIENT_SECRET=eef4aed0...
-DOCSPACE_SERVER_RATE_LIMITS_OAUTH_REGISTER_CAPACITY=40
-DOCSPACE_SERVER_RATE_LIMITS_OAUTH_REGISTER_WINDOW=7200000 # 2 hours
-```
-
 <!-- Footnotes -->
 
 [RFC 7591: Client Metadata]: https://www.rfc-editor.org/rfc/rfc7591#section-2
@@ -1056,16 +633,8 @@ DOCSPACE_SERVER_RATE_LIMITS_OAUTH_REGISTER_WINDOW=7200000 # 2 hours
 [MCP: Session Management]: https://modelcontextprotocol.io/specification/2025-06-18/basic/transports/#session-management
 
 [DocSpace API: API Keys]: https://api.onlyoffice.com/docspace/api-backend/get-started/authentication/api-keys/
-[DocSpace API: OAuth]: https://api.onlyoffice.com/docspace/api-backend/get-started/authentication/oauth2/
 [DocSpace API: Basic Authentication]: https://api.onlyoffice.com/docspace/api-backend/get-started/authentication/basic-authentication/
 [DocSpace API: Personal Access Tokens]: https://api.onlyoffice.com/docspace/api-backend/get-started/authentication/personal-access-tokens/
-
-[DocSpace OAuth: App Name]: https://api.onlyoffice.com/docspace/api-backend/get-started/authentication/oauth2/creating-oauth-app/#app-name
-[DocSpace OAuth: Redirects URLs]: https://api.onlyoffice.com/docspace/api-backend/get-started/authentication/oauth2/creating-oauth-app/#redirects-urls
-[DocSpace OAuth: Allowed Origins]: https://api.onlyoffice.com/docspace/api-backend/get-started/authentication/oauth2/creating-oauth-app/#allowed-origins
-[DocSpace OAuth: Access Scopes]: https://api.onlyoffice.com/docspace/api-backend/get-started/authentication/oauth2/creating-oauth-app/#access-scopes
-[DocSpace OAuth: Privacy Policy URL]: https://api.onlyoffice.com/docspace/api-backend/get-started/authentication/oauth2/creating-oauth-app/#privacy-policy-url
-[DocSpace OAuth: Terms of Service URL]: https://api.onlyoffice.com/docspace/api-backend/get-started/authentication/oauth2/creating-oauth-app/#terms-of-service-url
 
 [DocSpace MCP: Toolsets]: ../features/tools.md#toolsets
 [DocSpace MCP: Tools]: ../features/tools.md#regular-tools
@@ -1082,5 +651,4 @@ DOCSPACE_SERVER_RATE_LIMITS_OAUTH_REGISTER_WINDOW=7200000 # 2 hours
 [`DOCSPACE_AUTH_TOKEN`]: #docspace_auth_token
 [`DOCSPACE_USERNAME`]: #docspace_username
 [`DOCSPACE_PASSWORD`]: #docspace_password
-[`DOCSPACE_OAUTH_CLIENT_ID`]: #docspace_oauth_client_id
 [`DOCSPACE_REQUEST_QUERY`]: #docspace_request_query

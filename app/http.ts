@@ -21,7 +21,6 @@ import type * as server from "@modelcontextprotocol/sdk/server/index.js"
 import express from "express"
 import * as api from "../lib/api.ts"
 import * as mcp from "../lib/mcp.ts"
-import * as oauth from "../lib/oauth.ts"
 import * as context from "../lib/util/context.ts"
 import * as errors from "../lib/util/errors.ts"
 import * as utilExpress from "../lib/util/express.ts"
@@ -35,15 +34,8 @@ import * as shared from "./shared.ts"
 type CreateServer = (req: express.Request) => result.Result<server.Server, Error>
 
 interface Components {
-	oauth: Oauth | undefined
 	sse: Mcp | undefined
 	streamable: Mcp | undefined
-}
-
-interface Oauth {
-	resource: express.Router
-	server: express.Router
-	middleware: express.Handler
 }
 
 interface Mcp {
@@ -92,11 +84,6 @@ function createCreateServer(
 	if (g.internal) {
 		return createInternalCreateServer(g, l)
 	}
-
-	if (g.oauth.client.clientId) {
-		return createCreateServerWithOauth(g, l)
-	}
-
 	return createCreateServerWithAuth(g, l)
 }
 
@@ -136,12 +123,8 @@ function createInternalCreateServer(
 
 		let cc: api.ClientConfig = {
 			userAgent: g.api.userAgent,
-			sharedBaseUrl: b.v.toString(),
-			sharedFetch: f,
-			oauthBaseUrl: "",
-			oauthFetch() {
-				throw new Error("Not implemented")
-			},
+			baseUrl: b.v.toString(),
+			fetch: f,
 		}
 
 		let c = new api.Client(cc)
@@ -154,74 +137,6 @@ function createInternalCreateServer(
 			uploader: new api.Uploader(c),
 			dynamic: g.mcp.dynamic,
 			tools: g.mcp.tools,
-		}
-
-		let defs = mcp.configuredServer(sc)
-
-		utilMcp.register(s, defs)
-
-		return result.ok(s)
-	}
-}
-
-function createCreateServerWithOauth(
-	g: config.global.Config,
-	l: logger.VanillaLogger,
-): CreateServer {
-	return (req) => {
-		if (!req.auth) {
-			return result.error(new Error("OAuth middleware was not registered"))
-		}
-
-		let p = api.decodeOauthTokenPayload(req.auth.token)
-		if (p.err) {
-			return result.error(new Error("Decoding OAuth token", {cause: p.err}))
-		}
-
-		let b = result.safeNew(URL, p.v.aud)
-		if (b.err) {
-			return result.error(new Error("Creating base URL", {cause: b.err}))
-		}
-
-		if (!b.v.pathname.endsWith("/")) {
-			b.v.pathname += "/"
-		}
-
-		let m = config.request.parseMcp(g, req)
-		if (m.err) {
-			return result.error(new Error("Parsing MCP config", {cause: m.err}))
-		}
-
-		let s = shared.createServer()
-
-		let e = new logger.ServerLogger(context, s)
-
-		s.registerCapabilities({logging: {}})
-
-		let f = utilFetch.withLogger(context, e, fetch)
-
-		f = utilFetch.withLogger(context, l, f)
-
-		let cc: api.ClientConfig = {
-			userAgent: g.api.userAgent,
-			sharedBaseUrl: b.v.toString(),
-			sharedFetch: f,
-			oauthBaseUrl: "",
-			oauthFetch() {
-				throw new Error("Not implemented")
-			},
-		}
-
-		let c = new api.Client(cc)
-
-		c = c.withBearerAuth(req.auth.token)
-
-		let sc: mcp.ConfiguredServerConfig = {
-			client: c,
-			resolver: new api.Resolver(c),
-			uploader: new api.Uploader(c),
-			dynamic: m.v.dynamic,
-			tools: m.v.tools,
 		}
 
 		let defs = mcp.configuredServer(sc)
@@ -259,12 +174,8 @@ function createCreateServerWithAuth(
 
 		let cc: api.ClientConfig = {
 			userAgent: g.api.userAgent,
-			sharedBaseUrl: a.v.baseUrl,
-			sharedFetch: f,
-			oauthBaseUrl: "",
-			oauthFetch() {
-				throw new Error("Not implemented")
-			},
+			baseUrl: a.v.baseUrl,
+			fetch: f,
 		}
 
 		let c = new api.Client(cc)
@@ -307,17 +218,8 @@ function createComponents(
 	create: CreateServer,
 ): result.Result<Components, Error> {
 	let c: Components = {
-		oauth: undefined,
 		sse: undefined,
 		streamable: undefined,
-	}
-
-	if (g.oauth.client.clientId) {
-		let r = createOauth(g, l)
-		if (r.err) {
-			return result.error(new Error("Creating OAuth", {cause: r.err}))
-		}
-		c.oauth = r.v
 	}
 
 	switch (g.mcp.transport) {
@@ -335,78 +237,6 @@ function createComponents(
 	}
 
 	return result.ok(c)
-}
-
-function createOauth(
-	g: config.global.Config,
-	l: logger.VanillaLogger,
-): result.Result<Oauth, Error> {
-	let cc: api.ClientConfig = {
-		userAgent: g.api.userAgent,
-		sharedBaseUrl: "",
-		sharedFetch() {
-			throw new Error("Not implemented")
-		},
-		oauthBaseUrl: g.api.oauth.baseUrl,
-		oauthFetch: utilFetch.withLogger(context, l, fetch),
-	}
-
-	let c = new api.Client(cc)
-
-	c = c.withApiKey(g.api.shared.apiKey)
-
-	let rc: oauth.ResourceServerConfig = {
-		metadataCorsOrigin: g.server.cors.oauthMetadata.origin,
-		metadataCorsMaxAge: g.server.cors.oauthMetadata.maxAge,
-		metadataRateLimitCapacity: g.server.rateLimits.oauthMetadata.capacity,
-		metadataRateLimitWindow: g.server.rateLimits.oauthMetadata.window,
-		resourceBaseUrl: g.server.baseUrl,
-		scopesSupported: g.oauth.resource.scopesSupported,
-		resourceName: g.oauth.resource.resourceName,
-		resourceDocumentation: g.oauth.resource.resourceDocumentation,
-	}
-
-	let r = oauth.resourceServer(rc)
-
-	let sc: oauth.AuthServerConfig = {
-		serverBaseUrl: g.server.baseUrl,
-		metadataCorsOrigin: g.server.cors.oauthMetadata.origin,
-		metadataCorsMaxAge: g.server.cors.oauthMetadata.maxAge,
-		metadataRateLimitCapacity: g.server.rateLimits.oauthMetadata.capacity,
-		metadataRateLimitWindow: g.server.rateLimits.oauthMetadata.window,
-		registerCorsOrigin: g.server.cors.oauthRegister.origin,
-		registerCorsMaxAge: g.server.cors.oauthRegister.maxAge,
-		registerRateLimitCapacity: g.server.rateLimits.oauthRegister.capacity,
-		registerRateLimitWindow: g.server.rateLimits.oauthRegister.window,
-		redirectUris: g.oauth.client.redirectUris,
-		clientId: g.oauth.client.clientId,
-		clientName: g.oauth.client.clientName,
-		scopes: g.oauth.client.scopes,
-		tosUri: g.oauth.client.tosUri,
-		policyUri: g.oauth.client.policyUri,
-		clientSecret: g.oauth.client.clientSecret,
-		client: c,
-	}
-
-	let s = oauth.authServer(sc)
-
-	let mc: oauth.MiddlewareConfig = {
-		resourceBaseUrl: g.server.baseUrl,
-		client: c,
-	}
-
-	let m = oauth.middleware(mc)
-	if (m.err) {
-		return result.error(new Error("Creating OAuth middleware", {cause: m.err}))
-	}
-
-	let o: Oauth = {
-		resource: r,
-		server: s,
-		middleware: m.v,
-	}
-
-	return result.ok(o)
 }
 
 function createSse(
@@ -438,11 +268,6 @@ function createSse(
 			create,
 		},
 		transports: t,
-	}
-
-	if (g.oauth.client.clientId) {
-		rc.corsAllowedHeaders.push("Authorization")
-		rc.corsExposedHeaders.push("WWW-Authenticate")
 	}
 
 	let m: Mcp = {
@@ -486,11 +311,6 @@ function createStreamable(
 		transports: t,
 	}
 
-	if (g.oauth.client.clientId) {
-		rc.corsAllowedHeaders.push("Authorization")
-		rc.corsExposedHeaders.push("WWW-Authenticate")
-	}
-
 	let m: Mcp = {
 		sessions: s,
 		server(...handlers) {
@@ -519,25 +339,12 @@ function createExpress(
 	e.use(utilExpress.context(context))
 	e.use(utilExpress.logger(context, l))
 
-	if (c.oauth) {
-		e.use(c.oauth.resource)
-		e.use(c.oauth.server)
+	if (c.sse) {
+		e.use(c.sse.server())
+	}
 
-		if (c.sse) {
-			e.use(c.sse.server(c.oauth.middleware))
-		}
-
-		if (c.streamable) {
-			e.use(c.streamable.server(c.oauth.middleware))
-		}
-	} else {
-		if (c.sse) {
-			e.use(c.sse.server())
-		}
-
-		if (c.streamable) {
-			e.use(c.streamable.server())
-		}
+	if (c.streamable) {
+		e.use(c.streamable.server())
 	}
 
 	e.use(notFound())

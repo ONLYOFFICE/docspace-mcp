@@ -11,7 +11,7 @@ The DocSpace MCP Server connects AI tools directly to ONLYOFFICE DocSpace. This 
 - **Room Management**: Create, update, and archive rooms. Configure room types, manage membership, and control access levels.
 - **Folder & File Operations**: Create folders, upload documents, copy or move items in batches, rename or delete content, and check file or folder details.
 - **Collaboration & Permissions**: Invite or remove users, adjust security settings, and review current access rights for rooms and shared spaces.
-- **Content Access**: Retrieve "My documents" or "Rooms" folders, get folder contents, download files as text, and monitor ongoing file operations.
+- **Content Access**: Retrieve "My Documents" or "Rooms" folders, get folder contents, download files as text, and monitor ongoing file operations.
 - **Storage & Tariff Control**: Check current portal quota and subscription plan before uploading or sharing large volumes of data.
 - **People Directory**: List all people in the portal to streamline invitations and access management.
 - **Localization & Settings**: Access supported languages, cultures, and time zones to adapt collaboration spaces to regional preferences.
@@ -80,7 +80,7 @@ Insert the following block into the `mcpServers` section of your config:
 Close and reopen Claude Desktop. The DocSpace MCP Server will start automatically, and you'll be able to issue natural language commands like:
 
 - Create a new project room and invite Anna with editor rights.
-- Upload this file to my Documents.
+- Upload this file to "My Documents".
 
 ## Connect to Cursor
 
@@ -191,7 +191,7 @@ The DocSpace MCP server supports the following MCP protocol features.
 | `delete_folder`      | Delete a folder.               | Delete the "Samples" folder from the "Documents" room. |
 | `get_folder_content` | Get content of a folder.       | Display the content of the "Contracts" folder.         |
 | `get_folder_info`    | Get folder information.        | Return the information of the "Projects" folder.       |
-| `get_my_folder`      | Get the "My Documents" folder. | Return the content of the "Me documents" folder.       |
+| `get_my_folder`      | Get the "My Documents" folder. | Return the content of the "My Documents" folder.       |
 | `rename_folder`      | Rename a folder.               | Rename the "Documents" folder to "New documents".      |
 
 </details>

@@ -119,16 +119,6 @@ Insert the following block into the `mcpServers` section of your config:
       "args": ["--yes", "@onlyoffice/docspace-mcp"]
     }
   }
-  "mcpServers": {
-    "onlyoffice-docspace": {
-      "env": {
-        "DOCSPACE_BASE_URL": "https://your-instance.onlyoffice.com",
-        "DOCSPACE_API_KEY": "your-api-key"
-      },
-      "command": "npx",
-      "args": ["--yes", "@onlyoffice/docspace-mcp"]
-    }
-  }
 }
 ```
 
@@ -305,42 +295,6 @@ npm test
 
 This runs all built-in integration tests. Tests cover basic CRUD operations for files, folders, and rooms.
 
-## Security and threats
-
-The DocSpace MCP Server follows the same authentication logic as DocSpace APIs.
-
-### Potential Threats
-
-- API key leakage — always store your API key in environment variables or vaults.
-- Unauthorized access — limit key permissions using DocSpace’s access policy settings.
-- Data exposure — avoid returning raw file data for sensitive documents.
-
-### Recommendations
-
-- Use HTTPS endpoints only
-- Rotate API keys regularly
-- Enable access logging in DocSpace
-
-## Error Handling
-
-Common errors and how to fix them:
-
-| Error                       | Cause                    | Solution                                |
-| --------------------------- | ------------------------ | --------------------------------------- |
-| `401 Unauthorized`          | Invalid API key          | Check credentials and reissue a new key |
-| `403 Forbidden`             | Insufficient permissions | Verify access policy settings           |
-| `404 Not Found`             | Missing file or room     | Check object path or ID                 |
-| `429 Too Many Requests`     | Rate limit reached       | Wait before retrying                    |
-| `500 Internal Server Error` | DocSpace service issue   | Retry later or contact admin            |
-
-
-## References
-
-- [DocSpace MCP: Distribution]
-- [DocSpace MCP: Installation on local server]
-- [DocSpace MCP: Configuration]
-- [DocSpace MCP: OAuth Authorization]
-- [DocSpace MCP: Tools]
 ## Security and threats
 
 The DocSpace MCP Server follows the same authentication logic as DocSpace APIs.

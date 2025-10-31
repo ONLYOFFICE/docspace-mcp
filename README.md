@@ -295,16 +295,16 @@ the [LICENSE] file.
 
 [MCP: Tools]: https://modelcontextprotocol.io/specification/2025-06-18/server/tools/
 
-[DocSpace MCP: Distribution]: ../distribution/README.md
-[DocSpace MCP: OAuth Authorization]: ../authorization/oauth.md
-[DocSpace MCP: Installation on local server]: ../installation/local-server.md
-[DocSpace MCP: Configuration]: ../configuration/README.md
-[DocSpace MCP: Tools]: ../features/tools.md
+[DocSpace MCP: Distribution]: /docs/distribution/README.md
+[DocSpace MCP: OAuth Authorization]: /docs/authorization/oauth.md
+[DocSpace MCP: Installation on local server]: /docs/installation/local-server.md
+[DocSpace MCP: Configuration]: /docs/configuration/README.md
+[DocSpace MCP: Tools]: /docs/features/tools.md
 
 [MCP: Tools]: https://modelcontextprotocol.io/specification/2025-06-18/server/tools/
 
-[DocSpace MCP: Distribution]: ../distribution/README.md
-[DocSpace MCP: OAuth Authorization]: ../authorization/oauth.md
-[DocSpace MCP: Installation on local server]: ../installation/local-server.md
-[DocSpace MCP: Configuration]: ../configuration/README.md
-[DocSpace MCP: Tools]: ../features/tools.md
+[DocSpace MCP: Distribution]: /docs/distribution/README.md
+[DocSpace MCP: OAuth Authorization]: /docs/authorization/oauth.md
+[DocSpace MCP: Installation on local server]: /docs/installation/local-server.md
+[DocSpace MCP: Configuration]: /docs/configuration/README.md
+[DocSpace MCP: Tools]: /docs/features/tools.md

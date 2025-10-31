@@ -6,35 +6,6 @@ provides an MCP server for [ONLYOFFICE DocSpace].
 
 The DocSpace MCP Server connects AI tools directly to ONLYOFFICE DocSpace. This gives AI agents, assistants, and chatbots the ability to manage rooms, collaborate on files, handle permissions, and automate document workflows - all through natural language interactions.
 
-The DocSpace MCP Server can be used directly with Claude Desktop by adding it to your `claude_desktop_config.json` file. This allows Claude to interact with your DocSpace - creating rooms, managing files, and collaborating on content via natural language.
-
-### Step 1. Locate your config file
-
-Find your Claude Desktop configuration file, usually named:
-
-- **macOS**: `~/Library/Application Support/Claude/claude_desktop_config.json`
-- **Windows**: `%APPDATA%\Claude\claude_desktop_config.json`
-- **Linux**: `~/.config/Claude/claude_desktop_config.json`
-
-### Step 2. Add the DocSpace MCP Server entry
-
-Insert the following block into the `mcpServers` section of your config:
-
-``` json
-{
-  "mcpServers": {
-    "onlyoffice-docspace": {
-      "env": {
-        "DOCSPACE_BASE_URL": "https://your-instance.onlyoffice.com",
-        "DOCSPACE_API_KEY": "your-api-key"
-      },
-      "command": "npx",
-      "args": ["--yes", "@onlyoffice/docspace-mcp"]
-    }
-  }
-}
-```
-
 ## Use Cases
 
 - **Room Management**: Create, update, and archive rooms. Configure room types, manage membership, and control access levels.

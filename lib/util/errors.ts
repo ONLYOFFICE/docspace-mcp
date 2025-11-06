@@ -107,6 +107,40 @@ export function isAborted(err: unknown): boolean {
 	return false
 }
 
+export function as<
+	A extends unknown[],
+	R,
+>(
+	err: unknown,
+	t: new (...args: A) => R,
+): R | undefined {
+	if (err instanceof Error) {
+		if (err.constructor === t.constructor) {
+			return err as unknown as R
+		}
+
+		if (err.cause) {
+			let a = as(err.cause, t)
+			if (a) {
+				return a
+			}
+			return
+		}
+
+		return
+	}
+
+	if (Array.isArray(err)) {
+		for (let e of err) {
+			let a = as(e, t)
+			if (a) {
+				return a
+			}
+		}
+		return
+	}
+}
+
 export function format(err: Error): string {
 	let m = ""
 	let l = 0

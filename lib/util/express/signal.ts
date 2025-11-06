@@ -20,7 +20,36 @@
  * @module util/express
  */
 
-export * from "./express/context.ts"
-export * from "./express/logger.ts"
-export * from "./express/no-cache.ts"
-export * from "./express/signal.ts"
+import type express from "express"
+
+declare module "express-serve-static-core" {
+	interface Request {
+		signal?: AbortSignal
+	}
+}
+
+export function signal(): express.Handler {
+	return (req, res, next) => {
+		let ac = new AbortController()
+
+		if (req.signal) {
+			req.signal.addEventListener(
+				"abort",
+				() => {
+					ac.abort()
+				},
+				{
+					once: true,
+				},
+			)
+		}
+
+		req.signal = ac.signal
+
+		res.once("close", () => {
+			ac.abort()
+		})
+
+		next()
+	}
+}

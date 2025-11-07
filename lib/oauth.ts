@@ -17,10 +17,11 @@
  */
 
 /**
- * @module util/express
+ * @module oauth
  */
 
-export * from "./express/context.ts"
-export * from "./express/logger.ts"
-export * from "./express/no-cache.ts"
-export * from "./express/signal.ts"
+export * from "./oauth/auth.ts"
+export * from "./oauth/client.ts"
+export * from "./oauth/server.ts"
+export * from "./oauth/shared.ts"
+export * from "./oauth/state.ts"

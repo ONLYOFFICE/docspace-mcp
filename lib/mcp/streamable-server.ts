@@ -21,42 +21,45 @@
  * @mergeModuleWith mcp
  */
 
+/* eslint-disable typescript/consistent-type-definitions */
+
 import type * as server from "@modelcontextprotocol/sdk/server/index.js"
 import type * as streamableHttp from "@modelcontextprotocol/sdk/server/streamableHttp.js"
 import * as types from "@modelcontextprotocol/sdk/types.js"
-import cors from "cors"
 import express from "express"
-import * as expressRateLimit from "express-rate-limit"
 import * as errors from "../util/errors.ts"
+import * as utilExpress from "../util/express.ts"
 import * as result from "../util/result.ts"
 
-export interface StreamableServerConfig {
+export type StreamableServerConfig = {
 	corsOrigin: string[]
 	corsMaxAge: number
 	corsAllowedHeaders: string[]
 	corsExposedHeaders: string[]
 	rateLimitCapacity: number
 	rateLimitWindow: number
+	handlers: express.Handler[]
 	servers: StreamableServerServers
 	transports: StreamableServerTransports
 }
 
-export interface StreamableServerServers {
+export type StreamableServerServers = {
 	create(req: express.Request): result.Result<server.Server, Error>
 }
 
-export interface StreamableServerTransports {
+export type StreamableServerTransports = {
 	create(): streamableHttp.StreamableHTTPServerTransport
 	retrieve(id: string): result.Result<streamableHttp.StreamableHTTPServerTransport, Error>
 }
 
-class StreamableServer {
+export class StreamableServer {
 	private corsOrigin: string[]
 	private corsMaxAge: number
 	private corsAllowedHeaders: string[]
 	private corsExposedHeaders: string[]
 	private rateLimitCapacity: number
 	private rateLimitWindow: number
+	private handlers: express.Handler[]
 	private servers: StreamableServerServers
 	private transports: StreamableServerTransports
 
@@ -67,72 +70,86 @@ class StreamableServer {
 		this.corsExposedHeaders = config.corsExposedHeaders
 		this.rateLimitCapacity = config.rateLimitCapacity
 		this.rateLimitWindow = config.rateLimitWindow
+		this.handlers = config.handlers
 		this.servers = config.servers
 		this.transports = config.transports
 	}
 
-	cors(): express.Handler {
-		if (this.corsOrigin.length !== 0) {
-			return (_, __, next) => {
-				next()
+	router(): express.Router {
+		// todo: add recovery middleware
+		// todo: add signal middleware
+		// todo: add allowedMethods middleware
+		// todo: add supportedMediaTypes middleware
+
+		let cors = (r: express.Router): void => {
+			if (this.corsOrigin.length !== 0) {
+				let co: utilExpress.CorsOptions = {
+					origin: this.corsOrigin,
+					maxAge: this.corsMaxAge,
+					methods: ["GET", "POST", "DELETE"],
+					allowedHeaders: [
+						...this.corsAllowedHeaders,
+						"Content-Type",
+						"Mcp-Session-Id",
+					],
+					exposedHeaders: [
+						...this.corsExposedHeaders,
+						"Mcp-Session-Id",
+					],
+				}
+
+				if (this.rateLimitCapacity && this.rateLimitWindow) {
+					co.exposedHeaders.push(...utilExpress.rateLimitHeaders)
+				}
+
+				r.use(utilExpress.cors(co))
 			}
 		}
 
-		let o: cors.CorsOptions = {
-			origin: this.corsOrigin,
-			methods: ["GET", "POST", "DELETE"],
-			allowedHeaders: [
-				...this.corsAllowedHeaders,
-				"Content-Type",
-				"Mcp-Session-Id",
-			],
-		}
+		let guard = (r: express.Router): void => {
+			if (this.rateLimitCapacity && this.rateLimitWindow) {
+				let er = new errors.
+					JsonrpcError(
+						-32000,
+						"Too many requests, please try again later",
+					).
+					toObject()
 
-		let exposedHeaders: string[] = [
-			...this.corsExposedHeaders,
-			"Mcp-Session-Id",
-		]
+				let ro: utilExpress.RateLimitOptions = {
+					capacity: this.rateLimitCapacity,
+					window: this.rateLimitWindow,
+				}
 
-		if (this.rateLimitCapacity && this.rateLimitWindow) {
-			exposedHeaders.push(
-				"Retry-After",
-				"RateLimit-Limit",
-				"RateLimit-Remaining",
-				"RateLimit-Reset",
-			)
-		}
-
-		o.exposedHeaders = exposedHeaders
-
-		if (this.corsMaxAge) {
-			o.maxAge = this.corsMaxAge / 1000
-		}
-
-		return cors(o)
-	}
-
-	rateLimit(): express.Handler {
-		if (!this.rateLimitCapacity || !this.rateLimitWindow) {
-			return (_, __, next) => {
-				next()
+				r.use(utilExpress.rateLimit(ro, (_, res) => {
+					res.json(er)
+				}))
 			}
 		}
 
-		return expressRateLimit.rateLimit({
-			windowMs: this.rateLimitWindow,
-			limit: this.rateLimitCapacity,
-			standardHeaders: true,
-			legacyHeaders: false,
-			message: new errors.
-				JsonrpcError(
-					-32000,
-					"Too many requests, please try again later",
-				).
-				toObject(),
-		})
+		let r = express.Router()
+
+		r.use("/mcp", (() => {
+			let r = express.Router()
+
+			r.use(express.json())
+
+			cors(r)
+
+			r.use(...this.handlers)
+
+			guard(r)
+
+			r.post("/", this.handlePost.bind(this))
+			r.get("/", this.handleGetDelete.bind(this))
+			r.delete("/", this.handleGetDelete.bind(this))
+
+			return r
+		})())
+
+		return r
 	}
 
-	async post(req: express.Request, res: express.Response): Promise<void> {
+	private async handlePost(req: express.Request, res: express.Response): Promise<void> {
 		try {
 			let id = req.headers["mcp-session-id"]
 			let t: streamableHttp.StreamableHTTPServerTransport | undefined
@@ -236,11 +253,7 @@ class StreamableServer {
 		}
 	}
 
-	async get(req: express.Request, res: express.Response): Promise<void> {
-		await this.delete(req, res)
-	}
-
-	async delete(req: express.Request, res: express.Response): Promise<void> {
+	private async handleGetDelete(req: express.Request, res: express.Response): Promise<void> {
 		try {
 			let id = req.headers["mcp-session-id"]
 
@@ -313,29 +326,4 @@ class StreamableServer {
 			}
 		}
 	}
-}
-
-export function streamableServer(
-	config: StreamableServerConfig,
-	...handlers: express.RequestHandler[]
-): express.Router {
-	let s = new StreamableServer(config)
-
-	let r = express.Router()
-
-	r.use("/mcp", ...handlers, (() => {
-		let r = express.Router()
-
-		r.use(express.json())
-		r.use(s.cors())
-		r.use(s.rateLimit())
-
-		r.post("/", s.post.bind(s))
-		r.get("/", s.get.bind(s))
-		r.delete("/", s.delete.bind(s))
-
-		return r
-	})())
-
-	return r
 }

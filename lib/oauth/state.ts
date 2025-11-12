@@ -74,7 +74,7 @@ export class StateTokens {
 		this.ttl = config.ttl
 	}
 
-	decode(t: string): r.Result<State, Error> {
+	verify(t: string): r.Result<State, Error> {
 		let alg: jwt.Algorithm | undefined
 
 		if (this.algorithm) {
@@ -88,7 +88,7 @@ export class StateTokens {
 			complete: true,
 		}
 
-		let jw = r.safeSync(verify, t, this.secretKey, vo)
+		let jw = r.safeSync(jwt.verify, t, this.secretKey, vo)
 		if (jw.err) {
 			return r.error(new InvalidStateTokenError("Verifying token", {cause: jw.err}))
 		}
@@ -155,19 +155,11 @@ export class StateTokens {
 			algorithm: alg,
 		}
 
-		let tt = r.safeSync(sign, tp, this.secretKey, so)
+		let tt = r.safeSync(jwt.sign, tp, this.secretKey, so)
 		if (tt.err) {
 			return r.error(new Error("Signing token", {cause: tt.err}))
 		}
 
 		return r.ok(tt.v)
 	}
-}
-
-function sign(p: object, k: string, o: jwt.SignOptions): string {
-	return jwt.sign(p, k, o)
-}
-
-function verify(t: string, k: string, o: jwt.VerifyOptions): jwt.Jwt | jwt.JwtPayload | string {
-	return jwt.verify(t, k, o)
 }

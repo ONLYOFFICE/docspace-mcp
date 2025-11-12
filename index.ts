@@ -16,15 +16,8 @@
  * @license
  */
 
-/**
- * @module util/express
- */
-
-export * from "./express/allowed-methods.ts"
-export * from "./express/context.ts"
-export * from "./express/cors.ts"
-export * from "./express/logger.ts"
-export * from "./express/no-cache.ts"
-export * from "./express/rate-limit.ts"
-export * from "./express/signal.ts"
-export * from "./express/supported-media-types.ts"
+declare module "jsonwebtoken" {
+	function decode(t: string, o: DecodeOptions): Jwt | JwtPayload | string | null
+	function sign(p: object, k: string, o: SignOptions): string
+	function verify(t: string, k: string, o: VerifyOptions): Jwt | JwtPayload | string
+}

@@ -23,10 +23,7 @@
 
 /* eslint-disable typescript/consistent-type-definitions */
 
-import contentType from "content-type"
-import cors from "cors"
 import express from "express"
-import * as expressRateLimit from "express-rate-limit"
 import jwt from "jsonwebtoken"
 import * as errors from "../util/errors.ts"
 import * as utilExpress from "../util/express.ts"
@@ -34,7 +31,7 @@ import * as r from "../util/result.ts"
 import type {AuthTokenPayload} from "./auth.ts"
 import {InvalidAuthTokenError} from "./auth.ts"
 import type {ClientResponse} from "./client.ts"
-import {ClientErrorResponse} from "./client.ts"
+import {proxyError} from "./internal.ts"
 import type {
 	AuthorizeRequest,
 	AuthorizeResponse,
@@ -58,52 +55,27 @@ import {
 import type {State} from "./state.ts"
 import {InvalidStateTokenError} from "./state.ts"
 
-declare module "express-serve-static-core" {
-	interface Request {
-		oauth?: ExpressOauth
-	}
-}
-
-type ExpressOauth = {
-	aud: string
-	token: string
-}
-
 export type ServerConfig = {
 	baseUrl: string
-	scopes: string[]
 	clientId: string
 	clientSecret: string
-	serverMetadataCorsOrigin: string[]
-	serverMetadataCorsMaxAge: number
+	scopes: string[]
+	corsOrigin: string[]
+	corsMaxAge: number
 	serverMetadataRateLimitCapacity: number
 	serverMetadataRateLimitWindow: number
-	resourceMetadataCorsOrigin: string[]
-	resourceMetadataCorsMaxAge: number
 	resourceMetadataRateLimitCapacity: number
 	resourceMetadataRateLimitWindow: number
-	authorizeCorsOrigin: string[]
-	authorizeCorsMaxAge: number
 	authorizeRateLimitCapacity: number
 	authorizeRateLimitWindow: number
-	callbackCorsOrigin: string[]
-	callbackCorsMaxAge: number
 	callbackRateLimitCapacity: number
 	callbackRateLimitWindow: number
-	introspectCorsOrigin: string[]
-	introspectCorsMaxAge: number
 	introspectRateLimitCapacity: number
 	introspectRateLimitWindow: number
-	registerCorsOrigin: string[]
-	registerCorsMaxAge: number
 	registerRateLimitCapacity: number
 	registerRateLimitWindow: number
-	revokeCorsOrigin: string[]
-	revokeCorsMaxAge: number
 	revokeRateLimitCapacity: number
 	revokeRateLimitWindow: number
-	tokenCorsOrigin: string[]
-	tokenCorsMaxAge: number
 	tokenRateLimitCapacity: number
 	tokenRateLimitWindow: number
 	client: ServerClient
@@ -119,48 +91,34 @@ export type ServerClient = {
 }
 
 export type ServerAuthTokens = {
-	decode(t: string): r.Result<[string, AuthTokenPayload], Error>
+	verify(t: string): r.Result<[string, AuthTokenPayload], Error>
 	encode(t: string): r.Result<[string, AuthTokenPayload], Error>
 }
 
 export type ServerStateTokens = {
-	decode(t: string): r.Result<State, Error>
+	verify(t: string): r.Result<State, Error>
 	encode(s: State): r.Result<string, Error>
 }
 
 export class Server {
 	private clientId: string
 	private clientSecret: string
-	private serverMetadataCorsOrigin: string[]
-	private serverMetadataCorsMaxAge: number
+	private corsOrigin: string[]
+	private corsMaxAge: number
 	private serverMetadataRateLimitCapacity: number
 	private serverMetadataRateLimitWindow: number
-	private resourceMetadataCorsOrigin: string[]
-	private resourceMetadataCorsMaxAge: number
 	private resourceMetadataRateLimitCapacity: number
 	private resourceMetadataRateLimitWindow: number
-	private authorizeCorsOrigin: string[]
-	private authorizeCorsMaxAge: number
 	private authorizeRateLimitCapacity: number
 	private authorizeRateLimitWindow: number
-	private callbackCorsOrigin: string[]
-	private callbackCorsMaxAge: number
 	private callbackRateLimitCapacity: number
 	private callbackRateLimitWindow: number
-	private introspectCorsOrigin: string[]
-	private introspectCorsMaxAge: number
 	private introspectRateLimitCapacity: number
 	private introspectRateLimitWindow: number
-	private registerCorsOrigin: string[]
-	private registerCorsMaxAge: number
 	private registerRateLimitCapacity: number
 	private registerRateLimitWindow: number
-	private revokeCorsOrigin: string[]
-	private revokeCorsMaxAge: number
 	private revokeRateLimitCapacity: number
 	private revokeRateLimitWindow: number
-	private tokenCorsOrigin: string[]
-	private tokenCorsMaxAge: number
 	private tokenRateLimitCapacity: number
 	private tokenRateLimitWindow: number
 
@@ -168,49 +126,34 @@ export class Server {
 	private authTokens: ServerAuthTokens
 	private stateTokens: ServerStateTokens
 
-	private baseUrl: string
-	private resourceMetadataUrl: string
+	private issuer: string
+	private scope: string
 	private authorizeUrl: string
 	private callbackUrl: string
 	private introspectUrl: string
 	private registerUrl: string
 	private revokeUrl: string
 	private tokenUrl: string
-	private scope: string
 
 	constructor(config: ServerConfig) {
 		this.clientId = config.clientId
 		this.clientSecret = config.clientSecret
-		this.serverMetadataCorsOrigin = config.serverMetadataCorsOrigin
-		this.serverMetadataCorsMaxAge = config.serverMetadataCorsMaxAge
+		this.corsOrigin = config.corsOrigin
+		this.corsMaxAge = config.corsMaxAge
 		this.serverMetadataRateLimitCapacity = config.serverMetadataRateLimitCapacity
 		this.serverMetadataRateLimitWindow = config.serverMetadataRateLimitWindow
-		this.resourceMetadataCorsOrigin = config.resourceMetadataCorsOrigin
-		this.resourceMetadataCorsMaxAge = config.resourceMetadataCorsMaxAge
 		this.resourceMetadataRateLimitCapacity = config.resourceMetadataRateLimitCapacity
 		this.resourceMetadataRateLimitWindow = config.resourceMetadataRateLimitWindow
-		this.authorizeCorsOrigin = config.authorizeCorsOrigin
-		this.authorizeCorsMaxAge = config.authorizeCorsMaxAge
 		this.authorizeRateLimitCapacity = config.authorizeRateLimitCapacity
 		this.authorizeRateLimitWindow = config.authorizeRateLimitWindow
-		this.callbackCorsOrigin = config.callbackCorsOrigin
-		this.callbackCorsMaxAge = config.callbackCorsMaxAge
 		this.callbackRateLimitCapacity = config.callbackRateLimitCapacity
 		this.callbackRateLimitWindow = config.callbackRateLimitWindow
-		this.introspectCorsOrigin = config.introspectCorsOrigin
-		this.introspectCorsMaxAge = config.introspectCorsMaxAge
 		this.introspectRateLimitCapacity = config.introspectRateLimitCapacity
 		this.introspectRateLimitWindow = config.introspectRateLimitWindow
-		this.registerCorsOrigin = config.registerCorsOrigin
-		this.registerCorsMaxAge = config.registerCorsMaxAge
 		this.registerRateLimitCapacity = config.registerRateLimitCapacity
 		this.registerRateLimitWindow = config.registerRateLimitWindow
-		this.revokeCorsOrigin = config.revokeCorsOrigin
-		this.revokeCorsMaxAge = config.revokeCorsMaxAge
 		this.revokeRateLimitCapacity = config.revokeRateLimitCapacity
 		this.revokeRateLimitWindow = config.revokeRateLimitWindow
-		this.tokenCorsOrigin = config.tokenCorsOrigin
-		this.tokenCorsMaxAge = config.tokenCorsMaxAge
 		this.tokenRateLimitCapacity = config.tokenRateLimitCapacity
 		this.tokenRateLimitWindow = config.tokenRateLimitWindow
 
@@ -221,11 +164,6 @@ export class Server {
 		let pb = r.safeNew(URL, "/", config.baseUrl)
 		if (pb.err) {
 			throw new Error("Creating base URL", {cause: pb.v})
-		}
-
-		let pr = r.safeNew(URL, "/.well-known/oauth-protected-resource", config.baseUrl)
-		if (pr.err) {
-			throw new Error("Creating resource metadata URL", {cause: pr.err})
 		}
 
 		let pa = r.safeNew(URL, "/oauth/authorize", config.baseUrl)
@@ -258,58 +196,97 @@ export class Server {
 			throw new Error("Creating token URL", {cause: pt.err})
 		}
 
-		let bu: string | undefined
-
-		if (pb.v.pathname === "/") {
-			bu = pb.v.href.slice(0, -1)
+		if (pb.v.href.endsWith("/")) {
+			this.issuer = pb.v.href.slice(0, -1)
 		} else {
-			bu = pb.v.href
+			this.issuer = pb.v.href
 		}
 
-		this.baseUrl = bu
-		this.resourceMetadataUrl = pr.v.href
+		this.scope = config.scopes.join(" ")
+
 		this.authorizeUrl = pa.v.href
 		this.callbackUrl = pc.v.href
 		this.introspectUrl = pi.v.href
 		this.registerUrl = pg.v.href
 		this.revokeUrl = pv.v.href
 		this.tokenUrl = pt.v.href
-		this.scope = config.scopes.join(" ")
 	}
 
 	router(): express.Router {
-		let r = express.Router()
+		// todo: add recovery middleware
 
-		r.use(utilExpress.signal())
-		r.use(express.json())
-		r.use(express.urlencoded({extended: true}))
+		let corsMetadata = (r: express.Router): void => {
+			if (this.corsOrigin.length !== 0) {
+				let co: utilExpress.CorsOptions = {
+					origin: this.corsOrigin,
+					maxAge: this.corsMaxAge,
+					methods: ["GET"],
+					allowedHeaders: [],
+					exposedHeaders: [],
+				}
+
+				if (
+					this.serverMetadataRateLimitCapacity &&
+					this.serverMetadataRateLimitWindow ||
+					this.resourceMetadataRateLimitCapacity &&
+					this.resourceMetadataRateLimitWindow
+				) {
+					co.exposedHeaders.push(...utilExpress.rateLimitHeaders)
+				}
+
+				r.use(utilExpress.cors(co))
+			}
+		}
+
+		let corsOauth = (r: express.Router): void => {
+			if (this.corsOrigin.length !== 0) {
+				let co: utilExpress.CorsOptions = {
+					origin: this.corsOrigin,
+					maxAge: this.corsMaxAge,
+					methods: ["GET", "POST"],
+					allowedHeaders: [
+						"Authorization",
+						"Content-Type",
+					],
+					exposedHeaders: [],
+				}
+
+				if (
+					this.authorizeRateLimitCapacity &&
+					this.authorizeRateLimitWindow ||
+					this.callbackRateLimitCapacity &&
+					this.callbackRateLimitWindow ||
+					this.introspectRateLimitCapacity &&
+					this.introspectRateLimitWindow ||
+					this.registerRateLimitCapacity &&
+					this.registerRateLimitWindow ||
+					this.revokeRateLimitCapacity &&
+					this.revokeRateLimitWindow ||
+					this.tokenRateLimitCapacity &&
+					this.tokenRateLimitWindow
+				) {
+					co.exposedHeaders.push(...utilExpress.rateLimitHeaders)
+				}
+
+				r.use(utilExpress.cors(co))
+			}
+		}
+
+		let r = express.Router()
 
 		r.use("/.well-known/oauth-authorization-server", (() => {
 			let r = express.Router()
 
-			r.use(allowedMethods(["GET"]))
+			corsMetadata(r)
 
-			if (this.serverMetadataCorsOrigin.length !== 0) {
-				let co: CrossOriginOptions = {
-					origin: this.serverMetadataCorsOrigin,
-					maxAge: this.serverMetadataCorsMaxAge,
-					methods: ["GET"],
-					allowedHeaders: [],
-					capacity: this.serverMetadataRateLimitCapacity,
-					window: this.serverMetadataRateLimitWindow,
-				}
-
-				r.use(crossOrigin(co))
+			let go: GuardOptions = {
+				methods: ["GET"],
+				types: [],
+				capacity: this.serverMetadataRateLimitCapacity,
+				window: this.serverMetadataRateLimitWindow,
 			}
 
-			if (this.serverMetadataRateLimitCapacity && this.serverMetadataRateLimitWindow) {
-				let ro: RateLimitOptions = {
-					capacity: this.serverMetadataRateLimitCapacity,
-					window: this.serverMetadataRateLimitWindow,
-				}
-
-				r.use(rateLimit(ro))
-			}
+			guard(r, go)
 
 			r.use(this.handleServerMetadata.bind(this))
 
@@ -319,227 +296,132 @@ export class Server {
 		r.use("/.well-known/oauth-protected-resource", (() => {
 			let r = express.Router()
 
-			r.use(allowedMethods(["GET"]))
+			corsMetadata(r)
 
-			if (this.resourceMetadataCorsOrigin.length !== 0) {
-				let co: CrossOriginOptions = {
-					origin: this.resourceMetadataCorsOrigin,
-					maxAge: this.resourceMetadataCorsMaxAge,
-					methods: ["GET"],
-					allowedHeaders: [],
-					capacity: this.resourceMetadataRateLimitCapacity,
-					window: this.resourceMetadataRateLimitWindow,
-				}
-
-				r.use(crossOrigin(co))
+			let go: GuardOptions = {
+				methods: ["GET"],
+				types: [],
+				capacity: this.resourceMetadataRateLimitCapacity,
+				window: this.resourceMetadataRateLimitWindow,
 			}
 
-			if (this.resourceMetadataRateLimitCapacity && this.resourceMetadataRateLimitWindow) {
-				let ro: RateLimitOptions = {
-					capacity: this.resourceMetadataRateLimitCapacity,
-					window: this.resourceMetadataRateLimitWindow,
-				}
-
-				r.use(rateLimit(ro))
-			}
+			guard(r, go)
 
 			r.use(this.handleResourceMetadata.bind(this))
 
 			return r
 		})())
 
-		r.use("/oauth/authorize", (() => {
+		r.use("/oauth", (() => {
 			let r = express.Router()
 
-			r.use(allowedMethods(["GET"]))
+			r.use(utilExpress.signal())
+			r.use(express.json())
+			r.use(express.urlencoded({extended: true}))
 
-			if (this.authorizeCorsOrigin.length !== 0) {
-				let co: CrossOriginOptions = {
-					origin: this.authorizeCorsOrigin,
-					maxAge: this.authorizeCorsMaxAge,
+			corsOauth(r)
+
+			r.use("/authorize", (() => {
+				let r = express.Router()
+
+				let go: GuardOptions = {
 					methods: ["GET"],
-					allowedHeaders: [],
+					types: [],
 					capacity: this.authorizeRateLimitCapacity,
 					window: this.authorizeRateLimitWindow,
 				}
 
-				r.use(crossOrigin(co))
-			}
+				guard(r, go)
 
-			if (this.authorizeRateLimitCapacity && this.authorizeRateLimitWindow) {
-				let ro: RateLimitOptions = {
-					capacity: this.authorizeRateLimitCapacity,
-					window: this.authorizeRateLimitWindow,
-				}
+				r.use(this.handleAuthorize.bind(this))
 
-				r.use(rateLimit(ro))
-			}
+				return r
+			})())
 
-			r.use(this.handleAuthorize.bind(this))
+			r.use("/callback", (() => {
+				let r = express.Router()
 
-			return r
-		})())
-
-		r.use("/oauth/callback", (() => {
-			let r = express.Router()
-
-			r.use(allowedMethods(["GET"]))
-
-			if (this.callbackCorsOrigin.length !== 0) {
-				let co: CrossOriginOptions = {
-					origin: this.callbackCorsOrigin,
-					maxAge: this.callbackCorsMaxAge,
+				let go: GuardOptions = {
 					methods: ["GET"],
-					allowedHeaders: [],
+					types: [],
 					capacity: this.callbackRateLimitCapacity,
 					window: this.callbackRateLimitWindow,
 				}
 
-				r.use(crossOrigin(co))
-			}
+				guard(r, go)
 
-			if (this.callbackRateLimitCapacity && this.callbackRateLimitWindow) {
-				let ro: RateLimitOptions = {
-					capacity: this.callbackRateLimitCapacity,
-					window: this.callbackRateLimitWindow,
-				}
+				r.use(this.handleCallback.bind(this))
 
-				r.use(rateLimit(ro))
-			}
+				return r
+			})())
 
-			r.use(this.handleCallback.bind(this))
+			r.use("/introspect", (() => {
+				let r = express.Router()
 
-			return r
-		})())
-
-		r.use("/oauth/introspect", (() => {
-			let r = express.Router()
-
-			r.use(allowedMethods(["POST"]))
-			r.use(supportedMediaTypes(["application/x-www-form-urlencoded"]))
-
-			if (this.introspectCorsOrigin.length !== 0) {
-				let co: CrossOriginOptions = {
-					origin: this.introspectCorsOrigin,
-					maxAge: this.introspectCorsMaxAge,
+				let go: GuardOptions = {
 					methods: ["POST"],
-					allowedHeaders: ["Content-Type"],
+					types: ["application/x-www-form-urlencoded"],
 					capacity: this.introspectRateLimitCapacity,
 					window: this.introspectRateLimitWindow,
 				}
 
-				r.use(crossOrigin(co))
-			}
+				guard(r, go)
 
-			if (this.introspectRateLimitCapacity && this.introspectRateLimitWindow) {
-				let ro: RateLimitOptions = {
-					capacity: this.introspectRateLimitCapacity,
-					window: this.introspectRateLimitWindow,
-				}
+				r.use(this.handleIntrospect.bind(this))
 
-				r.use(rateLimit(ro))
-			}
+				return r
+			})())
 
-			r.use(this.handleIntrospect.bind(this))
+			r.use("/register", (() => {
+				let r = express.Router()
 
-			return r
-		})())
-
-		r.use("/oauth/register", (() => {
-			let r = express.Router()
-
-			r.use(allowedMethods(["POST"]))
-			r.use(supportedMediaTypes(["application/json"]))
-
-			if (this.registerCorsOrigin.length !== 0) {
-				let co: CrossOriginOptions = {
-					origin: this.registerCorsOrigin,
-					maxAge: this.registerCorsMaxAge,
+				let go: GuardOptions = {
 					methods: ["POST"],
-					allowedHeaders: ["Content-Type"],
+					types: ["application/json"],
 					capacity: this.registerRateLimitCapacity,
 					window: this.registerRateLimitWindow,
 				}
 
-				r.use(crossOrigin(co))
-			}
+				guard(r, go)
 
-			if (this.registerRateLimitCapacity && this.registerRateLimitWindow) {
-				let ro: RateLimitOptions = {
-					capacity: this.registerRateLimitCapacity,
-					window: this.registerRateLimitWindow,
-				}
+				r.use(this.handleRegister.bind(this))
 
-				r.use(rateLimit(ro))
-			}
+				return r
+			})())
 
-			r.use(this.handleRegister.bind(this))
+			r.use("/revoke", (() => {
+				let r = express.Router()
 
-			return r
-		})())
-
-		r.use("/oauth/revoke", (() => {
-			let r = express.Router()
-
-			r.use(allowedMethods(["POST"]))
-			r.use(supportedMediaTypes(["application/x-www-form-urlencoded"]))
-
-			if (this.revokeCorsOrigin.length !== 0) {
-				let co: CrossOriginOptions = {
-					origin: this.revokeCorsOrigin,
-					maxAge: this.revokeCorsMaxAge,
+				let go: GuardOptions = {
 					methods: ["POST"],
-					allowedHeaders: ["Content-Type"],
+					types: ["application/x-www-form-urlencoded"],
 					capacity: this.revokeRateLimitCapacity,
 					window: this.revokeRateLimitWindow,
 				}
 
-				r.use(crossOrigin(co))
-			}
+				guard(r, go)
 
-			if (this.revokeRateLimitCapacity && this.revokeRateLimitWindow) {
-				let ro: RateLimitOptions = {
-					capacity: this.revokeRateLimitCapacity,
-					window: this.revokeRateLimitWindow,
-				}
+				r.use(this.handleRevoke.bind(this))
 
-				r.use(rateLimit(ro))
-			}
+				return r
+			})())
 
-			r.use(this.handleRevoke.bind(this))
+			r.use("/token", (() => {
+				let r = express.Router()
 
-			return r
-		})())
-
-		r.use("/oauth/token", (() => {
-			let r = express.Router()
-
-			r.use(allowedMethods(["POST"]))
-			r.use(supportedMediaTypes(["application/x-www-form-urlencoded"]))
-
-			if (this.tokenCorsOrigin.length !== 0) {
-				let co: CrossOriginOptions = {
-					origin: this.tokenCorsOrigin,
-					maxAge: this.tokenCorsMaxAge,
+				let go: GuardOptions = {
 					methods: ["POST"],
-					allowedHeaders: ["Content-Type"],
+					types: ["application/x-www-form-urlencoded"],
 					capacity: this.tokenRateLimitCapacity,
 					window: this.tokenRateLimitWindow,
 				}
 
-				r.use(crossOrigin(co))
-			}
+				guard(r, go)
 
-			if (this.tokenRateLimitCapacity && this.tokenRateLimitWindow) {
-				let ro: RateLimitOptions = {
-					capacity: this.tokenRateLimitCapacity,
-					window: this.tokenRateLimitWindow,
-				}
+				r.use(this.handleToken.bind(this))
 
-				r.use(rateLimit(ro))
-			}
-
-			r.use(this.handleToken.bind(this))
+				return r
+			})())
 
 			return r
 		})())
@@ -548,142 +430,11 @@ export class Server {
 	}
 
 	/**
-	 * {@link https://www.rfc-editor.org/rfc/rfc6750.html#section-3 | RFC 6750 Reference}
-	 */
-	handler(): express.RequestHandler {
-		let www = (e: ErrorResponse): string => {
-			let s = `Bearer error="${e.error}", `
-
-			if (e.error_description) {
-				s += `error_description=${JSON.stringify(e.error_description)}, `
-			}
-
-			if (e.error_uri) {
-				s += `error_uri="${e.error_uri}", `
-			}
-
-			s += `resource_metadata="${this.resourceMetadataUrl}"`
-
-			return s
-		}
-
-		return async(req, res, next) => {
-			let ih = parseAuth("bearer", req)
-			if (ih.err) {
-				let err = new Error("Parsing header", {cause: ih.err})
-				let er: ErrorResponse = {
-					error: "invalid_request",
-					error_description: errors.format(err),
-				}
-				res.set("WWW-Authenticate", www(er))
-				res.status(401)
-				res.json(er)
-				return
-			}
-
-			let tu = this.authTokens.decode(ih.v)
-			if (tu.err) {
-				let err = new Error("Decoding token", {cause: tu.err})
-
-				let code: number | undefined
-				let error: string | undefined
-
-				if (errors.as(tu.err, InvalidAuthTokenError)) {
-					code = 401
-					error = "invalid_token"
-				} else {
-					code = 500
-					error = "server_error"
-				}
-
-				let er: ErrorResponse = {
-					error,
-					error_description: errors.format(err),
-				}
-				res.status(code)
-				res.json(er)
-				return
-			}
-
-			let [tt, tp] = tu.v
-
-			if (!tp.pld.aud) {
-				let err = new Error("No audience")
-				let er: ErrorResponse = {
-					error: "server_error",
-					error_description: errors.format(err),
-				}
-				res.status(500)
-				res.json(er)
-				return
-			}
-
-			if (!(typeof tp.pld.aud === "string")) {
-				let err = new Error("Invalid audience")
-				let er: ErrorResponse = {
-					error: "server_error",
-					error_description: errors.format(err),
-				}
-				res.status(500)
-				res.json(er)
-				return
-			}
-
-			let io: IntrospectRequest = {
-				token: tt,
-			}
-
-			let ci = await this.client.introspect(req.signal, io)
-			if (ci.err) {
-				let err = new Error("Introspecting token", {cause: ci.err})
-				let [co, er] = proxyError(ci.err, err)
-				res.set("WWW-Authenticate", www(er))
-				res.status(co)
-				res.json(er)
-				return
-			}
-
-			let [id] = ci.v
-
-			if (!id.active) {
-				let err = new Error("Inactive token")
-				let er: ErrorResponse = {
-					error: "invalid_token",
-					error_description: errors.format(err),
-				}
-				res.set("WWW-Authenticate", www(er))
-				res.status(401)
-				res.json(er)
-				return
-			}
-
-			if (id.exp && id.exp < Math.floor(Date.now() / 1000)) {
-				let err = new Error("Expired token")
-				let er: ErrorResponse = {
-					error: "invalid_token",
-					error_description: errors.format(err),
-				}
-				res.set("WWW-Authenticate", www(er))
-				res.status(401)
-				res.json(er)
-				return
-			}
-
-			req.oauth = {
-				aud: tp.pld.aud,
-				token: tt,
-			}
-
-			next()
-		}
-	}
-
-	/**
 	 * {@link https://www.rfc-editor.org/rfc/rfc8414#section-3 | RFC 8414 Reference}
 	 */
 	private handleServerMetadata(_: express.Request, res: express.Response): void {
 		let ob: ServerMetadataResponse = {
-			issuer: this.baseUrl,
+			issuer: this.issuer,
 			authorization_endpoint: this.authorizeUrl,
 			token_endpoint: this.tokenUrl,
 			registration_endpoint: this.registerUrl,
@@ -721,7 +472,7 @@ export class Server {
 	 */
 	private handleResourceMetadata(_: express.Request, res: express.Response): void {
 		let ob: ResourceMetadataResponse = {
-			resource: this.baseUrl,
+			resource: this.issuer,
 			authorization_servers: [
 				this.authorizeUrl,
 			],
@@ -791,8 +542,8 @@ export class Server {
 		let ca = this.client.authorize(ao)
 		if (ca.err) {
 			let err = new Error("Creating authorization URL", {cause: ca.err})
-			let [co, er] = proxyError(ca.err, err)
-			res.status(co)
+			let [code, er] = proxyError(ca.err, err)
+			res.status(code)
 			res.json(er)
 			return
 		}
@@ -827,9 +578,9 @@ export class Server {
 			return
 		}
 
-		let sd = this.stateTokens.decode(iq.data.state)
+		let sd = this.stateTokens.verify(iq.data.state)
 		if (sd.err) {
-			let err = new Error("Decoding token", {cause: sd.err})
+			let err = new Error("Verifying token", {cause: sd.err})
 
 			let code: number | undefined
 			let error: string | undefined
@@ -846,6 +597,7 @@ export class Server {
 				error,
 				error_description: errors.format(err),
 			}
+
 			res.status(code)
 			res.json(er)
 			return
@@ -872,19 +624,16 @@ export class Server {
 	 * {@link https://www.rfc-editor.org/rfc/rfc7662#section-2 | RFC 7662 Reference}
 	 */
 	private async handleIntrospect(req: express.Request, res: express.Response): Promise<void> {
-		let ih = parseAuth("basic", req)
+		let ih = parseBasic(req)
 		if (ih.err) {
-			if (ih.err.message !== "No header") {
-				let err = new Error("Parsing header", {cause: ih.err})
-				let er: ErrorResponse = {
-					error: "invalid_request",
-					error_description: errors.format(err),
-				}
-				res.status(400)
-				res.json(er)
-				return
+			let err = new Error("Parsing header", {cause: ih.err})
+			let er: ErrorResponse = {
+				error: "invalid_request",
+				error_description: errors.format(err),
 			}
-			ih = r.ok("")
+			res.status(400)
+			res.json(er)
+			return
 		}
 
 		let ib = IntrospectRequestSchema.safeParse(req.body)
@@ -931,7 +680,7 @@ export class Server {
 			it = "" // unreachable
 		}
 
-		let tu = this.authTokens.decode(it)
+		let tu = this.authTokens.verify(it)
 		if (tu.err) {
 			if (
 				errors.as(tu.err, jwt.NotBeforeError) ||
@@ -945,13 +694,13 @@ export class Server {
 				return
 			}
 
-			let err = new Error("Decoding token", {cause: tu.err})
+			let err = new Error("Verifying token", {cause: tu.err})
 
 			let code: number | undefined
 			let error: string | undefined
 
 			if (errors.as(tu.err, InvalidAuthTokenError)) {
-				code = 401
+				code = 400
 				error = "invalid_token"
 			} else {
 				code = 500
@@ -962,6 +711,7 @@ export class Server {
 				error,
 				error_description: errors.format(err),
 			}
+
 			res.status(code)
 			res.json(er)
 			return
@@ -976,8 +726,8 @@ export class Server {
 		let ci = await this.client.introspect(req.signal, io)
 		if (ci.err) {
 			let err = new Error("Introspecting token", {cause: ci.err})
-			let [co, er] = proxyError(ci.err, err)
-			res.status(co)
+			let [code, er] = proxyError(ci.err, err)
+			res.status(code)
 			res.json(er)
 			return
 		}
@@ -1018,19 +768,16 @@ export class Server {
 	 * {@link https://www.rfc-editor.org/rfc/rfc7009#section-2 | RFC 7009 Reference}
 	 */
 	private async handleRevoke(req: express.Request, res: express.Response): Promise<void> {
-		let ih = parseAuth("basic", req)
+		let ih = parseBasic(req)
 		if (ih.err) {
-			if (ih.err.message !== "No header") {
-				let err = new Error("Parsing header", {cause: ih.err})
-				let er: ErrorResponse = {
-					error: "invalid_request",
-					error_description: errors.format(err),
-				}
-				res.status(400)
-				res.json(er)
-				return
+			let err = new Error("Parsing header", {cause: ih.err})
+			let er: ErrorResponse = {
+				error: "invalid_request",
+				error_description: errors.format(err),
 			}
-			ih = r.ok("")
+			res.status(400)
+			res.json(er)
+			return
 		}
 
 		let ib = RevokeRequestSchema.safeParse(req.body)
@@ -1088,8 +835,8 @@ export class Server {
 		let cr = await this.client.revoke(req.signal, ro)
 		if (cr.err) {
 			let err = new Error("Revoking token", {cause: cr.err})
-			let [co, er] = proxyError(cr.err, err)
-			res.status(co)
+			let [code, er] = proxyError(cr.err, err)
+			res.status(code)
 			res.json(er)
 			return
 		}
@@ -1102,19 +849,16 @@ export class Server {
 	 * {@link https://www.rfc-editor.org/rfc/rfc6749#section-3.2 | RFC 6749 Reference}
 	 */
 	private async handleToken(req: express.Request, res: express.Response): Promise<void> {
-		let ih = parseAuth("basic", req)
+		let ih = parseBasic(req)
 		if (ih.err) {
-			if (ih.err.message !== "No header") {
-				let err = new Error("Parsing header", {cause: ih.err})
-				let er: ErrorResponse = {
-					error: "invalid_request",
-					error_description: errors.format(err),
-				}
-				res.status(400)
-				res.json(er)
-				return
+			let err = new Error("Parsing header", {cause: ih.err})
+			let er: ErrorResponse = {
+				error: "invalid_request",
+				error_description: errors.format(err),
 			}
-			ih = r.ok("")
+			res.status(400)
+			res.json(er)
+			return
 		}
 
 		let ib = TokenRequestSchema.safeParse(req.body)
@@ -1198,8 +942,8 @@ export class Server {
 		let ct = await this.client.token(req.signal, to)
 		if (ct.err) {
 			let err = new Error("Requesting token", {cause: ct.err})
-			let [co, er] = proxyError(ct.err, err)
-			res.status(co)
+			let [code, er] = proxyError(ct.err, err)
+			res.status(code)
 			res.json(er)
 			return
 		}
@@ -1242,174 +986,81 @@ export class Server {
 	}
 }
 
-function allowedMethods(methods: string[]): express.Handler {
-	let am = methods.join(", ")
+type GuardOptions = {
+	methods: string[]
+	types: string[]
+	capacity: number
+	window: number
+}
 
-	return (req, res, next) => {
-		if (methods.includes(req.method)) {
-			next()
-			return
-		}
-
+function guard(r: express.Router, o: GuardOptions): void {
+	if (o.methods.length !== 0) {
 		let er: ErrorResponse = {
 			error: "invalid_request",
 			error_description: "Method Not Allowed",
 		}
-		res.status(405)
-		res.set("Allow", am)
-		res.json(er)
+
+		r.use(utilExpress.allowedMethods(o.methods, (_, res) => {
+			res.json(er)
+		}))
 	}
-}
 
-function supportedMediaTypes(types: string[]): express.Handler {
-	let st = types.join(", ")
-
-	return (req, res, next) => {
-		let ct = r.safeSync(contentType.parse, req)
-		if (!ct.err && types.includes(ct.v.type)) {
-			next()
-			return
-		}
-
+	if (o.types.length !== 0) {
 		let er: ErrorResponse = {
 			error: "invalid_request",
 			error_description: "Unsupported Media Type",
 		}
-		res.status(415)
-		res.set("Accept", st)
-		res.json(er)
+
+		r.use(utilExpress.supportedMediaTypes(o.types, (_, res) => {
+			res.json(er)
+		}))
 	}
-}
-
-type CrossOriginOptions = {
-	origin: string[]
-	maxAge: number
-	methods: string[]
-	allowedHeaders: string[]
-	capacity: number
-	window: number
-}
-
-function crossOrigin(o: CrossOriginOptions): express.Handler {
-	let co: cors.CorsOptions = {}
-
-	if (o.origin.length !== 0) {
-		co.origin = o.origin
-	}
-
-	if (o.methods.length !== 0) {
-		co.methods = o.methods
-	}
-
-	if (o.allowedHeaders.length !== 0) {
-		co.allowedHeaders = o.allowedHeaders
-	}
-
-	let exposedHeaders: string[] = []
 
 	if (o.capacity && o.window) {
-		exposedHeaders.push(
-			"Retry-After",
-			"RateLimit-Limit",
-			"RateLimit-Remaining",
-			"RateLimit-Reset",
-		)
-	}
+		let er: ErrorResponse = {
+			error: "too_many_requests",
+			error_description: "Too Many Requests",
+		}
 
-	if (exposedHeaders.length !== 0) {
-		co.exposedHeaders = exposedHeaders
-	}
+		let ro: utilExpress.RateLimitOptions = {
+			capacity: o.capacity,
+			window: o.window,
+		}
 
-	if (o.maxAge) {
-		co.maxAge = o.maxAge / 1000
+		r.use(utilExpress.rateLimit(ro, (_, res) => {
+			res.json(er)
+		}))
 	}
-
-	return cors(co)
 }
 
-type RateLimitOptions = {
-	capacity: number
-	window: number
-}
-
-function rateLimit(o: RateLimitOptions): express.Handler {
-	let er: ErrorResponse = {
-		error: "too_many_requests",
-		error_description: "Too Many Requests",
-	}
-
-	let ro: Partial<expressRateLimit.Options> = {
-		windowMs: o.window,
-		limit: o.capacity,
-		standardHeaders: true,
-		legacyHeaders: false,
-		message: er,
-	}
-
-	return expressRateLimit.rateLimit(ro)
-}
-
-function parseAuth(scheme: string, req: express.Request): r.Result<string, Error> {
+function parseBasic(req: express.Request): r.Result<string, Error> {
 	let h = req.headers.authorization
 
 	if (!h) {
-		return r.error(new Error("No header"))
+		return r.ok("")
 	}
 
-	let parts = h.split(" ")
+	let i = h.indexOf(" ")
 
-	if (parts.length !== 2) {
+	if (i === -1) {
 		return r.error(new Error("Malformed header"))
 	}
 
-	let s = parts[0]
+	let s = h.slice(0, i)
 
 	if (!s) {
 		return r.error(new Error("No scheme"))
 	}
 
-	if (s.toLowerCase() !== scheme) {
+	if (s.toLowerCase() !== "basic") {
 		return r.error(new Error("Invalid scheme"))
 	}
 
-	let t = parts[1]
+	let t = h.slice(i + 1)
 
 	if (!t) {
 		return r.error(new Error("No token"))
 	}
 
 	return r.ok(t)
-}
-
-function proxyError(ce: Error, fe: Error): [number, ErrorResponse] {
-	let code: number | undefined
-	let error: string | undefined
-	let error_description: string | undefined
-	let error_uri: string | undefined
-
-	let cr = errors.as(ce, ClientErrorResponse)
-	if (cr) {
-		code = cr.response.status
-		error = cr.error
-		error_description = cr.error_description
-		error_uri = cr.error_uri
-	} else {
-		code = 500
-		error = "server_error"
-		error_description = errors.format(fe)
-	}
-
-	let er: ErrorResponse = {
-		error,
-	}
-
-	if (error_description) {
-		er.error_description = error_description
-	}
-
-	if (error_uri) {
-		er.error_uri = error_uri
-	}
-
-	return [code, er]
 }

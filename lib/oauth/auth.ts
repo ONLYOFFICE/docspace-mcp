@@ -71,7 +71,7 @@ export class AuthTokens {
 		this.ttl = config.ttl
 	}
 
-	decode(t: string): r.Result<[string, AuthTokenPayload], Error> {
+	verify(t: string): r.Result<[string, AuthTokenPayload], Error> {
 		let alg: jwt.Algorithm | undefined
 
 		if (this.algorithm) {
@@ -85,7 +85,7 @@ export class AuthTokens {
 			complete: true,
 		}
 
-		let jw = r.safeSync(verify, t, this.secretKey, vo)
+		let jw = r.safeSync(jwt.verify, t, this.secretKey, vo)
 		if (jw.err) {
 			return r.error(new InvalidAuthTokenError("Verifying token", {cause: jw.err}))
 		}
@@ -109,12 +109,41 @@ export class AuthTokens {
 		return r.ok([tt, tp.data])
 	}
 
+	decode(t: string): r.Result<[string, AuthTokenPayload], Error> {
+		let co: jwt.DecodeOptions = {
+			complete: true,
+		}
+
+		let jw = jwt.decode(t, co)
+		if (!jw) {
+			return r.error(new InvalidAuthTokenError("Invalid token"))
+		}
+
+		if (typeof jw === "string") {
+			return r.error(new Error("Invalid options"))
+		}
+
+		if (typeof jw.payload === "string") {
+			return r.error(new InvalidAuthTokenError("Invalid payload"))
+		}
+
+		let tp = AuthTokenPayloadSchema.safeParse(jw.payload)
+		if (!tp.success) {
+			return r.error(new InvalidAuthTokenError("Parsing payload", {cause: tp.error}))
+		}
+
+		// Use objects directly from the payload to preserve field order.
+		let tt = `${base64url(jw.payload.hdr)}.${base64url(jw.payload.pld)}.${jw.payload.sgn}`
+
+		return r.ok([tt, tp.data])
+	}
+
 	encode(t: string): r.Result<[string, AuthTokenPayload], Error> {
 		let co: jwt.DecodeOptions = {
 			complete: true,
 		}
 
-		let jw = decode(t, co)
+		let jw = jwt.decode(t, co)
 		if (!jw) {
 			return r.error(new InvalidAuthTokenError("Invalid token"))
 		}
@@ -170,25 +199,13 @@ export class AuthTokens {
 			algorithm: alg,
 		}
 
-		let tt = r.safeSync(sign, tp, this.secretKey, so)
+		let tt = r.safeSync(jwt.sign, tp, this.secretKey, so)
 		if (tt.err) {
 			return r.error(new Error("Signing token", {cause: tt.err}))
 		}
 
 		return r.ok([tt.v, tp])
 	}
-}
-
-function decode(t: string, o: jwt.DecodeOptions): jwt.Jwt | jwt.JwtPayload | string | null {
-	return jwt.decode(t, o)
-}
-
-function sign(p: object, k: string, o: jwt.SignOptions): string {
-	return jwt.sign(p, k, o)
-}
-
-function verify(t: string, k: string, o: jwt.VerifyOptions): jwt.Jwt | jwt.JwtPayload | string {
-	return jwt.verify(t, k, o)
 }
 
 function base64url(v: unknown): string {

@@ -40,7 +40,7 @@ interface Components {
 
 interface Mcp {
 	sessions: mcp.Sessions
-	server(...handlers: express.RequestHandler[]): express.Router
+	server: express.Router
 }
 
 interface App {
@@ -264,17 +264,18 @@ function createSse(
 		corsExposedHeaders: [],
 		rateLimitCapacity: g.server.rateLimits.mcp.capacity,
 		rateLimitWindow: g.server.rateLimits.mcp.window,
+		handlers: [],
 		servers: {
 			create,
 		},
 		transports: t,
 	}
 
+	let r = new mcp.SseServer(rc)
+
 	let m: Mcp = {
 		sessions: s,
-		server(...handlers) {
-			return mcp.sseServer(rc, ...handlers)
-		},
+		server: r.router(),
 	}
 
 	return m
@@ -305,17 +306,18 @@ function createStreamable(
 		corsExposedHeaders: [],
 		rateLimitCapacity: g.server.rateLimits.mcp.capacity,
 		rateLimitWindow: g.server.rateLimits.mcp.window,
+		handlers: [],
 		servers: {
 			create,
 		},
 		transports: t,
 	}
 
+	let r = new mcp.StreamableServer(rc)
+
 	let m: Mcp = {
 		sessions: s,
-		server(...handlers) {
-			return mcp.streamableServer(rc, ...handlers)
-		},
+		server: r.router(),
 	}
 
 	return m
@@ -340,11 +342,11 @@ function createExpress(
 	e.use(utilExpress.logger(context, l))
 
 	if (c.sse) {
-		e.use(c.sse.server())
+		e.use(c.sse.server)
 	}
 
 	if (c.streamable) {
-		e.use(c.streamable.server())
+		e.use(c.streamable.server)
 	}
 
 	e.use(notFound())

@@ -136,27 +136,7 @@ export function handler(config: HandlerConfig): r.Result<express.Handler, Error>
 			return
 		}
 
-		let [tt, tp] = tu.v
-
-		if (!tp.pld.aud) {
-			let err = new Error("No audience")
-			let er: ErrorResponse = {
-				error: "server_error",
-				error_description: errors.format(err),
-			}
-			end(res, 500, er)
-			return
-		}
-
-		if (!(typeof tp.pld.aud === "string")) {
-			let err = new Error("Invalid audience")
-			let er: ErrorResponse = {
-				error: "server_error",
-				error_description: errors.format(err),
-			}
-			end(res, 500, er)
-			return
-		}
+		let [tt] = tu.v
 
 		let io: IntrospectRequest = {
 			token: tt,
@@ -182,7 +162,37 @@ export function handler(config: HandlerConfig): r.Result<express.Handler, Error>
 			return
 		}
 
-		if (id.exp && id.exp < Math.floor(Date.now() / 1000)) {
+		if (!id.aud) {
+			let err = new Error("No audience")
+			let er: ErrorResponse = {
+				error: "invalid_token",
+				error_description: errors.format(err),
+			}
+			end(res, 401, er)
+			return
+		}
+
+		if (!(typeof id.aud === "string")) {
+			let err = new Error("Invalid audience")
+			let er: ErrorResponse = {
+				error: "invalid_token",
+				error_description: errors.format(err),
+			}
+			end(res, 401, er)
+			return
+		}
+
+		if (!id.exp) {
+			let err = new Error("No expiration")
+			let er: ErrorResponse = {
+				error: "invalid_token",
+				error_description: errors.format(err),
+			}
+			end(res, 401, er)
+			return
+		}
+
+		if (id.exp < Math.floor(Date.now() / 1000)) {
 			let err = new Error("Expired token")
 			let er: ErrorResponse = {
 				error: "invalid_token",
@@ -193,7 +203,7 @@ export function handler(config: HandlerConfig): r.Result<express.Handler, Error>
 		}
 
 		req.oauth = {
-			aud: tp.pld.aud,
+			aud: id.aud,
 			token: tt,
 		}
 

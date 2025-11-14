@@ -30,25 +30,27 @@ import * as utilExpress from "../util/express.ts"
 import * as r from "../util/result.ts"
 import type {AuthTokenPayload} from "./auth.ts"
 import {InvalidAuthTokenError} from "./auth.ts"
-import type {ClientResponse} from "./client.ts"
+import type {ClientResponse, ClientRevokeRequest, ClientTokenRequest} from "./client.ts"
 import {proxyError} from "./internal.ts"
 import type {
 	AuthorizeRequest,
 	AuthorizeResponse,
+	ClientPassword,
 	ErrorResponse,
 	IntrospectRequest,
 	IntrospectResponse,
 	RegisterResponse,
 	ResourceMetadataResponse,
-	RevokeRequest,
 	ServerMetadataResponse,
-	TokenRequest,
 	TokenResponse,
 } from "./shared.ts"
 import {
 	AuthorizeRequestSchema,
 	AuthorizeResponseSchema,
+	ClientCredentialsSchema,
+	ClientPasswordSchema,
 	IntrospectRequestSchema,
+	PartialClientCredentialsSchema,
 	RevokeRequestSchema,
 	TokenRequestSchema,
 } from "./shared.ts"
@@ -86,8 +88,8 @@ export type ServerConfig = {
 export type ServerClient = {
 	authorize(o: AuthorizeRequest): r.Result<URL, Error>
 	introspect(s: AbortSignal | undefined, o: IntrospectRequest): Promise<r.Result<[IntrospectResponse, ClientResponse], Error>>
-	revoke(s: AbortSignal | undefined, o: RevokeRequest): Promise<r.Result<ClientResponse, Error>>
-	token(s: AbortSignal | undefined, o: TokenRequest): Promise<r.Result<[TokenResponse, ClientResponse], Error>>
+	revoke(s: AbortSignal | undefined, o: ClientRevokeRequest): Promise<r.Result<ClientResponse, Error>>
+	token(s: AbortSignal | undefined, o: ClientTokenRequest): Promise<r.Result<[TokenResponse, ClientResponse], Error>>
 }
 
 export type ServerAuthTokens = {
@@ -215,6 +217,13 @@ export class Server {
 	router(): express.Router {
 		// todo: add recovery middleware
 
+		let ao: AuthOptions = {
+			clientId: this.clientId,
+			clientSecret: this.clientSecret,
+		}
+
+		let a = auth(ao)
+
 		let corsMetadata = (r: express.Router): void => {
 			if (this.corsOrigin.length !== 0) {
 				let co: utilExpress.CorsOptions = {
@@ -248,7 +257,9 @@ export class Server {
 						"Authorization",
 						"Content-Type",
 					],
-					exposedHeaders: [],
+					exposedHeaders: [
+						"WWW-Authenticate",
+					],
 				}
 
 				if (
@@ -258,6 +269,7 @@ export class Server {
 					this.callbackRateLimitWindow ||
 					this.introspectRateLimitCapacity &&
 					this.introspectRateLimitWindow ||
+					this.clientId &&
 					this.registerRateLimitCapacity &&
 					this.registerRateLimitWindow ||
 					this.revokeRateLimitCapacity &&
@@ -358,6 +370,8 @@ export class Server {
 			r.use("/introspect", (() => {
 				let r = express.Router()
 
+				r.use(a)
+
 				let go: GuardOptions = {
 					methods: ["POST"],
 					types: ["application/x-www-form-urlencoded"],
@@ -372,25 +386,29 @@ export class Server {
 				return r
 			})())
 
-			r.use("/register", (() => {
-				let r = express.Router()
+			if (this.clientId) {
+				r.use("/register", (() => {
+					let r = express.Router()
 
-				let go: GuardOptions = {
-					methods: ["POST"],
-					types: ["application/json"],
-					capacity: this.registerRateLimitCapacity,
-					window: this.registerRateLimitWindow,
-				}
+					let go: GuardOptions = {
+						methods: ["POST"],
+						types: ["application/json"],
+						capacity: this.registerRateLimitCapacity,
+						window: this.registerRateLimitWindow,
+					}
 
-				guard(r, go)
+					guard(r, go)
 
-				r.use(this.handleRegister.bind(this))
+					r.use(this.handleRegister.bind(this))
 
-				return r
-			})())
+					return r
+				})())
+			}
 
 			r.use("/revoke", (() => {
 				let r = express.Router()
+
+				r.use(a)
 
 				let go: GuardOptions = {
 					methods: ["POST"],
@@ -408,6 +426,8 @@ export class Server {
 
 			r.use("/token", (() => {
 				let r = express.Router()
+
+				r.use(a)
 
 				let go: GuardOptions = {
 					methods: ["POST"],
@@ -433,11 +453,22 @@ export class Server {
 	 * {@link https://www.rfc-editor.org/rfc/rfc8414#section-3 | RFC 8414 Reference}
 	 */
 	private handleServerMetadata(_: express.Request, res: express.Response): void {
+		let re: string | undefined
+		let am: string[] | undefined
+
+		if (this.clientId) {
+			re = this.registerUrl
+			am = ["none"]
+		} else {
+			re = ""
+			am = []
+		}
+
 		let ob: ServerMetadataResponse = {
 			issuer: this.issuer,
 			authorization_endpoint: this.authorizeUrl,
 			token_endpoint: this.tokenUrl,
-			registration_endpoint: this.registerUrl,
+			registration_endpoint: re,
 			response_types_supported: [
 				"code",
 			],
@@ -448,21 +479,29 @@ export class Server {
 			token_endpoint_auth_methods_supported: [
 				"client_secret_basic",
 				"client_secret_post",
+				...am,
 			],
 			revocation_endpoint: this.revokeUrl,
 			revocation_endpoint_auth_methods_supported: [
 				"client_secret_basic",
 				"client_secret_post",
+				...am,
 			],
 			introspection_endpoint: this.introspectUrl,
 			introspection_endpoint_auth_methods_supported: [
 				"client_secret_basic",
 				"client_secret_post",
+				...am,
 			],
 			code_challenge_methods_supported: [
 				"S256",
 			],
 		}
+
+		if (ob.registration_endpoint === "") {
+			delete ob.registration_endpoint
+		}
+
 		res.status(200)
 		res.json(ob)
 	}
@@ -624,14 +663,13 @@ export class Server {
 	 * {@link https://www.rfc-editor.org/rfc/rfc7662#section-2 | RFC 7662 Reference}
 	 */
 	private async handleIntrospect(req: express.Request, res: express.Response): Promise<void> {
-		let ih = parseBasic(req)
-		if (ih.err) {
-			let err = new Error("Parsing header", {cause: ih.err})
+		if (!req[authKey]) {
+			let err = new Error("No auth")
 			let er: ErrorResponse = {
-				error: "invalid_request",
+				error: "server_error",
 				error_description: errors.format(err),
 			}
-			res.status(400)
+			res.status(500)
 			res.json(er)
 			return
 		}
@@ -648,39 +686,7 @@ export class Server {
 			return
 		}
 
-		if (!ih.v && !ib.data.token) {
-			let err = new Error("No token")
-			let er: ErrorResponse = {
-				error: "invalid_request",
-				error_description: errors.format(err),
-			}
-			res.status(400)
-			res.json(er)
-			return
-		}
-
-		if (ih.v && ib.data.token && ih.v !== ib.data.token) {
-			let err = new Error("Mismatched tokens")
-			let er: ErrorResponse = {
-				error: "invalid_request",
-				error_description: errors.format(err),
-			}
-			res.status(400)
-			res.json(er)
-			return
-		}
-
-		let it: string | undefined
-
-		if (ih.v) {
-			it = ih.v
-		} else if (ib.data.token) {
-			it = ib.data.token
-		} else {
-			it = "" // unreachable
-		}
-
-		let tu = this.authTokens.verify(it)
+		let tu = this.authTokens.verify(ib.data.token)
 		if (tu.err) {
 			if (
 				errors.as(tu.err, jwt.NotBeforeError) ||
@@ -758,7 +764,6 @@ export class Server {
 	private handleRegister(_: express.Request, res: express.Response): void {
 		let ob: RegisterResponse = {
 			client_id: this.clientId,
-			client_secret: this.clientSecret,
 		}
 		res.status(201)
 		res.json(ob)
@@ -768,14 +773,13 @@ export class Server {
 	 * {@link https://www.rfc-editor.org/rfc/rfc7009#section-2 | RFC 7009 Reference}
 	 */
 	private async handleRevoke(req: express.Request, res: express.Response): Promise<void> {
-		let ih = parseBasic(req)
-		if (ih.err) {
-			let err = new Error("Parsing header", {cause: ih.err})
+		if (!req[authKey]) {
+			let err = new Error("No auth")
 			let er: ErrorResponse = {
-				error: "invalid_request",
+				error: "server_error",
 				error_description: errors.format(err),
 			}
-			res.status(400)
+			res.status(500)
 			res.json(er)
 			return
 		}
@@ -792,40 +796,10 @@ export class Server {
 			return
 		}
 
-		if (!ih.v && !ib.data.token) {
-			let err = new Error("No token")
-			let er: ErrorResponse = {
-				error: "invalid_request",
-				error_description: errors.format(err),
-			}
-			res.status(400)
-			res.json(er)
-			return
-		}
-
-		if (ih.v && ib.data.token && ih.v !== ib.data.token) {
-			let err = new Error("Mismatched tokens")
-			let er: ErrorResponse = {
-				error: "invalid_request",
-				error_description: errors.format(err),
-			}
-			res.status(400)
-			res.json(er)
-			return
-		}
-
-		let it: string | undefined
-
-		if (ih.v) {
-			it = ih.v
-		} else if (ib.data.token) {
-			it = ib.data.token
-		} else {
-			it = "" // unreachable
-		}
-
-		let ro: RevokeRequest = {
-			token: it,
+		let ro: ClientRevokeRequest = {
+			token: ib.data.token,
+			client_id: req[authKey].clientId,
+			client_secret: req[authKey].clientSecret,
 		}
 
 		if (ib.data.token_type_hint) {
@@ -849,14 +823,13 @@ export class Server {
 	 * {@link https://www.rfc-editor.org/rfc/rfc6749#section-3.2 | RFC 6749 Reference}
 	 */
 	private async handleToken(req: express.Request, res: express.Response): Promise<void> {
-		let ih = parseBasic(req)
-		if (ih.err) {
-			let err = new Error("Parsing header", {cause: ih.err})
+		if (!req[authKey]) {
+			let err = new Error("No auth")
 			let er: ErrorResponse = {
-				error: "invalid_request",
+				error: "server_error",
 				error_description: errors.format(err),
 			}
-			res.status(400)
+			res.status(500)
 			res.json(er)
 			return
 		}
@@ -873,52 +846,7 @@ export class Server {
 			return
 		}
 
-		let ht = ih.v
-		let bt: string | undefined
-
-		switch (ib.data.grant_type) {
-		case "authorization_code":
-			bt = ib.data.client_secret
-			break
-
-		case "refresh_token":
-			bt = ib.data.refresh_token
-			break
-		}
-
-		if (!ht && !bt) {
-			let err = new Error("No token")
-			let er: ErrorResponse = {
-				error: "invalid_request",
-				error_description: errors.format(err),
-			}
-			res.status(400)
-			res.json(er)
-			return
-		}
-
-		if (ht && bt && ht !== bt) {
-			let err = new Error("Mismatched tokens")
-			let er: ErrorResponse = {
-				error: "invalid_request",
-				error_description: errors.format(err),
-			}
-			res.status(400)
-			res.json(er)
-			return
-		}
-
-		let it: string | undefined
-
-		if (ht) {
-			it = ht
-		} else if (bt) {
-			it = bt
-		} else {
-			it = "" // unreachable
-		}
-
-		let to: TokenRequest | undefined
+		let to: ClientTokenRequest | undefined
 
 		switch (ib.data.grant_type) {
 		case "authorization_code":
@@ -926,15 +854,17 @@ export class Server {
 				grant_type: ib.data.grant_type,
 				code: ib.data.code,
 				redirect_uri: this.callbackUrl,
-				client_id: ib.data.client_id,
-				client_secret: it,
+				client_id: req[authKey].clientId,
+				client_secret: req[authKey].clientSecret,
 			}
 			break
 
 		case "refresh_token":
 			to = {
 				grant_type: ib.data.grant_type,
-				refresh_token: it,
+				refresh_token: ib.data.refresh_token,
+				client_id: req[authKey].clientId,
+				client_secret: req[authKey].clientSecret,
 			}
 			break
 		}
@@ -1033,34 +963,180 @@ function guard(r: express.Router, o: GuardOptions): void {
 	}
 }
 
-function parseBasic(req: express.Request): r.Result<string, Error> {
-	let h = req.headers.authorization
-
-	if (!h) {
-		return r.ok("")
+declare module "express-serve-static-core" {
+	interface Request {
+		[authKey]?: Auth
 	}
+}
 
+const authKey = Symbol("auth")
+
+type Auth = {
+	clientId: string
+	clientSecret: string
+}
+
+type AuthOptions = {
+	clientId: string
+	clientSecret: string
+}
+
+function auth(o: AuthOptions): express.Handler {
+	return (req, res, next) => {
+		if (req.headers.authorization) {
+			let h = parseBasic(req.headers.authorization)
+			if (h.err) {
+				let err = new Error("Parsing header", {cause: h.err})
+				let er: ErrorResponse = {
+					error: "invalid_client",
+					error_description: errors.format(err),
+				}
+				res.set('WWW-Authenticate: Basic realm="OAuth"')
+				res.status(401)
+				res.json(er)
+				return
+			}
+
+			let b = PartialClientCredentialsSchema.safeParse(req.body)
+			if (!b.success) {
+				let err = new Error("Parsing body", {cause: b.error})
+				let er: ErrorResponse = {
+					error: "invalid_request",
+					error_description: errors.format(err),
+				}
+				res.status(400)
+				res.json(er)
+				return
+			}
+
+			if (b.data.client_id || b.data.client_secret) {
+				let err = new Error("Multiple authentication methods")
+				let er: ErrorResponse = {
+					error: "invalid_request",
+					error_description: errors.format(err),
+				}
+				res.status(400)
+				res.json(er)
+				return
+			}
+
+			req[authKey] = {
+				clientId: h.v.client_id,
+				clientSecret: h.v.client_secret,
+			}
+			next()
+			return
+		}
+
+		if (o.clientId) {
+			let b = ClientCredentialsSchema.safeParse(req.body)
+			if (!b.success) {
+				let err = new Error("Parsing body", {cause: b.error})
+				let er: ErrorResponse = {
+					error: "invalid_request",
+					error_description: errors.format(err),
+				}
+				res.status(400)
+				res.json(er)
+				return
+			}
+
+			if (!b.data.client_secret) {
+				if (b.data.client_id !== o.clientId) {
+					let err = new Error("Client ID mismatch")
+					let er: ErrorResponse = {
+						error: "invalid_client",
+						error_description: errors.format(err),
+					}
+					res.set('WWW-Authenticate: Basic realm="OAuth"')
+					res.status(401)
+					res.json(er)
+					return
+				}
+
+				req[authKey] = {
+					clientId: o.clientId,
+					clientSecret: o.clientSecret,
+				}
+				next()
+				return
+			}
+
+			req[authKey] = {
+				clientId: b.data.client_id,
+				clientSecret: b.data.client_secret,
+			}
+			next()
+			return
+		}
+
+		let b = ClientPasswordSchema.safeParse(req.body)
+		if (!b.success) {
+			let err = new Error("Parsing body", {cause: b.error})
+			let er: ErrorResponse = {
+				error: "invalid_request",
+				error_description: errors.format(err),
+			}
+			res.status(400)
+			res.json(er)
+			return
+		}
+
+		req[authKey] = {
+			clientId: b.data.client_id,
+			clientSecret: b.data.client_secret,
+		}
+		next()
+	}
+}
+
+function parseBasic(h: string): r.Result<ClientPassword, Error> {
 	let i = h.indexOf(" ")
 
 	if (i === -1) {
 		return r.error(new Error("Malformed header"))
 	}
 
-	let s = h.slice(0, i)
+	let v = h.slice(0, i)
 
-	if (!s) {
+	if (!v) {
 		return r.error(new Error("No scheme"))
 	}
 
-	if (s.toLowerCase() !== "basic") {
+	if (v.toLowerCase() !== "basic") {
 		return r.error(new Error("Invalid scheme"))
 	}
 
-	let t = h.slice(i + 1)
+	v = h.slice(i + 1)
 
-	if (!t) {
-		return r.error(new Error("No token"))
+	if (!v) {
+		return r.error(new Error("No password"))
 	}
 
-	return r.ok(t)
+	v = Buffer.from(v, "base64").toString()
+
+	i = v.indexOf(":")
+
+	if (i === -1) {
+		return r.error(new Error("Malformed password"))
+	}
+
+	let x = h.slice(0, i)
+
+	if (!x) {
+		return r.error(new Error("No client_id"))
+	}
+
+	let y = h.slice(i + 1)
+
+	if (!y) {
+		return r.error(new Error("No client_secret"))
+	}
+
+	let c: ClientPassword = {
+		client_id: x,
+		client_secret: y,
+	}
+
+	return r.ok(c)
 }

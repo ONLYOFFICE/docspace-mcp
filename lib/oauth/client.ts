@@ -29,6 +29,7 @@ import z from "zod"
 import * as r from "../util/result.ts"
 import type {
 	AuthorizeRequest,
+	ClientPassword,
 	IntrospectRequest,
 	IntrospectResponse,
 	RevokeRequest,
@@ -36,6 +37,10 @@ import type {
 	TokenResponse,
 } from "./shared.ts"
 import {ErrorResponseSchema, IntrospectResponseSchema, TokenResponseSchema} from "./shared.ts"
+
+export type ClientRevokeRequest = RevokeRequest & ClientPassword
+
+export type ClientTokenRequest = TokenRequest & ClientPassword
 
 export const ClientCustomErrorResponseSchema = z.object({
 	reason: z.string(),
@@ -151,7 +156,7 @@ export class Client {
 		return r.ok([p.data, res])
 	}
 
-	async revoke(s: AbortSignal | undefined, o: RevokeRequest): Promise<r.Result<ClientResponse, Error>> {
+	async revoke(s: AbortSignal | undefined, o: ClientRevokeRequest): Promise<r.Result<ClientResponse, Error>> {
 		let u = this.createUrl("oauth2/revoke")
 		if (u.err) {
 			return r.error(new Error("Creating URL", {cause: u.err}))
@@ -177,7 +182,7 @@ export class Client {
 		return r.ok(w)
 	}
 
-	async token(s: AbortSignal | undefined, o: TokenRequest): Promise<r.Result<[TokenResponse, ClientResponse], Error>> {
+	async token(s: AbortSignal | undefined, o: ClientTokenRequest): Promise<r.Result<[TokenResponse, ClientResponse], Error>> {
 		let u = this.createUrl("oauth2/token")
 		if (u.err) {
 			return r.error(new Error("Creating URL", {cause: u.err}))
@@ -286,7 +291,7 @@ export class Client {
 
 		let c = await checkResponse(req, f.v)
 		if (c.err) {
-			return r.error(new Error("Checking response", {cause: c}))
+			return r.error(new Error("Checking response", {cause: c.err}))
 		}
 
 		return r.ok(f.v)

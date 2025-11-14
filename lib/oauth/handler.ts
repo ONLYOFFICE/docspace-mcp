@@ -172,14 +172,47 @@ export function handler(config: HandlerConfig): r.Result<express.Handler, Error>
 			return
 		}
 
-		if (!(typeof id.aud === "string")) {
-			let err = new Error("Invalid audience")
+		let aud: string | undefined
+
+		if (Array.isArray(id.aud)) {
+			if (id.aud.length === 0) {
+				let err = new Error("No audience")
+				let er: ErrorResponse = {
+					error: "invalid_token",
+					error_description: errors.format(err),
+				}
+				end(res, 401, er)
+				return
+			}
+
+			if (id.aud.length > 1) {
+				let err = new Error("Multiple audience")
+				let er: ErrorResponse = {
+					error: "invalid_token",
+					error_description: errors.format(err),
+				}
+				end(res, 401, er)
+				return
+			}
+
+			aud = id.aud[0]
+		} else {
+			aud = id.aud
+		}
+
+		let au = r.safeNew(URL, aud)
+		if (au.err) {
+			let err = new Error("Parsing audience")
 			let er: ErrorResponse = {
 				error: "invalid_token",
 				error_description: errors.format(err),
 			}
 			end(res, 401, er)
 			return
+		}
+
+		if (!au.v.pathname.endsWith("/")) {
+			au.v.pathname += "/"
 		}
 
 		if (!id.exp) {
@@ -203,7 +236,7 @@ export function handler(config: HandlerConfig): r.Result<express.Handler, Error>
 		}
 
 		req.oauth = {
-			aud: id.aud,
+			aud: au.v.href,
 			token: tt,
 		}
 

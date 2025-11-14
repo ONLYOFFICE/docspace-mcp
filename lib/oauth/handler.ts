@@ -34,9 +34,11 @@ import type {ErrorResponse, IntrospectRequest, IntrospectResponse} from "./share
 
 declare module "express-serve-static-core" {
 	interface Request {
-		oauth?: Oauth
+		[oauthKey]?: Oauth
 	}
 }
+
+export const oauthKey = Symbol("oauth")
 
 export const handlerRequestHeaders: string[] = [
 	"Authorization",
@@ -235,7 +237,7 @@ export function handler(config: HandlerConfig): r.Result<express.Handler, Error>
 			return
 		}
 
-		req.oauth = {
+		req[oauthKey] = {
 			aud: au.v.href,
 			token: tt,
 		}

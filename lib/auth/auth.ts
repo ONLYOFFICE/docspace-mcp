@@ -31,9 +31,11 @@ import type {Credential} from "./credential.ts"
 
 declare module "express-serve-static-core" {
 	interface Request {
-		auth?: Auth
+		[authKey]?: Auth
 	}
 }
+
+export const authKey = Symbol("auth")
 
 export type ErrorResponse = {
 	message: string
@@ -175,7 +177,7 @@ export class AuthManager {
 					c.v.username === "" &&
 					c.v.password === ""
 				) {
-					req.auth = {
+					req[authKey] = {
 						baseUrl: c.v.baseUrl,
 						auth: h,
 						apiKey: "",
@@ -199,7 +201,7 @@ export class AuthManager {
 					c.v.username !== "" ||
 					c.v.password !== ""
 				) {
-					req.auth = {
+					req[authKey] = {
 						baseUrl: c.v.baseUrl,
 						auth: "",
 						apiKey: c.v.apiKey,
@@ -222,7 +224,7 @@ export class AuthManager {
 			}
 
 			if (this.defaultBaseUrl !== "") {
-				req.auth = {
+				req[authKey] = {
 					baseUrl: this.defaultBaseUrl,
 					auth: this.defaultAuth,
 					apiKey: this.defaultApiKey,

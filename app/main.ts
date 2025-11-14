@@ -29,6 +29,7 @@ import * as api from "../lib/api.ts"
 import * as auth from "../lib/auth.ts"
 import * as mcp from "../lib/mcp.ts"
 import * as meta from "../lib/meta.ts"
+import * as oauth from "../lib/oauth.ts"
 import * as settings from "../lib/settings.ts"
 import * as context from "../lib/util/context.ts"
 import * as errors from "../lib/util/errors.ts"
@@ -38,6 +39,17 @@ import * as utilLogger from "../lib/util/logger.ts"
 import * as utilMcp from "../lib/util/mcp.ts"
 import * as r from "../lib/util/result.ts"
 import * as zod from "../lib/util/zod.ts"
+
+type Algorithm =
+	"HS256" |
+	"HS384" |
+	"HS512"
+
+const availableAlgorithms: Algorithm[] = [
+	"HS256",
+	"HS384",
+	"HS512",
+]
 
 type Transport =
 	"stdio" |
@@ -78,6 +90,7 @@ const ConfigSchema = z.
 			transform(zod.envBoolean()),
 		DOCSPACE_TRANSPORT: z.
 			string().
+			toLowerCase().
 			default("stdio").
 			transform(zod.envUnion(availableTransports)),
 		DOCSPACE_DYNAMIC: z.
@@ -140,6 +153,54 @@ const ConfigSchema = z.
 			string().
 			trim().
 			default(""),
+		DOCSPACE_OAUTH_BASE_URL: z.
+			string().
+			default("").
+			transform(zod.envBaseUrl()),
+		DOCSPACE_OAUTH_CLIENT_ID: z.
+			string().
+			trim().
+			default(""),
+		DOCSPACE_OAUTH_CLIENT_SECRET: z.
+			string().
+			trim().
+			default(""),
+		DOCSPACE_OAUTH_SCOPES: z.
+			string().
+			default("").
+			transform(zod.envList()),
+		DOCSPACE_OAUTH_AUTH_TOKEN_ALGORITHM: z.
+			string().
+			toUpperCase().
+			default("HS256").
+			transform(zod.envUnion<Algorithm | "">(["", ...availableAlgorithms])),
+		DOCSPACE_OAUTH_AUTH_TOKEN_TTL: z.
+			string().
+			default("3600000").
+			transform(zod.envNumber()).
+			pipe(z.number().min(0)), // 1 hour
+		DOCSPACE_OAUTH_AUTH_TOKEN_SECRET_KEY: z.
+			string().
+			trim().
+			default(""),
+		DOCSPACE_OAUTH_STATE_TOKEN_ALGORITHM: z.
+			string().
+			toUpperCase().
+			default("HS256").
+			transform(zod.envUnion<Algorithm | "">(["", ...availableAlgorithms])),
+		DOCSPACE_OAUTH_STATE_TOKEN_TTL: z.
+			string().
+			default("3600000").
+			transform(zod.envNumber()).
+			pipe(z.number().min(0)), // 1 hour
+		DOCSPACE_OAUTH_STATE_TOKEN_SECRET_KEY: z.
+			string().
+			trim().
+			default(""),
+		DOCSPACE_SERVER_BASE_URL: z.
+			string().
+			default("").
+			transform(zod.envBaseUrl()),
 		DOCSPACE_HOST: z.
 			string().
 			trim().
@@ -163,6 +224,15 @@ const ConfigSchema = z.
 			default("86400000"). // 1 day
 			transform(zod.envNumber()).
 			pipe(z.number().min(0)),
+		DOCSPACE_SERVER_CORS_OAUTH_ORIGIN: z.
+			string().
+			default("*").
+			transform(zod.envList()),
+		DOCSPACE_SERVER_CORS_OAUTH_MAX_AGE: z.
+			string().
+			default("86400000"). // 1 day
+			transform(zod.envNumber()).
+			pipe(z.number().min(0)),
 		DOCSPACE_SERVER_RATE_LIMITS_MCP_CAPACITY: z.
 			string().
 			default("1000").
@@ -171,6 +241,86 @@ const ConfigSchema = z.
 		DOCSPACE_SERVER_RATE_LIMITS_MCP_WINDOW: z.
 			string().
 			default("1000"). // 1 second
+			transform(zod.envNumber()).
+			pipe(z.number().min(0)),
+		DOCSPACE_SERVER_RATE_LIMITS_OAUTH_SERVER_METADATA_CAPACITY: z.
+			string().
+			default("200").
+			transform(zod.envNumber()).
+			pipe(z.number().min(0)),
+		DOCSPACE_SERVER_RATE_LIMITS_OAUTH_SERVER_METADATA_WINDOW: z.
+			string().
+			default("60000"). // 1 minute
+			transform(zod.envNumber()).
+			pipe(z.number().min(0)),
+		DOCSPACE_SERVER_RATE_LIMITS_OAUTH_RESOURCE_METADATA_CAPACITY: z.
+			string().
+			default("200").
+			transform(zod.envNumber()).
+			pipe(z.number().min(0)),
+		DOCSPACE_SERVER_RATE_LIMITS_OAUTH_RESOURCE_METADATA_WINDOW: z.
+			string().
+			default("60000"). // 1 minute
+			transform(zod.envNumber()).
+			pipe(z.number().min(0)),
+		DOCSPACE_SERVER_RATE_LIMITS_OAUTH_AUTHORIZE_CAPACITY: z.
+			string().
+			default("200").
+			transform(zod.envNumber()).
+			pipe(z.number().min(0)),
+		DOCSPACE_SERVER_RATE_LIMITS_OAUTH_AUTHORIZE_WINDOW: z.
+			string().
+			default("60000"). // 1 minute
+			transform(zod.envNumber()).
+			pipe(z.number().min(0)),
+		DOCSPACE_SERVER_RATE_LIMITS_OAUTH_CALLBACK_CAPACITY: z.
+			string().
+			default("200").
+			transform(zod.envNumber()).
+			pipe(z.number().min(0)),
+		DOCSPACE_SERVER_RATE_LIMITS_OAUTH_CALLBACK_WINDOW: z.
+			string().
+			default("60000"). // 1 minute
+			transform(zod.envNumber()).
+			pipe(z.number().min(0)),
+		DOCSPACE_SERVER_RATE_LIMITS_OAUTH_INTROSPECT_CAPACITY: z.
+			string().
+			default("10").
+			transform(zod.envNumber()).
+			pipe(z.number().min(0)),
+		DOCSPACE_SERVER_RATE_LIMITS_OAUTH_INTROSPECT_WINDOW: z.
+			string().
+			default("60000"). // 1 minute
+			transform(zod.envNumber()).
+			pipe(z.number().min(0)),
+		DOCSPACE_SERVER_RATE_LIMITS_OAUTH_REGISTER_CAPACITY: z.
+			string().
+			default("10").
+			transform(zod.envNumber()).
+			pipe(z.number().min(0)),
+		DOCSPACE_SERVER_RATE_LIMITS_OAUTH_REGISTER_WINDOW: z.
+			string().
+			default("60000"). // 1 minute
+			transform(zod.envNumber()).
+			pipe(z.number().min(0)),
+		DOCSPACE_SERVER_RATE_LIMITS_OAUTH_REVOKE_CAPACITY: z.
+			string().
+			default("10").
+			transform(zod.envNumber()).
+			pipe(z.number().min(0)),
+		DOCSPACE_SERVER_RATE_LIMITS_OAUTH_REVOKE_WINDOW: z.
+			string().
+			default("60000"). // 1 minute
+			transform(zod.envNumber()).
+			pipe(z.number().min(0)),
+		DOCSPACE_SERVER_RATE_LIMITS_OAUTH_TOKEN_CAPACITY: z.
+			string().
+			default("10").
+			transform(zod.envNumber()).
+			pipe(z.number().min(0)),
+		DOCSPACE_SERVER_RATE_LIMITS_OAUTH_TOKEN_WINDOW: z.
+			string().
+			default("60000"). // 1 minute
 			transform(zod.envNumber()).
 			pipe(z.number().min(0)),
 		DOCSPACE_REQUEST_QUERY: z.
@@ -211,8 +361,27 @@ const ConfigSchema = z.
 				username: o.DOCSPACE_USERNAME,
 				password: o.DOCSPACE_PASSWORD,
 			},
+			oauth: {
+				baseUrl: o.DOCSPACE_OAUTH_BASE_URL,
+				clientId: o.DOCSPACE_OAUTH_CLIENT_ID,
+				clientSecret: o.DOCSPACE_OAUTH_CLIENT_SECRET,
+				scopes: o.DOCSPACE_OAUTH_SCOPES,
+			},
+		},
+		oauth: {
+			authToken: {
+				algorithm: o.DOCSPACE_OAUTH_AUTH_TOKEN_ALGORITHM,
+				ttl: o.DOCSPACE_OAUTH_AUTH_TOKEN_TTL,
+				secretKey: o.DOCSPACE_OAUTH_AUTH_TOKEN_SECRET_KEY,
+			},
+			stateToken: {
+				algorithm: o.DOCSPACE_OAUTH_STATE_TOKEN_ALGORITHM,
+				ttl: o.DOCSPACE_OAUTH_STATE_TOKEN_TTL,
+				secretKey: o.DOCSPACE_OAUTH_STATE_TOKEN_SECRET_KEY,
+			},
 		},
 		server: {
+			baseUrl: o.DOCSPACE_SERVER_BASE_URL,
 			host: o.DOCSPACE_HOST,
 			port: o.DOCSPACE_PORT,
 			proxy: {
@@ -223,17 +392,55 @@ const ConfigSchema = z.
 					origin: o.DOCSPACE_SERVER_CORS_MCP_ORIGIN,
 					maxAge: o.DOCSPACE_SERVER_CORS_MCP_MAX_AGE,
 				},
+				oauth: {
+					origin: o.DOCSPACE_SERVER_CORS_OAUTH_ORIGIN,
+					maxAge: o.DOCSPACE_SERVER_CORS_OAUTH_MAX_AGE,
+				},
 			},
 			rateLimits: {
 				mcp: {
 					capacity: o.DOCSPACE_SERVER_RATE_LIMITS_MCP_CAPACITY,
 					window: o.DOCSPACE_SERVER_RATE_LIMITS_MCP_WINDOW,
 				},
+				oauth: {
+					serverMetadata: {
+						capacity: o.DOCSPACE_SERVER_RATE_LIMITS_OAUTH_SERVER_METADATA_CAPACITY,
+						window: o.DOCSPACE_SERVER_RATE_LIMITS_OAUTH_SERVER_METADATA_WINDOW,
+					},
+					resourceMetadata: {
+						capacity: o.DOCSPACE_SERVER_RATE_LIMITS_OAUTH_RESOURCE_METADATA_CAPACITY,
+						window: o.DOCSPACE_SERVER_RATE_LIMITS_OAUTH_RESOURCE_METADATA_WINDOW,
+					},
+					authorize: {
+						capacity: o.DOCSPACE_SERVER_RATE_LIMITS_OAUTH_AUTHORIZE_CAPACITY,
+						window: o.DOCSPACE_SERVER_RATE_LIMITS_OAUTH_AUTHORIZE_WINDOW,
+					},
+					callback: {
+						capacity: o.DOCSPACE_SERVER_RATE_LIMITS_OAUTH_CALLBACK_CAPACITY,
+						window: o.DOCSPACE_SERVER_RATE_LIMITS_OAUTH_CALLBACK_WINDOW,
+					},
+					introspect: {
+						capacity: o.DOCSPACE_SERVER_RATE_LIMITS_OAUTH_INTROSPECT_CAPACITY,
+						window: o.DOCSPACE_SERVER_RATE_LIMITS_OAUTH_INTROSPECT_WINDOW,
+					},
+					register: {
+						capacity: o.DOCSPACE_SERVER_RATE_LIMITS_OAUTH_REGISTER_CAPACITY,
+						window: o.DOCSPACE_SERVER_RATE_LIMITS_OAUTH_REGISTER_WINDOW,
+					},
+					revoke: {
+						capacity: o.DOCSPACE_SERVER_RATE_LIMITS_OAUTH_REVOKE_CAPACITY,
+						window: o.DOCSPACE_SERVER_RATE_LIMITS_OAUTH_REVOKE_WINDOW,
+					},
+					token: {
+						capacity: o.DOCSPACE_SERVER_RATE_LIMITS_OAUTH_TOKEN_CAPACITY,
+						window: o.DOCSPACE_SERVER_RATE_LIMITS_OAUTH_TOKEN_WINDOW,
+					},
+				},
 			},
 		},
 		request: {
-			query: o.DOCSPACE_REQUEST_QUERY,
-			authorizationHeader: o.DOCSPACE_REQUEST_AUTHORIZATION_HEADER,
+			queryEnabled: o.DOCSPACE_REQUEST_QUERY,
+			headerEnabled: o.DOCSPACE_REQUEST_AUTHORIZATION_HEADER,
 			headerPrefix: o.DOCSPACE_REQUEST_HEADER_PREFIX,
 		},
 	}))
@@ -341,8 +548,27 @@ function loadConfig(): r.Result<Config, Error> {
 					username: "",
 					password: "",
 				},
+				oauth: {
+					baseUrl: "",
+					clientId: "",
+					clientSecret: "",
+					scopes: [],
+				},
+			},
+			oauth: {
+				authToken: {
+					algorithm: "",
+					ttl: 0,
+					secretKey: "",
+				},
+				stateToken: {
+					algorithm: "",
+					ttl: 0,
+					secretKey: "",
+				},
 			},
 			server: {
+				baseUrl: "",
 				host: p.data.server.host,
 				port: p.data.server.port,
 				proxy: {
@@ -353,38 +579,7 @@ function loadConfig(): r.Result<Config, Error> {
 						origin: [],
 						maxAge: 0,
 					},
-				},
-				rateLimits: {
-					mcp: {
-						capacity: 0,
-						window: 0,
-					},
-				},
-			},
-			request: {
-				query: false,
-				authorizationHeader: false,
-				headerPrefix: "",
-			},
-		}
-	}
-
-	if (p.data.mcp.transport === "stdio") {
-		p.data = {
-			internal: p.data.internal,
-			mcp: p.data.mcp,
-			api: {
-				userAgent: p.data.api.userAgent,
-				shared: p.data.api.shared,
-			},
-			server: {
-				host: "",
-				port: 0,
-				proxy: {
-					hops: 0,
-				},
-				cors: {
-					mcp: {
+					oauth: {
 						origin: [],
 						maxAge: 0,
 					},
@@ -394,11 +589,45 @@ function loadConfig(): r.Result<Config, Error> {
 						capacity: 0,
 						window: 0,
 					},
+					oauth: {
+						serverMetadata: {
+							capacity: 0,
+							window: 0,
+						},
+						resourceMetadata: {
+							capacity: 0,
+							window: 0,
+						},
+						authorize: {
+							capacity: 0,
+							window: 0,
+						},
+						callback: {
+							capacity: 0,
+							window: 0,
+						},
+						introspect: {
+							capacity: 0,
+							window: 0,
+						},
+						register: {
+							capacity: 0,
+							window: 0,
+						},
+						revoke: {
+							capacity: 0,
+							window: 0,
+						},
+						token: {
+							capacity: 0,
+							window: 0,
+						},
+					},
 				},
 			},
 			request: {
-				query: false,
-				authorizationHeader: false,
+				queryEnabled: false,
+				headerEnabled: false,
 				headerPrefix: "",
 			},
 		}
@@ -425,61 +654,184 @@ function loadConfig(): r.Result<Config, Error> {
 		errs.push(new Error("No tools left"))
 	}
 
-	if (p.data.mcp.transport === "stdio") {
-		let a = Boolean(p.data.api.shared.authorization)
-		let b = Boolean(p.data.api.shared.apiKey)
-		let c = Boolean(p.data.api.shared.pat)
-		let d = Boolean(p.data.api.shared.username) && Boolean(p.data.api.shared.password)
-		let u = Number(a) + Number(b) + Number(c) + Number(d)
-
-		if (u === 0) {
-			errs.push(new Error("Expected at least one of Authorization header, API key, PAT, or (username and password) to be set for stdio transport"))
-		}
-
-		if (u !== 0 && u !== 1) {
-			errs.push(new Error("Expected only one of Authorization header, API key, PAT, or (username and password) to be set for stdio transport"))
-		}
-
-		if ((a || b || c || d) && !p.data.api.shared.baseUrl) {
-			errs.push(new Error("API base URL is required for stdio transport with Authorization header, API key, PAT, or (username and password)"))
-		}
+	if (
+		(
+			p.data.mcp.transport === "stdio" ||
+			(
+				p.data.mcp.transport === "sse" ||
+				p.data.mcp.transport === "streamable-http" ||
+				p.data.mcp.transport === "http"
+			) &&
+			!p.data.api.oauth.baseUrl
+		) &&
+		p.data.api.shared.username &&
+		!p.data.api.shared.password
+	) {
+		errs.push(new Error("No password"))
 	}
 
 	if (
-		p.data.mcp.transport === "sse" ||
-		p.data.mcp.transport === "streamable-http" ||
-		p.data.mcp.transport === "http"
+		(
+			p.data.mcp.transport === "stdio" ||
+			(
+				p.data.mcp.transport === "sse" ||
+				p.data.mcp.transport === "streamable-http" ||
+				p.data.mcp.transport === "http"
+			) &&
+			!p.data.api.oauth.baseUrl
+		) &&
+		!p.data.api.shared.username &&
+		p.data.api.shared.password
 	) {
-		let t = ""
-		switch (p.data.mcp.transport) {
-		case "sse":
-			t = "SSE"
-			break
-		case "streamable-http":
-			t = "Streamable HTTP"
-			break
-		case "http":
-			t = "HTTP"
-			break
-		}
+		errs.push(new Error("No username"))
+	}
 
-		let a = Boolean(p.data.api.shared.authorization)
-		let b = Boolean(p.data.api.shared.apiKey)
-		let c = Boolean(p.data.api.shared.pat)
-		let d = Boolean(p.data.api.shared.username) && Boolean(p.data.api.shared.password)
-		let u = Number(a) + Number(b) + Number(c) + Number(d)
+	if (
+		(
+			p.data.mcp.transport === "sse" ||
+			p.data.mcp.transport === "streamable-http" ||
+			p.data.mcp.transport === "http"
+		) &&
+		p.data.api.oauth.baseUrl &&
+		p.data.api.oauth.clientId &&
+		!p.data.api.oauth.clientSecret
+	) {
+		errs.push(new Error("No OAuth client secret"))
+	}
 
-		if (u !== 0 && u !== 1) {
-			errs.push(new Error(`Expected only one of Authorization header, API key, PAT, or (username and password) to be set for ${t} transport`))
-		}
+	if (
+		(
+			p.data.mcp.transport === "sse" ||
+			p.data.mcp.transport === "streamable-http" ||
+			p.data.mcp.transport === "http"
+		) &&
+		p.data.api.oauth.baseUrl &&
+		!p.data.api.oauth.clientId &&
+		p.data.api.oauth.clientSecret
+	) {
+		errs.push(new Error("No OAuth client ID"))
+	}
 
-		if ((a || b || c || d) && !p.data.api.shared.baseUrl) {
-			errs.push(new Error(`API base URL is required for ${t} transport with Authorization header, API key, PAT, or (username and password)`))
-		}
+	if (
+		p.data.mcp.transport === "stdio" &&
+		!p.data.api.shared.authorization &&
+		!p.data.api.shared.apiKey &&
+		!p.data.api.shared.pat &&
+		(
+			!p.data.api.shared.username ||
+			!p.data.api.shared.password
+		) ||
+		(
+			p.data.mcp.transport === "sse" ||
+			p.data.mcp.transport === "streamable-http" ||
+			p.data.mcp.transport === "http"
+		) &&
+		!p.data.api.shared.authorization &&
+		!p.data.api.shared.apiKey &&
+		!p.data.api.shared.pat &&
+		(
+			!p.data.api.shared.username ||
+			!p.data.api.shared.password
+		) &&
+		!p.data.api.oauth.baseUrl &&
+		!p.data.request.headerPrefix &&
+		(
+			!p.data.request.headerEnabled ||
+			!p.data.request.queryEnabled
+		)
+	) {
+		errs.push(new Error("No authentication method"))
+	}
 
-		if (!p.data.server.host) {
-			errs.push(new Error(`Server host is required for ${t} transport`))
-		}
+	if (
+		(
+			p.data.mcp.transport === "stdio" ||
+			(
+				p.data.mcp.transport === "sse" ||
+				p.data.mcp.transport === "streamable-http" ||
+				p.data.mcp.transport === "http"
+			) &&
+			!p.data.api.oauth.baseUrl
+		) &&
+		(
+			p.data.api.shared.authorization ||
+			p.data.api.shared.apiKey ||
+			p.data.api.shared.pat ||
+			p.data.api.shared.username ||
+			p.data.api.shared.password
+		) &&
+		Number(Boolean(p.data.api.shared.authorization)) +
+		Number(Boolean(p.data.api.shared.apiKey)) +
+		Number(Boolean(p.data.api.shared.pat)) +
+		Number(
+			Boolean(p.data.api.shared.username) ||
+			Boolean(p.data.api.shared.password),
+		) !== 1
+	) {
+		errs.push(new Error("Multiple authentication methods"))
+	}
+
+	if (
+		(
+			p.data.mcp.transport === "sse" ||
+			p.data.mcp.transport === "streamable-http" ||
+			p.data.mcp.transport === "http"
+		) &&
+		(
+			p.data.api.shared.authorization ||
+			p.data.api.shared.apiKey ||
+			p.data.api.shared.pat ||
+			p.data.api.shared.username ||
+			p.data.api.shared.password
+		) &&
+		p.data.api.oauth.baseUrl
+	) {
+		errs.push(new Error("Mixed authentication methods"))
+	}
+
+	if (
+		(
+			p.data.mcp.transport === "stdio" ||
+			(
+				p.data.mcp.transport === "sse" ||
+				p.data.mcp.transport === "streamable-http" ||
+				p.data.mcp.transport === "http"
+			) &&
+			!p.data.api.oauth.baseUrl
+		) &&
+		(
+			p.data.api.shared.authorization ||
+			p.data.api.shared.apiKey ||
+			p.data.api.shared.pat ||
+			p.data.api.shared.username ||
+			p.data.api.shared.password
+		) &&
+		!p.data.api.shared.baseUrl
+	) {
+		errs.push(new Error("No API base URL"))
+	}
+
+	if (
+		(
+			p.data.mcp.transport === "sse" ||
+			p.data.mcp.transport === "streamable-http" ||
+			p.data.mcp.transport === "http"
+		) &&
+		p.data.api.oauth.baseUrl &&
+		!p.data.server.baseUrl
+	) {
+		errs.push(new Error("No server base URL"))
+	}
+
+	if (
+		(
+			p.data.mcp.transport === "sse" ||
+			p.data.mcp.transport === "streamable-http" ||
+			p.data.mcp.transport === "http"
+		) &&
+		!p.data.server.host
+	) {
+		errs.push(new Error("No server host"))
 	}
 
 	if (errs.length !== 0) {
@@ -499,6 +851,9 @@ function formatConfig(c: Config): object {
 		"root.api.shared.pat",
 		"root.api.shared.username",
 		"root.api.shared.password",
+		"root.api.oauth.clientSecret",
+		"root.oauth.authToken.secretKey",
+		"root.oauth.stateToken.secretKey",
 	]
 
 	let h = (v: unknown, p: string): unknown => {
@@ -643,6 +998,89 @@ function startStdio(config: r.Result<Config, Error>): r.Result<Start, Error> {
 }
 
 function startHttp(config: Config, logger: utilLogger.VanillaLogger): r.Result<Start, Error> {
+	let oauthAuthTokens: oauth.AuthTokens | undefined
+	let oauthRouter: express.Router | undefined
+	let oauthHandler: express.Handler | undefined
+
+	if (config.api.oauth.baseUrl) {
+		let fetch = utilFetch.withLogger(context, logger, globalThis.fetch)
+
+		let cc: oauth.ClientConfig = {
+			userAgent: config.api.userAgent,
+			baseUrl: config.api.oauth.baseUrl,
+			fetch,
+		}
+
+		let c = r.safeNew(oauth.Client, cc)
+		if (c.err) {
+			return r.error(new Error("Creating OAuth client", {cause: c.err}))
+		}
+
+		let atc: oauth.AuthTokensConfig = {
+			algorithm: config.oauth.authToken.algorithm,
+			ttl: config.oauth.authToken.ttl,
+			secretKey: config.oauth.authToken.secretKey,
+		}
+
+		let at = new oauth.AuthTokens(atc)
+
+		let stc: oauth.StateTokensConfig = {
+			algorithm: config.oauth.stateToken.algorithm,
+			ttl: config.oauth.stateToken.ttl,
+			secretKey: config.oauth.stateToken.secretKey,
+		}
+
+		let st = new oauth.StateTokens(stc)
+
+		let sc: oauth.ServerConfig = {
+			baseUrl: config.server.baseUrl,
+			clientId: config.api.oauth.clientId,
+			clientSecret: config.api.oauth.clientSecret,
+			scopes: config.api.oauth.scopes,
+			corsOrigin: config.server.cors.oauth.origin,
+			corsMaxAge: config.server.cors.oauth.maxAge,
+			serverMetadataRateLimitCapacity: config.server.rateLimits.oauth.serverMetadata.capacity,
+			serverMetadataRateLimitWindow: config.server.rateLimits.oauth.serverMetadata.window,
+			resourceMetadataRateLimitCapacity: config.server.rateLimits.oauth.resourceMetadata.capacity,
+			resourceMetadataRateLimitWindow: config.server.rateLimits.oauth.resourceMetadata.window,
+			authorizeRateLimitCapacity: config.server.rateLimits.oauth.authorize.capacity,
+			authorizeRateLimitWindow: config.server.rateLimits.oauth.authorize.window,
+			callbackRateLimitCapacity: config.server.rateLimits.oauth.callback.capacity,
+			callbackRateLimitWindow: config.server.rateLimits.oauth.callback.window,
+			introspectRateLimitCapacity: config.server.rateLimits.oauth.introspect.capacity,
+			introspectRateLimitWindow: config.server.rateLimits.oauth.introspect.window,
+			registerRateLimitCapacity: config.server.rateLimits.oauth.register.capacity,
+			registerRateLimitWindow: config.server.rateLimits.oauth.register.window,
+			revokeRateLimitCapacity: config.server.rateLimits.oauth.revoke.capacity,
+			revokeRateLimitWindow: config.server.rateLimits.oauth.revoke.window,
+			tokenRateLimitCapacity: config.server.rateLimits.oauth.token.capacity,
+			tokenRateLimitWindow: config.server.rateLimits.oauth.token.window,
+			client: c.v,
+			authTokens: at,
+			stateTokens: st,
+		}
+
+		let s = r.safeNew(oauth.Server, sc)
+		if (s.err) {
+			return r.error(new Error("Creating OAuth server", {cause: s.err}))
+		}
+
+		let hc: oauth.HandlerConfig = {
+			baseUrl: config.server.baseUrl,
+			client: c.v,
+			authTokens: at,
+		}
+
+		let h = oauth.handler(hc)
+		if (h.err) {
+			return r.error(new Error("Creating OAuth handler", {cause: h.err}))
+		}
+
+		oauthAuthTokens = at
+		oauthRouter = s.v.router()
+		oauthHandler = h.v
+	}
+
 	let credentialParserRequestHeaders: string[] | undefined
 	let credentialParser: auth.AuthManagerCredentialParser | undefined
 
@@ -653,7 +1091,7 @@ function startHttp(config: Config, logger: utilLogger.VanillaLogger): r.Result<S
 		credentialParser = icp
 	} else {
 		let cpc: auth.CredentialParserConfig = {
-			queryEnabled: config.request.query,
+			queryEnabled: config.request.queryEnabled,
 			headerPrefix: config.request.headerPrefix,
 		}
 
@@ -671,7 +1109,7 @@ function startHttp(config: Config, logger: utilLogger.VanillaLogger): r.Result<S
 		defaultUsername: config.api.shared.username,
 		defaultPassword: config.api.shared.password,
 		oauthEnabled: false,
-		headerEnabled: config.request.authorizationHeader,
+		headerEnabled: config.request.headerEnabled,
 		oauthAuthTokens: {
 			decode() {
 				throw new Error("Not implemented")
@@ -686,6 +1124,20 @@ function startHttp(config: Config, logger: utilLogger.VanillaLogger): r.Result<S
 		credentialParser,
 	}
 
+	if (config.api.oauth.baseUrl) {
+		amc.oauthEnabled = true
+	}
+
+	if (oauthAuthTokens) {
+		amc.oauthAuthTokens = oauthAuthTokens
+	}
+
+	if (oauthHandler) {
+		amc.oauthHandlerRequestHeaders = oauth.handlerRequestHeaders
+		amc.oauthHandlerResponseHeaders = oauth.handlerResponseHeaders
+		amc.oauthHandler = oauthHandler
+	}
+
 	let am = new auth.AuthManager(amc)
 
 	let authHandler = am.handler()
@@ -694,7 +1146,7 @@ function startHttp(config: Config, logger: utilLogger.VanillaLogger): r.Result<S
 		defaultDynamic: config.mcp.dynamic,
 		defaultToolsets: config.mcp.toolsets,
 		defaultTools: config.mcp.tools,
-		queryEnabled: config.request.query,
+		queryEnabled: config.request.queryEnabled,
 		headerPrefix: config.request.headerPrefix,
 	}
 
@@ -738,7 +1190,7 @@ function startHttp(config: Config, logger: utilLogger.VanillaLogger): r.Result<S
 		let c = new api.Client(cc)
 
 		if (req.oauth) {
-			c = c.withAuthToken(req.oauth.token)
+			c = c.withBearerAuth(req.oauth.token)
 		}
 
 		if (req.auth && req.auth.auth) {
@@ -872,6 +1324,10 @@ function startHttp(config: Config, logger: utilLogger.VanillaLogger): r.Result<S
 
 	e.use(utilExpress.context(context))
 	e.use(utilExpress.logger(context, logger))
+
+	if (oauthRouter) {
+		e.use(oauthRouter)
+	}
 
 	if (sseRouter) {
 		e.use(sseRouter)

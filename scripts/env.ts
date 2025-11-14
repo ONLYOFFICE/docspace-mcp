@@ -17,13 +17,11 @@
  */
 
 import * as fs from "node:fs"
-import * as config from "../app/config.ts"
 
-const envs = new Set<string>([
+// eslint-disable-next-line unicorn/prefer-set-has
+const envs: string[] = [
 	"HTTP_PROXY",
-	// eslint-disable-next-line no-underscore-dangle
-	...Object.keys(config.global.ConfigSchema._def.schema._def.schema._def.shape()),
-])
+]
 
 export function load(): void {
 	if (fs.existsSync(".env")) {
@@ -46,7 +44,7 @@ export function environ(): string[] {
 	let environ: string[] = []
 
 	for (let [k, v] of Object.entries(process.env)) {
-		if (v !== undefined && envs.has(k)) {
+		if (v !== undefined && (envs.includes(k) || k.startsWith("DOCSPACE_"))) {
 			environ.push(`${k}=${v}`)
 		}
 	}

@@ -30,6 +30,7 @@ export class Errors extends Error {
 	constructor(options: ErrorOptions & {cause: Error[]}) {
 		super("Multiple errors", options)
 		this.name = "Errors"
+		this.cause = options.cause
 	}
 }
 

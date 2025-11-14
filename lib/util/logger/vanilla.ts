@@ -82,9 +82,7 @@ function format(v: object): Record<string, unknown> {
 		}
 
 		if (Array.isArray(v)) {
-			for (let [i, e] of v.entries()) {
-				next(o, `${k}[${i}]`, e)
-			}
+			o[strings.camelCaseToSnakeCase(k)] = strings.escapeWhitespace(v.join(","))
 			return
 		}
 

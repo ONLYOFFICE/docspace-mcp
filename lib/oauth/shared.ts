@@ -60,6 +60,30 @@ export const JwtClaimsSchema = z.
 	passthrough()
 
 /**
+ * {@link https://www.rfc-editor.org/rfc/rfc6749#section-2.3.1 | RFC 6749 Reference}
+ */
+export const ClientPasswordSchema = z.object({
+	client_id: z.string(),
+	client_secret: z.string(),
+})
+
+/**
+ * {@link https://www.rfc-editor.org/rfc/rfc6749#section-2.3.1 | RFC 6749 Reference}
+ */
+export const ClientCredentialsSchema = z.object({
+	client_id: z.string(),
+	client_secret: z.string().optional(),
+})
+
+/**
+ * {@link https://www.rfc-editor.org/rfc/rfc6749#section-2.3.1 | RFC 6749 Reference}
+ */
+export const PartialClientCredentialsSchema = z.object({
+	client_id: z.string().optional(),
+	client_secret: z.string().optional(),
+})
+
+/**
  * {@link https://www.rfc-editor.org/rfc/rfc6749#section-4.1.1 | RFC 6749 Reference}
  */
 export const AuthorizeRequestSchema = z.object({
@@ -81,20 +105,17 @@ export const IntrospectRequestSchema = z.object({
  * {@link https://www.rfc-editor.org/rfc/rfc7009#section-2.1 | RFC 7009 Reference}
  */
 export const RevokeRequestSchema = z.object({
-	token: z.string().optional(),
+	token: z.string(),
 	token_type_hint: z.union([z.literal("access_token"), z.literal("refresh_token")]).optional().catch(undefined),
 })
 
 /**
- * {@link https://www.rfc-editor.org/rfc/rfc6749#section-3.2.1 | RFC 6749 Reference #1}\
- * {@link https://www.rfc-editor.org/rfc/rfc6749#section-4.1.3 | RFC 6749 Reference #2}
+ * {@link https://www.rfc-editor.org/rfc/rfc6749#section-4.1.3 | RFC 6749 Reference}
  */
 export const AccessTokenRequestSchema = z.object({
 	grant_type: z.literal("authorization_code"),
 	code: z.string(),
 	redirect_uri: z.string().optional(),
-	client_id: z.string(),
-	client_secret: z.string().optional(),
 })
 
 /**
@@ -178,7 +199,6 @@ export const IntrospectResponseSchema = z.object({
  */
 export const RegisterResponseSchema = z.object({
 	client_id: z.string(),
-	client_secret: z.string().optional(),
 })
 
 /**
@@ -192,17 +212,13 @@ export const TokenResponseSchema = z.object({
 	scope: z.string().optional(),
 })
 
-export type JwtHeader = z.infer<typeof JwsHeaderSchema>
+export type ClientPassword = z.infer<typeof ClientPasswordSchema>
 
 export type AuthorizeRequest = z.infer<typeof AuthorizeRequestSchema>
 
 export type IntrospectRequest = z.infer<typeof IntrospectRequestSchema>
 
 export type RevokeRequest = z.infer<typeof RevokeRequestSchema>
-
-export type AccessTokenRequest = z.infer<typeof AccessTokenRequestSchema>
-
-export type RefreshTokenRequest = z.infer<typeof RefreshTokenRequestSchema>
 
 export type TokenRequest = z.infer<typeof TokenRequestSchema>
 

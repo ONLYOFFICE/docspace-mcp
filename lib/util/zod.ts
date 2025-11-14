@@ -260,10 +260,8 @@ export function envUrlList(): (v: string, c: z.RefinementCtx) => string[] | neve
 
 export function envUnion<T extends string>(a: T[]): (v: string, c: z.RefinementCtx) => T | never {
 	return (v, c) => {
-		let t = v.trim().toLowerCase()
-
 		for (let e of a) {
-			if (e === t) {
+			if (e === v) {
 				return e
 			}
 		}

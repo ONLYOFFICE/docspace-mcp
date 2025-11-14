@@ -16,9 +16,35 @@
  * @license
  */
 
-import * as tools from "../app/config/tools.ts"
-import * as transports from "../app/config/transports.ts"
+// todo: move this config description with config from app into own module
+
+import * as mcp from "../lib/mcp.ts"
 import * as meta from "../lib/meta.ts"
+
+const availableTransports: string[] = [
+	"stdio",
+	"sse",
+	"streamable-http",
+	"http",
+]
+
+const availableToolsets = (() => {
+	let a: string[] = []
+	for (let s of mcp.toolsetInfos) {
+		a.push(s.name)
+	}
+	return a
+})()
+
+const availableTools = (() => {
+	let a: string[] = []
+	for (let s of mcp.toolsetInfos) {
+		for (let t of s.tools) {
+			a.push(t.name)
+		}
+	}
+	return a
+})()
 
 export interface Option {
 	env: string
@@ -46,7 +72,7 @@ export const options: Option[] = [
 		transports: ["stdio", "sse", "streamable-http"],
 		distribution: ["js", "oci"],
 		type: "string",
-		choices: transports.availableTransports,
+		choices: availableTransports,
 		default: "stdio",
 		sensitive: false,
 	},
@@ -70,7 +96,7 @@ export const options: Option[] = [
 		transports: ["stdio", "sse", "streamable-http"],
 		distribution: ["js", "oci"],
 		type: "string",
-		choices: tools.availableToolsets,
+		choices: availableToolsets,
 		default: "all",
 		sensitive: false,
 	},
@@ -82,7 +108,7 @@ export const options: Option[] = [
 		transports: ["stdio", "sse", "streamable-http"],
 		distribution: ["js", "oci"],
 		type: "string",
-		choices: tools.availableTools,
+		choices: availableTools,
 		default: "",
 		sensitive: false,
 	},
@@ -94,7 +120,7 @@ export const options: Option[] = [
 		transports: ["stdio", "sse", "streamable-http"],
 		distribution: ["js", "oci"],
 		type: "string",
-		choices: tools.availableTools,
+		choices: availableTools,
 		default: "",
 		sensitive: false,
 	},

@@ -1179,34 +1179,34 @@ function startHttp(config: Config, logger: utilLogger.VanillaLogger): r.Result<S
 			fetch,
 		}
 
-		if (req.oauth) {
-			cc.baseUrl = req.oauth.aud
+		if (req[oauth.oauthKey]) {
+			cc.baseUrl = req[oauth.oauthKey].aud
 		}
 
-		if (req.auth) {
-			cc.baseUrl = req.auth.baseUrl
+		if (req[auth.authKey]) {
+			cc.baseUrl = req[auth.authKey].baseUrl
 		}
 
 		let c = new api.Client(cc)
 
-		if (req.oauth) {
-			c = c.withBearerAuth(req.oauth.token)
+		if (req[oauth.oauthKey]) {
+			c = c.withBearerAuth(req[oauth.oauthKey].token)
 		}
 
-		if (req.auth && req.auth.auth) {
-			c = c.withAuth(req.auth.auth)
+		if (req[auth.authKey] && req[auth.authKey].auth) {
+			c = c.withAuth(req[auth.authKey].auth)
 		}
 
-		if (req.auth && req.auth.apiKey) {
-			c = c.withApiKey(req.auth.apiKey)
+		if (req[auth.authKey] && req[auth.authKey].apiKey) {
+			c = c.withApiKey(req[auth.authKey].apiKey)
 		}
 
-		if (req.auth && req.auth.pat) {
-			c = c.withAuthToken(req.auth.pat)
+		if (req[auth.authKey] && req[auth.authKey].pat) {
+			c = c.withAuthToken(req[auth.authKey].pat)
 		}
 
-		if (req.auth && req.auth.username && req.auth.password) {
-			c = c.withBasicAuth(req.auth.username, req.auth.password)
+		if (req[auth.authKey] && req[auth.authKey].username && req[auth.authKey].password) {
+			c = c.withBasicAuth(req[auth.authKey].username, req[auth.authKey].password)
 		}
 
 		let csc: mcp.ConfiguredServerConfig = {

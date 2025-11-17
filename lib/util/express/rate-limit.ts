@@ -17,7 +17,8 @@
  */
 
 /**
- * @module util/express
+ * @module
+ * @mergeModuleWith util/express
  */
 
 /* eslint-disable typescript/consistent-type-definitions */

@@ -1003,7 +1003,11 @@ function startHttp(config: Config, logger: utilLogger.VanillaLogger): r.Result<S
 	let oauthHandler: express.Handler | undefined
 
 	if (config.api.oauth.baseUrl) {
-		let fetch = utilFetch.withLogger(context, logger, globalThis.fetch)
+		let fetch = globalThis.fetch
+
+		fetch = utilFetch.withLogger(context, logger, fetch)
+
+		fetch = utilFetch.withForwarding(context, fetch)
 
 		let cc: oauth.ClientConfig = {
 			userAgent: config.api.userAgent,
@@ -1169,9 +1173,13 @@ function startHttp(config: Config, logger: utilLogger.VanillaLogger): r.Result<S
 
 		ms.registerCapabilities({logging: {}})
 
-		let fetch = utilFetch.withLogger(context, logger, globalThis.fetch)
+		let fetch = globalThis.fetch
+
+		fetch = utilFetch.withLogger(context, logger, fetch)
 
 		fetch = utilFetch.withLogger(context, sl, fetch)
+
+		fetch = utilFetch.withForwarding(context, fetch)
 
 		let cc: api.ClientConfig = {
 			userAgent: config.api.userAgent,

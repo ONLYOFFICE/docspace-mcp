@@ -17,7 +17,8 @@
  */
 
 /**
- * @module util/express
+ * @module
+ * @mergeModuleWith util/express
  */
 
 import contentType from "content-type"

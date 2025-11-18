@@ -17,7 +17,8 @@
  */
 
 /**
- * @module util/express
+ * @module
+ * @mergeModuleWith util/express
  */
 
 import type express from "express"

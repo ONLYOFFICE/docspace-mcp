@@ -22,9 +22,7 @@
 
 import * as asyncHooks from "node:async_hooks"
 
-export interface Context {
-	sessionId?: string
-}
+export interface Context {}
 
 const s = new asyncHooks.AsyncLocalStorage<Context>({
 	name: "context",

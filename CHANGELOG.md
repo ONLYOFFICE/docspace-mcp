@@ -5,7 +5,20 @@ This document records all notable changes to the project, following the
 
 ## [Unreleased]
 
-There are no noticeable changes in version [unreleased].
+<!-- There are no noticeable changes in version [unreleased]. -->
+
+### Added
+
+- Add OAuth 2.0 support ([ea99fb4]).
+
+### Changed
+
+- Update request forwarding to preserve original client IP addresses ([6664353]).
+
+### Fixed
+
+- Include custom configuration headers in CORS headers ([a1bc156]);
+- Better validate global configuration ([7df306d]).
 
 ## [3.0.1] - 2025-10-28
 
@@ -241,6 +254,10 @@ There are no noticeable changes in version [3.0.1].
 [0.1.1]: https://github.com/onlyoffice/docspace-mcp/compare/v0.1.0...v0.1.1/
 [0.1.0]: https://github.com/onlyoffice/docspace-mcp/releases/tag/v0.1.0/
 
+[6664353]: https://github.com/onlyoffice/docspace-mcp/commit/6664353e85be80d54dd0367bc5b699eb28487edc/
+[7df306d]: https://github.com/onlyoffice/docspace-mcp/commit/7df306d675d8f58d36c4836e28023f5e6deaea45/
+[a1bc156]: https://github.com/onlyoffice/docspace-mcp/commit/a1bc1567ce16322d5ce2646cc7497d93e82ca70b/
+[ea99fb4]: https://github.com/onlyoffice/docspace-mcp/commit/ea99fb443f8ed720bff9ec499ddb94e3e5bd13ae/
 [d31464e]: https://github.com/onlyoffice/docspace-mcp/commit/d31464eb9047f49d9aa63b495532a4907e8f81b9/
 [6b41eeb]: https://github.com/onlyoffice/docspace-mcp/commit/6b41eebd8b65d3592568880e1966b88bd02a3522/
 [cbfa539]: https://github.com/onlyoffice/docspace-mcp/commit/cbfa539d56f4dae66b3888204d1b11ab8a3bcc70/

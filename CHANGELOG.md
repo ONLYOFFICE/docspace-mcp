@@ -1,10 +1,24 @@
 # Changelog
 
-This document records all notable changes to the project, following the [Keep a Changelog] format and adhering to [Semantic Versioning].
+This document records all notable changes to the project, following the
+[Keep a Changelog] format and adhering to [Semantic Versioning].
 
 ## [Unreleased]
 
-There are no noticeable changes in version [unreleased].
+<!-- There are no noticeable changes in version [unreleased]. -->
+
+### Added
+
+- Add OAuth 2.0 support ([ea99fb4]).
+
+### Changed
+
+- Update request forwarding to preserve original client IP addresses ([6664353]).
+
+### Fixed
+
+- Include custom configuration headers in CORS headers ([a1bc156]);
+- Better validate global configuration ([7df306d]).
 
 ## [3.0.1] - 2025-10-28
 
@@ -12,11 +26,12 @@ There are no noticeable changes in version [3.0.1].
 
 ## [3.0.0] - 2025-10-28
 
-### Add
+### Added
 
 - Add partial support for output schemas ([b50a7bc]);
 - Add the implementation of SSE transport ([9b3535c], [2504af1], [d63057b]);
-- Add the implementation of Streamable HTTP transport ([b1fe294], [2504af1], [d63057b]);
+- Add the implementation of Streamable HTTP transport ([b1fe294], [2504af1],
+  [d63057b]);
 - Add the ability to configure using HTTP headers ([785f5dc]);
 - Add support for the logging capability ([ce30d96]);
 - Add the `DOCSPACE_AUTHORIZATION` option ([6b41eeb]);
@@ -24,32 +39,48 @@ There are no noticeable changes in version [3.0.1].
 
 ### Changed
 
-- In the internal Streamable HTTP transport, check `Authorization` and `Referer` headers only during the initialization request ([b6e33bf]);
+- In the internal Streamable HTTP transport, check `Authorization` and `Referer`
+  headers only during the initialization request ([b6e33bf]);
 - Update `@modelcontextprotocol/sdk` to 1.17.0 ([8d3f3f3]);
-- Ignore the `DOCSPACE_TRANSPORT` option when the `DOCSPACE_INTERNAL` option is set ([d643a82]);
+- Ignore the `DOCSPACE_TRANSPORT` option when the `DOCSPACE_INTERNAL` option is
+  set ([d643a82]);
 - **Breaking** Remove the `DOCSPACE_ORIGIN` option ([ac33ab6]);
 - Downgrade the minimum required Node.js version to 18.0.0 ([6ac1d59]).
 
 ### Fixed
 
 - Restore access to regular tools when using meta-tools ([eb84c1f]);
-- Prevent a disabled tool from being called when a regular tool is called ([eb84c1f]);
-- In the internal Streamable HTTP transport, allow the `Referer` header to be without a trailing slash ([ad70531]);
-- Require the `DOCSPACE_HOST` option to be present when the `DOCSPACE_TRANSPORT` is set to an HTTP-like transport ([428ee1c]);
-- When the `DOCSPACE_TRANSPORT` option is set to `stdio`, validate the `DOCSPACE_BASE_URL` only if `DOCSPACE_API_KEY`, `DOCSPACE_AUTH_TOKEN`, or `DOCSPACE_USERNAME`/`DOCSPACE_PASSWORD` is present ([428ee1c]);
+- Prevent a disabled tool from being called when a regular tool is called
+  ([eb84c1f]);
+- In the internal Streamable HTTP transport, allow the `Referer` header to be
+  without a trailing slash ([ad70531]);
+- Require the `DOCSPACE_HOST` option to be present when the `DOCSPACE_TRANSPORT`
+  is set to an HTTP-like transport ([428ee1c]);
+- When the `DOCSPACE_TRANSPORT` option is set to `stdio`, validate the
+  `DOCSPACE_BASE_URL` only if `DOCSPACE_API_KEY`, `DOCSPACE_AUTH_TOKEN`, or
+  `DOCSPACE_USERNAME`/`DOCSPACE_PASSWORD` is present ([428ee1c]);
 - Better validate the `DOCSPACE_BASE_URL` option ([428ee1c]);
-- The `DOCSPACE_SESSION_TTL` option with the `0` value prevents session expiration ([428ee1c]);
-- The `DOCSPACE_SESSION_INTERVAL` option with the `0` value disables session cleanup ([428ee1c]);
-- Make `DOCSPACE_API_KEY`, `DOCSPACE_AUTH_TOKEN`, and `DOCSPACE_USERNAME`/`DOCSPACE_PASSWORD` trimmable ([428ee1c]);
-- The `DOCSPACE_PORT` option with the `0` value selects a random port ([428ee1c]);
+- The `DOCSPACE_SESSION_TTL` option with the `0` value prevents session
+  expiration ([428ee1c]);
+- The `DOCSPACE_SESSION_INTERVAL` option with the `0` value disables session
+  cleanup ([428ee1c]);
+- Make `DOCSPACE_API_KEY`, `DOCSPACE_AUTH_TOKEN`, and
+  `DOCSPACE_USERNAME`/`DOCSPACE_PASSWORD` trimmable ([428ee1c]);
+- The `DOCSPACE_PORT` option with the `0` value selects a random port
+  ([428ee1c]);
 - Allow the `65535` value for the `DOCSPACE_PORT` option ([428ee1c]);
-- For all options with the boolean type, the empty string value resolves to the `false` value ([428ee1c]);
-- For all options with the number type, the empty string value resolves to the `0` value ([428ee1c]);
-- For the `copy_batch_items` and `move_batch_items` tools, change the conflict resolution behavior from skipping files to duplicating them ([b2588f3]);
-- For the `get_file_info` and `update_file` tools, fix the type of the `folderId` field in the response ([2cde131]);
+- For all options with the boolean type, the empty string value resolves to the
+  `false` value ([428ee1c]);
+- For all options with the number type, the empty string value resolves to the
+  `0` value ([428ee1c]);
+- For the `copy_batch_items` and `move_batch_items` tools, change the conflict
+  resolution behavior from skipping files to duplicating them ([b2588f3]);
+- For the `get_file_info` and `update_file` tools, fix the type of the
+  `folderId` field in the response ([2cde131]);
 - Fix returning value from the `get_room_security_info` tool ([8dd2099]);
 - Fix acceptable fields for the `get_room_security_info` tool ([a5f79c1]);
-- For tools that expect datetime fields as objects, change these fields to strings ([cbfa539]).
+- For tools that expect datetime fields as objects, change these fields to
+  strings ([cbfa539]).
 
 ## [2.0.0] - 2025-07-23
 
@@ -64,12 +95,15 @@ There are no noticeable changes in version [3.0.1].
 - Gracefully handle SIGTERM and SIGINT signals ([ca3a432]);
 - Use native basic authentication ([fcd203a]);
 - Update `@modelcontextprotocol/sdk` to 1.16.0 ([2c0f50f]);
-- **Breaking** Remove unclaimed tools: `files_get_folders`, `files_get_operation_statuses`, `portal_get_quota`, `portal_get_tariff`, `settings_get_supported_cultures`, `settings_get_time_zones` ([1eb7792]);
+- **Breaking** Remove unclaimed tools: `files_get_folders`,
+  `files_get_operation_statuses`, `portal_get_quota`, `portal_get_tariff`,
+  `settings_get_supported_cultures`, `settings_get_time_zones` ([1eb7792]);
 - **Breaking** Rename all tools and reorganize all toolsets ([90c2b72]).
 
 ### Fixed
 
-- Remove hardcoded extensions from the `others_download_as_text` tool ([0d657d9]).
+- Remove hardcoded extensions from the `others_download_as_text` tool
+  ([0d657d9]).
 
 ## [1.3.1] - 2025-07-08
 
@@ -85,28 +119,40 @@ There are no noticeable changes in version [3.0.1].
 
 ### Added
 
-- Add more filters for tools `get_folder`, `files_get_my_folder`, `files_get_room_security_info`, `files_get_rooms_folder`, and `people_get_all` ([6d36beb]).
+- Add more filters for tools `get_folder`, `files_get_my_folder`,
+  `files_get_room_security_info`, `files_get_rooms_folder`, and `people_get_all`
+  ([6d36beb]).
 
 ### Changed
 
-- Remove string literals from `RoomType`, `FileShare`, and `FileType` schemas ([6d36beb], [97e1454]).
+- Remove string literals from `RoomType`, `FileShare`, and `FileType` schemas
+  ([6d36beb], [97e1454]).
 
 ### Fixed
 
 - Fix handling error responses with a non-JSON body ([7e9be5d]).
-- Remove invalid filters from tools `get_folder`, `files_get_my_folder`, `files_set_room_security`, `files_get_room_security_info`, `files_get_rooms_folder`, and `people_get_all_tool` ([6d36beb]).
+- Remove invalid filters from tools `get_folder`, `files_get_my_folder`,
+  `files_set_room_security`, `files_get_room_security_info`,
+  `files_get_rooms_folder`, and `people_get_all_tool` ([6d36beb]).
 
 ## [1.2.0] - 2025-06-24
 
 ### Added
 
-- Add `fields` filter to `files_get_file_info`, `files_create_folder`, `files_get_folder`, `files_get_folder_info`, `files_get_folders`, `files_rename_folder`, `files_get_my_folder`, `files_create_room`, `files_get_room_info`, `files_update_room`, `files_set_room_security`, `files_get_room_security_info`, `files_get_rooms_folder`, and `people_get_all` tools ([88f0581]).
-- Add general filters to `files_set_room_security` and `files_get_room_security_info` tools ([88f0581]).
+- Add `fields` filter to `files_get_file_info`, `files_create_folder`,
+  `files_get_folder`, `files_get_folder_info`, `files_get_folders`,
+  `files_rename_folder`, `files_get_my_folder`, `files_create_room`,
+  `files_get_room_info`, `files_update_room`, `files_set_room_security`,
+  `files_get_room_security_info`, `files_get_rooms_folder`, and `people_get_all`
+  tools ([88f0581]).
+- Add general filters to `files_set_room_security` and
+  `files_get_room_security_info` tools ([88f0581]).
 - Add `DOCSPACE_DYNAMIC` and `DOCSPACE_TOOLSETS` options ([8e2e54a]).
 
 ### Changed
 
-- Rename tool `others_get_available_room_invitation_access` to `others_get_available_room_access` ([cf92803]).
+- Rename tool `others_get_available_room_invitation_access` to
+  `others_get_available_room_access` ([cf92803]).
 - Require the `count` filter field be in the range from 1 to 50 ([ae0c83a]).
 - Make all filters mandatory ([756fd7b]).
 
@@ -119,13 +165,15 @@ There are no noticeable changes in version [3.0.1].
 
 ### Changed
 
-- Change the default `filters.count` value to `30` for the `files_get_folder` tool ([036098d]).
+- Change the default `filters.count` value to `30` for the `files_get_folder`
+  tool ([036098d]).
 
 ## [1.0.0] - 2025-05-13
 
 ### Changed
 
-- Clarify that the room invitation access level may vary depending on the room type ([52afde9], [ded370e]).
+- Clarify that the room invitation access level may vary depending on the room
+  type ([52afde9], [ded370e]).
 - Clarify the names of the room types in their descriptions ([77aa941]).
 
 ## [0.2.0] - 2025-05-07
@@ -141,12 +189,14 @@ There are no noticeable changes in version [3.0.1].
 
 ### Changed
 
-- Expand the input for the `files_set_room_security` tool ([0fec2b5], [5af63c3]).
+- Expand the input for the `files_set_room_security` tool ([0fec2b5],
+  [5af63c3]).
 - Rephrase descriptions of the inputs of tools ([06934e6]).
 
 ### Fixed
 
-- Fix the calculation of the filesize for the `others_upload_file` tool ([8a129ad]).
+- Fix the calculation of the filesize for the `others_upload_file` tool
+  ([8a129ad]).
 - Add missing input options for the `files_update_room` tool ([7750110]).
 - Handle an error response with status 200 when uploading a chunk ([7e0ff48]).
 
@@ -172,10 +222,19 @@ There are no noticeable changes in version [3.0.1].
 
 ### Added
 
-- The `DOCSPACE_BASE_URL`, `DOCSPACE_ORIGIN`, `DOCSPACE_USER_AGENT`, `DOCSPACE_API_KEY`, `DOCSPACE_AUTH_TOKEN`, `DOCSPACE_USERNAME`, `DOCSPACE_PASSWORD` configuration options.
-- The `files.archive_room`, `files.copy_batch_items`, `files.create_folder`, `files.create_room`, `files.delete_file`, `files.delete_folder`, `files.get_file_info`, `files.get_folder`, `files.get_folder_info`, `files.get_folders`, `files.get_my_folder`, `files.get_operation_statuses`, `files.get_room_info`, `files.get_room_security_info`, `files.get_rooms_folder`, `files.move_batch_items`, `files.rename_folder`, `files.set_room_security`, `files.update_file`, `files.update_room`, `others.download_as_text`, `others.upload_file`, `people.get_all` tools.
+- The `DOCSPACE_BASE_URL`, `DOCSPACE_ORIGIN`, `DOCSPACE_USER_AGENT`,
+  `DOCSPACE_API_KEY`, `DOCSPACE_AUTH_TOKEN`, `DOCSPACE_USERNAME`,
+  `DOCSPACE_PASSWORD` configuration options.
+- The `files.archive_room`, `files.copy_batch_items`, `files.create_folder`,
+  `files.create_room`, `files.delete_file`, `files.delete_folder`,
+  `files.get_file_info`, `files.get_folder`, `files.get_folder_info`,
+  `files.get_folders`, `files.get_my_folder`, `files.get_operation_statuses`,
+  `files.get_room_info`, `files.get_room_security_info`,
+  `files.get_rooms_folder`, `files.move_batch_items`, `files.rename_folder`,
+  `files.set_room_security`, `files.update_file`, `files.update_room`,
+  `others.download_as_text`, `others.upload_file`, `people.get_all` tools.
 
-<!-- Footnotes -->
+<!-- Definitions -->
 
 [Keep a Changelog]: https://keepachangelog.com/en/1.1.0/
 [Semantic Versioning]: https://semver.org/spec/v2.0.0.html
@@ -195,6 +254,10 @@ There are no noticeable changes in version [3.0.1].
 [0.1.1]: https://github.com/onlyoffice/docspace-mcp/compare/v0.1.0...v0.1.1/
 [0.1.0]: https://github.com/onlyoffice/docspace-mcp/releases/tag/v0.1.0/
 
+[6664353]: https://github.com/onlyoffice/docspace-mcp/commit/6664353e85be80d54dd0367bc5b699eb28487edc/
+[7df306d]: https://github.com/onlyoffice/docspace-mcp/commit/7df306d675d8f58d36c4836e28023f5e6deaea45/
+[a1bc156]: https://github.com/onlyoffice/docspace-mcp/commit/a1bc1567ce16322d5ce2646cc7497d93e82ca70b/
+[ea99fb4]: https://github.com/onlyoffice/docspace-mcp/commit/ea99fb443f8ed720bff9ec499ddb94e3e5bd13ae/
 [d31464e]: https://github.com/onlyoffice/docspace-mcp/commit/d31464eb9047f49d9aa63b495532a4907e8f81b9/
 [6b41eeb]: https://github.com/onlyoffice/docspace-mcp/commit/6b41eebd8b65d3592568880e1966b88bd02a3522/
 [cbfa539]: https://github.com/onlyoffice/docspace-mcp/commit/cbfa539d56f4dae66b3888204d1b11ab8a3bcc70/
@@ -212,6 +275,7 @@ There are no noticeable changes in version [3.0.1].
 [ad70531]: https://github.com/onlyoffice/docspace-mcp/commit/ad70531288788dbdea452c71217384325734bcc2/
 [2504af1]: https://github.com/onlyoffice/docspace-mcp/commit/2504af1459ce15980dc68366a8a9b3115a71948f/
 [9b3535c]: https://github.com/onlyoffice/docspace-mcp/commit/9b3535cba408919d66d36878d218b9e53a8fae4d/
+[b1fe294]: https://github.com/onlyoffice/docspace-mcp/commit/b1fe294f86506ab39d987057145142c7e66f76af/
 [b6e33bf]: https://github.com/onlyoffice/docspace-mcp/commit/b6e33bfeedb13673374f38f8f846a574813a7876/
 [8d3f3f3]: https://github.com/onlyoffice/docspace-mcp/commit/8d3f3f39b3cd99b1fd135881cc1bede193091a6a/
 [b50a7bc]: https://github.com/onlyoffice/docspace-mcp/commit/b50a7bc2dc0a4554475e9f8f81a08ad7653870d5/

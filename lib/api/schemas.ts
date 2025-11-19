@@ -363,6 +363,7 @@ export const SessionRequestSchema = z.object({
 	fileName: z.string().optional(),
 	fileSize: z.number().optional(),
 	createOn: z.string().optional(),
+	createNewIfExist: z.boolean().optional(),
 })
 
 /**

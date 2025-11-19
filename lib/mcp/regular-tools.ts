@@ -459,7 +459,7 @@ export class RegularTools {
 			fileIds: pr.data.fileIds,
 			// @ts-ignore See the type above for the reason.
 			destFolderId: pr.data.destFolderId,
-			contentResolveType: 2,
+			conflictResolveType: 2,
 			deleteAfter: false,
 		}
 
@@ -491,7 +491,7 @@ export class RegularTools {
 			fileIds: pr.data.fileIds,
 			// @ts-ignore See the type above for the reason.
 			destFolderId: pr.data.destFolderId,
-			contentResolveType: 2,
+			conflictResolveType: 2,
 			deleteAfter: false,
 		}
 

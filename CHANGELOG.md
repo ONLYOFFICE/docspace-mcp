@@ -18,7 +18,9 @@ This document records all notable changes to the project, following the
 ### Fixed
 
 - Include custom configuration headers in CORS headers ([a1bc156]);
-- Better validate global configuration ([7df306d]).
+- Better validate global configuration ([7df306d]);
+- Fix conflict resolution in `copy_batch_items` and `move_batch_items` tools
+  ([6bd3734]).
 
 ## [3.0.1] - 2025-10-28
 
@@ -254,6 +256,7 @@ There are no noticeable changes in version [3.0.1].
 [0.1.1]: https://github.com/onlyoffice/docspace-mcp/compare/v0.1.0...v0.1.1/
 [0.1.0]: https://github.com/onlyoffice/docspace-mcp/releases/tag/v0.1.0/
 
+[6bd3734]: https://github.com/onlyoffice/docspace-mcp/commit/6bd37345c76f304b33dc8c753d6444aea5888d7b/
 [6664353]: https://github.com/onlyoffice/docspace-mcp/commit/6664353e85be80d54dd0367bc5b699eb28487edc/
 [7df306d]: https://github.com/onlyoffice/docspace-mcp/commit/7df306d675d8f58d36c4836e28023f5e6deaea45/
 [a1bc156]: https://github.com/onlyoffice/docspace-mcp/commit/a1bc1567ce16322d5ce2646cc7497d93e82ca70b/

@@ -628,6 +628,7 @@ export class RegularTools {
 			fileName: pr.data.filename,
 			fileSize: buf.length,
 			createOn: new Date().toISOString(),
+			createNewIfExist: true,
 		}
 
 		let sr = await this.s.client.files.createUploadSession(signal, pr.data.parentId, so)

@@ -415,6 +415,35 @@ export class FilesService {
 		return ok([e.data, res])
 	}
 
+	/**
+	 * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/products/ASC.Files/Server/Api/FoldersController.cs/#L474 | DocSpace Reference}
+	 */
+	async getTrashFolder(s: AbortSignal): Promise<Result<[GetFolderResponse, Response], Error>> {
+		let u = this.c.createUrl("api/2.0/files/@trash")
+		if (u.err) {
+			return error(new Error("Creating URL.", {cause: u.err}))
+		}
+
+		let req = this.c.createRequest(s, "GET", u.v)
+		if (req.err) {
+			return error(new Error("Creating request.", {cause: req.err}))
+		}
+
+		let f = await this.c.fetch(req.v)
+		if (f.err) {
+			return error(new Error("Fetching request.", {cause: f.err}))
+		}
+
+		let [p, res] = f.v
+
+		let e = FolderContentDtoSchema.safeParse(p)
+		if (!e.success) {
+			return error(new Error("Parsing response.", {cause: e.error}))
+		}
+
+		return ok([e.data, res])
+	}
+
 	//
 	// OperationController
 	//

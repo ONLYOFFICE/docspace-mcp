@@ -16,7 +16,8 @@ This document records all notable changes to the project, following the
 - Update request forwarding to preserve original client IP addresses
   ([6664353]);
 - Create new file on duplicate name when uploading via `upload_file` tool
-  ([a1c4c33]).
+  ([a1c4c33]);
+- Clarify the sorting options for the `get_rooms_folder` tool ([0c3daef]).
 
 ### Fixed
 
@@ -259,6 +260,7 @@ There are no noticeable changes in version [3.0.1].
 [0.1.1]: https://github.com/onlyoffice/docspace-mcp/compare/v0.1.0...v0.1.1/
 [0.1.0]: https://github.com/onlyoffice/docspace-mcp/releases/tag/v0.1.0/
 
+[0c3daef]: https://github.com/onlyoffice/docspace-mcp/commit/0c3daef35e7d9d55613471b1e3c04e63eff3827d/
 [6bd3734]: https://github.com/onlyoffice/docspace-mcp/commit/6bd37345c76f304b33dc8c753d6444aea5888d7b/
 [a1c4c33]: https://github.com/onlyoffice/docspace-mcp/commit/a1c4c335104a4189b8297aea26c92de194b40355/
 [6664353]: https://github.com/onlyoffice/docspace-mcp/commit/6664353e85be80d54dd0367bc5b699eb28487edc/

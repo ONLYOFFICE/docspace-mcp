@@ -238,7 +238,7 @@ export const FileConflictResolveTypeSchema = z.union([
  */
 export const BatchRequestDtoSchema = BaseBatchRequestDtoSchema.extend({
 	destFolderId: JsonElementSchema.optional(),
-	contentResolveType: FileConflictResolveTypeSchema.optional(),
+	conflictResolveType: FileConflictResolveTypeSchema.optional(),
 	deleteAfter: z.boolean().optional(),
 })
 

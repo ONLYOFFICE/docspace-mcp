@@ -30,6 +30,11 @@ jobs:
     - name: Install Dependencies
       run: pnpm install --frozen-lockfile
 
+    - name: Check Licenses
+      uses: onlyoffice/check-licenses@v1
+      with:
+        project_license: ${{github.event.repository.license.spdx_id || github.event.repository.licenses[0]}}
+
     - name: Build Application
       run: pnpm build-app
 

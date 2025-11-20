@@ -609,8 +609,8 @@ export const FilesSettingsDtoSchema = z.
 /**
  * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.2.1-server/products/ASC.Files/Core/ApiModels/ResponseDto/FolderDto.cs/#L32 | DocSpace Reference}
  */
-export const FolderDtoSchema = z.
-	object({
+export const FolderDtoSchema = FileEntryDtoSchema.
+	extend({
 		parentId: JsonElementSchema.optional().describe("The parent folder ID of the folder."),
 		filesCount: z.number().optional().describe("The number of files that the folder contains."),
 		foldersCount: z.number().optional().describe("The number of folders that the folder contains."),

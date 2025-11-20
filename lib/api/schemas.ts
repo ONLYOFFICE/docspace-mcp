@@ -896,6 +896,17 @@ export const GetRoomSecurityFiltersSchema = z.object({
 })
 
 /**
+ * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.1.1-server/products/ASC.Files/Core/Core/Entries/OrderBy.cs#L33 | DocSpace Reference}
+ */
+export const GetRoomsFolderFiltersSortBySchema = z.union([
+	z.literal("DateAndTime").describe("Date and time"),
+	z.literal("AZ").describe("AZ"),
+	z.literal("Author").describe("Author"),
+	z.literal("RoomType").describe("Room type"),
+	z.literal("Tags").describe("Tags"),
+])
+
+/**
  * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.1.1-server/products/ASC.Files/Core/ApiModels/RequestDto/RoomContentRequestDto.cs/#L32 | DocSpace Reference}
  */
 export const GetRoomsFolderFiltersSchema = z.object({
@@ -915,7 +926,7 @@ export const GetRoomsFolderFiltersSchema = z.object({
 	// storageFilter: StorageFilterSchema.optional().describe("The filter by storage (None - 0, Internal - 1, ThirdParty - 2)."),
 	count: z.number().min(1).max(50).default(30).describe("Specifies the maximum number of items to retrieve."),
 	startIndex: z.number().optional().describe("The index from which to start retrieving the room content."),
-	sortBy: z.string().optional().describe("Specifies the field by which the room content should be sorted."),
+	sortBy: stringUnionToEnum(GetRoomsFolderFiltersSortBySchema, "Specifies the field by which the room content should be sorted.").optional(),
 	sortOrder: numberUnionToEnum(NumericSortOrderSchema, "The order in which the results are sorted.").optional(),
 	filterValue: z.string().optional().describe("The text used for filtering or searching folder contents."),
 	fields: z.array(stringUnionToEnum(FolderContentDtoFieldSchema, "The fields to include in the response.")),

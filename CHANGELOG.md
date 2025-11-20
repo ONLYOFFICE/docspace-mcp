@@ -18,6 +18,8 @@ This document records all notable changes to the project, following the
 - Create new file on duplicate name when uploading via `upload_file` tool
   ([a1c4c33]);
 - Remove permanent deletion capability from `delete_file` tool ([9aa37d7]).
+  ([a1c4c33]);
+- Clarify the sorting options for the `get_rooms_folder` tool ([0c3daef]).
 
 ### Fixed
 
@@ -260,6 +262,7 @@ There are no noticeable changes in version [3.0.1].
 [0.1.1]: https://github.com/onlyoffice/docspace-mcp/compare/v0.1.0...v0.1.1/
 [0.1.0]: https://github.com/onlyoffice/docspace-mcp/releases/tag/v0.1.0/
 
+[0c3daef]: https://github.com/onlyoffice/docspace-mcp/commit/0c3daef35e7d9d55613471b1e3c04e63eff3827d/
 [9aa37d7]: https://github.com/onlyoffice/docspace-mcp/commit/9aa37d7b9d53e68c47190edd89bd85d7944dc1a2/
 [6bd3734]: https://github.com/onlyoffice/docspace-mcp/commit/6bd37345c76f304b33dc8c753d6444aea5888d7b/
 [a1c4c33]: https://github.com/onlyoffice/docspace-mcp/commit/a1c4c335104a4189b8297aea26c92de194b40355/

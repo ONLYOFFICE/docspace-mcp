@@ -390,6 +390,36 @@ export class RegularTools {
 			return error(new Error("Parsing input.", {cause: pr.error}))
 		}
 
+		let tr = await this.s.client.files.getTrashFolder(signal)
+		if (tr.err) {
+			return error(new Error("Getting trash folder.", {cause: tr.err}))
+		}
+
+		let [td] = tr.v
+
+		if (!td.current) {
+			return error(new Error("Trash folder is not defined."))
+		}
+
+		if (!td.current.id) {
+			return error(new Error("Trash folder ID is not defined."))
+		}
+
+		let fr = await this.s.client.files.getFileInfo(signal, pr.data.fileId)
+		if (fr.err) {
+			return error(new Error("Getting file info.", {cause: fr.err}))
+		}
+
+		let [gd] = fr.v
+
+		if (!gd.folderId) {
+			return error(new Error("File folder ID is not defined."))
+		}
+
+		if (gd.folderId === td.current.id) {
+			return ok("File is already in the trash folder.")
+		}
+
 		let dp: DeleteFileOptions = {
 			deleteAfter: false,
 			immediately: false,

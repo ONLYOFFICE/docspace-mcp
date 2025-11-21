@@ -20,6 +20,7 @@ This document records all notable changes to the project, following the
 - Remove permanent deletion capability from `delete_file` tool ([9aa37d7]).
   ([a1c4c33]);
 - Clarify the sorting options for the `get_rooms_folder` tool ([0c3daef]);
+- Require file extension when uploading via `upload_file` tool ([577ff31]);
 - Return users will all statues from the `get_all_people` tool ([081bf37]).
 
 ### Fixed
@@ -264,6 +265,7 @@ There are no noticeable changes in version [3.0.1].
 [0.1.0]: https://github.com/onlyoffice/docspace-mcp/releases/tag/v0.1.0/
 
 [081bf37]: https://github.com/onlyoffice/docspace-mcp/commit/081bf376dccbfb4b2103b914f4e78687781673ec/
+[577ff31]: https://github.com/onlyoffice/docspace-mcp/commit/577ff31bb72def7fe946f70515872ba7b08c8edd/
 [0c3daef]: https://github.com/onlyoffice/docspace-mcp/commit/0c3daef35e7d9d55613471b1e3c04e63eff3827d/
 [9aa37d7]: https://github.com/onlyoffice/docspace-mcp/commit/9aa37d7b9d53e68c47190edd89bd85d7944dc1a2/
 [6bd3734]: https://github.com/onlyoffice/docspace-mcp/commit/6bd37345c76f304b33dc8c753d6444aea5888d7b/

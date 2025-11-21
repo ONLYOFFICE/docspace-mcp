@@ -33,10 +33,10 @@ import {
 	FileShareDtoSchema,
 	FolderContentDtoSchema,
 	FolderDtoSchema,
-	GetAllFiltersSchema,
 	GetFileInfoFiltersSchema,
 	GetFolderFiltersSchema,
 	GetFolderInfoFiltersSchema,
+	GetFullByFilterFiltersSchema,
 	GetMyFolderFiltersSchema,
 	GetRoomInfoFiltersSchema,
 	GetRoomSecurityFiltersSchema,
@@ -367,7 +367,7 @@ export const GetRoomAccessLevelsSchema = z.object({
 //
 
 export const GetAllPeopleInputSchema = z.object({
-	filters: GetAllFiltersSchema.describe("The filters to apply to the list of people. Use them to reduce the size of the response."),
+	filters: GetFullByFilterFiltersSchema.describe("The filters to apply to the list of people. Use them to reduce the size of the response."),
 })
 
 export const GetAllPeopleOutputSchema = SuccessApiResponseSchema.extend({
@@ -1000,7 +1000,7 @@ export class RegularTools {
 			return error(new Error("Parsing input.", {cause: pr.error}))
 		}
 
-		let gr = await this.s.client.people.getAll(signal, pr.data.filters)
+		let gr = await this.s.client.people.getFullByFilter(signal, pr.data.filters)
 		if (gr.err) {
 			return error(new Error("Getting people.", {cause: gr.err}))
 		}

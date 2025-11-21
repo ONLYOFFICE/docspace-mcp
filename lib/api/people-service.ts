@@ -25,11 +25,11 @@ import * as z from "zod"
 import type {Result} from "../util/result.ts"
 import {error, ok} from "../util/result.ts"
 import type {Client, Response} from "./client.ts"
-import type {GetAllFiltersSchema} from "./schemas.ts"
-import {EmployeeDtoSchema} from "./schemas.ts"
+import type {GetFullByFilterFiltersSchema} from "./schemas.ts"
+import {EmployeeFullDtoSchema} from "./schemas.ts"
 
-export type GetAllFilters = z.input<typeof GetAllFiltersSchema>
-export type GetAllResponseItem = z.output<typeof EmployeeDtoSchema>
+export type GetFullByFilterFilters = z.input<typeof GetFullByFilterFiltersSchema>
+export type GetFullByFilterResponseItem = z.output<typeof EmployeeFullDtoSchema>
 
 /**
  * {@link https://github.com/ONLYOFFICE/DocSpace-server/tree/v3.0.4-server/products/ASC.People/ | DocSpace Reference}
@@ -42,10 +42,10 @@ export class PeopleService {
 	}
 
 	/**
-	 * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/products/ASC.People/Server/Api/UserController.cs/#L681 | DocSpace Reference}
+	 * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/products/ASC.People/Server/Api/UserController.cs/#L811 | DocSpace Reference}
 	 */
-	async getAll(s: AbortSignal, filters?: GetAllFilters): Promise<Result<[GetAllResponseItem[], Response], Error>> {
-		let u = this.c.createUrl("api/2.0/people", filters)
+	async getFullByFilter(s: AbortSignal, filters?: GetFullByFilterFilters): Promise<Result<[GetFullByFilterResponseItem[], Response], Error>> {
+		let u = this.c.createUrl("api/2.0/people/filter", filters)
 		if (u.err) {
 			return error(new Error("Creating URL.", {cause: u.err}))
 		}
@@ -62,7 +62,7 @@ export class PeopleService {
 
 		let [p, res] = f.v
 
-		let e = z.array(EmployeeDtoSchema).safeParse(p)
+		let e = z.array(EmployeeFullDtoSchema).safeParse(p)
 		if (!e.success) {
 			return error(new Error("Parsing response.", {cause: e.error}))
 		}

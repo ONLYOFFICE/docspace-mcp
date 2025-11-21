@@ -114,6 +114,17 @@ export const EmailInvitationDtoSchema = z.object({
 })
 
 /**
+ * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.5.0-server/common/ASC.Core.Common/Core/EmployeeStatus.cs/#L33 | DocSpace Reference}
+ */
+export const EmployeeStatusSchema = z.union([
+	z.literal(1).describe("Active"),
+	z.literal(2).describe("Terminated"),
+	z.literal(4).describe("Pending"),
+	z.literal(7).describe("All (Active | Terminated | Pending)"),
+	z.literal(5).describe("Default (Active | Pending)"),
+])
+
+/**
  * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.2.1-server/common/ASC.Api.Core/Model/EmployeeDto.cs/#L34 | DocSpace Reference}
  */
 export const EmployeeDtoSchema = z.
@@ -140,6 +151,23 @@ export const EmployeeDtoFieldSchema = z.union([
 	// z.literal("hasAvatar").describe("Specifies if the user has an avatar or not."),
 	z.literal("isAnonim").describe("Specifies if the user is anonymous or not."),
 ])
+
+/**
+ * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.5.0-server/common/ASC.Api.Core/Model/EmployeeFullDto.cs/#L34 | DocSpace Reference}
+ */
+export const EmployeeFullDtoSchema = EmployeeDtoSchema.
+	extend({
+		email: z.string().optional().describe("The user email."),
+		birthday: z.string().optional().describe("The user birthday."),
+		status: numberUnionToEnum(EmployeeStatusSchema, "The user status.").optional(),
+		department: z.string().optional().describe("The user department."),
+		isAdmin: z.boolean().optional().describe("Specifies if the user is an administrator or not."),
+		isRoomAdmin: z.boolean().optional().describe("Specifies if the user is a room administrator or not."),
+		isOwner: z.boolean().optional().describe("Specifies if the user is a portal owner or not."),
+		isVisitor: z.boolean().optional().describe("Specifies if the user is a portal visitor or not."),
+		isCollaborator: z.boolean().optional().describe("Specifies if the user is a portal collaborator or not."),
+	}).
+	passthrough()
 
 /**
  * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.1.1-server/common/ASC.Api.Core/Model/EmployeeFullDto.cs/#L34 | DocSpace Reference}
@@ -932,13 +960,12 @@ export const GetRoomsFolderFiltersSchema = z.object({
 	fields: z.array(stringUnionToEnum(FolderContentDtoFieldSchema, "The fields to include in the response.")),
 })
 
-export const GetAllFiltersSchema = z.object({
+export const GetFullByFilterFiltersSchema = z.object({
 	count: z.number().min(1).max(50).default(30).describe("The maximum number of items to be retrieved in the response."),
 	startIndex: z.number().optional().describe("The zero-based index of the first item to be retrieved in a filtered result set."),
-	filterBy: z.string().optional().describe("Specifies the filter criteria for user-related queries."),
 	sortBy: z.string().optional().describe("Specifies the property or field name by which the results should be sorted."),
 	sortOrder: numberUnionToEnum(NumericSortOrderSchema, "The order in which the results are sorted.").optional(),
-	filterSeparator: z.string().optional().describe("The character or string used to separate multiple filter values in a filtering query."),
-	filterValue: z.string().optional().describe("The text value used as an additional filter criterion for profiles retrieval."),
+	filterSeparator: z.string().optional().describe("Represents the separator used to split filter criteria in query parameters."),
+	filterValue: z.string().optional().describe("The search text used to filter results based on user input."),
 	fields: z.array(stringUnionToEnum(EmployeeFullDtoFieldSchema, "The fields to include in the response.")),
 })

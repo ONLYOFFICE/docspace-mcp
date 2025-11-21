@@ -761,10 +761,17 @@ export class Server {
 	/**
 	 * {@link https://www.rfc-editor.org/rfc/rfc7591#section-3 | RFC 7591 Reference}
 	 */
-	private handleRegister(_: express.Request, res: express.Response): void {
+	private handleRegister(req: express.Request, res: express.Response): void {
+		// Per RFC 7591, client_id is the only required field in the registration
+		// response. However, some clients expect the server to echo back the
+		// registration request data. To ensure compatibility, we return the entire
+		// request body along with the assigned client_id.
+
 		let ob: RegisterResponse = {
+			...req.body,
 			client_id: this.clientId,
 		}
+
 		res.status(201)
 		res.json(ob)
 	}

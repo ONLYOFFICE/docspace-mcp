@@ -197,9 +197,11 @@ export const IntrospectResponseSchema = z.object({
 /**
  * {@link https://www.rfc-editor.org/rfc/rfc7591#section-3.2.1 | RFC 7591 Reference}
  */
-export const RegisterResponseSchema = z.object({
-	client_id: z.string(),
-})
+export const RegisterResponseSchema = z.
+	object({
+		client_id: z.string(),
+	}).
+	passthrough()
 
 /**
  * {@link https://www.rfc-editor.org/rfc/rfc6749#section-5.1 | RFC 6749 Reference}

@@ -21,6 +21,7 @@
  * @mergeModuleWith mcp
  */
 
+import path from "node:path"
 import * as z from "zod"
 import type {JsonSchema7Type} from "zod-to-json-schema"
 import {zodToJsonSchema} from "zod-to-json-schema"
@@ -648,6 +649,12 @@ export class RegularTools {
 		let pr = UploadFileInputSchema.safeParse(p)
 		if (!pr.success) {
 			return error(new Error("Parsing input.", {cause: pr.error}))
+		}
+
+		let fp = path.parse(pr.data.filename)
+
+		if (!fp.ext) {
+			return error(new Error("File extension is missing in the filename."))
 		}
 
 		let te = new TextEncoder()

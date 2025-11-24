@@ -61,7 +61,6 @@ export type ServerConfig = {
 	baseUrl: string
 	clientId: string
 	clientSecret: string
-	scopes: string[]
 	corsOrigin: string[]
 	corsMaxAge: number
 	serverMetadataRateLimitCapacity: number
@@ -129,7 +128,6 @@ export class Server {
 	private stateTokens: ServerStateTokens
 
 	private issuer: string
-	private scope: string
 	private authorizeUrl: string
 	private callbackUrl: string
 	private introspectUrl: string
@@ -203,8 +201,6 @@ export class Server {
 		} else {
 			this.issuer = pb.v.href
 		}
-
-		this.scope = config.scopes.join(" ")
 
 		this.authorizeUrl = pa.v.href
 		this.callbackUrl = pc.v.href
@@ -574,7 +570,6 @@ export class Server {
 			response_type: "code",
 			client_id: iq.data.client_id,
 			redirect_uri: this.callbackUrl,
-			scope: this.scope,
 			state: se.v,
 		}
 

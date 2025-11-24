@@ -1341,7 +1341,7 @@ function startHttp(config: Config, logger: utilLogger.VanillaLogger): r.Result<S
 		e.use(streamableRouter)
 	}
 
-	e.use("/healthcheck", (_, res) => {
+	e.use("/health", (_, res) => {
 		res.status(200)
 		res.end()
 	})

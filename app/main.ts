@@ -165,10 +165,6 @@ const ConfigSchema = z.
 			string().
 			trim().
 			default(""),
-		DOCSPACE_OAUTH_SCOPES: z.
-			string().
-			default("").
-			transform(zod.envList()),
 		DOCSPACE_OAUTH_AUTH_TOKEN_ALGORITHM: z.
 			string().
 			toUpperCase().
@@ -365,7 +361,6 @@ const ConfigSchema = z.
 				baseUrl: o.DOCSPACE_OAUTH_BASE_URL,
 				clientId: o.DOCSPACE_OAUTH_CLIENT_ID,
 				clientSecret: o.DOCSPACE_OAUTH_CLIENT_SECRET,
-				scopes: o.DOCSPACE_OAUTH_SCOPES,
 			},
 		},
 		oauth: {
@@ -552,7 +547,6 @@ function loadConfig(): r.Result<Config, Error> {
 					baseUrl: "",
 					clientId: "",
 					clientSecret: "",
-					scopes: [],
 				},
 			},
 			oauth: {
@@ -1043,7 +1037,6 @@ function startHttp(config: Config, logger: utilLogger.VanillaLogger): r.Result<S
 			baseUrl: config.server.baseUrl,
 			clientId: config.api.oauth.clientId,
 			clientSecret: config.api.oauth.clientSecret,
-			scopes: config.api.oauth.scopes,
 			corsOrigin: config.server.cors.oauth.origin,
 			corsMaxAge: config.server.cors.oauth.maxAge,
 			serverMetadataRateLimitCapacity: config.server.rateLimits.oauth.serverMetadata.capacity,

@@ -713,31 +713,34 @@ function loadConfig(): r.Result<Config, Error> {
 	}
 
 	if (
-		p.data.mcp.transport === "stdio" &&
-		!p.data.api.shared.authorization &&
-		!p.data.api.shared.apiKey &&
-		!p.data.api.shared.pat &&
+		!p.data.internal &&
 		(
-			!p.data.api.shared.username ||
-			!p.data.api.shared.password
-		) ||
-		(
-			p.data.mcp.transport === "sse" ||
-			p.data.mcp.transport === "streamable-http" ||
-			p.data.mcp.transport === "http"
-		) &&
-		!p.data.api.shared.authorization &&
-		!p.data.api.shared.apiKey &&
-		!p.data.api.shared.pat &&
-		(
-			!p.data.api.shared.username ||
-			!p.data.api.shared.password
-		) &&
-		!p.data.api.oauth.baseUrl &&
-		!p.data.request.headerPrefix &&
-		(
-			!p.data.request.headerEnabled ||
-			!p.data.request.queryEnabled
+			p.data.mcp.transport === "stdio" &&
+			!p.data.api.shared.authorization &&
+			!p.data.api.shared.apiKey &&
+			!p.data.api.shared.pat &&
+			(
+				!p.data.api.shared.username ||
+				!p.data.api.shared.password
+			) ||
+			(
+				p.data.mcp.transport === "sse" ||
+				p.data.mcp.transport === "streamable-http" ||
+				p.data.mcp.transport === "http"
+			) &&
+			!p.data.api.shared.authorization &&
+			!p.data.api.shared.apiKey &&
+			!p.data.api.shared.pat &&
+			(
+				!p.data.api.shared.username ||
+				!p.data.api.shared.password
+			) &&
+			!p.data.api.oauth.baseUrl &&
+			!p.data.request.headerPrefix &&
+			(
+				!p.data.request.headerEnabled ||
+				!p.data.request.queryEnabled
+			)
 		)
 	) {
 		errs.push(new Error("No authentication method"))

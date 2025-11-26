@@ -6,12 +6,12 @@ available based on toolset configuration and enabled/disabled tool options.
 ## Contents
 
 - [Visualization](#visualization)
-	- [Global Configuration](#global-configuration)
-	- [Request Configuration](#request-configuration)
+  - [Global Configuration](#global-configuration)
+  - [Request Configuration](#request-configuration)
 - [Examples](#examples)
-	- [Enable a Tool From Not Specified Toolset](#enable-a-tool-from-not-specified-toolset)
-	- [Disable a Tool From Specified Toolset](#disable-a-tool-from-specified-toolset)
-	- [Manually Specify Tools to Be Available](#manually-specify-tools-to-be-available)
+  - [Enable a Tool From Not Specified Toolset](#enable-a-tool-from-not-specified-toolset)
+  - [Disable a Tool From Specified Toolset](#disable-a-tool-from-specified-toolset)
+  - [Manually Specify Tools to Be Available](#manually-specify-tools-to-be-available)
 - [References](#references)
 
 ## Visualization
@@ -133,7 +133,7 @@ Result:
 - [DocSpace MCP: Global Configuration]
 - [DocSpace MCP: Request Configuration]
 
-<!-- Footnotes -->
+<!-- Definitions -->
 
 [DocSpace MCP: Global Configuration]: ./global-configuration.md
 [DocSpace MCP: Request Configuration]: ./request-configuration.md

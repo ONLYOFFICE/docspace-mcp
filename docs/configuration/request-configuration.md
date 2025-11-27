@@ -1,52 +1,51 @@
 # Request Configuration
 
 This document describes how to configure the DocSpace MCP server behavior on the
-request level using query parameters and custom HTTP headers. Request
-configuration is only available for HTTP-like transports.
+request level using query parameters and custom headers. Request configuration
+is only available for HTTP-like transports.
 
 ## Contents
 
 - [Query Options](#query-options)
-	- [MCP General Options](#mcp-general-options)
-		- [dynamic](#dynamic)
-		- [toolsets](#toolsets)
-		- [enabled_tools](#enabled_tools)
-		- [disabled_tools](#disabled_tools)
-	- [API Shared Options](#api-shared-options-1)
-		- [base_url](#base_url)
+  - [MCP Options](#mcp-options)
+    - [dynamic](#dynamic)
+    - [toolsets](#toolsets)
+    - [enabled_tools](#enabled_tools)
+    - [disabled_tools](#disabled_tools)
+  - [API Options](#api-options-1)
+    - [base_url](#base_url)
 - [Header Options](#header-options)
-	- [MCP General Options](#mcp-general-options-1)
-		- [X-Mcp-Dynamic](#x-mcp-dynamic)
-		- [X-Mcp-Toolsets](#x-mcp-toolsets)
-		- [X-Mcp-Enabled-Tools](#x-mcp-enabled-tools)
-		- [X-Mcp-Disabled-Tools](#x-mcp-disabled-tools)
-	- [API Shared Options](#api-shared-options-2)
-		- [X-Mcp-Base-Url](#x-mcp-base-url)
-		- [Authorization](#authorization)
-		- [X-Mcp-Api-Key](#x-mcp-api-key)
-		- [X-Mcp-Auth-Token](#x-mcp-auth-token)
-		- [X-Mcp-Username](#x-mcp-username)
-		- [X-Mcp-Password](#x-mcp-password)
+  - [MCP Options](#mcp-options-1)
+    - [X-Mcp-Dynamic](#x-mcp-dynamic)
+    - [X-Mcp-Toolsets](#x-mcp-toolsets)
+    - [X-Mcp-Enabled-Tools](#x-mcp-enabled-tools)
+    - [X-Mcp-Disabled-Tools](#x-mcp-disabled-tools)
+  - [API Options](#api-options-2)
+    - [X-Mcp-Base-Url](#x-mcp-base-url)
+    - [Authorization](#authorization)
+    - [X-Mcp-Api-Key](#x-mcp-api-key)
+    - [X-Mcp-Auth-Token](#x-mcp-auth-token)
+    - [X-Mcp-Username](#x-mcp-username)
+    - [X-Mcp-Password](#x-mcp-password)
 - [Examples](#examples)
-	- [Authentication with API Key](#authentication-with-api-key)
-	- [Custom Tool Selection](#custom-tool-selection)
+  - [Authentication with API Key](#authentication-with-api-key)
+  - [Custom Tool Selection](#custom-tool-selection)
 
 ## Query Options
 
 The following options can be configured using query parameters in the request
 URL.
 
-Query parameters are only available if the DocSpace MCP server is configured
-to accept configuration via query parameters.
+Query parameters are only available if the MCP server is configured to accept
+configuration via query parameters.
 
-### MCP General Options
+### MCP Options
 
-The following query parameters are used to configure the general behavior of the
-DocSpace MCP server at the MCP server level.
+The following options are used to configure the behavior of the MCP server.
 
 #### dynamic
 
-The flag that indicates whether the DocSpace MCP server should use meta tools.
+The flag that indicates whether the MCP server should use meta tools.
 
 This option is complementary to [`toolsets`], [`enabled_tools`], and
 [`disabled_tools`].
@@ -66,10 +65,10 @@ This option is mutually exclusive with [`X-Mcp-Dynamic`].
 
 #### toolsets
 
-The list of toolsets to enable for the DocSpace MCP server.
+The list of toolsets to enable for the MCP server.
 
-The available list of toolsets for this options depends on the DocSpace MCP
-server global configuration.
+The available list of toolsets for this options depends on the MCP server global
+configuration.
 
 This option is mutually exclusive with [`X-Mcp-Toolsets`].
 
@@ -86,10 +85,10 @@ This option is mutually exclusive with [`X-Mcp-Toolsets`].
 
 #### enabled_tools
 
-The list of tools to enable for the DocSpace MCP server.
+The list of tools to enable for the MCP server.
 
-The available list of tools for this options depends on the DocSpace MCP server
-global configuration.
+The available list of tools for this options depends on the MCP server global
+configuration.
 
 This option is mutually exclusive with [`X-Mcp-Enabled-Tools`].
 
@@ -106,10 +105,10 @@ This option is mutually exclusive with [`X-Mcp-Enabled-Tools`].
 
 #### disabled_tools
 
-The list of tools to disable for the DocSpace MCP server.
+The list of tools to disable for the MCP server.
 
-The available list of tools for this options depends on the DocSpace MCP server
-global configuration.
+The available list of tools for this options depends on the MCP server global
+configuration.
 
 This option is mutually exclusive with [`X-Mcp-Disabled-Tools`].
 
@@ -124,10 +123,9 @@ This option is mutually exclusive with [`X-Mcp-Disabled-Tools`].
 - [DocSpace MCP: Tools]
 - [DocSpace MCP: Tools Resolution]
 
-### API Shared Options
+### API Options
 
-The following query parameters are used to configure the behavior for DocSpace
-API requests to common DocSpace services (e.g., files, people, etc.).
+The following options are used to configure the behavior for API requests.
 
 #### base_url
 
@@ -148,17 +146,16 @@ This option is mutually exclusive with [`X-Mcp-Base-Url`].
 
 The following options can be configured using custom HTTP headers.
 
-HTTP headers are only available if the DocSpace MCP server is configured
-to accept configuration via HTTP headers.
+HTTP headers are only available if the MCP server is configured to accept
+configuration via HTTP headers.
 
-### MCP General Options
+### MCP Options
 
-The following HTTP headers are used to configure the general behavior of the
-DocSpace MCP server at the MCP server level.
+The following options are used to configure the behavior of the MCP server.
 
 #### X-Mcp-Dynamic
 
-The flag that indicates whether the DocSpace MCP server should use meta tools.
+The flag that indicates whether the MCP server should use meta tools.
 
 This option is complementary to [`X-Mcp-Toolsets`], [`X-Mcp-Enabled-Tools`], and
 [`X-Mcp-Disabled-Tools`].
@@ -180,8 +177,8 @@ This option is mutually exclusive with [`dynamic`].
 
 The list of toolsets to enable for the DocSpace MCP server.
 
-The available list of toolsets for this options depends on the DocSpace MCP
-server global configuration.
+The available list of toolsets for this options depends on the MCP server global
+configuration.
 
 This option is mutually exclusive with [`toolsets`].
 
@@ -198,10 +195,10 @@ This option is mutually exclusive with [`toolsets`].
 
 #### X-Mcp-Enabled-Tools
 
-The list of tools to enable for the DocSpace MCP server.
+The list of tools to enable for the MCP server.
 
-The available list of tools for this options depends on the DocSpace MCP server
-global configuration.
+The available list of tools for this options depends on the MCP server global
+configuration.
 
 This option is mutually exclusive with [`enabled_tools`].
 
@@ -218,10 +215,10 @@ This option is mutually exclusive with [`enabled_tools`].
 
 #### X-Mcp-Disabled-Tools
 
-The list of tools to disable for the DocSpace MCP server.
+The list of tools to disable for the MCP server.
 
-The available list of tools for this options depends on the DocSpace MCP server
-global configuration.
+The available list of tools for this options depends on the MCP server global
+configuration.
 
 This option is mutually exclusive with [`disabled_tools`].
 
@@ -236,10 +233,9 @@ This option is mutually exclusive with [`disabled_tools`].
 - [DocSpace MCP: Tools]
 - [DocSpace MCP: Tools Resolution]
 
-### API Shared Options
+### API Options
 
-The following HTTP headers are used to configure the behavior for DocSpace API
-requests to common DocSpace services (e.g., files, people, etc.).
+The following options are used to configure the behavior for API requests.
 
 #### X-Mcp-Base-Url
 
@@ -261,18 +257,18 @@ This option is mutually exclusive with [`base_url`].
 
 #### Authorization
 
-The raw value to include in the `Authorization` header for DocSpace API
-requests.
+The raw value to include in the `Authorization` header for API requests.
 
-This option is not available if the DocSpace MCP server is configured to ignore
-the `Authorization` header in incoming requests.
+This option is available only if the MCP server is configured to accept the
+`Authorization` header in incoming requests.
 
-This option is required if the DocSpace MCP server is configured without
-authentication, and neither [`X-Mcp-Api-Key`], [`X-Mcp-Auth-Token`], nor the
-[`X-Mcp-Username`]/[`X-Mcp-Password`] pair is set.
+This option is required if the MCP server is configured without authentication,
+and neither [`X-Mcp-Api-Key`], [`X-Mcp-Auth-Token`], nor the
+[`X-Mcp-Username`]/[`X-Mcp-Password`] pair is set, and the OAuth flow is not
+initialized.
 
 This option is mutually exclusive with [`X-Mcp-Api-Key`], [`X-Mcp-Auth-Token`],
-and the [`X-Mcp-Username`]/[`X-Mcp-Password`] pair.
+the [`X-Mcp-Username`]/[`X-Mcp-Password`] pair, and the OAuth flow.
 
 ##### Signature
 
@@ -289,14 +285,15 @@ and the [`X-Mcp-Username`]/[`X-Mcp-Password`] pair.
 
 #### X-Mcp-Api-Key
 
-The API key for accessing the DocSpace API.
+The API key for accessing the API.
 
-This option is required if the DocSpace MCP server is configured without
-authentication, and neither [`Authorization`], [`X-Mcp-Auth-Token`], nor the
-[`X-Mcp-Username`]/[`X-Mcp-Password`] pair is set.
+This option is required if the MCP server is configured without authentication,
+and neither [`Authorization`], [`X-Mcp-Auth-Token`], nor the
+[`X-Mcp-Username`]/[`X-Mcp-Password`] pair is set, and the OAuth flow is not
+initialized.
 
 This option is mutually exclusive with [`Authorization`], [`X-Mcp-Auth-Token`],
-and the [`X-Mcp-Username`]/[`X-Mcp-Password`] pair.
+the [`X-Mcp-Username`]/[`X-Mcp-Password`] pair, and the OAuth flow.
 
 ##### Signature
 
@@ -311,14 +308,15 @@ and the [`X-Mcp-Username`]/[`X-Mcp-Password`] pair.
 
 #### X-Mcp-Auth-Token
 
-The Personal Access Token (PAT) for accessing the DocSpace API.
+The Personal Access Token (PAT) for accessing the API.
 
-This option is required if the DocSpace MCP server is configured without
-authentication, and neither [`Authorization`], [`X-Mcp-Api-Key`], nor the
-[`X-Mcp-Username`]/[`X-Mcp-Password`] pair is set.
+This option is required if the MCP server is configured without authentication,
+and neither [`Authorization`], [`X-Mcp-Api-Key`], nor the
+[`X-Mcp-Username`]/[`X-Mcp-Password`] pair is set, and the OAuth flow is not
+initialized.
 
 This option is mutually exclusive with [`Authorization`], [`X-Mcp-Api-Key`],
-and the [`X-Mcp-Username`]/[`X-Mcp-Password`] pair.
+the [`X-Mcp-Username`]/[`X-Mcp-Password`] pair, and the OAuth flow.
 
 ##### Signature
 
@@ -333,16 +331,16 @@ and the [`X-Mcp-Username`]/[`X-Mcp-Password`] pair.
 
 #### X-Mcp-Username
 
-The username for accessing the DocSpace API using basic authentication.
+The username for accessing the API using basic authentication.
 
 This option is used in conjunction with [`X-Mcp-Password`].
 
-This option is required if the DocSpace MCP server is configured without
-authentication, and neither [`Authorization`], [`X-Mcp-Api-Key`], nor
-[`X-Mcp-Auth-Token`] is set.
+This option is required if the MCP server is configured without authentication,
+and neither [`Authorization`], [`X-Mcp-Api-Key`], nor [`X-Mcp-Auth-Token`] is
+set, and the OAuth flow is not initialized.
 
 This option is mutually exclusive with [`Authorization`], [`X-Mcp-Api-Key`],
-and [`X-Mcp-Auth-Token`].
+[`X-Mcp-Auth-Token`], and the OAuth flow.
 
 ##### Signature
 
@@ -357,16 +355,16 @@ and [`X-Mcp-Auth-Token`].
 
 #### X-Mcp-Password
 
-The password for accessing the DocSpace API using basic authentication.
+The password for accessing the API using basic authentication.
 
 This option is used in conjunction with [`X-Mcp-Username`].
 
-This option is required if the DocSpace MCP server is configured without
-authentication, and neither [`Authorization`], [`X-Mcp-Api-Key`], nor
-[`X-Mcp-Auth-Token`] is set.
+This option is required if the MCP server is configured without authentication,
+and neither [`Authorization`], [`X-Mcp-Api-Key`], nor [`X-Mcp-Auth-Token`] is
+set, and the OAuth flow is not initialized.
 
 This option is mutually exclusive with [`Authorization`], [`X-Mcp-Api-Key`],
-and [`X-Mcp-Auth-Token`].
+[`X-Mcp-Auth-Token`], and the OAuth flow.
 
 ##### Signature
 
@@ -403,7 +401,7 @@ X-Mcp-Enabled-Tools: get_all_people
 X-Mcp-Disabled-Tools: delete_file,delete_folder
 ```
 
-<!-- Footnotes -->
+<!-- Definitions -->
 
 [DocSpace API: API Keys]: https://api.onlyoffice.com/docspace/api-backend/get-started/authentication/api-keys/
 [DocSpace API: Basic Authentication]: https://api.onlyoffice.com/docspace/api-backend/get-started/authentication/basic-authentication/

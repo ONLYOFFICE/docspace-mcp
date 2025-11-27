@@ -6,10 +6,10 @@ methods based on transport configuration and available authentication options.
 ## Contents
 
 - [Visualization](#visualization)
-	- [Global Configuration](#global-configuration)
-		- [stdio Transport](#stdio-transport)
-		- [HTTP-like Transport](#http-like-transport)
-	- [Request Configuration](#request-configuration)
+  - [Global Configuration](#global-configuration)
+    - [stdio Transport](#stdio-transport)
+    - [HTTP-like Transport](#http-like-transport)
+  - [Request Configuration](#request-configuration)
 - [References](#references)
 
 ## Visualization
@@ -30,8 +30,7 @@ For stdio transport, exactly one authentication method must be configured.
 ```mermaid
 flowchart TD
 	S[Start application] --> A[Load global configuration]
-	A --> B[Use stdio transport]
-	B --> C{Check authentication methods}
+	A --> C{Check authentication methods}
 	C -->|None configured| E[Error: At least one authentication method required]
 	C -->|Exactly one configured| F[Start server with authentication]
 	C -->|Multiple configured| D[Error: Only one authentication method allowed]
@@ -45,21 +44,25 @@ with or without authentication depending on the use case.
 ```mermaid
 flowchart TD
 	S[Start application] --> A[Load global configuration]
-	A --> B[Use HTTP-like transport]
-	B --> G{Check authentication methods}
+	A --> G{Check authentication methods}
 	G -->|None configured| J[Start server without authentication]
-	G -->|Exactly one configured| F[Start server with authentication]
+	G -->|Exactly one configured| I{OAuth enabled?}
 	G -->|Multiple configured| H[Error: Only one authentication method allowed]
+	I -->|No| Q[Start server with non-OAuth authentication]
+	I -->|Yes| P[Start server with OAuth]
 ```
 
 ### Request Configuration
 
 For HTTP-like transports, authentication can be configured on the request level
-using custom headers.
+using query parameters and custom headers, unless OAuth is being used.
 
 ```mermaid
 flowchart TD
-	K[On initialization request] --> O{Check authentication methods}
+	K[On initialization request] --> A[Load request configuration]
+	A --> L{OAuth enabled?}
+	L -->|No| O{Check authentication methods}
+	L -->|Yes| M[Skip: OAuth handles authentication]
 	O -->|None configured| P[Error: At least one authentication method required]
 	O -->|Exactly one configured| Q[Create authenticated session]
 	O -->|Multiple configured| R[Error: Only one authentication method allowed]
@@ -70,7 +73,7 @@ flowchart TD
 - [DocSpace MCP: Global Configuration]
 - [DocSpace MCP: Request Configuration]
 
-<!-- Footnotes -->
+<!-- Definitions -->
 
 [DocSpace MCP: Global Configuration]: ./global-configuration.md
 [DocSpace MCP: Request Configuration]: ./request-configuration.md

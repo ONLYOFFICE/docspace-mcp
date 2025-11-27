@@ -27,6 +27,7 @@ interface Detail {
 	$schema?: string
 	version?: string
 	packages?: Package[]
+	remotes?: Transport[]
 }
 
 interface Package {
@@ -229,6 +230,19 @@ async function main(): Promise<void> {
 	}
 
 	mo.packages = packages
+
+	mo.remotes = [
+		{
+			type: "sse",
+			url: "https://mcp.onlyoffice.com/sse",
+			headers,
+		},
+		{
+			type: "streamable-http",
+			url: "https://mcp.onlyoffice.com/mcp",
+			headers,
+		},
+	]
 
 	if (!av(mo)) {
 		throw new Error("Validating manifest", {cause: av.errors})

@@ -27,6 +27,7 @@ interface Detail {
 	$schema?: string
 	version?: string
 	packages?: Package[]
+	remotes?: Transport[]
 }
 
 interface Package {
@@ -136,7 +137,7 @@ async function main(): Promise<void> {
 
 		switch (p.registryType) {
 		case "mcpb":
-			let a = await fs.readFile("onlyoffice-docspace-mcp-3.0.1.mcpb")
+			let a = await fs.readFile("onlyoffice-docspace-mcp-3.1.0.mcpb")
 
 			p.identifier = p.identifier.replaceAll("{{version}}", meta.version)
 			p.version = meta.version
@@ -229,6 +230,19 @@ async function main(): Promise<void> {
 	}
 
 	mo.packages = packages
+
+	mo.remotes = [
+		{
+			type: "sse",
+			url: "https://mcp.onlyoffice.com/sse",
+			headers,
+		},
+		{
+			type: "streamable-http",
+			url: "https://mcp.onlyoffice.com/mcp",
+			headers,
+		},
+	]
 
 	if (!av(mo)) {
 		throw new Error("Validating manifest", {cause: av.errors})

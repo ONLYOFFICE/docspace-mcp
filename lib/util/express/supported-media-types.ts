@@ -17,21 +17,33 @@
  */
 
 /**
- * @module util/context
+ * @module
+ * @mergeModuleWith util/express
  */
 
-import * as asyncHooks from "node:async_hooks"
+import contentType from "content-type"
+import type express from "express"
+import * as r from "../result.ts"
 
-export interface Context {}
+export type SupportedMediaTypesCallback = (req: express.Request, res: express.Response) => void
 
-const s = new asyncHooks.AsyncLocalStorage<Context>({
-	name: "context",
-})
+export function supportedMediaTypes(types: string[], cb: SupportedMediaTypesCallback): express.Handler {
+	let st = types.join(", ")
 
-export function run(c: Context, cb: () => void): void {
-	s.run(c, cb)
-}
+	return (req, res, next) => {
+		let ct = r.safeSync(contentType.parse, req)
+		if (!ct.err && types.includes(ct.v.type)) {
+			next()
+			return
+		}
 
-export function get(): Context | undefined {
-	return s.getStore()
+		res.status(415)
+		res.set("Accept", st)
+
+		cb(req, res)
+
+		if (!res.writableEnded) {
+			res.end()
+		}
+	}
 }

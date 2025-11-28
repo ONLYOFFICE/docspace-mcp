@@ -16,16 +16,13 @@
  * @license
  */
 
-import * as server from "@modelcontextprotocol/sdk/server/index.js"
-import * as meta from "../lib/meta.ts"
+/**
+ * @module oauth
+ */
 
-export type P = Promise<Error | undefined>
-
-export type Cleanup = () => P
-
-export function createServer(): server.Server {
-	return new server.Server({
-		name: meta.name,
-		version: meta.version,
-	})
-}
+export * from "./oauth/auth.ts"
+export * from "./oauth/client.ts"
+export * from "./oauth/handler.ts"
+export * from "./oauth/server.ts"
+export * from "./oauth/shared.ts"
+export * from "./oauth/state.ts"

@@ -21,6 +21,7 @@
  * @mergeModuleWith mcp
  */
 
+import path from "node:path"
 import * as z from "zod"
 import type {JsonSchema7Type} from "zod-to-json-schema"
 import {zodToJsonSchema} from "zod-to-json-schema"
@@ -32,10 +33,10 @@ import {
 	FileShareDtoSchema,
 	FolderContentDtoSchema,
 	FolderDtoSchema,
-	GetAllFiltersSchema,
 	GetFileInfoFiltersSchema,
 	GetFolderFiltersSchema,
 	GetFolderInfoFiltersSchema,
+	GetFullByFilterFiltersSchema,
 	GetMyFolderFiltersSchema,
 	GetRoomInfoFiltersSchema,
 	GetRoomSecurityFiltersSchema,
@@ -366,7 +367,7 @@ export const GetRoomAccessLevelsSchema = z.object({
 //
 
 export const GetAllPeopleInputSchema = z.object({
-	filters: GetAllFiltersSchema.describe("The filters to apply to the list of people. Use them to reduce the size of the response."),
+	filters: GetFullByFilterFiltersSchema.describe("The filters to apply to the list of people. Use them to reduce the size of the response."),
 })
 
 export const GetAllPeopleOutputSchema = SuccessApiResponseSchema.extend({
@@ -388,6 +389,36 @@ export class RegularTools {
 		let pr = DeleteFileInputSchema.safeParse(p)
 		if (!pr.success) {
 			return error(new Error("Parsing input.", {cause: pr.error}))
+		}
+
+		let tr = await this.s.client.files.getTrashFolder(signal)
+		if (tr.err) {
+			return error(new Error("Getting trash folder.", {cause: tr.err}))
+		}
+
+		let [td] = tr.v
+
+		if (!td.current) {
+			return error(new Error("Trash folder is not defined."))
+		}
+
+		if (!td.current.id) {
+			return error(new Error("Trash folder ID is not defined."))
+		}
+
+		let fr = await this.s.client.files.getFileInfo(signal, pr.data.fileId)
+		if (fr.err) {
+			return error(new Error("Getting file info.", {cause: fr.err}))
+		}
+
+		let [gd] = fr.v
+
+		if (!gd.folderId) {
+			return error(new Error("File folder ID is not defined."))
+		}
+
+		if (gd.folderId === td.current.id) {
+			return ok("File is already in the trash folder.")
 		}
 
 		let dp: DeleteFileOptions = {
@@ -459,7 +490,7 @@ export class RegularTools {
 			fileIds: pr.data.fileIds,
 			// @ts-ignore See the type above for the reason.
 			destFolderId: pr.data.destFolderId,
-			contentResolveType: 2,
+			conflictResolveType: 2,
 			deleteAfter: false,
 		}
 
@@ -491,7 +522,7 @@ export class RegularTools {
 			fileIds: pr.data.fileIds,
 			// @ts-ignore See the type above for the reason.
 			destFolderId: pr.data.destFolderId,
-			contentResolveType: 2,
+			conflictResolveType: 2,
 			deleteAfter: false,
 		}
 
@@ -620,6 +651,12 @@ export class RegularTools {
 			return error(new Error("Parsing input.", {cause: pr.error}))
 		}
 
+		let fp = path.parse(pr.data.filename)
+
+		if (!fp.ext) {
+			return error(new Error("File extension is missing in the filename."))
+		}
+
 		let te = new TextEncoder()
 
 		let buf = te.encode(pr.data.content)
@@ -628,6 +665,7 @@ export class RegularTools {
 			fileName: pr.data.filename,
 			fileSize: buf.length,
 			createOn: new Date().toISOString(),
+			createNewIfExist: true,
 		}
 
 		let sr = await this.s.client.files.createUploadSession(signal, pr.data.parentId, so)
@@ -962,7 +1000,7 @@ export class RegularTools {
 			return error(new Error("Parsing input.", {cause: pr.error}))
 		}
 
-		let gr = await this.s.client.people.getAll(signal, pr.data.filters)
+		let gr = await this.s.client.people.getFullByFilter(signal, pr.data.filters)
 		if (gr.err) {
 			return error(new Error("Getting people.", {cause: gr.err}))
 		}

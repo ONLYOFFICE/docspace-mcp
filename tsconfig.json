@@ -17,6 +17,7 @@
 		"app",
 		"lib",
 		"scripts",
-		"*.js"
+		"*.js",
+		"*.ts"
 	]
 }

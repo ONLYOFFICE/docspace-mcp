@@ -17,9 +17,8 @@
  */
 
 /**
- * @module util/types
+ * @module auth
  */
 
-export type RecursivePartial<T> = {
-	[P in keyof T]?: RecursivePartial<T[P]>
-}
+export * from "./auth/auth.ts"
+export * from "./auth/credential.ts"

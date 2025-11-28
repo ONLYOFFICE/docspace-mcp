@@ -16,50 +16,32 @@
  * @license
  */
 
-import * as mcp from "../../lib/mcp.ts"
+/**
+ * @module
+ * @mergeModuleWith settings
+ */
 
-export const availableToolsets = (() => {
-	let a: string[] = ["all"]
-	for (let s of mcp.toolsetInfos) {
-		a.push(s.name)
-	}
-	return a
-})()
+/* eslint-disable typescript/consistent-type-definitions */
 
-export const availableTools = (() => {
-	let a: string[] = []
-	for (let s of mcp.toolsetInfos) {
-		for (let t of s.tools) {
-			a.push(t.name)
-		}
-	}
-	return a
-})()
+import * as mcp from "../mcp.ts"
 
-export function normalizeToolsets(a: string[]): string[] {
-	if (a.includes("all")) {
-		a = [...availableToolsets]
-
-		let i = a.indexOf("all")
-		if (i !== -1) {
-			a.splice(i, 1)
-		}
-
-		return a
-	}
-
-	return [...a]
+export type ResolveToolsOptions = {
+	toolsets: string[]
+	enabledTools: string[]
+	disabledTools: string[]
 }
 
-export function resolveToolsetsAndTools(
-	toolsets: string[],
-	enabledTools: string[],
-	disabledTools: string[],
-): [string[], string[]] {
+export type ResolveToolsResult = {
+	toolsets: string[]
+	tools: string[]
+}
+
+// todo: the behavior of this function is unclear
+export function resolveTools(o: ResolveToolsOptions): ResolveToolsResult {
 	let x: string[] = []
 	let y: string[] = []
 
-	for (let n of toolsets) {
+	for (let n of o.toolsets) {
 		x.push(n)
 
 		for (let s of mcp.toolsetInfos) {
@@ -72,7 +54,7 @@ export function resolveToolsetsAndTools(
 		}
 	}
 
-	for (let n of enabledTools) {
+	for (let n of o.enabledTools) {
 		for (let s of mcp.toolsetInfos) {
 			let h = false
 			for (let t of s.tools) {
@@ -95,7 +77,7 @@ export function resolveToolsetsAndTools(
 		}
 	}
 
-	for (let n of disabledTools) {
+	for (let n of o.disabledTools) {
 		let i = y.indexOf(n)
 		if (i !== -1) {
 			y.splice(i, 1)
@@ -132,5 +114,10 @@ export function resolveToolsetsAndTools(
 		}
 	}
 
-	return [x, y]
+	let r: ResolveToolsResult = {
+		toolsets: x,
+		tools: y,
+	}
+
+	return r
 }

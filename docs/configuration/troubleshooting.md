@@ -28,7 +28,7 @@ configuration issues.
 - [Docker Docs: MCP Catalog and Toolkit]
 - [DocSpace MCP: Global Configuration]
 
-<!-- Footnotes -->
+<!-- Definitions -->
 
 [Docker Docs: MCP Catalog and Toolkit]: https://docs.docker.com/ai/mcp-catalog-and-toolkit/
 

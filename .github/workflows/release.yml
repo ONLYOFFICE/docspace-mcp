@@ -16,6 +16,12 @@ jobs:
 
     - name: Setup mise
       uses: jdx/mise-action@v2
+      with:
+        # mise uses GITHUB_TOKEN to interact with the GitHub API when installing
+        # tools. This results in a 401 Unauthorized error if the action runs
+        # outside of GitHub's infrastructure. As a workaround, only provide
+        # GITHUB_TOKEN when running on github.com.
+        GITHUB_TOKEN: ${{github.server_url == 'https://github.com' && github.token || ''}}
 
     - name: Store Version
       id: version
@@ -68,6 +74,12 @@ jobs:
 
     - name: Setup mise
       uses: jdx/mise-action@v2
+      with:
+        # mise uses GITHUB_TOKEN to interact with the GitHub API when installing
+        # tools. This results in a 401 Unauthorized error if the action runs
+        # outside of GitHub's infrastructure. As a workaround, only provide
+        # GITHUB_TOKEN when running on github.com.
+        GITHUB_TOKEN: ${{github.server_url == 'https://github.com' && github.token || ''}}
 
     - name: Download Package
       uses: actions/download-artifact@v4

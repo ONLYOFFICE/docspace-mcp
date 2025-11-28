@@ -17,23 +17,8 @@
  */
 
 /**
- * @module util/http
+ * @module settings
  */
 
-export function isContentTypeJson(h: string): boolean {
-	if (!h) {
-		return false
-	}
-
-	let a = h.split(";")
-	if (a.length === 0) {
-		return false
-	}
-
-	let t = a[0].trim().toLowerCase()
-	if (!t) {
-		return false
-	}
-
-	return t === "application/json"
-}
+export * from "./settings/settings.ts"
+export * from "./settings/tools.ts"

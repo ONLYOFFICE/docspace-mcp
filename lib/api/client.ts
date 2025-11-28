@@ -207,9 +207,18 @@ export class Client {
 			let q = new URLSearchParams()
 
 			for (let [k, v] of Object.entries(query)) {
-				if (v !== undefined) {
-					q.append(k, v.toString())
+				if (v === undefined) {
+					continue
 				}
+
+				if (Array.isArray(v)) {
+					for (let e of v) {
+						q.append(k, e.toString())
+					}
+					continue
+				}
+
+				q.append(k, v.toString())
 			}
 
 			let s = q.toString()

@@ -114,6 +114,17 @@ export const EmailInvitationDtoSchema = z.object({
 })
 
 /**
+ * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.5.0-server/common/ASC.Core.Common/Core/EmployeeStatus.cs/#L33 | DocSpace Reference}
+ */
+export const EmployeeStatusSchema = z.union([
+	z.literal(1).describe("Active"),
+	z.literal(2).describe("Terminated"),
+	z.literal(4).describe("Pending"),
+	z.literal(7).describe("All (Active | Terminated | Pending)"),
+	z.literal(5).describe("Default (Active | Pending)"),
+])
+
+/**
  * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.2.1-server/common/ASC.Api.Core/Model/EmployeeDto.cs/#L34 | DocSpace Reference}
  */
 export const EmployeeDtoSchema = z.
@@ -140,6 +151,23 @@ export const EmployeeDtoFieldSchema = z.union([
 	// z.literal("hasAvatar").describe("Specifies if the user has an avatar or not."),
 	z.literal("isAnonim").describe("Specifies if the user is anonymous or not."),
 ])
+
+/**
+ * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.5.0-server/common/ASC.Api.Core/Model/EmployeeFullDto.cs/#L34 | DocSpace Reference}
+ */
+export const EmployeeFullDtoSchema = EmployeeDtoSchema.
+	extend({
+		email: z.string().optional().describe("The user email."),
+		birthday: z.string().optional().describe("The user birthday."),
+		status: numberUnionToEnum(EmployeeStatusSchema, "The user status.").optional(),
+		department: z.string().optional().describe("The user department."),
+		isAdmin: z.boolean().optional().describe("Specifies if the user is an administrator or not."),
+		isRoomAdmin: z.boolean().optional().describe("Specifies if the user is a room administrator or not."),
+		isOwner: z.boolean().optional().describe("Specifies if the user is a portal owner or not."),
+		isVisitor: z.boolean().optional().describe("Specifies if the user is a portal visitor or not."),
+		isCollaborator: z.boolean().optional().describe("Specifies if the user is a portal collaborator or not."),
+	}).
+	passthrough()
 
 /**
  * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.1.1-server/common/ASC.Api.Core/Model/EmployeeFullDto.cs/#L34 | DocSpace Reference}
@@ -238,7 +266,7 @@ export const FileConflictResolveTypeSchema = z.union([
  */
 export const BatchRequestDtoSchema = BaseBatchRequestDtoSchema.extend({
 	destFolderId: JsonElementSchema.optional(),
-	contentResolveType: FileConflictResolveTypeSchema.optional(),
+	conflictResolveType: FileConflictResolveTypeSchema.optional(),
 	deleteAfter: z.boolean().optional(),
 })
 
@@ -363,6 +391,7 @@ export const SessionRequestSchema = z.object({
 	fileName: z.string().optional(),
 	fileSize: z.number().optional(),
 	createOn: z.string().optional(),
+	createNewIfExist: z.boolean().optional(),
 })
 
 /**
@@ -608,8 +637,8 @@ export const FilesSettingsDtoSchema = z.
 /**
  * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.2.1-server/products/ASC.Files/Core/ApiModels/ResponseDto/FolderDto.cs/#L32 | DocSpace Reference}
  */
-export const FolderDtoSchema = z.
-	object({
+export const FolderDtoSchema = FileEntryDtoSchema.
+	extend({
 		parentId: JsonElementSchema.optional().describe("The parent folder ID of the folder."),
 		filesCount: z.number().optional().describe("The number of files that the folder contains."),
 		foldersCount: z.number().optional().describe("The number of folders that the folder contains."),
@@ -895,6 +924,17 @@ export const GetRoomSecurityFiltersSchema = z.object({
 })
 
 /**
+ * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.1.1-server/products/ASC.Files/Core/Core/Entries/OrderBy.cs#L33 | DocSpace Reference}
+ */
+export const GetRoomsFolderFiltersSortBySchema = z.union([
+	z.literal("DateAndTime").describe("Date and time"),
+	z.literal("AZ").describe("AZ"),
+	z.literal("Author").describe("Author"),
+	z.literal("RoomType").describe("Room type"),
+	z.literal("Tags").describe("Tags"),
+])
+
+/**
  * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.1.1-server/products/ASC.Files/Core/ApiModels/RequestDto/RoomContentRequestDto.cs/#L32 | DocSpace Reference}
  */
 export const GetRoomsFolderFiltersSchema = z.object({
@@ -914,19 +954,18 @@ export const GetRoomsFolderFiltersSchema = z.object({
 	// storageFilter: StorageFilterSchema.optional().describe("The filter by storage (None - 0, Internal - 1, ThirdParty - 2)."),
 	count: z.number().min(1).max(50).default(30).describe("Specifies the maximum number of items to retrieve."),
 	startIndex: z.number().optional().describe("The index from which to start retrieving the room content."),
-	sortBy: z.string().optional().describe("Specifies the field by which the room content should be sorted."),
+	sortBy: stringUnionToEnum(GetRoomsFolderFiltersSortBySchema, "Specifies the field by which the room content should be sorted.").optional(),
 	sortOrder: numberUnionToEnum(NumericSortOrderSchema, "The order in which the results are sorted.").optional(),
 	filterValue: z.string().optional().describe("The text used for filtering or searching folder contents."),
 	fields: z.array(stringUnionToEnum(FolderContentDtoFieldSchema, "The fields to include in the response.")),
 })
 
-export const GetAllFiltersSchema = z.object({
+export const GetFullByFilterFiltersSchema = z.object({
 	count: z.number().min(1).max(50).default(30).describe("The maximum number of items to be retrieved in the response."),
 	startIndex: z.number().optional().describe("The zero-based index of the first item to be retrieved in a filtered result set."),
-	filterBy: z.string().optional().describe("Specifies the filter criteria for user-related queries."),
 	sortBy: z.string().optional().describe("Specifies the property or field name by which the results should be sorted."),
 	sortOrder: numberUnionToEnum(NumericSortOrderSchema, "The order in which the results are sorted.").optional(),
-	filterSeparator: z.string().optional().describe("The character or string used to separate multiple filter values in a filtering query."),
-	filterValue: z.string().optional().describe("The text value used as an additional filter criterion for profiles retrieval."),
+	filterSeparator: z.string().optional().describe("Represents the separator used to split filter criteria in query parameters."),
+	filterValue: z.string().optional().describe("The search text used to filter results based on user input."),
 	fields: z.array(stringUnionToEnum(EmployeeFullDtoFieldSchema, "The fields to include in the response.")),
 })

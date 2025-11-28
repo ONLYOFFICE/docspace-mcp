@@ -21,4 +21,4 @@
  */
 
 export const name = "@onlyoffice/docspace-mcp"
-export const version = "3.0.1"
+export const version = "3.1.0"

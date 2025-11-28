@@ -16,7 +16,7 @@ on your system.
 1. Download the latest release from GitHub:
 
   ```sh
-  VERSION=3.0.1 curl --location --output docspace-mcp.mcpb https://github.com/ONLYOFFICE/docspace-mcp/releases/v$VERSION/download/onlyoffice-docspace-mcp-$VERSION.mcpb
+  VERSION=3.1.0 curl --location --output docspace-mcp.mcpb https://github.com/ONLYOFFICE/docspace-mcp/releases/v$VERSION/download/onlyoffice-docspace-mcp-$VERSION.mcpb
   ```
 
   To download a specific version:
@@ -35,7 +35,7 @@ installed on your system.
 1. Download the latest release from GitHub:
 
   ```sh
-  VERSION=3.0.1 curl --location --output docspace-mcp.tgz https://github.com/ONLYOFFICE/docspace-mcp/releases/v$VERSION/download/onlyoffice-docspace-mcp-$VERSION.tgz
+  VERSION=3.1.0 curl --location --output docspace-mcp.tgz https://github.com/ONLYOFFICE/docspace-mcp/releases/v$VERSION/download/onlyoffice-docspace-mcp-$VERSION.tgz
   ```
 
   To download a specific version:

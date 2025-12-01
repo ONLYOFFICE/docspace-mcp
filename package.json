@@ -60,7 +60,7 @@
 		"cors": "2.8.5",
 		"esbuild": "0.25.5",
 		"eslint": "9.29.0",
-		"express": "5.1.0",
+		"express": "5.2.0",
 		"express-rate-limit": "8.0.1",
 		"jsonwebtoken": "9.0.2",
 		"logfmt": "1.4.0",

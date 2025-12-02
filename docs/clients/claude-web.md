@@ -11,14 +11,14 @@ WEB (i.e., https://claude.ai).
 ## Connector
 
 Connect to the MCP server running remotely using Claude's Connectors. This is
-the preferred method of connection.
+the preferred connection method.
 
 1. Open Claude WEB;
 2. Navigate to Settings;
 3. Navigate to Connectors;
 4. Click "Add custom connector";
 5. Enter a name (e.g., "ONLYOFFICE DocSpace MCP");
-6. Enter an URL (e.g., https://mcp.onlyoffice.com/mcp);
+6. Enter a URL (e.g., https://mcp.onlyoffice.com/mcp);
 7. Click "Add";
 8. Click "Connect" next to the newly added connector;
 9. Complete the OAuth authentication process.

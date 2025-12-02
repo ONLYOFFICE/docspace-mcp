@@ -16,7 +16,7 @@ provides an MCP server for [ONLYOFFICE DocSpace].
 	"mcpServers": {
 		"onlyoffice-docspace": {
 			"command": "docker",
-			"args": ["run", "onlyoffice/docspace-mcp", "--interactive", "--rm", "--env", "DOCSPACE_BASE_URL", "--env", "DOCSPACE_API_KEY"],
+			"args": ["run", "--interactive", "--rm", "--env", "DOCSPACE_BASE_URL", "--env", "DOCSPACE_API_KEY", "onlyoffice/docspace-mcp"],
 			"env": {
 				"DOCSPACE_BASE_URL": "https://your-instance.onlyoffice.com",
 				"DOCSPACE_API_KEY": "your-api-key"

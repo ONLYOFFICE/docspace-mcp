@@ -12,10 +12,10 @@ Studio Code.
 ## HTTP
 
 Connect to the MCP server running remotely using Streamable-HTTP transport. This
-is the preferred method of connection.
+is the preferred connection method.
 
 1. Open Visual Studio Code;
-2. Bring up Command Pallette;
+2. Bring up Command Palette;
 3. Select "MCP: Open User Configuration";
 4. Add a new record to the `servers` section:
    ```json
@@ -28,20 +28,21 @@ is the preferred method of connection.
    	}
    }
    ```
-5. Bring up Command Pallette;
-6. Select "MCP: List Servers";
-7. Select "onlyoffice-docspace";
-8. Select "Start Server";
-9. Complete the OAuth authentication process.
+5. Save the file;
+6. Bring up Command Palette;
+7. Select "MCP: List Servers";
+8. Select "onlyoffice-docspace";
+9. Select "Start Server";
+10. Complete the OAuth authentication process.
 
 ## Command
 
-Connect to a locally running the MCP server using stdio transport.
+Connect to the locally running MCP server using stdio transport.
 
 Ensure [Docker] is installed on your system.
 
 1. Open Visual Studio Code;
-2. Bring up Command Pallette;
+2. Bring up Command Palette;
 3. Select "MCP: Open User Configuration";
 4. Add a new record to the `servers` section:
    ```json
@@ -49,7 +50,16 @@ Ensure [Docker] is installed on your system.
    	"servers": {
    		"onlyoffice-docspace": {
    			"command": "docker",
-   			"args": ["run", "onlyoffice/docspace-mcp", "--interactive", "--rm", "--env", "DOCSPACE_BASE_URL", "--env", "DOCSPACE_API_KEY"],
+   			"args": [
+   				"run",
+   				"--interactive",
+   				"--rm",
+   				"--env",
+   				"DOCSPACE_BASE_URL",
+   				"--env",
+   				"DOCSPACE_API_KEY",
+   				"onlyoffice/docspace-mcp"
+   			],
    			"env": {
    				"DOCSPACE_BASE_URL": "https://your-instance.onlyoffice.com",
    				"DOCSPACE_API_KEY": "your-api-key"
@@ -58,10 +68,11 @@ Ensure [Docker] is installed on your system.
    	}
    }
    ```
-5. Bring up Command Pallette;
-6. Select "MCP: List Servers";
-7. Select "onlyoffice-docspace";
-8. Select "Start Server".
+5. Save the file;
+6. Bring up Command Palette;
+7. Select "MCP: List Servers";
+8. Select "onlyoffice-docspace";
+9. Select "Start Server".
 
 ## References
 

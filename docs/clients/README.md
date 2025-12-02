@@ -8,3 +8,4 @@ clients.
 - [Claude Desktop](./claude-desktop.md)
 - [Claude WEB](./claude-web.md)
 - [Visual Studio Code](./vscode.md)
+- [Windsurf](./windsurf.md)

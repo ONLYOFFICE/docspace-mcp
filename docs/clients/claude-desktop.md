@@ -52,21 +52,20 @@ Ensure [Docker] is installed on your system.
 4. Click "Edit config";
 5. Open the configuration file in a text editor;
 6. Add a new record to the `mcpServers` section:
-
-```json
-{
-	"mcpServers": {
-		"onlyoffice-docspace": {
-			"command": "docker",
-			"args": ["run", "onlyoffice/docspace-mcp", "--interactive", "--rm", "--env", "DOCSPACE_BASE_URL", "--env", "DOCSPACE_API_KEY"],
-			"env": {
-				"DOCSPACE_BASE_URL": "https://your-instance.onlyoffice.com",
-				"DOCSPACE_API_KEY": "your-api-key"
-			}
-		}
-	}
-}
-```
+   ```json
+   {
+   	"mcpServers": {
+   		"onlyoffice-docspace": {
+   			"command": "docker",
+   			"args": ["run", "onlyoffice/docspace-mcp", "--interactive", "--rm", "--env", "DOCSPACE_BASE_URL", "--env", "DOCSPACE_API_KEY"],
+   			"env": {
+   				"DOCSPACE_BASE_URL": "https://your-instance.onlyoffice.com",
+   				"DOCSPACE_API_KEY": "your-api-key"
+   			}
+   		}
+   	}
+   }
+   ```
 
 ## References
 

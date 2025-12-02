@@ -6,3 +6,4 @@ clients.
 ## Contents
 
 - [Claude Desktop](./claude-desktop.md)
+- [Claude WEB](./claude-web.md)

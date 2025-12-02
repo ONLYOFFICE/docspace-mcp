@@ -13,7 +13,7 @@ WEB (i.e., https://claude.ai).
 Connect to the MCP server running remotely using Claude's Connectors. This is
 the preferred method of connection.
 
-1. Open Claude Desktop;
+1. Open Claude WEB;
 2. Navigate to Settings;
 3. Navigate to Connectors;
 4. Click "Add custom connector";

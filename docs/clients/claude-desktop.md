@@ -12,15 +12,15 @@ Desktop.
 
 ## Connector
 
-Connect to the MCP server running remotely using Claude's Custom Connectors.
-This is the preferred method of connection.
+Connect to the MCP server running remotely using Claude's Connectors. This is
+the preferred method of connection.
 
 1. Open Claude Desktop;
 2. Navigate to Settings;
 3. Navigate to Connectors;
 4. Click "Add custom connector";
 5. Enter a name (e.g., "ONLYOFFICE DocSpace MCP");
-6. Enter an URL (e.g., [https://mcp.onlyoffice.com/mcp]);
+6. Enter an URL (e.g., https://mcp.onlyoffice.com/mcp);
 7. Click "Add";
 8. Click "Connect" next to the newly added connector;
 9. Complete the OAuth authentication process.
@@ -84,7 +84,6 @@ Ensure [Docker] is installed on your system.
 [Claude Support: Getting Started with Local MCP Servers on Claude Desktop]: https://support.claude.com/en/articles/10949351-getting-started-with-local-mcp-servers-on-claude-desktop
 [Claude Support: Using the Connectors Directory to extend Claude's capabilities]: https://support.claude.com/en/articles/11724452-using-the-connectors-directory-to-extend-claude-s-capabilities
 
-[https://mcp.onlyoffice.com/mcp]: https://mcp.onlyoffice.com/mcp
 [GitHub Releases]: https://github.com/ONLYOFFICE/docspace-mcp/releases
 
 [Docker MCP: Configuration]: ../configuration/README.md

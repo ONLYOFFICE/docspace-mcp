@@ -7,4 +7,5 @@ MCP clients.
 
 - [Claude Desktop](./claude-desktop.md)
 - [Claude WEB](./claude-web.md)
+- [Cursor](./cursor.md)
 - [Visual Studio Code](./vscode.md)

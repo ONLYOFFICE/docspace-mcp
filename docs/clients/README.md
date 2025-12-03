@@ -5,8 +5,9 @@ MCP clients.
 
 ## Contents
 
+- [ChatGPT Web](./chatgpt-web.md)
 - [Claude Desktop](./claude-desktop.md)
-- [Claude WEB](./claude-web.md)
+- [Claude Web](./claude-web.md)
 - [Cursor](./cursor.md)
 - [Le Chat](./le-chat.md)
 - [Visual Studio Code](./vscode.md)

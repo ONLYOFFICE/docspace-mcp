@@ -1,7 +1,6 @@
-# Visual Studio Code
+# Cursor
 
-This document describes how to connect to the DocSpace MCP server using Visual
-Studio Code.
+This document describes how to connect to the DocSpace MCP server using Cursor.
 
 ## Contents
 
@@ -14,13 +13,14 @@ Studio Code.
 Connect to the MCP server running remotely using Streamable-HTTP transport. This
 is the preferred connection method.
 
-1. Open Visual Studio Code;
+1. Open Cursor;
 2. Bring up Command Palette;
-3. Select "MCP: Open User Configuration";
-4. Add a new record to the `servers` section:
+3. Select "View: Open MCP Settings";
+4. Click "Add Custom MCP";
+5. Add a new record to the `mcpServers` section:
    ```json
    {
-   	"servers": {
+   	"mcpServers": {
    		"onlyoffice-docspace": {
    			"type": "http",
    			"url": "https://mcp.onlyoffice.com/mcp"
@@ -28,12 +28,10 @@ is the preferred connection method.
    	}
    }
    ```
-5. Save the file;
-6. Bring up Command Palette;
-7. Select "MCP: List Servers";
-8. Select "onlyoffice-docspace";
-9. Select "Start Server";
-10. Complete the OAuth authentication process.
+6. Save the file;
+7. Navigate back to "MCP Settings";
+8. Click "Connect" next to the newly added MCP server;
+9. Complete the OAuth authentication process.
 
 ## Command
 
@@ -41,13 +39,14 @@ Connect to the locally running MCP server using stdio transport.
 
 Ensure [Docker] is installed on your system.
 
-1. Open Visual Studio Code;
+1. Open Cursor;
 2. Bring up Command Palette;
-3. Select "MCP: Open User Configuration";
-4. Add a new record to the `servers` section:
+3. Select "View: Open MCP Settings";
+4. Click "Add Custom MCP";
+5. Add a new record to the `mcpServers` section:
    ```json
    {
-   	"servers": {
+   	"mcpServers": {
    		"onlyoffice-docspace": {
    			"command": "docker",
    			"args": [
@@ -68,16 +67,12 @@ Ensure [Docker] is installed on your system.
    	}
    }
    ```
-5. Save the file;
-6. Bring up Command Palette;
-7. Select "MCP: List Servers";
-8. Select "onlyoffice-docspace";
-9. Select "Start Server".
+6. Save the file.
 
 ## References
 
-- [Visual Studio Code: Command Palette]
-- [Visual Studio Code: Use MCP Servers]
+- [Cursor: Keyboard Shortcuts]
+- [Cursor: Model Context Protocol (MCP)]
 - [Docker MCP: Distribution]
 - [Docker MCP: Installation]
 - [Docker MCP: Configuration]
@@ -86,8 +81,8 @@ Ensure [Docker] is installed on your system.
 
 [Docker]: https://www.docker.com/
 
-[Visual Studio Code: Use MCP Servers]: https://code.visualstudio.com/docs/copilot/customization/mcp-servers
-[Visual Studio Code: Command Palette]: https://code.visualstudio.com/docs/getstarted/userinterface/#_command-palette
+[Cursor: Keyboard Shortcuts]: https://cursor.com/docs/configuration/kbd
+[Cursor: Model Context Protocol (MCP)]: https://cursor.com/docs/context/mcp
 
 [Docker MCP: Configuration]: ../configuration/README.md
 [Docker MCP: Distribution]: ../distribution/README.md

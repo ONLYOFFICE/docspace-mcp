@@ -13,21 +13,21 @@ Desktop.
 ## Connector
 
 Connect to the MCP server running remotely using Claude's Connectors. This is
-the preferred method of connection.
+the preferred connection method.
 
 1. Open Claude Desktop;
 2. Navigate to Settings;
 3. Navigate to Connectors;
 4. Click "Add custom connector";
 5. Enter a name (e.g., "ONLYOFFICE DocSpace MCP");
-6. Enter an URL (e.g., https://mcp.onlyoffice.com/mcp);
+6. Enter a URL (e.g., https://mcp.onlyoffice.com/mcp);
 7. Click "Add";
 8. Click "Connect" next to the newly added connector;
 9. Complete the OAuth authentication process.
 
 ## Extension
 
-Connect to a locally running the MCP server using Claude's Extensions.
+Connect to the locally running MCP server using Claude's Extensions.
 
 Ensure [Node.js] version 18 or higher is installed on your system, then download
 the MCP bundle from [GitHub Releases].
@@ -42,7 +42,7 @@ the MCP bundle from [GitHub Releases].
 
 ## Local MCP
 
-Connect to a locally running the MCP server using Claude's Local MCP servers.
+Connect to the locally running MCP server using Claude's Local MCP servers.
 
 Ensure [Docker] is installed on your system.
 
@@ -57,7 +57,16 @@ Ensure [Docker] is installed on your system.
    	"mcpServers": {
    		"onlyoffice-docspace": {
    			"command": "docker",
-   			"args": ["run", "onlyoffice/docspace-mcp", "--interactive", "--rm", "--env", "DOCSPACE_BASE_URL", "--env", "DOCSPACE_API_KEY"],
+   			"args": [
+   				"run",
+   				"--interactive",
+   				"--rm",
+   				"--env",
+   				"DOCSPACE_BASE_URL",
+   				"--env",
+   				"DOCSPACE_API_KEY",
+   				"onlyoffice/docspace-mcp"
+   			],
    			"env": {
    				"DOCSPACE_BASE_URL": "https://your-instance.onlyoffice.com",
    				"DOCSPACE_API_KEY": "your-api-key"
@@ -66,6 +75,7 @@ Ensure [Docker] is installed on your system.
    	}
    }
    ```
+7. Save the file.
 
 ## References
 

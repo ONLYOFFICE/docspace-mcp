@@ -12,9 +12,9 @@ a remote machine.
 
 ## Public Instance
 
-The public instance is available at [https://mcp.onlyoffice.com/mcp] for clients
+The public instance is available at https://mcp.onlyoffice.com/mcp for clients
 that support modern Streamable HTTP transport and at
-[https://mcp.onlyoffice.com/sse] for clients that support only the legacy SSE
+https://mcp.onlyoffice.com/sse for clients that support only the legacy SSE
 transport. Prefer to use the Streamable HTTP transport whenever possible.
 
 The public instance supports authentication using OAuth, API key, Personal
@@ -91,9 +91,6 @@ https://henry.milton%40onlyoffice.com:ditgor-p...@mcp.onlyoffice.com/mcp?base_ur
 - [Docker MCP: Request Configuration]
 
 <!-- Definitions -->
-
-[https://mcp.onlyoffice.com/mcp]: https://mcp.onlyoffice.com/mcp
-[https://mcp.onlyoffice.com/sse]: https://mcp.onlyoffice.com/sse
 
 [MCP: Connect to Remote MCP Servers]: https://modelcontextprotocol.io/docs/tutorials/use-remote-mcp-server
 [MCP: Example Clients]: https://modelcontextprotocol.io/clients

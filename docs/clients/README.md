@@ -9,3 +9,4 @@ MCP clients.
 - [Claude WEB](./claude-web.md)
 - [Cursor](./cursor.md)
 - [Visual Studio Code](./vscode.md)
+- [Windsurf](./windsurf.md)

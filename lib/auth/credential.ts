@@ -85,8 +85,8 @@ export class CredentialParser {
 					[baseUrl]: z.string().optional().transform(zod.envOptionalBaseUrl()),
 					[apiKey]: z.string().trim().optional(),
 					[pat]: z.string().trim().optional(),
-					[username]: z.string().time().optional(),
-					[password]: z.string().time().optional(),
+					[username]: z.string().trim().optional(),
+					[password]: z.string().trim().optional(),
 				}).
 				transform((o) => ({
 					baseUrl: o[baseUrl],

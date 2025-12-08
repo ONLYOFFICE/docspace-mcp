@@ -22,7 +22,7 @@
  */
 
 import * as types from "@modelcontextprotocol/sdk/types.js"
-import type * as zodToJsonSchema from "zod-to-json-schema"
+import type * as z from "zod"
 import * as api from "../api.ts"
 import * as errors from "../util/errors.ts"
 import type * as mcp from "../util/mcp.ts"
@@ -46,9 +46,9 @@ export type CallRegularToolHandler = (
 ) => CallRegularToolHandlerResult
 
 export type CallRegularToolHandlerResult =
-	result.Result<zodToJsonSchema.JsonSchema7Type, Error> |
+	result.Result<z.core.JSONSchema.BaseSchema, Error> |
 	Promise<result.Result<api.Response, Error>> |
-	Promise<result.Result<zodToJsonSchema.JsonSchema7Type, Error>> |
+	Promise<result.Result<z.core.JSONSchema.BaseSchema, Error>> |
 	Promise<result.Result<string, Error>>
 
 export interface ConfiguredServerConfig {

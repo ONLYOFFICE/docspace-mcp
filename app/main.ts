@@ -86,20 +86,20 @@ const ConfigSchema = z.
 	object({
 		DOCSPACE_INTERNAL: z.
 			string().
-			default("0").
+			prefault("0").
 			transform(zod.envBoolean()),
 		DOCSPACE_TRANSPORT: z.
 			string().
 			toLowerCase().
-			default("stdio").
+			prefault("stdio").
 			transform(zod.envUnion(availableTransports)),
 		DOCSPACE_DYNAMIC: z.
 			string().
-			default("0").
+			prefault("0").
 			transform(zod.envBoolean()),
 		DOCSPACE_TOOLSETS: z.
 			string().
-			default("all").
+			prefault("all").
 			transform(zod.envOptions(["all", ...availableToolsets])).
 			transform((o) => {
 				if (o.includes("all")) {
@@ -109,229 +109,229 @@ const ConfigSchema = z.
 			}),
 		DOCSPACE_ENABLED_TOOLS: z.
 			string().
-			default("").
+			prefault("").
 			transform(zod.envOptions(availableTools)),
 		DOCSPACE_DISABLED_TOOLS: z.
 			string().
-			default("").
+			prefault("").
 			transform(zod.envOptions(availableTools)),
 		DOCSPACE_SESSION_TTL: z.
 			string().
-			default("28800000"). // 8 hours
+			prefault("28800000"). // 8 hours
 			transform(zod.envNumber()).
 			pipe(z.number().min(0)),
 		DOCSPACE_SESSION_INTERVAL: z.
 			string().
-			default("240000"). // 4 minutes
+			prefault("240000"). // 4 minutes
 			transform(zod.envNumber()).
 			pipe(z.number().min(0)),
 		DOCSPACE_USER_AGENT: z.
 			string().
 			trim().
-			default(`${meta.name} v${meta.version}`),
+			prefault(`${meta.name} v${meta.version}`),
 		DOCSPACE_BASE_URL: z.
 			string().
-			default("").
+			prefault("").
 			transform(zod.envBaseUrl()),
 		DOCSPACE_AUTHORIZATION: z.
 			string().
 			trim().
-			default(""),
+			prefault(""),
 		DOCSPACE_API_KEY: z.
 			string().
 			trim().
-			default(""),
+			prefault(""),
 		DOCSPACE_AUTH_TOKEN: z.
 			string().
 			trim().
-			default(""),
+			prefault(""),
 		DOCSPACE_USERNAME: z.
 			string().
 			trim().
-			default(""),
+			prefault(""),
 		DOCSPACE_PASSWORD: z.
 			string().
 			trim().
-			default(""),
+			prefault(""),
 		DOCSPACE_OAUTH_BASE_URL: z.
 			string().
-			default("").
+			prefault("").
 			transform(zod.envBaseUrl()),
 		DOCSPACE_OAUTH_CLIENT_ID: z.
 			string().
 			trim().
-			default(""),
+			prefault(""),
 		DOCSPACE_OAUTH_CLIENT_SECRET: z.
 			string().
 			trim().
-			default(""),
+			prefault(""),
 		DOCSPACE_OAUTH_AUTH_TOKEN_ALGORITHM: z.
 			string().
 			toUpperCase().
-			default("HS256").
+			prefault("HS256").
 			transform(zod.envUnion<Algorithm | "">(["", ...availableAlgorithms])),
 		DOCSPACE_OAUTH_AUTH_TOKEN_TTL: z.
 			string().
-			default("3600000").
+			prefault("3600000").
 			transform(zod.envNumber()).
 			pipe(z.number().min(0)), // 1 hour
 		DOCSPACE_OAUTH_AUTH_TOKEN_SECRET_KEY: z.
 			string().
 			trim().
-			default(""),
+			prefault(""),
 		DOCSPACE_OAUTH_STATE_TOKEN_ALGORITHM: z.
 			string().
 			toUpperCase().
-			default("HS256").
+			prefault("HS256").
 			transform(zod.envUnion<Algorithm | "">(["", ...availableAlgorithms])),
 		DOCSPACE_OAUTH_STATE_TOKEN_TTL: z.
 			string().
-			default("3600000").
+			prefault("3600000").
 			transform(zod.envNumber()).
 			pipe(z.number().min(0)), // 1 hour
 		DOCSPACE_OAUTH_STATE_TOKEN_SECRET_KEY: z.
 			string().
 			trim().
-			default(""),
+			prefault(""),
 		DOCSPACE_SERVER_BASE_URL: z.
 			string().
-			default("").
+			prefault("").
 			transform(zod.envBaseUrl()),
 		DOCSPACE_HOST: z.
 			string().
 			trim().
-			default("127.0.0.1"),
+			prefault("127.0.0.1"),
 		DOCSPACE_PORT: z.
 			string().
-			default("8080").
+			prefault("8080").
 			transform(zod.envNumber()).
 			pipe(z.number().min(0).max(65535)),
 		DOCSPACE_PROXY_HOPS: z.
 			string().
-			default("0").
+			prefault("0").
 			transform(zod.envNumber()).
 			pipe(z.number().min(0)),
 		DOCSPACE_SERVER_CORS_MCP_ORIGIN: z.
 			string().
-			default("*").
+			prefault("*").
 			transform(zod.envList()),
 		DOCSPACE_SERVER_CORS_MCP_MAX_AGE: z.
 			string().
-			default("86400000"). // 1 day
+			prefault("86400000"). // 1 day
 			transform(zod.envNumber()).
 			pipe(z.number().min(0)),
 		DOCSPACE_SERVER_CORS_OAUTH_ORIGIN: z.
 			string().
-			default("*").
+			prefault("*").
 			transform(zod.envList()),
 		DOCSPACE_SERVER_CORS_OAUTH_MAX_AGE: z.
 			string().
-			default("86400000"). // 1 day
+			prefault("86400000"). // 1 day
 			transform(zod.envNumber()).
 			pipe(z.number().min(0)),
 		DOCSPACE_SERVER_RATE_LIMITS_MCP_CAPACITY: z.
 			string().
-			default("1000").
+			prefault("1000").
 			transform(zod.envNumber()).
 			pipe(z.number().min(0)),
 		DOCSPACE_SERVER_RATE_LIMITS_MCP_WINDOW: z.
 			string().
-			default("1000"). // 1 second
+			prefault("1000"). // 1 second
 			transform(zod.envNumber()).
 			pipe(z.number().min(0)),
 		DOCSPACE_SERVER_RATE_LIMITS_OAUTH_SERVER_METADATA_CAPACITY: z.
 			string().
-			default("200").
+			prefault("200").
 			transform(zod.envNumber()).
 			pipe(z.number().min(0)),
 		DOCSPACE_SERVER_RATE_LIMITS_OAUTH_SERVER_METADATA_WINDOW: z.
 			string().
-			default("60000"). // 1 minute
+			prefault("60000"). // 1 minute
 			transform(zod.envNumber()).
 			pipe(z.number().min(0)),
 		DOCSPACE_SERVER_RATE_LIMITS_OAUTH_RESOURCE_METADATA_CAPACITY: z.
 			string().
-			default("200").
+			prefault("200").
 			transform(zod.envNumber()).
 			pipe(z.number().min(0)),
 		DOCSPACE_SERVER_RATE_LIMITS_OAUTH_RESOURCE_METADATA_WINDOW: z.
 			string().
-			default("60000"). // 1 minute
+			prefault("60000"). // 1 minute
 			transform(zod.envNumber()).
 			pipe(z.number().min(0)),
 		DOCSPACE_SERVER_RATE_LIMITS_OAUTH_AUTHORIZE_CAPACITY: z.
 			string().
-			default("200").
+			prefault("200").
 			transform(zod.envNumber()).
 			pipe(z.number().min(0)),
 		DOCSPACE_SERVER_RATE_LIMITS_OAUTH_AUTHORIZE_WINDOW: z.
 			string().
-			default("60000"). // 1 minute
+			prefault("60000"). // 1 minute
 			transform(zod.envNumber()).
 			pipe(z.number().min(0)),
 		DOCSPACE_SERVER_RATE_LIMITS_OAUTH_CALLBACK_CAPACITY: z.
 			string().
-			default("200").
+			prefault("200").
 			transform(zod.envNumber()).
 			pipe(z.number().min(0)),
 		DOCSPACE_SERVER_RATE_LIMITS_OAUTH_CALLBACK_WINDOW: z.
 			string().
-			default("60000"). // 1 minute
+			prefault("60000"). // 1 minute
 			transform(zod.envNumber()).
 			pipe(z.number().min(0)),
 		DOCSPACE_SERVER_RATE_LIMITS_OAUTH_INTROSPECT_CAPACITY: z.
 			string().
-			default("10").
+			prefault("10").
 			transform(zod.envNumber()).
 			pipe(z.number().min(0)),
 		DOCSPACE_SERVER_RATE_LIMITS_OAUTH_INTROSPECT_WINDOW: z.
 			string().
-			default("60000"). // 1 minute
+			prefault("60000"). // 1 minute
 			transform(zod.envNumber()).
 			pipe(z.number().min(0)),
 		DOCSPACE_SERVER_RATE_LIMITS_OAUTH_REGISTER_CAPACITY: z.
 			string().
-			default("10").
+			prefault("10").
 			transform(zod.envNumber()).
 			pipe(z.number().min(0)),
 		DOCSPACE_SERVER_RATE_LIMITS_OAUTH_REGISTER_WINDOW: z.
 			string().
-			default("60000"). // 1 minute
+			prefault("60000"). // 1 minute
 			transform(zod.envNumber()).
 			pipe(z.number().min(0)),
 		DOCSPACE_SERVER_RATE_LIMITS_OAUTH_REVOKE_CAPACITY: z.
 			string().
-			default("10").
+			prefault("10").
 			transform(zod.envNumber()).
 			pipe(z.number().min(0)),
 		DOCSPACE_SERVER_RATE_LIMITS_OAUTH_REVOKE_WINDOW: z.
 			string().
-			default("60000"). // 1 minute
+			prefault("60000"). // 1 minute
 			transform(zod.envNumber()).
 			pipe(z.number().min(0)),
 		DOCSPACE_SERVER_RATE_LIMITS_OAUTH_TOKEN_CAPACITY: z.
 			string().
-			default("10").
+			prefault("10").
 			transform(zod.envNumber()).
 			pipe(z.number().min(0)),
 		DOCSPACE_SERVER_RATE_LIMITS_OAUTH_TOKEN_WINDOW: z.
 			string().
-			default("60000"). // 1 minute
+			prefault("60000"). // 1 minute
 			transform(zod.envNumber()).
 			pipe(z.number().min(0)),
 		DOCSPACE_REQUEST_QUERY: z.
 			string().
-			default("1").
+			prefault("1").
 			transform(zod.envBoolean()),
 		DOCSPACE_REQUEST_AUTHORIZATION_HEADER: z.
 			string().
-			default("1").
+			prefault("1").
 			transform(zod.envBoolean()),
 		DOCSPACE_REQUEST_HEADER_PREFIX: z.
 			string().
 			trim().
 			toLowerCase().
-			default("x-mcp-"),
+			prefault("x-mcp-"),
 	}).
 	transform((o) => ({
 		internal: o.DOCSPACE_INTERNAL,

@@ -41,7 +41,7 @@ export const GetToolOutputSchemaInputSchema = z.object({
 
 export const CallToolInputSchema = z.object({
 	tool: z.string().describe("The name of the tool to call."),
-	input: z.object({}).passthrough().optional().describe("The value that corresponds to the input schema of the tool."),
+	input: z.looseObject({}).optional().describe("The value that corresponds to the input schema of the tool."),
 })
 
 export class MetaTools {

@@ -24,7 +24,7 @@
 /* eslint-disable typescript/consistent-type-definitions */
 
 import jwt from "jsonwebtoken"
-import z from "zod"
+import * as z from "zod"
 import * as r from "../util/result.ts"
 import {JwsHeaderSchema, JwtClaimsSchema} from "./shared.ts"
 

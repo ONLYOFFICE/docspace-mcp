@@ -23,8 +23,6 @@
 
 import path from "node:path"
 import * as z from "zod"
-import type {JsonSchema7Type} from "zod-to-json-schema"
-import {zodToJsonSchema} from "zod-to-json-schema"
 import {
 	CreateFolderFiltersSchema,
 	CreateRoomFiltersSchema,
@@ -65,7 +63,7 @@ import type {
 } from "../api.ts"
 import type {Result} from "../util/result.ts"
 import {error, ok, safeAsync, safeSync} from "../util/result.ts"
-import {numberUnionToEnum} from "../util/zod.ts"
+import {unionToEnum} from "../util/zod.ts"
 import type {ConfiguredServer} from "./configured-server.ts"
 
 //
@@ -217,52 +215,52 @@ const RoomInvitationAccessSchema = z.union([
 
 const FormFillingRoomInvitationAccessSchema = z.union([
 	/* eslint-disable no-underscore-dangle */
-	RoomInvitationAccessSchema._def.options[4],
-	RoomInvitationAccessSchema._def.options[5],
-	RoomInvitationAccessSchema._def.options[7],
+	RoomInvitationAccessSchema._zod.def.options[4],
+	RoomInvitationAccessSchema._zod.def.options[5],
+	RoomInvitationAccessSchema._zod.def.options[7],
 	/* eslint-enable no-underscore-dangle */
 ])
 
 const CollaborationRoomInvitationAccessSchema = z.union([
 	/* eslint-disable no-underscore-dangle */
-	RoomInvitationAccessSchema._def.options[1],
-	RoomInvitationAccessSchema._def.options[5],
-	RoomInvitationAccessSchema._def.options[6],
-	RoomInvitationAccessSchema._def.options[7],
+	RoomInvitationAccessSchema._zod.def.options[1],
+	RoomInvitationAccessSchema._zod.def.options[5],
+	RoomInvitationAccessSchema._zod.def.options[6],
+	RoomInvitationAccessSchema._zod.def.options[7],
 	/* eslint-enable no-underscore-dangle */
 ])
 
 const CustomRoomInvitationAccessSchema = z.union([
 	/* eslint-disable no-underscore-dangle */
-	RoomInvitationAccessSchema._def.options[1],
-	RoomInvitationAccessSchema._def.options[2],
-	RoomInvitationAccessSchema._def.options[3],
-	RoomInvitationAccessSchema._def.options[5],
-	RoomInvitationAccessSchema._def.options[6],
-	RoomInvitationAccessSchema._def.options[7],
+	RoomInvitationAccessSchema._zod.def.options[1],
+	RoomInvitationAccessSchema._zod.def.options[2],
+	RoomInvitationAccessSchema._zod.def.options[3],
+	RoomInvitationAccessSchema._zod.def.options[5],
+	RoomInvitationAccessSchema._zod.def.options[6],
+	RoomInvitationAccessSchema._zod.def.options[7],
 	/* eslint-enable no-underscore-dangle */
 ])
 
 const PublicRoomInvitationAccessSchema = z.union([
 	/* eslint-disable no-underscore-dangle */
-	RoomInvitationAccessSchema._def.options[5],
-	RoomInvitationAccessSchema._def.options[7],
+	RoomInvitationAccessSchema._zod.def.options[5],
+	RoomInvitationAccessSchema._zod.def.options[7],
 	/* eslint-enable no-underscore-dangle */
 ])
 
 const VirtualDataRoomInvitationAccessSchema = z.union([
 	/* eslint-disable no-underscore-dangle */
-	RoomInvitationAccessSchema._def.options[1],
-	RoomInvitationAccessSchema._def.options[4],
-	RoomInvitationAccessSchema._def.options[5],
-	RoomInvitationAccessSchema._def.options[6],
-	RoomInvitationAccessSchema._def.options[7],
+	RoomInvitationAccessSchema._zod.def.options[1],
+	RoomInvitationAccessSchema._zod.def.options[4],
+	RoomInvitationAccessSchema._zod.def.options[5],
+	RoomInvitationAccessSchema._zod.def.options[6],
+	RoomInvitationAccessSchema._zod.def.options[7],
 	/* eslint-enable no-underscore-dangle */
 ])
 
 export const CreateRoomInputSchema = z.object({
 	title: z.string().describe("The title of the room to create."),
-	roomType: numberUnionToEnum(RoomTypeSchema, "The type of the room to create.").optional().default(6),
+	roomType: unionToEnum(RoomTypeSchema, "The type of the room to create.").optional().default(6),
 	filters: CreateRoomFiltersSchema.describe("The filters to apply to the room creation."),
 })
 
@@ -309,7 +307,7 @@ export const SetRoomSecurityInputSchema = z.object({
 						string().
 						optional().
 						describe("The email of the user to invite or remove. Mutually exclusive with User ID."),
-					access: numberUnionToEnum(RoomInvitationAccessSchema, "The access level to grant to the user. May vary depending on the type of room.").
+					access: unionToEnum(RoomInvitationAccessSchema, "The access level to grant to the user. May vary depending on the type of room.").
 						optional(),
 				}).
 				describe("The invitation or removal of a user. Must contain either User ID or User Email.").
@@ -943,11 +941,11 @@ export class RegularTools {
 		return ok(res)
 	}
 
-	getRoomTypes(): Result<JsonSchema7Type, Error> {
-		return ok(zodToJsonSchema(RoomTypeSchema))
+	getRoomTypes(): Result<z.core.JSONSchema.BaseSchema, Error> {
+		return ok(z.toJSONSchema(RoomTypeSchema))
 	}
 
-	async getRoomAccessLevels(signal: AbortSignal, p: unknown): Promise<Result<JsonSchema7Type, Error>> {
+	async getRoomAccessLevels(signal: AbortSignal, p: unknown): Promise<Result<z.core.JSONSchema.BaseSchema, Error>> {
 		let pr = GetRoomAccessLevelsSchema.safeParse(p)
 		if (!pr.success) {
 			return error(new Error("Parsing input.", {cause: pr.error}))
@@ -964,7 +962,7 @@ export class RegularTools {
 			return error(new Error("Room type is not defined."))
 		}
 
-		let sh: z.ZodSchema<unknown>
+		let sh: z.ZodType
 
 		switch (gd.roomType) {
 		case 1:
@@ -987,7 +985,7 @@ export class RegularTools {
 			break
 		}
 
-		return ok(zodToJsonSchema(sh))
+		return ok(z.toJSONSchema(sh))
 	}
 
 	//

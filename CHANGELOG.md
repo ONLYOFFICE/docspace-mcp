@@ -11,7 +11,8 @@ This document records all notable changes to the project, following the
 
 - Update `@modelcontextprotocol/sdk` to 1.24.3, `express` to 5.2.1,
   `express-rate-limit` to 8.2.1, `jsonwebtoken` to 9.0.3, `zod` to 4.1.13
-  ([1da5a12], [05d37dd]).
+  ([1da5a12], [05d37dd]);
+- Update Node.js to 24.11.1 in OCI image ([02b1525]).
 
 ### Fixed
 
@@ -279,6 +280,7 @@ There are no noticeable changes in version [3.0.1].
 [0.1.1]: https://github.com/onlyoffice/docspace-mcp/compare/v0.1.0...v0.1.1/
 [0.1.0]: https://github.com/onlyoffice/docspace-mcp/releases/tag/v0.1.0/
 
+[02b1525]: https://github.com/onlyoffice/docspace-mcp/commit/02b152547f2ff35b2d17ecb9b8491e97036a0659/
 [05d37dd]: https://github.com/onlyoffice/docspace-mcp/commit/05d37ddc35739c496ca307b4b7358558c5db470f/
 [1da5a12]: https://github.com/onlyoffice/docspace-mcp/commit/1da5a12c446f1926f63d8b08d302b034e59b7013/
 [9abb089]: https://github.com/onlyoffice/docspace-mcp/commit/9abb0898d91ad49aeb450dc41d48b77659a4cd81/

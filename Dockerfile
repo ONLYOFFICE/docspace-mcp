@@ -1,4 +1,4 @@
-FROM node:24.1.0-alpine3.22 AS build
+FROM node:24.11.1-alpine3.22 AS build
 WORKDIR /srv/onlyoffice-docspace-mcp
 COPY app app
 COPY lib lib
@@ -11,7 +11,7 @@ RUN \
 	pnpm install --frozen-lockfile && \
 	pnpm build-app
 
-FROM node:24.1.0-alpine3.22
+FROM node:24.11.1-alpine3.22
 LABEL org.opencontainers.image.authors="Ascensio System SIA <integration@onlyoffice.com>"
 LABEL org.opencontainers.image.url="https://github.com/onlyoffice/docspace-mcp/"
 LABEL org.opencontainers.image.documentation="https://github.com/onlyoffice/docspace-mcp/blob/v3.1.0/README.md"

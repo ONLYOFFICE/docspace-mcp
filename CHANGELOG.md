@@ -7,6 +7,12 @@ This document records all notable changes to the project, following the
 
 <!-- There are no noticeable changes in version [unreleased]. -->
 
+### Changed
+
+- Update `@modelcontextprotocol/sdk` to 1.24.3, `express` to 5.2.1,
+  `express-rate-limit` to 8.2.1, `jsonwebtoken` to 9.0.3, `zod` to 4.1.13
+  ([1da5a12], [05d37dd]).
+
 ### Fixed
 
 - Fix validation of custom headers for username and password ([9abb089]).
@@ -273,6 +279,8 @@ There are no noticeable changes in version [3.0.1].
 [0.1.1]: https://github.com/onlyoffice/docspace-mcp/compare/v0.1.0...v0.1.1/
 [0.1.0]: https://github.com/onlyoffice/docspace-mcp/releases/tag/v0.1.0/
 
+[05d37dd]: https://github.com/onlyoffice/docspace-mcp/commit/05d37ddc35739c496ca307b4b7358558c5db470f/
+[1da5a12]: https://github.com/onlyoffice/docspace-mcp/commit/1da5a12c446f1926f63d8b08d302b034e59b7013/
 [9abb089]: https://github.com/onlyoffice/docspace-mcp/commit/9abb0898d91ad49aeb450dc41d48b77659a4cd81/
 [c7dc55c]: https://github.com/onlyoffice/docspace-mcp/commit/c7dc55cdea38aceb250f08109797e4e9898fc125/
 [081bf37]: https://github.com/onlyoffice/docspace-mcp/commit/081bf376dccbfb4b2103b914f4e78687781673ec/

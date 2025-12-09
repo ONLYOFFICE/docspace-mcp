@@ -165,7 +165,7 @@ export function format(err: Error): string {
 					if (typeof e === "number") {
 						p += `[${e}]`
 					} else {
-						p += `.${e}`
+						p += `.${e.toString()}`
 					}
 				}
 

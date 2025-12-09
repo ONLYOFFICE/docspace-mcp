@@ -22,7 +22,7 @@
  */
 
 import * as z from "zod"
-import {numberUnionToEnum, stringUnionToEnum, wrapUnion} from "../util/zod.ts"
+import * as zod from "../util/zod.ts"
 
 /**
  * {@link https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/builtin-types/reference-types/#the-object-type | .NET Reference}
@@ -33,7 +33,7 @@ export const TypeObjectSchema = z.union([
 	z.boolean(),
 	z.null(),
 	z.array(z.unknown()),
-	z.object({}).passthrough(),
+	z.looseObject({}),
 ])
 
 /**
@@ -127,13 +127,11 @@ export const EmployeeStatusSchema = z.union([
 /**
  * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.2.1-server/common/ASC.Api.Core/Model/EmployeeDto.cs/#L34 | DocSpace Reference}
  */
-export const EmployeeDtoSchema = z.
-	object({
-		id: z.string().optional().describe("The user ID."),
-		displayName: z.string().optional().describe("The user display name."),
-		isAnonim: z.boolean().optional().describe("Specifies if the user is anonymous or not."),
-	}).
-	passthrough()
+export const EmployeeDtoSchema = z.looseObject({
+	id: z.string().optional().describe("The user ID."),
+	displayName: z.string().optional().describe("The user display name."),
+	isAnonim: z.boolean().optional().describe("Specifies if the user is anonymous or not."),
+})
 
 /**
  * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.2.1-server/common/ASC.Api.Core/Model/EmployeeDto.cs/#L34 | DocSpace Reference}
@@ -155,19 +153,17 @@ export const EmployeeDtoFieldSchema = z.union([
 /**
  * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.5.0-server/common/ASC.Api.Core/Model/EmployeeFullDto.cs/#L34 | DocSpace Reference}
  */
-export const EmployeeFullDtoSchema = EmployeeDtoSchema.
-	extend({
-		email: z.string().optional().describe("The user email."),
-		birthday: z.string().optional().describe("The user birthday."),
-		status: numberUnionToEnum(EmployeeStatusSchema, "The user status.").optional(),
-		department: z.string().optional().describe("The user department."),
-		isAdmin: z.boolean().optional().describe("Specifies if the user is an administrator or not."),
-		isRoomAdmin: z.boolean().optional().describe("Specifies if the user is a room administrator or not."),
-		isOwner: z.boolean().optional().describe("Specifies if the user is a portal owner or not."),
-		isVisitor: z.boolean().optional().describe("Specifies if the user is a portal visitor or not."),
-		isCollaborator: z.boolean().optional().describe("Specifies if the user is a portal collaborator or not."),
-	}).
-	passthrough()
+export const EmployeeFullDtoSchema = EmployeeDtoSchema.extend({
+	email: z.string().optional().describe("The user email."),
+	birthday: z.string().optional().describe("The user birthday."),
+	status: zod.unionToEnum(EmployeeStatusSchema, "The user status.").optional(),
+	department: z.string().optional().describe("The user department."),
+	isAdmin: z.boolean().optional().describe("Specifies if the user is an administrator or not."),
+	isRoomAdmin: z.boolean().optional().describe("Specifies if the user is a room administrator or not."),
+	isOwner: z.boolean().optional().describe("Specifies if the user is a portal owner or not."),
+	isVisitor: z.boolean().optional().describe("Specifies if the user is a portal visitor or not."),
+	isCollaborator: z.boolean().optional().describe("Specifies if the user is a portal collaborator or not."),
+})
 
 /**
  * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.1.1-server/common/ASC.Api.Core/Model/EmployeeFullDto.cs/#L34 | DocSpace Reference}
@@ -299,7 +295,7 @@ export const UpdateRoomRequestSchema = z.object({
  * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/products/ASC.Files/Core/ApiModels/RequestDto/CreateRoomRequestDto.cs/#L72 | DocSpace Reference}
  */
 export const CreateRoomRequestDtoSchema = UpdateRoomRequestSchema.extend({
-	roomType: numberUnionToEnum(RoomTypeSchema, "").optional(),
+	roomType: zod.unionToEnum(RoomTypeSchema, "").optional(),
 })
 
 /**
@@ -371,7 +367,7 @@ export const FileShareSchema = z.union([
  */
 export const RoomInvitationSchema = EmailInvitationDtoSchema.extend({
 	id: z.string().optional(),
-	access: numberUnionToEnum(FileShareSchema, "").optional(),
+	access: zod.unionToEnum(FileShareSchema, "").optional(),
 })
 
 /**
@@ -419,20 +415,18 @@ export const FileTypeSchema = z.union([
 /**
  * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.2.1-server/products/ASC.Files/Core/ApiModels/ResponseDto/FileEntryDto.cs/#L45 | DocSpace Reference}
  */
-export const FileEntryDtoSchema = z.
-	object({
-		id: JsonElementSchema.optional().describe("The file entry ID."),
-		rootFolderId: JsonElementSchema.optional().describe("The root folder ID of the file entry."),
-		canShare: z.boolean().optional().describe("Specifies if the file entry can be shared or not."),
-		security: z.unknown().optional().describe("The actions that can be performed with the file entry."),
-		title: z.string().optional().describe("The file entry title."),
-		access: z.unknown().optional().describe("The access rights to the file entry."),
-		shared: z.boolean().optional().describe("Specifies if the file entry is shared or not."),
-		created: z.string().optional().describe("The date and time when the file entry was created."),
-		createdBy: EmployeeDtoSchema.optional().describe("The user who created the file entry."),
-		fileEntityType: numberUnionToEnum(FileEntityTypeSchema, "The file entry type.").optional(),
-	}).
-	passthrough()
+export const FileEntryDtoSchema = z.looseObject({
+	id: JsonElementSchema.optional().describe("The file entry ID."),
+	rootFolderId: JsonElementSchema.optional().describe("The root folder ID of the file entry."),
+	canShare: z.boolean().optional().describe("Specifies if the file entry can be shared or not."),
+	security: z.unknown().optional().describe("The actions that can be performed with the file entry."),
+	title: z.string().optional().describe("The file entry title."),
+	access: z.unknown().optional().describe("The access rights to the file entry."),
+	shared: z.boolean().optional().describe("Specifies if the file entry is shared or not."),
+	created: z.string().optional().describe("The date and time when the file entry was created."),
+	createdBy: EmployeeDtoSchema.optional().describe("The user who created the file entry."),
+	fileEntityType: zod.unionToEnum(FileEntityTypeSchema, "The file entry type.").optional(),
+})
 
 /**
  * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.2.1-server/products/ASC.Files/Core/ApiModels/ResponseDto/FileEntryDto.cs/#L45 | DocSpace Reference}
@@ -451,7 +445,7 @@ export const FileEntryDtoFieldSchema = z.union([
 	z.literal("access").describe("The access rights to the file entry."),
 	z.literal("shared").describe("Specifies if the file entry is shared or not."),
 	z.literal("created").describe("The creation date and time of the file entry."),
-	...wrapUnion(EmployeeDtoFieldSchema, "createdBy").options,
+	...zod.wrapUnion(EmployeeDtoFieldSchema, "createdBy").options,
 	// z.literal("updated"),
 	// z.literal("autoDelete"),
 	// z.literal("rootFolderType").describe("The root folder type of the file entry."),
@@ -468,16 +462,14 @@ export const FileEntryDtoFieldSchema = z.union([
 /**
  * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.2.1-server/products/ASC.Files/Core/ApiModels/ResponseDto/FileDto.cs/#L32 | DocSpace Reference}
  */
-export const FileDtoSchema = FileEntryDtoSchema.
-	extend({
-		folderId: JsonElementSchema.optional().describe("The folder ID where the file is located."),
-		fileType: numberUnionToEnum(FileTypeSchema, "The file type.").optional(),
-		fileExst: z.string().optional().describe("The file extension."),
-		comment: z.string().optional().describe("The comment to the file."),
-		encrypted: z.boolean().optional().describe("Specifies if the file is encrypted or not."),
-		locked: z.boolean().optional().describe("Specifies if the file is locked or not."),
-	}).
-	passthrough()
+export const FileDtoSchema = FileEntryDtoSchema.extend({
+	folderId: JsonElementSchema.optional().describe("The folder ID where the file is located."),
+	fileType: zod.unionToEnum(FileTypeSchema, "The file type.").optional(),
+	fileExst: z.string().optional().describe("The file extension."),
+	comment: z.string().optional().describe("The comment to the file."),
+	encrypted: z.boolean().optional().describe("Specifies if the file is encrypted or not."),
+	locked: z.boolean().optional().describe("Specifies if the file is locked or not."),
+})
 
 // /**
 //  * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.1.1-server/products/ASC.Files/Core/ApiModels/ResponseDto/FileDto.cs/#L471 | DocSpace Reference}
@@ -532,15 +524,13 @@ export const FileDtoFieldSchema = z.union([
 /**
  * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/products/ASC.Files/Core/ApiModels/ResponseDto/FileOperationDto.cs/#L29 | DocSpace Reference}
  */
-export const FileOperationDtoSchema = z.
-	object({
-		id: z.string().optional(),
-		progress: z.number().optional(),
-		error: z.string().optional(),
-		finished: z.boolean().optional(),
-		url: z.string().optional(),
-	}).
-	passthrough()
+export const FileOperationDtoSchema = z.looseObject({
+	id: z.string().optional(),
+	progress: z.number().optional(),
+	error: z.string().optional(),
+	finished: z.boolean().optional(),
+	url: z.string().optional(),
+})
 
 /**
  * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.2.1-server/products/ASC.Files/Core/Core/Security/SubjectType.cs/#L61 | DocSpace Reference}
@@ -556,16 +546,14 @@ export const SubjectTypeSchema = z.union([
 /**
  * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.2.1-server/products/ASC.Files/Core/ApiModels/ResponseDto/FileShareDto.cs/#L32 | DocSpace Reference}
  */
-export const FileShareDtoSchema = z.
-	object({
-		access: numberUnionToEnum(FileShareSchema, "The access rights type.").optional(),
-		sharedTo: z.unknown().optional().describe("The user who has the access to the specified file."),
-		isLocked: z.boolean().optional().describe("Specifies if the access right is locked or not."),
-		isOwner: z.boolean().optional().describe("Specifies if the user is an owner of the specified file or not."),
-		canEditAccess: z.boolean().optional().describe("Specifies if the user can edit the access to the specified file or not."),
-		subjectType: numberUnionToEnum(SubjectTypeSchema, "The subject type.").optional(),
-	}).
-	passthrough()
+export const FileShareDtoSchema = z.looseObject({
+	access: zod.unionToEnum(FileShareSchema, "The access rights type.").optional(),
+	sharedTo: z.unknown().optional().describe("The user who has the access to the specified file."),
+	isLocked: z.boolean().optional().describe("Specifies if the access right is locked or not."),
+	isOwner: z.boolean().optional().describe("Specifies if the user is an owner of the specified file or not."),
+	canEditAccess: z.boolean().optional().describe("Specifies if the user can edit the access to the specified file or not."),
+	subjectType: zod.unionToEnum(SubjectTypeSchema, "The subject type.").optional(),
+})
 
 /**
  * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.2.1-server/products/ASC.Files/Core/ApiModels/ResponseDto/FileShareDto.cs/#L32 | DocSpace Reference}
@@ -582,11 +570,9 @@ export const FileShareDtoFieldSchema = z.union([
 /**
  * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.1.1-server/products/ASC.Files/Core/ApiModels/ResponseDto/FilesSettingsDto.cs/#L32 | DocSpace Reference}
  */
-export const FilesSettingsDtoSchema = z.
-	object({
-		extsConvertible: z.record(z.string(), z.array(z.string()).optional()).optional(),
-	}).
-	passthrough()
+export const FilesSettingsDtoSchema = z.looseObject({
+	extsConvertible: z.record(z.string(), z.array(z.string()).optional()).optional(),
+})
 
 // /**
 //  * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.1.1-server/products/ASC.Files/Core/Core/VirtualRooms/Logo.cs/#L73 | DocSpace Reference}
@@ -637,20 +623,18 @@ export const FilesSettingsDtoSchema = z.
 /**
  * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.2.1-server/products/ASC.Files/Core/ApiModels/ResponseDto/FolderDto.cs/#L32 | DocSpace Reference}
  */
-export const FolderDtoSchema = FileEntryDtoSchema.
-	extend({
-		parentId: JsonElementSchema.optional().describe("The parent folder ID of the folder."),
-		filesCount: z.number().optional().describe("The number of files that the folder contains."),
-		foldersCount: z.number().optional().describe("The number of folders that the folder contains."),
-		isShareable: z.boolean().optional().describe("Specifies if the folder can be shared or not."),
-		isFavorite: z.boolean().optional().describe("Specifies if the folder is favorite or not."),
-		tags: z.array(z.string()).optional().describe("The list of tags of the folder."),
-		roomType: numberUnionToEnum(RoomTypeSchema, "The room type of the folder.").optional(),
-		private: z.boolean().optional().describe("Specifies if the folder is private or not."),
-		type: numberUnionToEnum(FolderType, "The folder type.").optional(),
-		inRoom: z.boolean().optional().describe("Specifies if the folder is placed in the room or not."),
-	}).
-	passthrough()
+export const FolderDtoSchema = FileEntryDtoSchema.extend({
+	parentId: JsonElementSchema.optional().describe("The parent folder ID of the folder."),
+	filesCount: z.number().optional().describe("The number of files that the folder contains."),
+	foldersCount: z.number().optional().describe("The number of folders that the folder contains."),
+	isShareable: z.boolean().optional().describe("Specifies if the folder can be shared or not."),
+	isFavorite: z.boolean().optional().describe("Specifies if the folder is favorite or not."),
+	tags: z.array(z.string()).optional().describe("The list of tags of the folder."),
+	roomType: zod.unionToEnum(RoomTypeSchema, "The room type of the folder.").optional(),
+	private: z.boolean().optional().describe("Specifies if the folder is private or not."),
+	type: zod.unionToEnum(FolderType, "The folder type.").optional(),
+	inRoom: z.boolean().optional().describe("Specifies if the folder is placed in the room or not."),
+})
 
 /**
  * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.2.1-server/products/ASC.Files/Core/ApiModels/ResponseDto/FolderDto.cs/#L32 | DocSpace Reference}
@@ -689,24 +673,22 @@ export const FolderDtoFieldSchema = z.union([
 /**
  * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.2.1-server/products/ASC.Files/Core/ApiModels/ResponseDto/FolderContentDto.cs/#L32 | DocSpace Reference}
  */
-export const FolderContentDtoSchema = z.
-	object({
-		files: z.array(FileEntryDtoSchema).optional().describe("The list of files in the folder."),
-		folders: z.array(FileEntryDtoSchema).optional().describe("The list of folders in the folder."),
-		current: FolderDtoSchema.optional().describe("The current folder information."),
-		startIndex: z.number().optional().describe("The folder start index."),
-		count: z.number().optional().describe("The number of folder elements."),
-		total: z.number().optional().describe("The total number of elements in the folder."),
-	}).
-	passthrough()
+export const FolderContentDtoSchema = z.looseObject({
+	files: z.array(FileEntryDtoSchema).optional().describe("The list of files in the folder."),
+	folders: z.array(FileEntryDtoSchema).optional().describe("The list of folders in the folder."),
+	current: FolderDtoSchema.optional().describe("The current folder information."),
+	startIndex: z.number().optional().describe("The folder start index."),
+	count: z.number().optional().describe("The number of folder elements."),
+	total: z.number().optional().describe("The total number of elements in the folder."),
+})
 
 /**
  * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.2.1-server/products/ASC.Files/Core/ApiModels/ResponseDto/FolderContentDto.cs/#L32 | DocSpace Reference}
  */
 export const FolderContentDtoFieldSchema = z.union([
-	...wrapUnion(FileDtoFieldSchema, "files").options,
-	...wrapUnion(FolderDtoFieldSchema, "folders").options,
-	...wrapUnion(FolderDtoFieldSchema, "current").options,
+	...zod.wrapUnion(FileDtoFieldSchema, "files").options,
+	...zod.wrapUnion(FolderDtoFieldSchema, "folders").options,
+	...zod.wrapUnion(FolderDtoFieldSchema, "current").options,
 	// z.literal("pathParts").describe("The folder path."),
 	z.literal("startIndex").describe("The folder start index."),
 	z.literal("count").describe("The number of folder elements."),
@@ -717,19 +699,17 @@ export const FolderContentDtoFieldSchema = z.union([
 /**
  * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.2.1-server/products/ASC.Files/Core/ApiModels/ResponseDto/RoomAccessDto.cs/#L32 | DocSpace Reference}
  */
-export const RoomSecurityDtoSchema = z.
-	object({
-		members: z.array(FileShareDtoSchema).optional().describe("The list of room members."),
-		warning: z.string().optional().describe("The warning message."),
-		error: z.unknown().optional().describe("The error type."),
-	}).
-	passthrough()
+export const RoomSecurityDtoSchema = z.looseObject({
+	members: z.array(FileShareDtoSchema).optional().describe("The list of room members."),
+	warning: z.string().optional().describe("The warning message."),
+	error: z.unknown().optional().describe("The error type."),
+})
 
 /**
  * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.2.1-server/products/ASC.Files/Core/ApiModels/ResponseDto/RoomAccessDto.cs/#L32 | DocSpace Reference}
  */
 export const RoomSecurityDtoFieldSchema = z.union([
-	...wrapUnion(FileShareDtoFieldSchema, "members").options,
+	...zod.wrapUnion(FileShareDtoFieldSchema, "members").options,
 	z.literal("warning").describe("The warning message."),
 	z.literal("error").describe("The error type."),
 ])
@@ -812,11 +792,9 @@ export const UploadChunkSuccessResponseSchema = z.object({
 /**
  * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/products/ASC.Files/Server/Helpers/UploadControllerHelper.cs/#L97 | DocSpace Reference}
  */
-export const UploadSessionObjectDataSchema = z.
-	object({
-		id: z.string().optional(),
-	}).
-	passthrough()
+export const UploadSessionObjectDataSchema = z.looseObject({
+	id: z.string().optional(),
+})
 
 /**
  * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/products/ASC.Files/Server/Helpers/UploadControllerHelper.cs/#L97 | DocSpace Reference}
@@ -837,90 +815,88 @@ export const AuthRequestsDtoSchema = z.object({
 /**
  * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/web/ASC.Web.Api/ApiModels/ResponseDto/AuthenticationTokenDto.cs/#L29 | DocSpace Reference}
  */
-export const AuthenticationTokenDtoSchema = z.
-	object({
-		token: z.string().optional(),
-		expires: z.string().optional(),
-	}).
-	passthrough()
+export const AuthenticationTokenDtoSchema = z.looseObject({
+	token: z.string().optional(),
+	expires: z.string().optional(),
+})
 
 export const GetFileInfoFiltersSchema = z.object({
-	fields: z.array(stringUnionToEnum(FileDtoFieldSchema, "The fields to include in the response.")),
+	fields: z.array(zod.unionToEnum(FileDtoFieldSchema, "The fields to include in the response.")),
 })
 
 export const CreateFolderFiltersSchema = z.object({
-	fields: z.array(stringUnionToEnum(FolderDtoFieldSchema, "The fields to include in the response.")),
+	fields: z.array(zod.unionToEnum(FolderDtoFieldSchema, "The fields to include in the response.")),
 })
 
 /**
  * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.1.1-server/products/ASC.Files/Core/ApiModels/RequestDto/GetFolderRequestDto.cs/#L32 | DocSpace Reference}
  */
 export const GetFolderFiltersSchema = z.object({
-	userIdOrGroupId: z.string().uuid().optional().describe("The user or group ID."),
-	filterType: numberUnionToEnum(FilterTypeSchema, "The filter type.").optional(),
+	userIdOrGroupId: z.uuid().optional().describe("The user or group ID."),
+	filterType: zod.unionToEnum(FilterTypeSchema, "The filter type.").optional(),
 	roomId: JsonElementSchema.optional().describe("The room ID."),
 	excludeSubject: z.boolean().optional().describe("Specifies whether to exclude search by user or group ID."),
-	applyFilterOption: ApplyFilterOptionSchema.optional().describe("Specifies whether to return only files, only folders or all elements from the specified folder."),
+	applyFilterOption: zod.unionToEnum(ApplyFilterOptionSchema, "Specifies whether to return only files, only folders or all elements from the specified folder.").optional(),
 	extension: z.string().optional().describe("Specifies whether to search for the specific file extension."),
-	searchArea: SearchAreaSchema.optional().describe("The search area."),
+	searchArea: zod.unionToEnum(SearchAreaSchema, "The search area.").optional(),
 	// formsItemKey: z.string().describe("The forms item key."),
 	// formsItemType: z.string().describe("The forms item type."),
 	count: z.number().min(1).max(50).default(30).describe("The maximum number of items to retrieve in the request."),
 	startIndex: z.number().optional().describe("The zero-based index of the first item to retrieve in a paginated request."),
 	sortBy: z.string().optional().describe("Specifies the property used for sorting the folder request results."),
-	sortOrder: numberUnionToEnum(NumericSortOrderSchema, "The order in which the results are sorted.").optional(),
+	sortOrder: zod.unionToEnum(NumericSortOrderSchema, "The order in which the results are sorted.").optional(),
 	filterValue: z.string().optional().describe("The text value used as a filter parameter for folder queries."),
-	fields: z.array(stringUnionToEnum(FolderContentDtoFieldSchema, "The fields to include in the response.")),
+	fields: z.array(zod.unionToEnum(FolderContentDtoFieldSchema, "The fields to include in the response.")),
 })
 
 export const GetFolderInfoFiltersSchema = z.object({
-	fields: z.array(stringUnionToEnum(FolderDtoFieldSchema, "The fields to include in the response.")),
+	fields: z.array(zod.unionToEnum(FolderDtoFieldSchema, "The fields to include in the response.")),
 })
 
 export const RenameFolderFiltersSchema = z.object({
-	fields: z.array(stringUnionToEnum(FolderDtoFieldSchema, "The fields to include in the response.")),
+	fields: z.array(zod.unionToEnum(FolderDtoFieldSchema, "The fields to include in the response.")),
 })
 
 /**
  * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.1.1-server/products/ASC.Files/Core/ApiModels/RequestDto/GetFolderRequestDto.cs/#L116 | DocSpace Reference}
  */
 export const GetMyFolderFiltersSchema = z.object({
-	userIdOrGroupId: z.string().uuid().optional().describe("The user or group ID."),
-	filterType: numberUnionToEnum(FilterTypeSchema, "The filter type.").optional(),
-	applyFilterOption: ApplyFilterOptionSchema.optional().describe("Specifies whether to return only files, only folders or all elements."),
+	userIdOrGroupId: z.uuid().optional().describe("The user or group ID."),
+	filterType: zod.unionToEnum(FilterTypeSchema, "The filter type.").optional(),
+	applyFilterOption: zod.unionToEnum(ApplyFilterOptionSchema, "Specifies whether to return only files, only folders or all elements.").optional(),
 	count: z.number().min(1).max(50).default(30).describe("The maximum number of items to retrieve in the response."),
 	startIndex: z.number().optional().describe("The starting position of the items to be retrieved."),
 	sortBy: z.string().optional().describe("The property used to specify the sorting criteria for folder contents."),
-	sortOrder: numberUnionToEnum(NumericSortOrderSchema, "The order in which the results are sorted.").optional(),
+	sortOrder: zod.unionToEnum(NumericSortOrderSchema, "The order in which the results are sorted.").optional(),
 	filterValue: z.string().optional().describe("The text used for filtering or searching folder contents."),
-	fields: z.array(stringUnionToEnum(FolderContentDtoFieldSchema, "The fields to include in the response.")),
+	fields: z.array(zod.unionToEnum(FolderContentDtoFieldSchema, "The fields to include in the response.")),
 })
 
 export const CreateRoomFiltersSchema = z.object({
-	fields: z.array(stringUnionToEnum(FolderDtoFieldSchema, "The fields to include in the response.")),
+	fields: z.array(zod.unionToEnum(FolderDtoFieldSchema, "The fields to include in the response.")),
 })
 
 export const GetRoomInfoFiltersSchema = z.object({
-	fields: z.array(stringUnionToEnum(FolderDtoFieldSchema, "The fields to include in the response.")),
+	fields: z.array(zod.unionToEnum(FolderDtoFieldSchema, "The fields to include in the response.")),
 })
 
 export const UpdateRoomFiltersSchema = z.object({
-	fields: z.array(stringUnionToEnum(FolderDtoFieldSchema, "The fields to include in the response.")),
+	fields: z.array(zod.unionToEnum(FolderDtoFieldSchema, "The fields to include in the response.")),
 })
 
 export const SetRoomSecurityFiltersSchema = z.object({
-	fields: z.array(stringUnionToEnum(RoomSecurityDtoFieldSchema, "The fields to include in the response.")),
+	fields: z.array(zod.unionToEnum(RoomSecurityDtoFieldSchema, "The fields to include in the response.")),
 })
 
 /**
  * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.1.1-server/products/ASC.Files/Core/ApiModels/RequestDto/RoomSecurityInfoRequestDto.cs/#L32 | DocSpace Reference}
  */
 export const GetRoomSecurityFiltersSchema = z.object({
-	filterType: numberUnionToEnum(ShareFilterTypeSchema, "The filter type of the access rights.").optional(),
+	filterType: zod.unionToEnum(ShareFilterTypeSchema, "The filter type of the access rights.").optional(),
 	count: z.number().min(1).max(50).default(30).describe("The number of items to be retrieved or processed."),
 	startIndex: z.number().optional().describe("The starting index of the items to retrieve in a paginated request."),
 	filterValue: z.string().optional().describe("The text filter value used for filtering room security information."),
-	fields: z.array(stringUnionToEnum(FileShareDtoFieldSchema, "The fields to include in the response.")),
+	fields: z.array(zod.unionToEnum(FileShareDtoFieldSchema, "The fields to include in the response.")),
 })
 
 /**
@@ -938,9 +914,9 @@ export const GetRoomsFolderFiltersSortBySchema = z.union([
  * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.1.1-server/products/ASC.Files/Core/ApiModels/RequestDto/RoomContentRequestDto.cs/#L32 | DocSpace Reference}
  */
 export const GetRoomsFolderFiltersSchema = z.object({
-	type: z.array(numberUnionToEnum(RoomTypeSchema, "The filter by room type.")).optional(),
+	type: z.array(zod.unionToEnum(RoomTypeSchema, "The filter by room type.")).optional(),
 	subjectId: z.string().optional().describe("The filter by user ID."),
-	searchArea: SearchAreaSchema.optional().describe("The room search area (Active, Archive, Any, Recent by links)."),
+	searchArea: zod.unionToEnum(SearchAreaSchema, "The room search area (Active, Archive, Any, Recent by links).").optional(),
 	withoutTags: z.boolean().optional().describe("Specifies whether to search by tags or not."),
 	tags: z.string().optional().describe("The tags in the serialized format."),
 	excludeSubject: z.boolean().optional().describe("Specifies whether to exclude search by user or group ID."),
@@ -954,18 +930,18 @@ export const GetRoomsFolderFiltersSchema = z.object({
 	// storageFilter: StorageFilterSchema.optional().describe("The filter by storage (None - 0, Internal - 1, ThirdParty - 2)."),
 	count: z.number().min(1).max(50).default(30).describe("Specifies the maximum number of items to retrieve."),
 	startIndex: z.number().optional().describe("The index from which to start retrieving the room content."),
-	sortBy: stringUnionToEnum(GetRoomsFolderFiltersSortBySchema, "Specifies the field by which the room content should be sorted.").optional(),
-	sortOrder: numberUnionToEnum(NumericSortOrderSchema, "The order in which the results are sorted.").optional(),
+	sortBy: zod.unionToEnum(GetRoomsFolderFiltersSortBySchema, "Specifies the field by which the room content should be sorted.").optional(),
+	sortOrder: zod.unionToEnum(NumericSortOrderSchema, "The order in which the results are sorted.").optional(),
 	filterValue: z.string().optional().describe("The text used for filtering or searching folder contents."),
-	fields: z.array(stringUnionToEnum(FolderContentDtoFieldSchema, "The fields to include in the response.")),
+	fields: z.array(zod.unionToEnum(FolderContentDtoFieldSchema, "The fields to include in the response.")),
 })
 
 export const GetFullByFilterFiltersSchema = z.object({
 	count: z.number().min(1).max(50).default(30).describe("The maximum number of items to be retrieved in the response."),
 	startIndex: z.number().optional().describe("The zero-based index of the first item to be retrieved in a filtered result set."),
 	sortBy: z.string().optional().describe("Specifies the property or field name by which the results should be sorted."),
-	sortOrder: numberUnionToEnum(NumericSortOrderSchema, "The order in which the results are sorted.").optional(),
+	sortOrder: zod.unionToEnum(NumericSortOrderSchema, "The order in which the results are sorted.").optional(),
 	filterSeparator: z.string().optional().describe("Represents the separator used to split filter criteria in query parameters."),
 	filterValue: z.string().optional().describe("The search text used to filter results based on user input."),
-	fields: z.array(stringUnionToEnum(EmployeeFullDtoFieldSchema, "The fields to include in the response.")),
+	fields: z.array(zod.unionToEnum(EmployeeFullDtoFieldSchema, "The fields to include in the response.")),
 })

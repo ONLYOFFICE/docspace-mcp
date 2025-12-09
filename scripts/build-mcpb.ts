@@ -20,7 +20,7 @@ import child from "node:child_process"
 import fs from "node:fs/promises"
 import path from "node:path"
 import util from "node:util"
-import ajv from "ajv/dist/2020.js"
+import ajv from "ajv"
 import ajvFormats from "ajv-formats"
 import * as mcp from "../lib/mcp.ts"
 import * as meta from "../lib/meta.ts"
@@ -67,7 +67,7 @@ const files: string[] = [
 ]
 
 async function main(): Promise<void> {
-	let aa = new ajv.Ajv2020()
+	let aa = new ajv.Ajv()
 	ajvFormats.default(aa)
 
 	let mc = await fs.readFile("manifest.template.json", "utf8")
@@ -105,10 +105,6 @@ async function main(): Promise<void> {
 	let so = JSON.parse(sc) as ajv.AnySchema
 
 	let av = aa.compile(so)
-
-	// @ts-ignore
-	// https://github.com/anthropics/mcpb/issues/102
-	delete mo.$schema
 
 	mo.version = meta.version
 	mo.documentation = mo.documentation.replace("{{version}}", meta.version)

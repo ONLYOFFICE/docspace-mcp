@@ -25,7 +25,7 @@
 /* eslint-disable unicorn/custom-error-definition */
 
 import contentType from "content-type"
-import z from "zod"
+import * as z from "zod"
 import * as r from "../util/result.ts"
 import type {
 	AuthorizeRequest,

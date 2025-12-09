@@ -1,6 +1,6 @@
 {
-	"$schema": "vendor/mcpb-manifest.schema.json",
-	"manifest_version": "0.1",
+	"$schema": "node_modules/@anthropic-ai/mcpb/schemas/mcpb-manifest-v0.3.schema.json",
+	"manifest_version": "0.3",
 	"name": "onlyoffice-docspace",
 	"display_name": "ONLYOFFICE DocSpace",
 	"version": "",

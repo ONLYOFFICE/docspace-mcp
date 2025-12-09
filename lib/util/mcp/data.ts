@@ -23,7 +23,6 @@
 
 import type * as types from "@modelcontextprotocol/sdk/types.js"
 import * as z from "zod"
-import * as zodToJsonSchema from "zod-to-json-schema"
 
 export type ToolsetDefinition = Summary & {
 	tools: ToolDefinition[]
@@ -89,11 +88,11 @@ export function toToolInfos(defs: ToolDefinition[]): ToolInfo[] {
 		let i: ToolInfo = {
 			name: d.name,
 			description: d.description,
-			inputSchema: zodToJsonSchema.zodToJsonSchema(inputSchema) as ToolInputSchema,
+			inputSchema: z.toJSONSchema(inputSchema) as ToolOutputSchema,
 		}
 
 		if (d.outputSchema) {
-			i.outputSchema = zodToJsonSchema.zodToJsonSchema(d.outputSchema) as ToolOutputSchema
+			i.outputSchema = z.toJSONSchema(d.outputSchema) as ToolOutputSchema
 		}
 
 		infos.push(i)

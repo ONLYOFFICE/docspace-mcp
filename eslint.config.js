@@ -30,9 +30,10 @@ export default [
 	{
 		files: ["**/*.ts"],
 		rules: {
-			"new-cap": ["error", {capIsNew: false}],
 			"es-x/no-export-ns-from": "off",
 			"jsdoc/check-tag-names": ["error", {definedTags: ["mergeModuleWith"]}],
+			"new-cap": ["error", {capIsNew: false}],
+			"typescript/no-deprecated": ["error", {allow: [{from: "package", package: "@modelcontextprotocol/sdk", name: "Server"}, {from: "package", package: "@modelcontextprotocol/sdk", name: "SSEServerTransport"}]}],
 			"unicorn/import-style": "off",
 			"unicorn/prefer-add-event-listener": "off",
 		},

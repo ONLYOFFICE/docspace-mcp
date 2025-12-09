@@ -23,41 +23,37 @@
 
 /* eslint-disable unicorn/prefer-top-level-await */
 
-import z from "zod"
+import * as z from "zod"
 
 /**
  * {@link https://www.rfc-editor.org/rfc/rfc7515#section-4.1 | RFC 7515 Reference}
  */
-export const JwsHeaderSchema = z.
-	object({
-		"alg": z.string(),
-		"jku": z.string().optional(),
-		"jwk": z.string().optional(),
-		"kid": z.string().optional(),
-		"x5u": z.union([z.string(), z.array(z.string())]).optional(),
-		"x5c": z.union([z.string(), z.array(z.string())]).optional(),
-		"x5t": z.string().optional(),
-		"x5t#S256": z.string().optional(),
-		"typ": z.string().optional(),
-		"cty": z.string().optional(),
-		"crit": z.union([z.string(), z.array(z.string())]).optional(),
-	}).
-	passthrough()
+export const JwsHeaderSchema = z.looseObject({
+	"alg": z.string(),
+	"jku": z.string().optional(),
+	"jwk": z.string().optional(),
+	"kid": z.string().optional(),
+	"x5u": z.union([z.string(), z.array(z.string())]).optional(),
+	"x5c": z.union([z.string(), z.array(z.string())]).optional(),
+	"x5t": z.string().optional(),
+	"x5t#S256": z.string().optional(),
+	"typ": z.string().optional(),
+	"cty": z.string().optional(),
+	"crit": z.union([z.string(), z.array(z.string())]).optional(),
+})
 
 /**
  * {@link https://www.rfc-editor.org/rfc/rfc7519#section-4 | RFC 7519 Reference}
  */
-export const JwtClaimsSchema = z.
-	object({
-		iss: z.string().optional(),
-		sub: z.string().optional(),
-		aud: z.union([z.string(), z.array(z.string())]).optional(),
-		exp: z.number().optional(),
-		nbf: z.number().optional(),
-		iat: z.number().optional(),
-		jti: z.string().optional(),
-	}).
-	passthrough()
+export const JwtClaimsSchema = z.looseObject({
+	iss: z.string().optional(),
+	sub: z.string().optional(),
+	aud: z.union([z.string(), z.array(z.string())]).optional(),
+	exp: z.number().optional(),
+	nbf: z.number().optional(),
+	iat: z.number().optional(),
+	jti: z.string().optional(),
+})
 
 /**
  * {@link https://www.rfc-editor.org/rfc/rfc6749#section-2.3.1 | RFC 6749 Reference}
@@ -197,11 +193,9 @@ export const IntrospectResponseSchema = z.object({
 /**
  * {@link https://www.rfc-editor.org/rfc/rfc7591#section-3.2.1 | RFC 7591 Reference}
  */
-export const RegisterResponseSchema = z.
-	object({
-		client_id: z.string(),
-	}).
-	passthrough()
+export const RegisterResponseSchema = z.looseObject({
+	client_id: z.string(),
+})
 
 /**
  * {@link https://www.rfc-editor.org/rfc/rfc6749#section-5.1 | RFC 6749 Reference}

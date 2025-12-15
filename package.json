@@ -38,7 +38,7 @@
 		"inspect": "node scripts/inspect.ts",
 		"lint": "eslint --no-warn-ignored .github app docs lib scripts *.*",
 		"serve": "node scripts/serve.ts",
-		"test": "c8 --config c8.config.json node --test"
+		"test": "node test/test.ts"
 	},
 	"devDependencies": {
 		"@anthropic-ai/mcpb": "2.1.2",

@@ -640,24 +640,11 @@ function loadConfig(): r.Result<Config, Error> {
 
 	let errs: Error[] = []
 
-	if (p.data.mcp.toolsets.length === 0) {
-		errs.push(new Error("No toolsets left"))
-	}
-
 	if (p.data.mcp.tools.length === 0) {
 		errs.push(new Error("No tools left"))
 	}
 
 	if (
-		(
-			p.data.mcp.transport === "stdio" ||
-			(
-				p.data.mcp.transport === "sse" ||
-				p.data.mcp.transport === "streamable-http" ||
-				p.data.mcp.transport === "http"
-			) &&
-			!p.data.api.oauth.baseUrl
-		) &&
 		p.data.api.shared.username &&
 		!p.data.api.shared.password
 	) {
@@ -665,19 +652,23 @@ function loadConfig(): r.Result<Config, Error> {
 	}
 
 	if (
-		(
-			p.data.mcp.transport === "stdio" ||
-			(
-				p.data.mcp.transport === "sse" ||
-				p.data.mcp.transport === "streamable-http" ||
-				p.data.mcp.transport === "http"
-			) &&
-			!p.data.api.oauth.baseUrl
-		) &&
 		!p.data.api.shared.username &&
 		p.data.api.shared.password
 	) {
 		errs.push(new Error("No username"))
+	}
+
+	if (
+		(
+			p.data.api.shared.authorization ||
+			p.data.api.shared.apiKey ||
+			p.data.api.shared.pat ||
+			p.data.api.shared.username &&
+			p.data.api.shared.password
+		) &&
+		!p.data.api.shared.baseUrl
+	) {
+		errs.push(new Error("No API base URL"))
 	}
 
 	if (
@@ -713,10 +704,8 @@ function loadConfig(): r.Result<Config, Error> {
 			!p.data.api.shared.authorization &&
 			!p.data.api.shared.apiKey &&
 			!p.data.api.shared.pat &&
-			(
-				!p.data.api.shared.username ||
-				!p.data.api.shared.password
-			) ||
+			!p.data.api.shared.username &&
+			!p.data.api.shared.password ||
 			(
 				p.data.mcp.transport === "sse" ||
 				p.data.mcp.transport === "streamable-http" ||
@@ -725,10 +714,8 @@ function loadConfig(): r.Result<Config, Error> {
 			!p.data.api.shared.authorization &&
 			!p.data.api.shared.apiKey &&
 			!p.data.api.shared.pat &&
-			(
-				!p.data.api.shared.username ||
-				!p.data.api.shared.password
-			) &&
+			!p.data.api.shared.username &&
+			!p.data.api.shared.password &&
 			!p.data.api.oauth.baseUrl &&
 			!p.data.request.headerPrefix &&
 			(
@@ -741,34 +728,21 @@ function loadConfig(): r.Result<Config, Error> {
 	}
 
 	if (
-		(
-			p.data.mcp.transport === "stdio" ||
-			(
-				p.data.mcp.transport === "sse" ||
-				p.data.mcp.transport === "streamable-http" ||
-				p.data.mcp.transport === "http"
-			) &&
-			!p.data.api.oauth.baseUrl
-		) &&
+		p.data.mcp.transport === "stdio" &&
 		(
 			p.data.api.shared.authorization ||
 			p.data.api.shared.apiKey ||
 			p.data.api.shared.pat ||
-			p.data.api.shared.username ||
+			p.data.api.shared.username &&
 			p.data.api.shared.password
 		) &&
 		Number(Boolean(p.data.api.shared.authorization)) +
 		Number(Boolean(p.data.api.shared.apiKey)) +
 		Number(Boolean(p.data.api.shared.pat)) +
 		Number(
-			Boolean(p.data.api.shared.username) ||
+			Boolean(p.data.api.shared.username) &&
 			Boolean(p.data.api.shared.password),
-		) !== 1
-	) {
-		errs.push(new Error("Multiple authentication methods"))
-	}
-
-	if (
+		) !== 1 ||
 		(
 			p.data.mcp.transport === "sse" ||
 			p.data.mcp.transport === "streamable-http" ||
@@ -778,34 +752,20 @@ function loadConfig(): r.Result<Config, Error> {
 			p.data.api.shared.authorization ||
 			p.data.api.shared.apiKey ||
 			p.data.api.shared.pat ||
-			p.data.api.shared.username ||
-			p.data.api.shared.password
+			p.data.api.shared.username &&
+			p.data.api.shared.password ||
+			p.data.api.oauth.baseUrl
 		) &&
-		p.data.api.oauth.baseUrl
+		Number(Boolean(p.data.api.shared.authorization)) +
+		Number(Boolean(p.data.api.shared.apiKey)) +
+		Number(Boolean(p.data.api.shared.pat)) +
+		Number(
+			Boolean(p.data.api.shared.username) &&
+			Boolean(p.data.api.shared.password),
+		) +
+		Number(Boolean(p.data.api.oauth.baseUrl)) !== 1
 	) {
-		errs.push(new Error("Mixed authentication methods"))
-	}
-
-	if (
-		(
-			p.data.mcp.transport === "stdio" ||
-			(
-				p.data.mcp.transport === "sse" ||
-				p.data.mcp.transport === "streamable-http" ||
-				p.data.mcp.transport === "http"
-			) &&
-			!p.data.api.oauth.baseUrl
-		) &&
-		(
-			p.data.api.shared.authorization ||
-			p.data.api.shared.apiKey ||
-			p.data.api.shared.pat ||
-			p.data.api.shared.username ||
-			p.data.api.shared.password
-		) &&
-		!p.data.api.shared.baseUrl
-	) {
-		errs.push(new Error("No API base URL"))
+		errs.push(new Error("Multiple authentication methods"))
 	}
 
 	if (

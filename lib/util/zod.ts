@@ -21,6 +21,7 @@
  */
 
 import * as z from "zod"
+import type * as core from "zod/v4/core"
 import * as result from "./result.ts"
 
 export function wrapUnion<
@@ -45,23 +46,64 @@ export function wrapUnion<
 	return z.union(a as unknown as A)
 }
 
-export function unionToEnum<
-	T extends string | number,
-	A extends readonly [z.ZodLiteral<T>, z.ZodLiteral<T>, ...z.ZodLiteral<T>[]],
->(u: z.ZodUnion<A>, d: string): z.ZodEnum<Record<string, T>> {
+export function unionToEnum<T extends string | number>(
+	u: z.ZodUnion<readonly [z.ZodLiteral<T>, z.ZodLiteral<T>, ...z.ZodLiteral<T>[]]>,
+	d: string,
+): T extends string ? z.ZodString : T extends number ? z.ZodNumber : never {
+	let t: z.ZodString | z.ZodNumber | undefined
 	let r: Record<string, T> = {}
 	let c = ""
 
-	for (let o of u.options) {
-		if (o.values.size !== 0) {
-			let [v] = o.values
+	let errs: Error[] = []
 
-			r[`_${v}`] = v
+	if (u.options.length === 0) {
+		errs.push(new Error("Union has no options"))
+	} else {
+		for (let o of u.options) {
+			if (o.values.size !== 1) {
+				errs.push(new Error("Union option must have exactly one literal value"))
+			} else {
+				let [v] = o.values
 
-			if (o.description) {
-				c += `${v} - ${o.description}\n`
+				if (t) {
+					if (typeof v !== t.type) {
+						errs.push(new Error("Union options must have consistent types"))
+					}
+				} else {
+					switch (typeof v) {
+					case "string":
+						t = z.string()
+						break
+					case "number":
+						t = z.number()
+						break
+					default:
+						errs.push(new Error("Union option type must be string or number"))
+						break
+					}
+				}
+
+				let k = `_${v}`
+
+				if (k in r) {
+					errs.push(new Error("Duplicate value in union options"))
+				} else {
+					r[k] = v
+
+					if (o.description) {
+						c += `${v} - ${o.description}\n`
+					}
+				}
 			}
 		}
+	}
+
+	if (errs.length !== 0) {
+		throw new Error("Converting union to enum", {cause: errs})
+	}
+
+	if (!t) {
+		throw new Error("Could not determine union type")
 	}
 
 	if (c !== "") {
@@ -80,7 +122,22 @@ export function unionToEnum<
 		e = e.describe(c)
 	}
 
-	return e
+	t = t.superRefine((v, ctx) => {
+		let p = e.safeParse(v)
+		if (!p.success) {
+			for (let i of p.error.issues) {
+				ctx.addIssue(i as core.$ZodSuperRefineIssue)
+			}
+		}
+	})
+
+	if (c !== "") {
+		t = t.describe(c)
+	}
+
+	// It is hard to write the return type without using any.
+	// eslint-disable-next-line typescript/no-explicit-any
+	return t as any
 }
 
 // eslint-disable-next-line stylistic/max-len

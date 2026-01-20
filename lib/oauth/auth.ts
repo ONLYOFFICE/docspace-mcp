@@ -174,9 +174,19 @@ export class AuthTokens {
 			exp = iat
 		}
 
+		let nbf = iat
+
+		if (jw.payload.nbf && jw.payload.nbf > nbf) {
+			nbf = jw.payload.nbf
+		}
+
+		if (exp && nbf > exp) {
+			nbf = iat
+		}
+
 		let tp: AuthTokenPayload = {
 			exp,
-			nbf: iat,
+			nbf,
 			iat,
 			hdr: jw.header,
 			pld: jw.payload,

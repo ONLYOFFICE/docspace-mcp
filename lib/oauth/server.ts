@@ -990,7 +990,7 @@ function auth(o: AuthOptions): express.Handler {
 					error: "invalid_client",
 					error_description: errors.format(err),
 				}
-				res.set('WWW-Authenticate: Basic realm="OAuth"')
+				res.set("WWW-Authenticate", 'Basic realm="OAuth"')
 				res.status(401)
 				res.json(er)
 				return
@@ -1047,7 +1047,7 @@ function auth(o: AuthOptions): express.Handler {
 						error: "invalid_client",
 						error_description: errors.format(err),
 					}
-					res.set('WWW-Authenticate: Basic realm="OAuth"')
+					res.set("WWW-Authenticate", 'Basic realm="OAuth"')
 					res.status(401)
 					res.json(er)
 					return

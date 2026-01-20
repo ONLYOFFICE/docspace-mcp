@@ -22,7 +22,9 @@ This document records all notable changes to the project, following the
 - Fix not exposing the `RateLimit-Policy` header ([a8aae98]);
 - Move authentication middleware after guard-like middlewares in OAuth server
   ([84ab292]);
-- Fix edge-case calculation of `expires_in` in OAuth token response ([f32f02f]).
+- Fix edge-case calculation of `expires_in` in OAuth token response ([f32f02f]);
+- Fix parsing of the `Authorization` header for OAuth server endpoints
+  ([3c9432c]).
 
 ## [3.1.0] - 2025-11-28
 
@@ -286,6 +288,7 @@ There are no noticeable changes in version [3.0.1].
 [0.1.1]: https://github.com/onlyoffice/docspace-mcp/compare/v0.1.0...v0.1.1/
 [0.1.0]: https://github.com/onlyoffice/docspace-mcp/releases/tag/v0.1.0/
 
+[3c9432c]: https://github.com/onlyoffice/docspace-mcp/commit/3c9432c16994515dbbc6d6f5f52303c55f868f9a/
 [f32f02f]: https://github.com/onlyoffice/docspace-mcp/commit/f32f02fc6e788022954abf114f97bb43e214626c/
 [84ab292]: https://github.com/onlyoffice/docspace-mcp/commit/84ab29288f6fad7d9f4fbae862876725d959eb58/
 [a8aae98]: https://github.com/onlyoffice/docspace-mcp/commit/a8aae9841413b815d4023ff3e7ca9b47425b230b/

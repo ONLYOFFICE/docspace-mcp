@@ -21,7 +21,8 @@ This document records all notable changes to the project, following the
 - Fix not setting the wildcard `Access-Control-Allow-Origin` header ([b8d39d4]);
 - Fix not exposing the `RateLimit-Policy` header ([a8aae98]);
 - Move authentication middleware after guard-like middlewares in OAuth server
-  ([84ab292]).
+  ([84ab292]);
+- Fix edge-case calculation of `expires_in` in OAuth token response ([f32f02f]).
 
 ## [3.1.0] - 2025-11-28
 
@@ -285,6 +286,7 @@ There are no noticeable changes in version [3.0.1].
 [0.1.1]: https://github.com/onlyoffice/docspace-mcp/compare/v0.1.0...v0.1.1/
 [0.1.0]: https://github.com/onlyoffice/docspace-mcp/releases/tag/v0.1.0/
 
+[f32f02f]: https://github.com/onlyoffice/docspace-mcp/commit/f32f02fc6e788022954abf114f97bb43e214626c/
 [84ab292]: https://github.com/onlyoffice/docspace-mcp/commit/84ab29288f6fad7d9f4fbae862876725d959eb58/
 [a8aae98]: https://github.com/onlyoffice/docspace-mcp/commit/a8aae9841413b815d4023ff3e7ca9b47425b230b/
 [b8d39d4]: https://github.com/onlyoffice/docspace-mcp/commit/b8d39d4ebfb8824eb5f298aeae63a437219c5801/

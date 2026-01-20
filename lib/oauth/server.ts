@@ -907,7 +907,7 @@ export class Server {
 		} else if (td.expires_in) {
 			ob.expires_in = td.expires_in
 		} else if (tp.exp) {
-			ob.expires_in = tp.exp
+			ob.expires_in = tp.exp - tp.iat
 		}
 
 		res.status(200)

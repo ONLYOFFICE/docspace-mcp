@@ -213,13 +213,6 @@ export class Server {
 	router(): express.Router {
 		// todo: add recovery middleware
 
-		let ao: AuthOptions = {
-			clientId: this.clientId,
-			clientSecret: this.clientSecret,
-		}
-
-		let a = auth(ao)
-
 		let corsMetadata = (r: express.Router): void => {
 			if (this.corsOrigin.length !== 0) {
 				let co: utilExpress.CorsOptions = {
@@ -279,6 +272,13 @@ export class Server {
 				r.use(utilExpress.cors(co))
 			}
 		}
+
+		let ao: AuthOptions = {
+			clientId: this.clientId,
+			clientSecret: this.clientSecret,
+		}
+
+		let a = auth(ao)
 
 		let r = express.Router()
 
@@ -366,8 +366,6 @@ export class Server {
 			r.use("/introspect", (() => {
 				let r = express.Router()
 
-				r.use(a)
-
 				let go: GuardOptions = {
 					methods: ["POST"],
 					types: ["application/x-www-form-urlencoded"],
@@ -377,6 +375,7 @@ export class Server {
 
 				guard(r, go)
 
+				r.use(a)
 				r.use(this.handleIntrospect.bind(this))
 
 				return r
@@ -404,8 +403,6 @@ export class Server {
 			r.use("/revoke", (() => {
 				let r = express.Router()
 
-				r.use(a)
-
 				let go: GuardOptions = {
 					methods: ["POST"],
 					types: ["application/x-www-form-urlencoded"],
@@ -415,6 +412,7 @@ export class Server {
 
 				guard(r, go)
 
+				r.use(a)
 				r.use(this.handleRevoke.bind(this))
 
 				return r
@@ -422,8 +420,6 @@ export class Server {
 
 			r.use("/token", (() => {
 				let r = express.Router()
-
-				r.use(a)
 
 				let go: GuardOptions = {
 					methods: ["POST"],
@@ -434,6 +430,7 @@ export class Server {
 
 				guard(r, go)
 
+				r.use(a)
 				r.use(this.handleToken.bind(this))
 
 				return r

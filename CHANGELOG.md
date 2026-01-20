@@ -30,7 +30,8 @@ This document records all notable changes to the project, following the
 - Fix unwrapping of the access token in the OAuth revocation endpoint
   ([f03c714]);
 - Fix proxying of the not-before timestamp from the upstream OAuth service
-  ([658ffae]).
+  ([658ffae]);
+- Fix `scope` field type in the OAuth refresh token request schema ([a733d43]).
 
 ## [3.1.0] - 2025-11-28
 
@@ -294,6 +295,7 @@ There are no noticeable changes in version [3.0.1].
 [0.1.1]: https://github.com/onlyoffice/docspace-mcp/compare/v0.1.0...v0.1.1/
 [0.1.0]: https://github.com/onlyoffice/docspace-mcp/releases/tag/v0.1.0/
 
+[a733d43]: https://github.com/onlyoffice/docspace-mcp/commit/a733d43b8881f4825399737bd3ddb172a3b51fac/
 [658ffae]: https://github.com/onlyoffice/docspace-mcp/commit/658ffae49f0f8d253346c29f9b0bebb752329f79/
 [f03c714]: https://github.com/onlyoffice/docspace-mcp/commit/f03c714cf646bea44bc48bc3dcd3dcc368e90ef6/
 [54b90c5]: https://github.com/onlyoffice/docspace-mcp/commit/54b90c565d66dd35b77f738ffee3189759b9bd52/

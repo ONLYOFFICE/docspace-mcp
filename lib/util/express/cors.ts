@@ -38,7 +38,11 @@ export function cors(o: CorsOptions): express.Handler {
 	let co: cors_.CorsOptions = {}
 
 	if (o.origin.length !== 0) {
-		co.origin = o.origin
+		if (o.origin.includes("*")) {
+			co.origin = "*"
+		} else {
+			co.origin = [...new Set(o.origin)].sort()
+		}
 	}
 
 	if (o.methods.length !== 0) {

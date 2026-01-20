@@ -17,7 +17,8 @@ This document records all notable changes to the project, following the
 
 ### Fixed
 
-- Fix validation of custom headers for username and password ([9abb089]).
+- Fix validation of custom headers for username and password ([9abb089]);
+- Fix not setting the wildcard `Access-Control-Allow-Origin` header ([b8d39d4]).
 
 ## [3.1.0] - 2025-11-28
 
@@ -281,6 +282,7 @@ There are no noticeable changes in version [3.0.1].
 [0.1.1]: https://github.com/onlyoffice/docspace-mcp/compare/v0.1.0...v0.1.1/
 [0.1.0]: https://github.com/onlyoffice/docspace-mcp/releases/tag/v0.1.0/
 
+[b8d39d4]: https://github.com/onlyoffice/docspace-mcp/commit/b8d39d4ebfb8824eb5f298aeae63a437219c5801/
 [ed5a178]: https://github.com/onlyoffice/docspace-mcp/commit/ed5a1781da629eed4c66b3cddd05a69d6c130bb2/
 [02b1525]: https://github.com/onlyoffice/docspace-mcp/commit/02b152547f2ff35b2d17ecb9b8491e97036a0659/
 [05d37dd]: https://github.com/onlyoffice/docspace-mcp/commit/05d37ddc35739c496ca307b4b7358558c5db470f/

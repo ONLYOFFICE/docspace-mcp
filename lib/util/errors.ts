@@ -116,7 +116,7 @@ export function as<
 	t: new (...args: A) => R,
 ): R | undefined {
 	if (err instanceof Error) {
-		if (err.constructor === t.constructor) {
+		if (err.constructor === t) {
 			return err as unknown as R
 		}
 

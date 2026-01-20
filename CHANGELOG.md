@@ -26,7 +26,9 @@ This document records all notable changes to the project, following the
 - Fix parsing of the `Authorization` header for OAuth server endpoints
   ([3c9432c]);
 - Fix setting of the `WWW-Authenticate` header in OAuth server authorization
-  ([54b90c5]).
+  ([54b90c5]);
+- Fix unwrapping of the access token in the OAuth revocation endpoint
+  ([f03c714]).
 
 ## [3.1.0] - 2025-11-28
 
@@ -290,6 +292,7 @@ There are no noticeable changes in version [3.0.1].
 [0.1.1]: https://github.com/onlyoffice/docspace-mcp/compare/v0.1.0...v0.1.1/
 [0.1.0]: https://github.com/onlyoffice/docspace-mcp/releases/tag/v0.1.0/
 
+[f03c714]: https://github.com/onlyoffice/docspace-mcp/commit/f03c714cf646bea44bc48bc3dcd3dcc368e90ef6/
 [54b90c5]: https://github.com/onlyoffice/docspace-mcp/commit/54b90c565d66dd35b77f738ffee3189759b9bd52/
 [3c9432c]: https://github.com/onlyoffice/docspace-mcp/commit/3c9432c16994515dbbc6d6f5f52303c55f868f9a/
 [f32f02f]: https://github.com/onlyoffice/docspace-mcp/commit/f32f02fc6e788022954abf114f97bb43e214626c/

@@ -93,6 +93,7 @@ export type ServerClient = {
 
 export type ServerAuthTokens = {
 	verify(t: string): r.Result<[string, AuthTokenPayload], Error>
+	decode(t: string): r.Result<[string, AuthTokenPayload], Error>
 	encode(t: string): r.Result<[string, AuthTokenPayload], Error>
 }
 
@@ -795,8 +796,17 @@ export class Server {
 			return
 		}
 
+		let tt: string | undefined
+
+		let tu = this.authTokens.decode(ib.data.token)
+		if (tu.err) {
+			tt = ib.data.token
+		} else {
+			tt = tu.v[0]
+		}
+
 		let ro: ClientRevokeRequest = {
-			token: ib.data.token,
+			token: tt,
 			client_id: req[authKey].clientId,
 			client_secret: req[authKey].clientSecret,
 		}

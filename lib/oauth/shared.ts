@@ -120,7 +120,7 @@ export const AccessTokenRequestSchema = z.object({
 export const RefreshTokenRequestSchema = z.object({
 	grant_type: z.literal("refresh_token"),
 	refresh_token: z.string(),
-	scope: z.array(z.string()).optional(),
+	scope: z.string().optional(),
 })
 
 export const TokenRequestSchema = z.union([

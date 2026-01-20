@@ -1120,13 +1120,13 @@ function parseBasic(h: string): r.Result<ClientPassword, Error> {
 		return r.error(new Error("Malformed password"))
 	}
 
-	let x = h.slice(0, i)
+	let x = v.slice(0, i)
 
 	if (!x) {
 		return r.error(new Error("No client_id"))
 	}
 
-	let y = h.slice(i + 1)
+	let y = v.slice(i + 1)
 
 	if (!y) {
 		return r.error(new Error("No client_secret"))

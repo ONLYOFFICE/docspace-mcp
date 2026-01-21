@@ -806,9 +806,9 @@ export class Server {
 		}
 
 		let ro: ClientRevokeRequest = {
-			token: tt,
 			client_id: req[authKey].clientId,
 			client_secret: req[authKey].clientSecret,
+			token: tt,
 		}
 
 		if (ib.data.token_type_hint) {
@@ -860,20 +860,20 @@ export class Server {
 		switch (ib.data.grant_type) {
 		case "authorization_code":
 			to = {
+				client_id: req[authKey].clientId,
+				client_secret: req[authKey].clientSecret,
 				grant_type: ib.data.grant_type,
 				code: ib.data.code,
 				redirect_uri: this.callbackUrl,
-				client_id: req[authKey].clientId,
-				client_secret: req[authKey].clientSecret,
 			}
 			break
 
 		case "refresh_token":
 			to = {
-				grant_type: ib.data.grant_type,
-				refresh_token: ib.data.refresh_token,
 				client_id: req[authKey].clientId,
 				client_secret: req[authKey].clientSecret,
+				grant_type: ib.data.grant_type,
+				refresh_token: ib.data.refresh_token,
 			}
 			break
 		}

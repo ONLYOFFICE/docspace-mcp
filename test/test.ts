@@ -20,7 +20,9 @@
 
 import assert from "node:assert/strict"
 import childProcess from "node:child_process"
+import http from "node:http"
 import net from "node:net"
+import querystring from "node:querystring"
 import test from "node:test"
 import * as client from "@modelcontextprotocol/sdk/client/index.js"
 import * as sse from "@modelcontextprotocol/sdk/client/sse.js"
@@ -47,6 +49,59 @@ function powerSet<T>(arr: T[]): T[][] {
 	}
 
 	return x
+}
+
+function inDelta(a: number, e: number, d: number): boolean {
+	return Math.abs(e - a) <= d
+}
+
+async function randomAddress(): Promise<r.Result<net.AddressInfo, Error>> {
+	let s = new net.Server()
+
+	let p = new Promise<r.Result<void, Error>>((res) => {
+		s.once("error", (err) => {
+			res(r.error(err))
+		})
+
+		s.once("listening", () => {
+			res(r.ok())
+		})
+	})
+
+	let listen: (port: number, host: string) => void = s.listen.bind(s)
+
+	let l = r.safeSync(listen, 0, "::")
+	if (l.err) {
+		return r.error(new Error("Listening server", {cause: l.err}))
+	}
+
+	let w = await p
+	if (w.err) {
+		return r.error(new Error("Waiting for server", {cause: w.err}))
+	}
+
+	let a = s.address()
+
+	if (!a || typeof a !== "object") {
+		return r.error(new Error("Address is not object"))
+	}
+
+	p = new Promise<r.Result<void, Error>>((res) => {
+		s.close((err) => {
+			if (err) {
+				res(r.error(err))
+			} else {
+				res(r.ok())
+			}
+		})
+	})
+
+	w = await p
+	if (w.err) {
+		return r.error(new Error("Closing server", {cause: w.err}))
+	}
+
+	return r.ok(a)
 }
 
 async function waitForPort(p: number, h: string): Promise<r.Result<void, Error>> {
@@ -82,6 +137,336 @@ async function waitForPort(p: number, h: string): Promise<r.Result<void, Error>>
 	}
 
 	return r.error(new Error(`Timeout waiting for port ${p}`))
+}
+
+async function readFetchJson(res: Response): Promise<r.Result<unknown, Error>> {
+	let t = res.headers.get("Content-Type")
+
+	if (!t) {
+		return r.error(new Error("Content-Type is missing"))
+	}
+
+	if (t !== "application/json; charset=utf-8") {
+		return r.error(new Error(`Content-Type ${t} is not 'application/json; charset=utf-8'`))
+	}
+
+	let l = res.headers.get("Content-Length")
+
+	if (!l) {
+		return r.error(new Error("Content-Length is missing"))
+	}
+
+	let n = Number.parseInt(l, 10)
+
+	if (Number.isNaN(n)) {
+		return r.error(new Error(`Content-Length ${l} is invalid`))
+	}
+
+	let b = await r.safeAsync(res.text.bind(res))
+	if (b.err) {
+		return r.error(new Error("Reading text", {cause: b.err}))
+	}
+
+	let e = new TextEncoder()
+
+	let x = e.encode(b.v)
+
+	if (x.length !== n) {
+		return r.error(new Error("Content-Length mismatch"))
+	}
+
+	let j = r.safeSync(JSON.parse, b.v)
+	if (j.err) {
+		return r.error(new Error("Parsing JSON", {cause: j.err}))
+	}
+
+	return r.ok(j.v)
+}
+
+async function readFetchText(res: Response): Promise<r.Result<string, Error>> {
+	let t = res.headers.get("Content-Type")
+
+	if (!t) {
+		return r.error(new Error("Content-Type is missing"))
+	}
+
+	if (t !== "text/plain; charset=utf-8") {
+		return r.error(new Error(`Content-Type ${t} is not 'text/plain; charset=utf-8'`))
+	}
+
+	let l = res.headers.get("Content-Length")
+
+	if (!l) {
+		return r.error(new Error("Content-Length is missing"))
+	}
+
+	let n = Number.parseInt(l, 10)
+
+	if (Number.isNaN(n)) {
+		return r.error(new Error(`Content-Length ${l} is invalid`))
+	}
+
+	let b = await r.safeAsync(res.text.bind(res))
+	if (b.err) {
+		return r.error(new Error("Reading text", {cause: b.err}))
+	}
+
+	let e = new TextEncoder()
+
+	let x = e.encode(b.v)
+
+	if (x.length !== n) {
+		return r.error(new Error("Content-Length mismatch"))
+	}
+
+	return r.ok(b.v)
+}
+
+function parseFetchLocation(res: Response): r.Result<URL, Error> {
+	let s = res.headers.get("Location")
+	if (!s) {
+		return r.error(new Error("Location is missing"))
+	}
+
+	let u = r.safeNew(URL, s)
+	if (u.err) {
+		return r.error(new Error("Parsing URL", {cause: u.err}))
+	}
+
+	return r.ok(u.v)
+}
+
+async function readHttpForm(req: http.IncomingMessage): Promise<r.Result<Record<string, string | string[] | undefined>, Error>> {
+	let t = req.headers["content-type"]
+
+	if (!t) {
+		return r.error(new Error("Content-Type is missing"))
+	}
+
+	if (t !== "application/x-www-form-urlencoded") {
+		return r.error(new Error(`Content-Type ${t} is not 'application/x-www-form-urlencoded'`))
+	}
+
+	let l = req.headers["content-length"]
+
+	if (!l) {
+		return r.error(new Error("Content-Length is missing"))
+	}
+
+	let n = Number.parseInt(l, 10)
+
+	if (Number.isNaN(n)) {
+		return r.error(new Error(`Content-Length ${l} is invalid`))
+	}
+
+	let d = await readHttpData(req)
+	if (d.err) {
+		return r.error(new Error("Reading data", {cause: d.err}))
+	}
+
+	let b = r.safeSync(Buffer.concat.bind(Buffer), d.v)
+	if (b.err) {
+		return r.error(new Error("Concatenating data", {cause: b.err}))
+	}
+
+	let s = r.safeSync(b.v.toString.bind(b.v), "utf8")
+	if (s.err) {
+		return r.error(new Error("Converting data", {cause: s.err}))
+	}
+
+	let e = new TextEncoder()
+
+	let x = e.encode(s.v)
+
+	if (x.length !== n) {
+		return r.error(new Error("Content-Length mismatch"))
+	}
+
+	let q = r.safeSync(querystring.parse, s.v)
+	if (q.err) {
+		return r.error(new Error("Parsing data", {cause: q.err}))
+	}
+
+	return r.ok({...q.v})
+}
+
+async function readHttpData(req: http.IncomingMessage): Promise<r.Result<Uint8Array[], Error>> {
+	if (!req.readable) {
+		return r.error(new Error("Request is not readable"))
+	}
+
+	return await new Promise<r.Result<Uint8Array[], Error>>((resolve) => {
+		let a: Uint8Array[] = []
+
+		let onError = (err: Error): void => {
+			close(r.error(new Error("Request error", {cause: err})))
+		}
+
+		let onClose = (): void => {
+			close(r.error(new Error("Request closed")))
+		}
+
+		let onData = (c: Uint8Array): void => {
+			a.push(c)
+		}
+
+		let onEnd = (): void => {
+			if (req.complete) {
+				close(r.ok(a))
+			} else {
+				close(r.error(new Error("Request is not complete")))
+			}
+		}
+
+		let close = (r: r.Result<Uint8Array[], Error>): void => {
+			req.removeListener("error", onError)
+			req.removeListener("close", onClose)
+			req.removeListener("data", onData)
+			req.removeListener("end", onEnd)
+			resolve(r)
+		}
+
+		req.on("error", onError)
+		req.on("close", onClose)
+		req.on("data", onData)
+		req.on("end", onEnd)
+	})
+}
+
+async function sendJson(res: http.ServerResponse, statusCode: number, body: unknown): Promise<r.Result<void, Error>> {
+	if (!res.writable) {
+		return r.error(new Error("Response is not writable"))
+	}
+
+	let sr = r.safeSync(JSON.stringify, body, null, 2)
+	if (sr.err) {
+		return r.error(new Error("Stringifying body", {cause: sr.err}))
+	}
+
+	if (!res.getHeader("Content-Type")) {
+		res.setHeader("Content-Type", "application/json")
+	}
+
+	let hr = r.safeSync(res.writeHead.bind(res), statusCode)
+	if (hr.err) {
+		return r.error(new Error("Writing head", {cause: hr.err}))
+	}
+
+	return await new Promise((resolve) => {
+		let onError = (err: Error): void => {
+			end(new Error("Response error", {cause: err}))
+		}
+
+		let end = (err?: Error): void => {
+			res.removeListener("error", onError)
+
+			if (err) {
+				resolve(r.error(err))
+			} else {
+				resolve(r.ok())
+			}
+		}
+
+		res.on("error", onError)
+		res.end(sr.v, end)
+	})
+}
+
+type AsyncRequestListener = (...args: Parameters<http.RequestListener>) => PromiseLike<void> | void
+
+async function onRequest(t: test.TestContext, s: http.Server, l: AsyncRequestListener): Promise<void> {
+	await new Promise<void>((_, reject) => {
+		let w: http.RequestListener = (req, res) => {
+			void (async() => {
+				try {
+					await l(req, res)
+				} catch (err) {
+					res.destroy()
+					if (err instanceof Error) {
+						reject(err)
+					} else {
+						reject(new Error("Non-Error thrown", {cause: err}))
+					}
+				}
+			})()
+		}
+
+		t.after(() => {
+			s.removeListener("request", w)
+		})
+
+		s.on("request", w)
+	})
+}
+
+async function setupHttp(t: test.TestContext): Promise<[http.Server, net.AddressInfo]> {
+	let s = new http.Server()
+
+	t.after(async() => {
+		let p = new Promise<r.Result<void, Error>>((res) => {
+			s.close((err) => {
+				if (err) {
+					res(r.error(err))
+				} else {
+					res(r.ok())
+				}
+			})
+		})
+
+		let w = await p
+		assert.ok(w.err === undefined)
+	})
+
+	let p = new Promise<r.Result<void, Error>>((res) => {
+		s.once("error", (err) => {
+			res(r.error(err))
+		})
+
+		s.once("listening", () => {
+			res(r.ok())
+		})
+	})
+
+	let listen: (port: number, host: string) => void = s.listen.bind(s)
+
+	let l = r.safeSync(listen, 0, "::")
+	assert.ok(l.err === undefined)
+
+	let w = await p
+	assert.ok(w.err === undefined)
+
+	let a = s.address()
+	assert.ok(a && typeof a === "object")
+
+	return [s, a]
+}
+
+type SetupBinOptions = {
+	host: string
+	port: number
+	env: Record<string, string>
+}
+
+async function setupBin(t: test.TestContext, o: SetupBinOptions): Promise<void> {
+	let so: childProcess.SpawnOptions = {
+		env: {
+			...process.env,
+			...o.env,
+		},
+	}
+
+	let cp = childProcess.spawn(
+		"node",
+		["./bin/onlyoffice-docspace-mcp.js"],
+		so,
+	)
+
+	t.after(() => {
+		cp.kill()
+	})
+
+	let wp = await waitForPort(o.port, o.host)
+	assert.ok(wp.err === undefined)
 }
 
 type SetupMcpOptions = {

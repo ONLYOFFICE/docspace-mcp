@@ -31,8 +31,6 @@ import * as types from "@modelcontextprotocol/sdk/types.js"
 import type * as z from "zod"
 import * as r from "../lib/util/result.ts"
 
-const skip = false
-
 function powerSet<T>(arr: T[]): T[][] {
 	let x: T[][] = []
 
@@ -86,14 +84,14 @@ async function waitForPort(p: number, h: string): Promise<r.Result<void, Error>>
 	return r.error(new Error(`Timeout waiting for port ${p}`))
 }
 
-type SetupOptions = {
+type SetupMcpOptions = {
 	transport: "stdio" | "sse" | "streamable-http"
 	host: string
 	port: number
 	env: Record<string, string>
 }
 
-async function setup(t: test.TestContext, o: SetupOptions): Promise<client.Client> {
+async function setupMcp(t: test.TestContext, o: SetupMcpOptions): Promise<client.Client> {
 	let co: types.Implementation = {
 		name: "test",
 		version: "0.0.0",
@@ -135,11 +133,9 @@ async function setup(t: test.TestContext, o: SetupOptions): Promise<client.Clien
 		})
 
 		let w = await waitForPort(o.port, o.host)
-		if (w.err) {
-			assert.fail(new Error("Waiting for port", {cause: w.err}))
-		}
+		assert.ok(w.err === undefined)
 
-		let b = `http://${o.host}:${o.port}/`
+		let b = `http://[${o.host}]:${o.port}/`
 
 		let e: string | undefined
 
@@ -150,9 +146,7 @@ async function setup(t: test.TestContext, o: SetupOptions): Promise<client.Clien
 		}
 
 		let u = r.safeNew(URL, e, b)
-		if (u.err) {
-			assert.fail(new Error("Creating url", {cause: u.err}))
-		}
+		assert.ok(u.err === undefined)
 
 		if (o.transport === "sse") {
 			tr = new sse.SSEClientTransport(u.v)
@@ -162,143 +156,110 @@ async function setup(t: test.TestContext, o: SetupOptions): Promise<client.Clien
 	}
 
 	let cr = await r.safeAsync(cl.connect.bind(cl), tr)
-	if (cr.err) {
-		assert.fail(new Error("Connecting transport", {cause: cr.err}))
-	}
+	assert.ok(cr.err === undefined)
 
 	return cl
 }
 
-void test.suite("validates config", {skip}, () => {
+void test.suite("validates config", () => {
 	type Suite = {
 		name: string
-		skip: boolean
-		tests: Test[]
+		tests: Record<string, string>[]
 		text: string
-	}
-
-	type Test = {
-		skip: boolean
-		env: Record<string, string>
 	}
 
 	let suits: Suite[] = [
 		{
 			name: "no tools left",
-			skip,
 			tests: [
 				{
-					skip,
-					env: {
-						DOCSPACE_TOOLSETS: "",
-						DOCSPACE_BASE_URL: "http://localhost/",
-						DOCSPACE_API_KEY: "xxx",
-					},
+					DOCSPACE_TOOLSETS: "",
+					DOCSPACE_BASE_URL: "http://localhost/",
+					DOCSPACE_API_KEY: "xxx",
 				},
 				{
-					skip,
-					env: {
-						DOCSPACE_TOOLSETS: "people",
-						DOCSPACE_ENABLED_TOOLS: "download_file_as_text",
-						DOCSPACE_DISABLED_TOOLS: "download_file_as_text,get_all_people",
-						DOCSPACE_BASE_URL: "http://localhost/",
-						DOCSPACE_API_KEY: "xxx",
-					},
+					DOCSPACE_TOOLSETS: "people",
+					DOCSPACE_ENABLED_TOOLS: "download_file_as_text",
+					DOCSPACE_DISABLED_TOOLS: "download_file_as_text,get_all_people",
+					DOCSPACE_BASE_URL: "http://localhost/",
+					DOCSPACE_API_KEY: "xxx",
 				},
 			],
 			text: "No tools left",
 		},
 		{
 			name: "no password",
-			skip,
 			tests: [
 				{
-					skip,
-					env: {
-						DOCSPACE_BASE_URL: "http://localhost/",
-						DOCSPACE_USERNAME: "xxx",
-					},
+					DOCSPACE_BASE_URL: "http://localhost/",
+					DOCSPACE_USERNAME: "xxx",
 				},
 			],
 			text: "No password",
 		},
 		{
 			name: "no username",
-			skip,
 			tests: [
 				{
-					skip,
-					env: {
-						DOCSPACE_BASE_URL: "http://localhost/",
-						DOCSPACE_PASSWORD: "xxx",
-					},
+					DOCSPACE_BASE_URL: "http://localhost/",
+					DOCSPACE_PASSWORD: "xxx",
 				},
 			],
 			text: "No username",
 		},
 		{
 			name: "no api base url",
-			skip,
 			tests: [],
 			text: "No API base URL",
 		},
 		{
 			name: "no oauth client secret",
-			skip,
 			tests: [],
 			text: "No OAuth client secret",
 		},
 		{
 			name: "no oauth client id",
-			skip,
 			tests: [],
 			text: "No OAuth client ID",
 		},
 		{
 			name: "no auth method",
-			skip,
 			tests: [],
 			text: "No authentication method",
 		},
 		{
 			name: "multiple auth methods",
-			skip,
 			tests: [],
 			text: "Multiple authentication methods",
 		},
 		{
 			name: "no server base url",
-			skip,
 			tests: [],
 			text: "No server base URL",
 		},
 		{
 			name: "no server host",
-			skip,
 			tests: [],
 			text: "No server host",
 		},
 	]
 
 	for (let i = 0; i < 4; i += 1) {
-		let t: Test = {
-			skip,
-			env: {},
-		}
+		let t: Record<string, string> = {}
 
 		switch (i) {
 		case 0:
-			t.env.DOCSPACE_AUTHORIZATION = "xxx"
+			t.DOCSPACE_AUTHORIZATION = "xxx"
 			break
 		case 1:
-			t.env.DOCSPACE_API_KEY = "xxx"
+			t.DOCSPACE_API_KEY = "xxx"
 			break
 		case 2:
-			t.env.DOCSPACE_AUTH_TOKEN = "xxx"
+			t.DOCSPACE_AUTH_TOKEN = "xxx"
 			break
 		case 3:
-			t.env.DOCSPACE_USERNAME = "xxx"
-			t.env.DOCSPACE_PASSWORD = "xxx"
+			t.DOCSPACE_USERNAME = "xxx"
+			t.DOCSPACE_PASSWORD = "xxx"
 			break
 		}
 
@@ -309,25 +270,19 @@ void test.suite("validates config", {skip}, () => {
 		if (tr !== "stdio") {
 			suits[4].tests.push(
 				{
-					skip,
-					env: {
-						DOCSPACE_TRANSPORT: tr,
-						DOCSPACE_OAUTH_BASE_URL: "http://localhost/",
-						DOCSPACE_OAUTH_CLIENT_ID: "xxx",
-						DOCSPACE_SERVER_BASE_URL: "http://localhost/",
-					},
+					DOCSPACE_TRANSPORT: tr,
+					DOCSPACE_OAUTH_BASE_URL: "http://localhost/",
+					DOCSPACE_OAUTH_CLIENT_ID: "xxx",
+					DOCSPACE_SERVER_BASE_URL: "http://localhost/",
 				},
 			)
 
 			suits[5].tests.push(
 				{
-					skip,
-					env: {
-						DOCSPACE_TRANSPORT: tr,
-						DOCSPACE_OAUTH_BASE_URL: "http://localhost/",
-						DOCSPACE_OAUTH_CLIENT_SECRET: "xxx",
-						DOCSPACE_SERVER_BASE_URL: "http://localhost/",
-					},
+					DOCSPACE_TRANSPORT: tr,
+					DOCSPACE_OAUTH_BASE_URL: "http://localhost/",
+					DOCSPACE_OAUTH_CLIENT_SECRET: "xxx",
+					DOCSPACE_SERVER_BASE_URL: "http://localhost/",
 				},
 			)
 		}
@@ -335,29 +290,20 @@ void test.suite("validates config", {skip}, () => {
 		if (tr === "stdio") {
 			suits[6].tests.push(
 				{
-					skip,
-					env: {
-						DOCSPACE_TRANSPORT: tr,
-					},
+					DOCSPACE_TRANSPORT: tr,
 				},
 			)
 		} else {
 			suits[6].tests.push(
 				{
-					skip,
-					env: {
-						DOCSPACE_TRANSPORT: tr,
-						DOCSPACE_REQUEST_QUERY: "0",
-						DOCSPACE_REQUEST_HEADER_PREFIX: "",
-					},
+					DOCSPACE_TRANSPORT: tr,
+					DOCSPACE_REQUEST_QUERY: "0",
+					DOCSPACE_REQUEST_HEADER_PREFIX: "",
 				},
 				{
-					skip,
-					env: {
-						DOCSPACE_TRANSPORT: tr,
-						DOCSPACE_REQUEST_AUTHORIZATION_HEADER: "0",
-						DOCSPACE_REQUEST_HEADER_PREFIX: "",
-					},
+					DOCSPACE_TRANSPORT: tr,
+					DOCSPACE_REQUEST_AUTHORIZATION_HEADER: "0",
+					DOCSPACE_REQUEST_HEADER_PREFIX: "",
 				},
 			)
 		}
@@ -377,32 +323,29 @@ void test.suite("validates config", {skip}, () => {
 					continue
 				}
 
-				let t: Test = {
-					skip,
-					env: {
-						DOCSPACE_TRANSPORT: tr,
-						DOCSPACE_BASE_URL: "http://localhost/",
-					},
+				let t: Record<string, string> = {
+					DOCSPACE_TRANSPORT: tr,
+					DOCSPACE_BASE_URL: "http://localhost/",
 				}
 
 				for (let i of g) {
 					switch (i) {
 					case 0:
-						t.env.DOCSPACE_AUTHORIZATION = "xxx"
+						t.DOCSPACE_AUTHORIZATION = "xxx"
 						break
 					case 1:
-						t.env.DOCSPACE_API_KEY = "xxx"
+						t.DOCSPACE_API_KEY = "xxx"
 						break
 					case 2:
-						t.env.DOCSPACE_AUTH_TOKEN = "xxx"
+						t.DOCSPACE_AUTH_TOKEN = "xxx"
 						break
 					case 3:
-						t.env.DOCSPACE_USERNAME = "xxx"
-						t.env.DOCSPACE_PASSWORD = "xxx"
+						t.DOCSPACE_USERNAME = "xxx"
+						t.DOCSPACE_PASSWORD = "xxx"
 						break
 					case 4:
-						t.env.DOCSPACE_USERNAME = "xxx"
-						t.env.DOCSPACE_PASSWORD = "xxx"
+						t.DOCSPACE_USERNAME = "xxx"
+						t.DOCSPACE_PASSWORD = "xxx"
 						break
 					}
 				}
@@ -424,40 +367,37 @@ void test.suite("validates config", {skip}, () => {
 					continue
 				}
 
-				let t: Test = {
-					skip,
-					env: {
-						DOCSPACE_TRANSPORT: tr,
-					},
+				let t: Record<string, string> = {
+					DOCSPACE_TRANSPORT: tr,
 				}
 
 				for (let i of g) {
 					switch (i) {
 					case 0:
-						t.env.DOCSPACE_BASE_URL = "http://localhost/"
-						t.env.DOCSPACE_AUTHORIZATION = "xxx"
+						t.DOCSPACE_BASE_URL = "http://localhost/"
+						t.DOCSPACE_AUTHORIZATION = "xxx"
 						break
 					case 1:
-						t.env.DOCSPACE_BASE_URL = "http://localhost/"
-						t.env.DOCSPACE_API_KEY = "xxx"
+						t.DOCSPACE_BASE_URL = "http://localhost/"
+						t.DOCSPACE_API_KEY = "xxx"
 						break
 					case 2:
-						t.env.DOCSPACE_BASE_URL = "http://localhost/"
-						t.env.DOCSPACE_AUTH_TOKEN = "xxx"
+						t.DOCSPACE_BASE_URL = "http://localhost/"
+						t.DOCSPACE_AUTH_TOKEN = "xxx"
 						break
 					case 3:
-						t.env.DOCSPACE_BASE_URL = "http://localhost/"
-						t.env.DOCSPACE_USERNAME = "xxx"
-						t.env.DOCSPACE_PASSWORD = "xxx"
+						t.DOCSPACE_BASE_URL = "http://localhost/"
+						t.DOCSPACE_USERNAME = "xxx"
+						t.DOCSPACE_PASSWORD = "xxx"
 						break
 					case 4:
-						t.env.DOCSPACE_BASE_URL = "http://localhost/"
-						t.env.DOCSPACE_USERNAME = "xxx"
-						t.env.DOCSPACE_PASSWORD = "xxx"
+						t.DOCSPACE_BASE_URL = "http://localhost/"
+						t.DOCSPACE_USERNAME = "xxx"
+						t.DOCSPACE_PASSWORD = "xxx"
 						break
 					case 5:
-						t.env.DOCSPACE_OAUTH_BASE_URL = "http://localhost/"
-						t.env.DOCSPACE_SERVER_BASE_URL = "http://localhost/"
+						t.DOCSPACE_OAUTH_BASE_URL = "http://localhost/"
+						t.DOCSPACE_SERVER_BASE_URL = "http://localhost/"
 						break
 					}
 				}
@@ -469,36 +409,26 @@ void test.suite("validates config", {skip}, () => {
 		if (tr !== "stdio") {
 			suits[8].tests.push(
 				{
-					skip,
-					env: {
-						DOCSPACE_TRANSPORT: tr,
-						DOCSPACE_OAUTH_BASE_URL: "http://localhost/",
-					},
+					DOCSPACE_TRANSPORT: tr,
+					DOCSPACE_OAUTH_BASE_URL: "http://localhost/",
 				},
 			)
 
 			suits[9].tests.push(
 				{
-					skip,
-					env: {
-						DOCSPACE_TRANSPORT: tr,
-						DOCSPACE_HOST: "",
-					},
+					DOCSPACE_TRANSPORT: tr,
+					DOCSPACE_HOST: "",
 				},
 			)
 		}
 	}
 
 	for (let c of suits) {
-		let o: test.TestOptions = {
-			skip: c.skip,
-		}
-
-		void test.suite(c.name, o, () => {
-			for (let s of c.tests) {
+		void test.suite(c.name, () => {
+			for (let tt of c.tests) {
 				let n = ""
 
-				for (let [k, v] of Object.entries(s.env)) {
+				for (let [k, v] of Object.entries(tt)) {
 					n += `${k}=${v} `
 				}
 
@@ -506,19 +436,15 @@ void test.suite("validates config", {skip}, () => {
 					n = n.slice(0, -1)
 				}
 
-				let o: test.TestOptions = {
-					skip: s.skip,
-				}
-
-				void test(n, o, async(t) => {
-					let so: SetupOptions = {
+				void test(n, async(t) => {
+					let so: SetupMcpOptions = {
 						transport: "stdio",
 						host: "",
 						port: 0,
-						env: s.env,
+						env: tt,
 					}
 
-					let cl = await setup(t, so)
+					let cl = await setupMcp(t, so)
 
 					let req: types.CallToolRequest = {
 						method: "tools/call",
@@ -528,9 +454,7 @@ void test.suite("validates config", {skip}, () => {
 					}
 
 					let a = await r.safeAsync(cl.request.bind(cl), req, types.CallToolResultSchema)
-					if (a.err) {
-						assert.fail(new Error("Getting people", {cause: a.err}))
-					}
+					assert.ok(a.err === undefined)
 
 					let e: z.infer<typeof types.CallToolResultSchema> = {
 						content: [

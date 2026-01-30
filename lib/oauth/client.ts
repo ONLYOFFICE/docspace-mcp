@@ -26,6 +26,7 @@
 
 import contentType from "content-type"
 import * as z from "zod"
+import * as errors from "../util/errors.ts"
 import * as r from "../util/result.ts"
 import type {
 	AuthorizeRequest,
@@ -315,21 +316,40 @@ export async function checkResponse(req: Request, res: Response): Promise<r.Resu
 	await (async() => {
 		let h = res.headers.get("Content-Type")
 		if (!h) {
+			let err = new Error("Content-Type is missing")
+			o.error = "server_error"
+			o.error_description = errors.format(err)
 			return
 		}
 
 		let p = r.safeSync(contentType.parse, h)
-		if (p.err || p.v.type !== "application/json") {
+		if (p.err) {
+			let err = new Error("Parsing Content-Type", {cause: p.err})
+			o.error = "server_error"
+			o.error_description = errors.format(err)
+			return
+		}
+
+		if (p.v.type !== "application/json") {
+			let err = new Error("Content-Type is invalid")
+			o.error = "server_error"
+			o.error_description = errors.format(err)
 			return
 		}
 
 		let c = r.safeSync(res.clone.bind(res))
 		if (c.err) {
+			let err = new Error("Cloning response", {cause: c.err})
+			o.error = "server_error"
+			o.error_description = errors.format(err)
 			return
 		}
 
 		let b = await r.safeAsync(c.v.json.bind(c.v))
 		if (b.err) {
+			let err = new Error("Parsing response", {cause: b.err})
+			o.error = "server_error"
+			o.error_description = errors.format(err)
 			return
 		}
 

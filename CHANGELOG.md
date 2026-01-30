@@ -7,6 +7,10 @@ This document records all notable changes to the project, following the
 
 <!-- There are no noticeable changes in version [unreleased]. -->
 
+### Added
+
+- Add tool annotations ([01bc863]).
+
 ### Changed
 
 - Update `@modelcontextprotocol/sdk` to 1.24.3, `express` to 5.2.1,
@@ -304,6 +308,7 @@ There are no noticeable changes in version [3.0.1].
 [0.1.1]: https://github.com/onlyoffice/docspace-mcp/compare/v0.1.0...v0.1.1/
 [0.1.0]: https://github.com/onlyoffice/docspace-mcp/releases/tag/v0.1.0/
 
+[01bc863]: https://github.com/onlyoffice/docspace-mcp/commit/01bc863b7171c9bec9dd2fd277dbd83e710e7e6c/
 [38a3a75]: https://github.com/onlyoffice/docspace-mcp/commit/38a3a7587eb8bb4a4c02c136426cf1d59e108c9d/
 [a733d43]: https://github.com/onlyoffice/docspace-mcp/commit/a733d43b8881f4825399737bd3ddb172a3b51fac/
 [658ffae]: https://github.com/onlyoffice/docspace-mcp/commit/658ffae49f0f8d253346c29f9b0bebb752329f79/

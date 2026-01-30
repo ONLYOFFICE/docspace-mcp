@@ -17,7 +17,7 @@
 		"type": "git",
 		"url": "git+https://github.com/onlyoffice/docspace-mcp.git"
 	},
-	"license": "Apache-2.0",
+	"license": "MIT",
 	"author": {
 		"name": "Ascensio System SIA",
 		"email": "integration@onlyoffice.com",

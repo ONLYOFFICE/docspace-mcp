@@ -862,8 +862,6 @@ void test.suite("validates config", () => {
 
 void test("oauth server", (t) => {
 	// todo: client.ts
-	// upstream can respond without Content-Type
-	// upstream can respond with invalid Content-Type
 	// upstream can respond with invalid JSON
 
 	// todo: errors
@@ -2581,6 +2579,113 @@ void test("oauth server", (t) => {
 					let eb: object = {
 						error: "server_error",
 						error_description: "some_reason",
+					}
+
+					assert.deepEqual(ab.v, eb)
+				}
+
+				await Promise.race([hp, tf()])
+			})
+
+			void t.test("returns error when upstream responds without Content-Type header", async(t) => {
+				let [hs, ha] = await setupHttp(t)
+
+				let hp = onRequest(t, hs, (_, res) => {
+					res.statusCode = 418
+					res.end()
+				})
+
+				let tf = async(): Promise<void> => {
+					let e: object = {
+						DOCSPACE_OAUTH_BASE_URL: `http://[${ha.address}]:${ha.port}/`,
+					}
+
+					let a = await setup(t, e)
+
+					let u = r.safeNew(URL, o.path, `http://[${a.address}]:${a.port}/`)
+					assert.ok(u.err === undefined)
+
+					let f = new URLSearchParams()
+
+					for (let [k, v] of Object.entries(o.body)) {
+						f.set(k, v)
+					}
+
+					let i: RequestInit = {
+						method: "POST",
+						headers: {
+							"Content-Type": "application/x-www-form-urlencoded",
+						},
+						body: f.toString(),
+					}
+
+					let fetch = withAuth(globalThis.fetch)
+
+					let res = await r.safeAsync(fetch, u.v, i)
+					assert.ok(res.err === undefined)
+
+					assert.ok(res.v.status === 418)
+
+					let ab = await readFetchJson(res.v)
+					assert.ok(ab.err === undefined)
+
+					let eb: object = {
+						error: "server_error",
+						error_description: "Content-Type is missing",
+					}
+
+					assert.deepEqual(ab.v, eb)
+				}
+
+				await Promise.race([hp, tf()])
+			})
+
+			void t.test("returns error when upstream responds with invalid Content-Type header", async(t) => {
+				let [hs, ha] = await setupHttp(t)
+
+				let hp = onRequest(t, hs, (_, res) => {
+					res.statusCode = 418
+					res.setHeader("Content-Type", "text/plain")
+					res.end()
+				})
+
+				let tf = async(): Promise<void> => {
+					let e: object = {
+						DOCSPACE_OAUTH_BASE_URL: `http://[${ha.address}]:${ha.port}/`,
+					}
+
+					let a = await setup(t, e)
+
+					let u = r.safeNew(URL, o.path, `http://[${a.address}]:${a.port}/`)
+					assert.ok(u.err === undefined)
+
+					let f = new URLSearchParams()
+
+					for (let [k, v] of Object.entries(o.body)) {
+						f.set(k, v)
+					}
+
+					let i: RequestInit = {
+						method: "POST",
+						headers: {
+							"Content-Type": "application/x-www-form-urlencoded",
+						},
+						body: f.toString(),
+					}
+
+					let fetch = withAuth(globalThis.fetch)
+
+					let res = await r.safeAsync(fetch, u.v, i)
+					assert.ok(res.err === undefined)
+
+					assert.ok(res.v.status === 418)
+
+					let ab = await readFetchJson(res.v)
+					assert.ok(ab.err === undefined)
+
+					let eb: object = {
+						error: "server_error",
+						error_description: "Content-Type is invalid",
 					}
 
 					assert.deepEqual(ab.v, eb)

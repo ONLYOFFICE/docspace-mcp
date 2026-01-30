@@ -34,7 +34,6 @@
 		"build-docs": "node scripts/build-docs.ts",
 		"build-mcpb": "node scripts/build-mcpb.ts",
 		"check": "tsc",
-		"dev": "node scripts/dev.ts",
 		"inspect": "node scripts/inspect.ts",
 		"lint": "eslint --no-warn-ignored .github app docs lib scripts *.*",
 		"serve": "node scripts/serve.ts",

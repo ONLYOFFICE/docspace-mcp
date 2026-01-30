@@ -1,3 +1,4 @@
+
 # Getting started with the DocSpace MCP server
 
 This guide will demonstrate how the [DocSpace MCP server](../README.md) works with mcp clients like ChatGPT and VSCode, and how to establish this connection to enable seamless exchange of information between ONLYOFFICE DocSpace and AI models.
@@ -59,28 +60,66 @@ WHERE:
 2. Click **+** > **Connectors** on the chat bar
 
     Our newly configured mcp server (onlyoffice-docspace) is now enabled. 
-    ![confirm connection](../img/confirm-connection.png)
+
+<p align="center">
+  <picture>
+    <source width="100" media="(prefers-color-scheme: dark)" srcset="/docs/img/confirm-connection.dark.png">
+    <source width="100" media="(prefers-color-scheme: light)" srcset="/docs/img/confirm-connection.light.png">
+    <img width="100" src="/docs/img/confirm-connection.light.png" alt="This image confirms a successful client- DocSpace mcp server connection">
+  </picture>
+</p>
 
 ### Step 2: Interact with your DocSpace using newly connected client
 
 Now we have our connection, let us interact with DocSpace via Claude:
 
 1. Lets create a new room. Claude requests for permission to create this room.
-   ![create new room](../img/create-new-room.png)
+<p align="center">
+  <picture>
+    <source width="100" media="(prefers-color-scheme: dark)" srcset="/docs/img/create-new-room.dark.png">
+    <source width="100" media="(prefers-color-scheme: light)" srcset="/docs/img/create-new-room.light.png">
+    <img width="100" src="/docs/img/create-new-room.light.png" alt="This image shows the command to create a room">
+  </picture>
+</p>
 
     You can confirm this new room in your DocSpace account
-   ![confirm new room on DocSpace](../img/confirm-room-on-docspace.png)
+
+<p align="center">
+  <picture>
+    <source width="100" media="(prefers-color-scheme: dark)" srcset="/docs/img/confirm-room-on-docspace.dark.png">
+    <source width="100" media="(prefers-color-scheme: light)" srcset="/docs/img/confirm-room-on-docspace.light.png">
+    <img width="100" src="/docs/img/confirm-room-on-docspace.light.png" alt="This image confirms the room was successfully created ">
+  </picture>
+</p>
 
 2. Now, create a new document in this room
 
-    ![create new doc](../img/create-new-doc.png)
+<p align="center">
+  <picture>
+    <source width="100" media="(prefers-color-scheme: dark)" srcset="/docs/img/create-new-doc.dark.png">
+    <source width="100" media="(prefers-color-scheme: light)" srcset="/docs/img/create-new-doc.light.png">
+    <img width="100" src="/docs/img/create-new-doc.light.png" alt="This image shows the command for creating a new doc">
+  </picture>
+</p>
    
-    Confirm this new doc
-    ![confirm new doc](../img/confirm-new-doc.png)
+    Confirm the new doc was created
+<p align="center">
+  <picture>
+    <source width="100" media="(prefers-color-scheme: dark)" srcset="/docs/img/confirm-new-doc.dark.png">
+    <source width="100" media="(prefers-color-scheme: light)" srcset="/docs/img/confirm-new-doc.light.png">
+    <img width="100" src="/docs/img/confirm-new-doc.light.png" alt="This image confirms the doc was created">
+  </picture>
+</p>
 
     You can confirm the existence of this new doc in the new room in your DocSpace
-    ![confirm new doc in DocSpace](../img/confirm-new-doc-in-new-room.png)
-   
+    
+   <p align="center">
+  <picture>
+    <source width="100" media="(prefers-color-scheme: dark)" srcset="/docs/img/confirm-new-doc-in-new-room.dark.png">
+    <source width="100" media="(prefers-color-scheme: light)" srcset="/docs/img/confirm-new-doc-in-new-room.light.png">
+    <img width="100" src="/docs/img/confirm-new-doc-in-new-room.light.png" alt="This image confirms the doc was created">
+  </picture>
+</p>
 
 ## Next steps
 

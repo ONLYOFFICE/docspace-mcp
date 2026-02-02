@@ -94,7 +94,10 @@ configuration to your client's configuration file:
 	"mcpServers": {
 		"onlyoffice-docspace": {
 			"command": "npx",
-			"args": ["--yes", "@onlyoffice/docspace-mcp"],
+			"args": [
+				"--yes",
+				"@onlyoffice/docspace-mcp"
+			],
 			"env": {
 				"DOCSPACE_BASE_URL": "https://your-instance.onlyoffice.com",
 				"DOCSPACE_API_KEY": "your-api-key"

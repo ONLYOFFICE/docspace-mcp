@@ -1,25 +1,5 @@
 #!/usr/bin/env node
 
-/**
- * (c) Copyright Ascensio System SIA 2025
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- *
- * @license
- */
-
-/* eslint-disable typescript/consistent-type-definitions */
-
 import * as server from "@modelcontextprotocol/sdk/server/index.js"
 import * as stdio from "@modelcontextprotocol/sdk/server/stdio.js"
 import type * as types from "@modelcontextprotocol/sdk/types.js"
@@ -86,20 +66,20 @@ const ConfigSchema = z.
 	object({
 		DOCSPACE_INTERNAL: z.
 			string().
-			default("0").
+			prefault("0").
 			transform(zod.envBoolean()),
 		DOCSPACE_TRANSPORT: z.
 			string().
 			toLowerCase().
-			default("stdio").
+			prefault("stdio").
 			transform(zod.envUnion(availableTransports)),
 		DOCSPACE_DYNAMIC: z.
 			string().
-			default("0").
+			prefault("0").
 			transform(zod.envBoolean()),
 		DOCSPACE_TOOLSETS: z.
 			string().
-			default("all").
+			prefault("all").
 			transform(zod.envOptions(["all", ...availableToolsets])).
 			transform((o) => {
 				if (o.includes("all")) {
@@ -109,229 +89,229 @@ const ConfigSchema = z.
 			}),
 		DOCSPACE_ENABLED_TOOLS: z.
 			string().
-			default("").
+			prefault("").
 			transform(zod.envOptions(availableTools)),
 		DOCSPACE_DISABLED_TOOLS: z.
 			string().
-			default("").
+			prefault("").
 			transform(zod.envOptions(availableTools)),
 		DOCSPACE_SESSION_TTL: z.
 			string().
-			default("28800000"). // 8 hours
+			prefault("28800000"). // 8 hours
 			transform(zod.envNumber()).
 			pipe(z.number().min(0)),
 		DOCSPACE_SESSION_INTERVAL: z.
 			string().
-			default("240000"). // 4 minutes
+			prefault("240000"). // 4 minutes
 			transform(zod.envNumber()).
 			pipe(z.number().min(0)),
 		DOCSPACE_USER_AGENT: z.
 			string().
 			trim().
-			default(`${meta.name} v${meta.version}`),
+			prefault(`${meta.name} v${meta.version}`),
 		DOCSPACE_BASE_URL: z.
 			string().
-			default("").
+			prefault("").
 			transform(zod.envBaseUrl()),
 		DOCSPACE_AUTHORIZATION: z.
 			string().
 			trim().
-			default(""),
+			prefault(""),
 		DOCSPACE_API_KEY: z.
 			string().
 			trim().
-			default(""),
+			prefault(""),
 		DOCSPACE_AUTH_TOKEN: z.
 			string().
 			trim().
-			default(""),
+			prefault(""),
 		DOCSPACE_USERNAME: z.
 			string().
 			trim().
-			default(""),
+			prefault(""),
 		DOCSPACE_PASSWORD: z.
 			string().
 			trim().
-			default(""),
+			prefault(""),
 		DOCSPACE_OAUTH_BASE_URL: z.
 			string().
-			default("").
+			prefault("").
 			transform(zod.envBaseUrl()),
 		DOCSPACE_OAUTH_CLIENT_ID: z.
 			string().
 			trim().
-			default(""),
+			prefault(""),
 		DOCSPACE_OAUTH_CLIENT_SECRET: z.
 			string().
 			trim().
-			default(""),
+			prefault(""),
 		DOCSPACE_OAUTH_AUTH_TOKEN_ALGORITHM: z.
 			string().
 			toUpperCase().
-			default("HS256").
+			prefault("HS256").
 			transform(zod.envUnion<Algorithm | "">(["", ...availableAlgorithms])),
 		DOCSPACE_OAUTH_AUTH_TOKEN_TTL: z.
 			string().
-			default("3600000").
+			prefault("3600000").
 			transform(zod.envNumber()).
 			pipe(z.number().min(0)), // 1 hour
 		DOCSPACE_OAUTH_AUTH_TOKEN_SECRET_KEY: z.
 			string().
 			trim().
-			default(""),
+			prefault(""),
 		DOCSPACE_OAUTH_STATE_TOKEN_ALGORITHM: z.
 			string().
 			toUpperCase().
-			default("HS256").
+			prefault("HS256").
 			transform(zod.envUnion<Algorithm | "">(["", ...availableAlgorithms])),
 		DOCSPACE_OAUTH_STATE_TOKEN_TTL: z.
 			string().
-			default("3600000").
+			prefault("3600000").
 			transform(zod.envNumber()).
 			pipe(z.number().min(0)), // 1 hour
 		DOCSPACE_OAUTH_STATE_TOKEN_SECRET_KEY: z.
 			string().
 			trim().
-			default(""),
+			prefault(""),
 		DOCSPACE_SERVER_BASE_URL: z.
 			string().
-			default("").
+			prefault("").
 			transform(zod.envBaseUrl()),
 		DOCSPACE_HOST: z.
 			string().
 			trim().
-			default("127.0.0.1"),
+			prefault("127.0.0.1"),
 		DOCSPACE_PORT: z.
 			string().
-			default("8080").
+			prefault("8080").
 			transform(zod.envNumber()).
 			pipe(z.number().min(0).max(65535)),
 		DOCSPACE_PROXY_HOPS: z.
 			string().
-			default("0").
+			prefault("0").
 			transform(zod.envNumber()).
 			pipe(z.number().min(0)),
 		DOCSPACE_SERVER_CORS_MCP_ORIGIN: z.
 			string().
-			default("*").
+			prefault("*").
 			transform(zod.envList()),
 		DOCSPACE_SERVER_CORS_MCP_MAX_AGE: z.
 			string().
-			default("86400000"). // 1 day
+			prefault("86400000"). // 1 day
 			transform(zod.envNumber()).
 			pipe(z.number().min(0)),
 		DOCSPACE_SERVER_CORS_OAUTH_ORIGIN: z.
 			string().
-			default("*").
+			prefault("*").
 			transform(zod.envList()),
 		DOCSPACE_SERVER_CORS_OAUTH_MAX_AGE: z.
 			string().
-			default("86400000"). // 1 day
+			prefault("86400000"). // 1 day
 			transform(zod.envNumber()).
 			pipe(z.number().min(0)),
 		DOCSPACE_SERVER_RATE_LIMITS_MCP_CAPACITY: z.
 			string().
-			default("1000").
+			prefault("1000").
 			transform(zod.envNumber()).
 			pipe(z.number().min(0)),
 		DOCSPACE_SERVER_RATE_LIMITS_MCP_WINDOW: z.
 			string().
-			default("1000"). // 1 second
+			prefault("1000"). // 1 second
 			transform(zod.envNumber()).
 			pipe(z.number().min(0)),
 		DOCSPACE_SERVER_RATE_LIMITS_OAUTH_SERVER_METADATA_CAPACITY: z.
 			string().
-			default("200").
+			prefault("200").
 			transform(zod.envNumber()).
 			pipe(z.number().min(0)),
 		DOCSPACE_SERVER_RATE_LIMITS_OAUTH_SERVER_METADATA_WINDOW: z.
 			string().
-			default("60000"). // 1 minute
+			prefault("60000"). // 1 minute
 			transform(zod.envNumber()).
 			pipe(z.number().min(0)),
 		DOCSPACE_SERVER_RATE_LIMITS_OAUTH_RESOURCE_METADATA_CAPACITY: z.
 			string().
-			default("200").
+			prefault("200").
 			transform(zod.envNumber()).
 			pipe(z.number().min(0)),
 		DOCSPACE_SERVER_RATE_LIMITS_OAUTH_RESOURCE_METADATA_WINDOW: z.
 			string().
-			default("60000"). // 1 minute
+			prefault("60000"). // 1 minute
 			transform(zod.envNumber()).
 			pipe(z.number().min(0)),
 		DOCSPACE_SERVER_RATE_LIMITS_OAUTH_AUTHORIZE_CAPACITY: z.
 			string().
-			default("200").
+			prefault("200").
 			transform(zod.envNumber()).
 			pipe(z.number().min(0)),
 		DOCSPACE_SERVER_RATE_LIMITS_OAUTH_AUTHORIZE_WINDOW: z.
 			string().
-			default("60000"). // 1 minute
+			prefault("60000"). // 1 minute
 			transform(zod.envNumber()).
 			pipe(z.number().min(0)),
 		DOCSPACE_SERVER_RATE_LIMITS_OAUTH_CALLBACK_CAPACITY: z.
 			string().
-			default("200").
+			prefault("200").
 			transform(zod.envNumber()).
 			pipe(z.number().min(0)),
 		DOCSPACE_SERVER_RATE_LIMITS_OAUTH_CALLBACK_WINDOW: z.
 			string().
-			default("60000"). // 1 minute
+			prefault("60000"). // 1 minute
 			transform(zod.envNumber()).
 			pipe(z.number().min(0)),
 		DOCSPACE_SERVER_RATE_LIMITS_OAUTH_INTROSPECT_CAPACITY: z.
 			string().
-			default("10").
+			prefault("10").
 			transform(zod.envNumber()).
 			pipe(z.number().min(0)),
 		DOCSPACE_SERVER_RATE_LIMITS_OAUTH_INTROSPECT_WINDOW: z.
 			string().
-			default("60000"). // 1 minute
+			prefault("60000"). // 1 minute
 			transform(zod.envNumber()).
 			pipe(z.number().min(0)),
 		DOCSPACE_SERVER_RATE_LIMITS_OAUTH_REGISTER_CAPACITY: z.
 			string().
-			default("10").
+			prefault("10").
 			transform(zod.envNumber()).
 			pipe(z.number().min(0)),
 		DOCSPACE_SERVER_RATE_LIMITS_OAUTH_REGISTER_WINDOW: z.
 			string().
-			default("60000"). // 1 minute
+			prefault("60000"). // 1 minute
 			transform(zod.envNumber()).
 			pipe(z.number().min(0)),
 		DOCSPACE_SERVER_RATE_LIMITS_OAUTH_REVOKE_CAPACITY: z.
 			string().
-			default("10").
+			prefault("10").
 			transform(zod.envNumber()).
 			pipe(z.number().min(0)),
 		DOCSPACE_SERVER_RATE_LIMITS_OAUTH_REVOKE_WINDOW: z.
 			string().
-			default("60000"). // 1 minute
+			prefault("60000"). // 1 minute
 			transform(zod.envNumber()).
 			pipe(z.number().min(0)),
 		DOCSPACE_SERVER_RATE_LIMITS_OAUTH_TOKEN_CAPACITY: z.
 			string().
-			default("10").
+			prefault("10").
 			transform(zod.envNumber()).
 			pipe(z.number().min(0)),
 		DOCSPACE_SERVER_RATE_LIMITS_OAUTH_TOKEN_WINDOW: z.
 			string().
-			default("60000"). // 1 minute
+			prefault("60000"). // 1 minute
 			transform(zod.envNumber()).
 			pipe(z.number().min(0)),
 		DOCSPACE_REQUEST_QUERY: z.
 			string().
-			default("1").
+			prefault("1").
 			transform(zod.envBoolean()),
 		DOCSPACE_REQUEST_AUTHORIZATION_HEADER: z.
 			string().
-			default("1").
+			prefault("1").
 			transform(zod.envBoolean()),
 		DOCSPACE_REQUEST_HEADER_PREFIX: z.
 			string().
 			trim().
 			toLowerCase().
-			default("x-mcp-"),
+			prefault("x-mcp-"),
 	}).
 	transform((o) => ({
 		internal: o.DOCSPACE_INTERNAL,
@@ -640,24 +620,11 @@ function loadConfig(): r.Result<Config, Error> {
 
 	let errs: Error[] = []
 
-	if (p.data.mcp.toolsets.length === 0) {
-		errs.push(new Error("No toolsets left"))
-	}
-
 	if (p.data.mcp.tools.length === 0) {
 		errs.push(new Error("No tools left"))
 	}
 
 	if (
-		(
-			p.data.mcp.transport === "stdio" ||
-			(
-				p.data.mcp.transport === "sse" ||
-				p.data.mcp.transport === "streamable-http" ||
-				p.data.mcp.transport === "http"
-			) &&
-			!p.data.api.oauth.baseUrl
-		) &&
 		p.data.api.shared.username &&
 		!p.data.api.shared.password
 	) {
@@ -665,19 +632,23 @@ function loadConfig(): r.Result<Config, Error> {
 	}
 
 	if (
-		(
-			p.data.mcp.transport === "stdio" ||
-			(
-				p.data.mcp.transport === "sse" ||
-				p.data.mcp.transport === "streamable-http" ||
-				p.data.mcp.transport === "http"
-			) &&
-			!p.data.api.oauth.baseUrl
-		) &&
 		!p.data.api.shared.username &&
 		p.data.api.shared.password
 	) {
 		errs.push(new Error("No username"))
+	}
+
+	if (
+		(
+			p.data.api.shared.authorization ||
+			p.data.api.shared.apiKey ||
+			p.data.api.shared.pat ||
+			p.data.api.shared.username &&
+			p.data.api.shared.password
+		) &&
+		!p.data.api.shared.baseUrl
+	) {
+		errs.push(new Error("No API base URL"))
 	}
 
 	if (
@@ -713,10 +684,8 @@ function loadConfig(): r.Result<Config, Error> {
 			!p.data.api.shared.authorization &&
 			!p.data.api.shared.apiKey &&
 			!p.data.api.shared.pat &&
-			(
-				!p.data.api.shared.username ||
-				!p.data.api.shared.password
-			) ||
+			!p.data.api.shared.username &&
+			!p.data.api.shared.password ||
 			(
 				p.data.mcp.transport === "sse" ||
 				p.data.mcp.transport === "streamable-http" ||
@@ -725,10 +694,8 @@ function loadConfig(): r.Result<Config, Error> {
 			!p.data.api.shared.authorization &&
 			!p.data.api.shared.apiKey &&
 			!p.data.api.shared.pat &&
-			(
-				!p.data.api.shared.username ||
-				!p.data.api.shared.password
-			) &&
+			!p.data.api.shared.username &&
+			!p.data.api.shared.password &&
 			!p.data.api.oauth.baseUrl &&
 			!p.data.request.headerPrefix &&
 			(
@@ -741,34 +708,21 @@ function loadConfig(): r.Result<Config, Error> {
 	}
 
 	if (
-		(
-			p.data.mcp.transport === "stdio" ||
-			(
-				p.data.mcp.transport === "sse" ||
-				p.data.mcp.transport === "streamable-http" ||
-				p.data.mcp.transport === "http"
-			) &&
-			!p.data.api.oauth.baseUrl
-		) &&
+		p.data.mcp.transport === "stdio" &&
 		(
 			p.data.api.shared.authorization ||
 			p.data.api.shared.apiKey ||
 			p.data.api.shared.pat ||
-			p.data.api.shared.username ||
+			p.data.api.shared.username &&
 			p.data.api.shared.password
 		) &&
 		Number(Boolean(p.data.api.shared.authorization)) +
 		Number(Boolean(p.data.api.shared.apiKey)) +
 		Number(Boolean(p.data.api.shared.pat)) +
 		Number(
-			Boolean(p.data.api.shared.username) ||
+			Boolean(p.data.api.shared.username) &&
 			Boolean(p.data.api.shared.password),
-		) !== 1
-	) {
-		errs.push(new Error("Multiple authentication methods"))
-	}
-
-	if (
+		) !== 1 ||
 		(
 			p.data.mcp.transport === "sse" ||
 			p.data.mcp.transport === "streamable-http" ||
@@ -778,34 +732,20 @@ function loadConfig(): r.Result<Config, Error> {
 			p.data.api.shared.authorization ||
 			p.data.api.shared.apiKey ||
 			p.data.api.shared.pat ||
-			p.data.api.shared.username ||
-			p.data.api.shared.password
+			p.data.api.shared.username &&
+			p.data.api.shared.password ||
+			p.data.api.oauth.baseUrl
 		) &&
-		p.data.api.oauth.baseUrl
+		Number(Boolean(p.data.api.shared.authorization)) +
+		Number(Boolean(p.data.api.shared.apiKey)) +
+		Number(Boolean(p.data.api.shared.pat)) +
+		Number(
+			Boolean(p.data.api.shared.username) &&
+			Boolean(p.data.api.shared.password),
+		) +
+		Number(Boolean(p.data.api.oauth.baseUrl)) !== 1
 	) {
-		errs.push(new Error("Mixed authentication methods"))
-	}
-
-	if (
-		(
-			p.data.mcp.transport === "stdio" ||
-			(
-				p.data.mcp.transport === "sse" ||
-				p.data.mcp.transport === "streamable-http" ||
-				p.data.mcp.transport === "http"
-			) &&
-			!p.data.api.oauth.baseUrl
-		) &&
-		(
-			p.data.api.shared.authorization ||
-			p.data.api.shared.apiKey ||
-			p.data.api.shared.pat ||
-			p.data.api.shared.username ||
-			p.data.api.shared.password
-		) &&
-		!p.data.api.shared.baseUrl
-	) {
-		errs.push(new Error("No API base URL"))
+		errs.push(new Error("Multiple authentication methods"))
 	}
 
 	if (
@@ -841,7 +781,6 @@ function loadConfig(): r.Result<Config, Error> {
 function formatConfig(c: Config): object {
 	let m = "***"
 
-	// eslint-disable-next-line unicorn/prefer-set-has
 	let s: string[] = [
 		"root.api.shared.authorization",
 		"root.api.shared.apiKey",

@@ -1,40 +1,20 @@
-/**
- * (c) Copyright Ascensio System SIA 2025
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- *
- * @license
- */
-
 import config from "@vanyauhalin/eslint-config"
 
 export default [
 	...config,
 	{
-		files: ["app/main.ts"],
+		files: ["**/*.json"],
 		rules: {
-			"n/hashbang": "off",
-			"unicorn/prefer-top-level-await": "off",
+			"jsonc/array-bracket-newline": ["error", {minItems: 1}],
+			"jsonc/object-curly-newline": ["error", {minProperties: 1}],
 		},
 	},
 	{
 		files: ["**/*.ts"],
 		rules: {
-			"new-cap": ["error", {capIsNew: false}],
-			"es-x/no-export-ns-from": "off",
-			"jsdoc/check-tag-names": ["error", {definedTags: ["mergeModuleWith"]}],
-			"unicorn/import-style": "off",
-			"unicorn/prefer-add-event-listener": "off",
+			"import-x/no-deprecated": "off",
+			"stylistic/space-before-function-paren": ["error", {anonymous: "never", asyncArrow: "never", catch: "always", named: "never"}],
+			"typescript/no-deprecated": ["error", {allow: [{from: "package", package: "@modelcontextprotocol/sdk", name: "Server"}, {from: "package", package: "@modelcontextprotocol/sdk", name: "SSEClientTransport"}, {from: "package", package: "@modelcontextprotocol/sdk", name: "SSEServerTransport"}]}],
 		},
 	},
 ]

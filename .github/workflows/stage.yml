@@ -13,6 +13,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v4
@@ -63,8 +65,11 @@ jobs:
         if-no-files-found: error
 
   docker:
-    needs: build
+    needs:
+    - build
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     env:
       DOCKERHUB_NAMESPACE: onlyoffice
       DOCKERHUB_REPOSITORY: 4testing-docspace-mcp

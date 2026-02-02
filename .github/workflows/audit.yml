@@ -14,6 +14,8 @@ on:
 jobs:
   audit:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v4
@@ -38,12 +40,11 @@ jobs:
     - name: Build Application
       run: pnpm build-app
 
-    - name: Lint Package
-      run: pnpm lint
+    - name: Lint Types
+      run: pnpm lint-types
 
-    - name: Check Package
-      run: pnpm check
+    - name: Lint Code
+      run: pnpm lint-code
 
-    # Tests are not ready yet
-    # - name: Test Package
-    #   run: pnpm test
+    - name: Test Package
+      run: pnpm test

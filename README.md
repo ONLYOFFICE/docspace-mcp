@@ -48,11 +48,72 @@ If your MCP host does not support remote MCP servers, you can run the [local ver
 
 Most clients that implement the MCP protocol have a common configuration file in the `JSON` format, inside which you can add the ONLYOFFICE DocSpace MCP Local Server.
 
+**Note**: The common example below is applicable for Docker image, so Docker must be installed on your system.
+
+#### Step 1. Locate your config file
+
+Find your client `.json` configuration file.
+
+#### Step 2. Add the DocSpace MCP Server entry
+
+Insert the following block into the `mcpServers` section of your `.json` configuration file:
+
+```json
+{
+	"mcpServers": {
+		"onlyoffice-docspace": {
+			"command": "docker",
+			"args": [
+				"run",
+				"--interactive",
+				"--rm",
+				"--env",
+				"DOCSPACE_BASE_URL",
+				"--env",
+				"DOCSPACE_API_KEY",
+				"onlyoffice/docspace-mcp"
+			],
+			"env": {
+				"DOCSPACE_BASE_URL": "https://your-instance.onlyoffice.com",
+				"DOCSPACE_API_KEY": "your-api-key"
+			}
+		}
+	}
+}
+```
+
+#### Step 3. Set environment values
+
+- `DOCSPACE_BASE_URL` - the URL of your DocSpace instance (e.g. https://portal.onlyoffice.com).
+- `DOCSPACE_API_KEY` - your personal API key generated in DocSpace settings -> Developer Tools -> API keys.
+
+All available parameters are listed [here](/docs/configuration/global-configuration.md).
+
+#### Step 4. Restart the client
+
+Close and reopen your client. In most cases, the DocSpace MCP Server will start automatically, and you'll be able to issue natural language commands like:
+
+- Create a new project room and invite Anna with editor rights.
+- Upload this file to "My documents".
+
+## Tools
+
+The DocSpace MCP server implements the Tools concept described in the [MCP specification].
+
+All DocSpace MCP server tools are described [here](docs/features/tools.md).
+
+## Documentation
+
+The documentation is available in the [docs] directory.
+
+## Privacy Policy
+
+The policies are available at [Legal Terms] and [Privacy Policy].
 
 ## License
 
-The DocSpace MCP server is distributed under the Apache-2.0 license found in
-the [LICENSE] file.
+The DocSpace MCP server is distributed under the MIT license found in the
+[LICENSE] file.
 
 <!-- Footnotes -->
 
@@ -61,5 +122,8 @@ the [LICENSE] file.
 
 [Model Context Protocol]: https://modelcontextprotocol.io/
 [ONLYOFFICE DocSpace]: https://www.onlyoffice.com/docspace.aspx
+
+[Legal Terms]: https://www.onlyoffice.com/legalterms
+[Privacy Policy]: https://www.onlyoffice.com/privacy
 
 [MCP specification]: https://modelcontextprotocol.io/specification/2025-11-25/server/tools/

@@ -1,22 +1,4 @@
 /**
- * (c) Copyright Ascensio System SIA 2025
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- *
- * @license
- */
-
-/**
  * @module
  * @mergeModuleWith mcp
  */
@@ -71,26 +53,46 @@ export const metaToolInfos = mcp.toToolInfos([
 	{
 		name: "list_toolsets",
 		description: "This is a meta-tool for listing available toolsets. Toolset is a set of available tools.",
+		annotations: {
+			readOnlyHint: true,
+			destructiveHint: false,
+		},
 	},
 	{
 		name: "list_tools",
 		description: "This is a meta-tool for listing available tools of a specific toolset. The list of available toolsets can be obtained using the list_toolsets meta-tool.",
 		inputSchema: ListToolsInputSchema,
+		annotations: {
+			readOnlyHint: true,
+			destructiveHint: false,
+		},
 	},
 	{
 		name: "get_tool_input_schema",
 		description: "This is a meta-tool for getting an input schema for a specific tool. The list of available tools can be obtained using the list_tools meta-tool.",
 		inputSchema: GetToolInputSchemaInputSchema,
+		annotations: {
+			readOnlyHint: true,
+			destructiveHint: false,
+		},
 	},
 	{
 		name: "get_tool_output_schema",
 		description: "This is a meta-tool for getting an output schema for a specific tool. The list of available tools can be obtained using the list_tools meta-tool.",
 		inputSchema: GetToolOutputSchemaInputSchema,
+		annotations: {
+			readOnlyHint: true,
+			destructiveHint: false,
+		},
 	},
 	{
 		name: "call_tool",
 		description: "This is a meta-tool for calling a tool. The list of available tools can be obtained using the list_tools meta-tool. The input schema can be obtained using the get_tool_input_schema meta-tool.",
 		inputSchema: CallToolInputSchema,
+		annotations: {
+			readOnlyHint: false,
+			destructiveHint: true,
+		},
 	},
 ])
 
@@ -103,38 +105,66 @@ export const toolsetInfos = mcp.toToolsetInfos([
 				name: "delete_file",
 				description: "Delete a file.",
 				inputSchema: DeleteFileInputSchema,
+				annotations: {
+					readOnlyHint: false,
+					destructiveHint: true,
+				},
 			},
 			{
 				name: "get_file_info",
 				description: "Get file information.",
 				inputSchema: GetFileInfoInputSchema,
 				outputSchema: GetFileInfoOutputSchema,
+				annotations: {
+					readOnlyHint: true,
+					destructiveHint: false,
+				},
 			},
 			{
 				name: "update_file",
 				description: "Update a file.",
 				inputSchema: UpdateFileInputSchema,
 				outputSchema: UpdateFileOutputSchema,
+				annotations: {
+					readOnlyHint: false,
+					destructiveHint: true,
+				},
 			},
 			{
 				name: "copy_batch_items",
 				description: "Copy to a folder.",
 				inputSchema: CopyBatchItemsInputSchema,
+				annotations: {
+					readOnlyHint: false,
+					destructiveHint: true,
+				},
 			},
 			{
 				name: "move_batch_items",
 				description: "Move to a folder.",
 				inputSchema: MoveBatchItemsInputSchema,
+				annotations: {
+					readOnlyHint: false,
+					destructiveHint: true,
+				},
 			},
 			{
 				name: "download_file_as_text",
 				description: "Download a file as text.",
 				inputSchema: DownloadFileAsTextInputSchema,
+				annotations: {
+					readOnlyHint: true,
+					destructiveHint: false,
+				},
 			},
 			{
 				name: "upload_file",
 				description: "Upload a file.",
 				inputSchema: UploadFileInputSchema,
+				annotations: {
+					readOnlyHint: false,
+					destructiveHint: true,
+				},
 			},
 		],
 	},
@@ -147,35 +177,59 @@ export const toolsetInfos = mcp.toToolsetInfos([
 				description: "Create a folder.",
 				inputSchema: CreateFolderInputSchema,
 				outputSchema: CreateFolderOutputSchema,
+				annotations: {
+					readOnlyHint: false,
+					destructiveHint: true,
+				},
 			},
 			{
 				name: "delete_folder",
 				description: "Delete a folder.",
 				inputSchema: DeleteFolderInputSchema,
+				annotations: {
+					readOnlyHint: false,
+					destructiveHint: true,
+				},
 			},
 			{
 				name: "get_folder_content",
 				description: "Get content of a folder.",
 				inputSchema: GetFolderContentInputSchema,
 				outputSchema: GetFolderContentOutputSchema,
+				annotations: {
+					readOnlyHint: true,
+					destructiveHint: false,
+				},
 			},
 			{
 				name: "get_folder_info",
 				description: "Get folder information.",
 				inputSchema: GetFolderInfoInputSchema,
 				outputSchema: GetFolderInfoOutputSchema,
+				annotations: {
+					readOnlyHint: true,
+					destructiveHint: false,
+				},
 			},
 			{
 				name: "rename_folder",
 				description: "Rename a folder.",
 				inputSchema: RenameFolderInputSchema,
 				outputSchema: RenameFolderOutputSchema,
+				annotations: {
+					readOnlyHint: false,
+					destructiveHint: true,
+				},
 			},
 			{
 				name: "get_my_folder",
 				description: "Get the 'My Documents' folder.",
 				inputSchema: GetMyFolderInputSchema,
 				outputSchema: GetMyFolderOutputSchema,
+				annotations: {
+					readOnlyHint: true,
+					destructiveHint: false,
+				},
 			},
 		],
 	},
@@ -188,50 +242,86 @@ export const toolsetInfos = mcp.toToolsetInfos([
 				description: "Create a room.",
 				inputSchema: CreateRoomInputSchema,
 				outputSchema: CreateRoomOutputSchema,
+				annotations: {
+					readOnlyHint: false,
+					destructiveHint: true,
+				},
 			},
 			{
 				name: "get_room_info",
 				description: "Get room information.",
 				inputSchema: GetRoomInfoInputSchema,
 				outputSchema: GetRoomInfoOutputSchema,
+				annotations: {
+					readOnlyHint: true,
+					destructiveHint: false,
+				},
 			},
 			{
 				name: "update_room",
 				description: "Update a room.",
 				inputSchema: UpdateRoomInputSchema,
 				outputSchema: UpdateRoomOutputSchema,
+				annotations: {
+					readOnlyHint: false,
+					destructiveHint: true,
+				},
 			},
 			{
 				name: "archive_room",
 				description: "Archive a room.",
 				inputSchema: ArchiveRoomInputSchema,
+				annotations: {
+					readOnlyHint: false,
+					destructiveHint: true,
+				},
 			},
 			{
 				name: "set_room_security",
 				description: "Invite or remove users from a room.",
 				inputSchema: SetRoomSecurityInputSchema,
 				outputSchema: SetRoomSecurityOutputSchema,
+				annotations: {
+					readOnlyHint: false,
+					destructiveHint: true,
+				},
 			},
 			{
 				name: "get_room_security_info",
 				description: "Get a list of users with their access levels to a room.",
 				inputSchema: GetRoomSecurityInfoInputSchema,
 				outputSchema: GetRoomSecurityInfoOutputSchema,
+				annotations: {
+					readOnlyHint: true,
+					destructiveHint: false,
+				},
 			},
 			{
 				name: "get_rooms_folder",
 				description: "Get the 'Rooms' folder.",
 				inputSchema: GetRoomsFolderInputSchema,
 				outputSchema: GetRoomsFolderOutputSchema,
+				annotations: {
+					readOnlyHint: true,
+					destructiveHint: false,
+				},
 			},
 			{
 				name: "get_room_types",
 				description: "Get a list of available room types.",
+				annotations: {
+					readOnlyHint: true,
+					destructiveHint: false,
+				},
 			},
 			{
 				name: "get_room_access_levels",
 				description: "Get a list of available room invitation access levels.",
 				inputSchema: GetRoomAccessLevelsSchema,
+				annotations: {
+					readOnlyHint: true,
+					destructiveHint: false,
+				},
 			},
 		],
 	},
@@ -244,6 +334,10 @@ export const toolsetInfos = mcp.toToolsetInfos([
 				description: "Get all people.",
 				inputSchema: GetAllPeopleInputSchema,
 				outputSchema: GetAllPeopleOutputSchema,
+				annotations: {
+					readOnlyHint: true,
+					destructiveHint: false,
+				},
 			},
 		],
 	},

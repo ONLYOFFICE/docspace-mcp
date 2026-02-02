@@ -1,27 +1,7 @@
 /**
- * (c) Copyright Ascensio System SIA 2025
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- *
- * @license
- */
-
-/**
  * @module
  * @mergeModuleWith settings
  */
-
-/* eslint-disable typescript/consistent-type-definitions */
 
 import type express from "express"
 import * as z from "zod"
@@ -98,9 +78,9 @@ export class SettingsParser {
 			this.headerSchema = z.
 				object({
 					[dynamic]: z.string().optional().transform(zod.envOptionalBoolean()),
-					[toolsets]: z.string().optional().transform(zod.envOptionalOptions(config.defaultToolsets)), // eslint-disable-line stylistic/max-len
-					[enabledTools]: z.string().optional().transform(zod.envOptionalOptions(config.defaultTools)), // eslint-disable-line stylistic/max-len
-					[disabledTools]: z.string().optional().transform(zod.envOptionalOptions(config.defaultTools)), // eslint-disable-line stylistic/max-len
+					[toolsets]: z.string().optional().transform(zod.envOptionalOptions(config.defaultToolsets)),
+					[enabledTools]: z.string().optional().transform(zod.envOptionalOptions(config.defaultTools)),
+					[disabledTools]: z.string().optional().transform(zod.envOptionalOptions(config.defaultTools)),
 				}).
 				transform((o) => ({
 					dynamic: o[dynamic] as boolean | undefined,

@@ -99,8 +99,8 @@ The documentation is available in the [docs] directory.
 
 ## License
 
-The DocSpace MCP server is distributed under the Apache-2.0 license found in
-the [LICENSE] file.
+The DocSpace MCP server is distributed under the MIT license found in the
+[LICENSE] file.
 
 <!-- Footnotes -->
 

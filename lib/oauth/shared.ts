@@ -3,8 +3,6 @@
  * @mergeModuleWith oauth
  */
 
-/* eslint-disable unicorn/prefer-top-level-await */
-
 import * as z from "zod"
 
 /**

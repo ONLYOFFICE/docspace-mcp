@@ -3,8 +3,6 @@
  * @mergeModuleWith settings
  */
 
-/* eslint-disable typescript/consistent-type-definitions */
-
 import type express from "express"
 import * as z from "zod"
 import * as errors from "../util/errors.ts"
@@ -80,9 +78,9 @@ export class SettingsParser {
 			this.headerSchema = z.
 				object({
 					[dynamic]: z.string().optional().transform(zod.envOptionalBoolean()),
-					[toolsets]: z.string().optional().transform(zod.envOptionalOptions(config.defaultToolsets)), // eslint-disable-line stylistic/max-len
-					[enabledTools]: z.string().optional().transform(zod.envOptionalOptions(config.defaultTools)), // eslint-disable-line stylistic/max-len
-					[disabledTools]: z.string().optional().transform(zod.envOptionalOptions(config.defaultTools)), // eslint-disable-line stylistic/max-len
+					[toolsets]: z.string().optional().transform(zod.envOptionalOptions(config.defaultToolsets)),
+					[enabledTools]: z.string().optional().transform(zod.envOptionalOptions(config.defaultTools)),
+					[disabledTools]: z.string().optional().transform(zod.envOptionalOptions(config.defaultTools)),
 				}).
 				transform((o) => ({
 					dynamic: o[dynamic] as boolean | undefined,

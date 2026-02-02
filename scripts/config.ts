@@ -28,7 +28,7 @@ const availableTools = (() => {
 	return a
 })()
 
-export interface Option {
+export type Option = {
 	env: string
 	header: string
 	title: string

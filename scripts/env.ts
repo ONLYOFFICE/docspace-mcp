@@ -1,6 +1,5 @@
 import * as fs from "node:fs"
 
-// eslint-disable-next-line unicorn/prefer-set-has
 const envs: string[] = [
 	"HTTP_PROXY",
 ]

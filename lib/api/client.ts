@@ -26,7 +26,7 @@ const schemaBasicAuth = "Basic"
 const schemaBearerAuth = "Bearer"
 const cookieAuthToken = "asc_auth_key"
 
-export interface ClientConfig {
+export type ClientConfig = {
 	userAgent: string
 	baseUrl: string
 	fetch: typeof globalThis.fetch

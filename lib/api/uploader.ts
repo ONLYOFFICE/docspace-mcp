@@ -9,11 +9,11 @@ import type {Response} from "./client.ts"
 
 const maxChunkSize = 10 * 1024 * 1024 // 10mb
 
-export interface UploaderClient {
+export type UploaderClient = {
 	files: UploaderFilesService
 }
 
-export interface UploaderFilesService {
+export type UploaderFilesService = {
 	uploadChunk(s: AbortSignal, id: string, chunk: Blob): Promise<Result<[unknown, Response], Error>>
 }
 

@@ -3,8 +3,6 @@
  * @mergeModuleWith auth
  */
 
-/* eslint-disable typescript/consistent-type-definitions */
-
 import type express from "express"
 import type * as oauth from "../oauth.ts"
 import * as errors from "../util/errors.ts"
@@ -12,6 +10,7 @@ import type * as r from "../util/result.ts"
 import type {Credential} from "./credential.ts"
 
 declare module "express-serve-static-core" {
+	// eslint-disable-next-line typescript/consistent-type-definitions
 	interface Request {
 		[authKey]?: Auth
 	}

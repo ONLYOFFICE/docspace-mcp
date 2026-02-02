@@ -13,11 +13,11 @@ class State {
 	done = false
 }
 
-export interface ResolverClient {
+export type ResolverClient = {
 	files: ResolverFilesService
 }
 
-export interface ResolverFilesService {
+export type ResolverFilesService = {
 	getOperationStatuses(s: AbortSignal): Promise<Result<[Operation[], Response], Error>>
 }
 

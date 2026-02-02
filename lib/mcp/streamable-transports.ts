@@ -7,18 +7,18 @@ import * as streamableHttp from "@modelcontextprotocol/sdk/server/streamableHttp
 import * as result from "../util/result.ts"
 import type {Session, SessionsCreateOptions} from "./sessions.ts"
 
-export interface StreamableTransportsConfig {
+export type StreamableTransportsConfig = {
 	logger: StreamableTransportsLogger
 	sessions: StreamableTransportsSessions
 }
 
-export interface StreamableTransportsLogger {
+export type StreamableTransportsLogger = {
 	info(msg: string, o?: object): void
 	warn(msg: string, o?: object): void
 	error(msg: string, o?: object): void
 }
 
-export interface StreamableTransportsSessions {
+export type StreamableTransportsSessions = {
 	create(o: SessionsCreateOptions): result.Result<Session, Error>
 	get(id: string): result.Result<Session, Error>
 	delete(id: string): Error | undefined

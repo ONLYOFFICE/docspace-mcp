@@ -122,7 +122,6 @@ export function unionToEnum<T extends string | number>(
 	return t as any
 }
 
-// eslint-disable-next-line stylistic/max-len
 export function envOptionalBoolean(): (v: string | undefined, c: z.RefinementCtx) => boolean | undefined | never {
 	return (v, c) => {
 		if (v === undefined) {
@@ -199,7 +198,6 @@ export function envUrl(): (v: string, c: z.RefinementCtx) => string | never {
 	}
 }
 
-// eslint-disable-next-line stylistic/max-len
 export function envOptionalBaseUrl(): (v: string | undefined, c: z.RefinementCtx) => string | undefined | never {
 	return (v, c) => {
 		if (v === undefined) {
@@ -295,7 +293,6 @@ export function envUnion<T extends string>(a: T[]): (v: string, c: z.RefinementC
 	}
 }
 
-// eslint-disable-next-line stylistic/max-len
 export function envOptionalOptions(a: string[]): (v: string | undefined, c: z.RefinementCtx) => string[] | undefined | never {
 	return (v, c) => {
 		if (v === undefined) {

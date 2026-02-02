@@ -3,8 +3,6 @@
  * @mergeModuleWith mcp
  */
 
-/* eslint-disable typescript/consistent-type-definitions */
-
 import type * as server from "@modelcontextprotocol/sdk/server/index.js"
 import type * as streamableHttp from "@modelcontextprotocol/sdk/server/streamableHttp.js"
 import * as types from "@modelcontextprotocol/sdk/types.js"

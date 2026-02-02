@@ -3,8 +3,6 @@
  * @mergeModuleWith auth
  */
 
-/* eslint-disable typescript/consistent-type-definitions */
-
 import type express from "express"
 import * as z from "zod"
 import * as errors from "../util/errors.ts"

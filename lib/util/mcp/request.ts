@@ -33,7 +33,6 @@ export type RequestExtra<
 	N extends types.ServerNotification = types.ServerNotification,
 > = protocol.RequestHandlerExtra<R, N>
 
-// eslint-disable-next-line typescript/consistent-type-definitions
 export type RequestDefinition<
 	R extends types.ServerRequest = types.ServerRequest,
 	N extends types.ServerNotification = types.ServerNotification,

@@ -5,14 +5,14 @@ import ajvFormats from "ajv-formats"
 import * as meta from "../lib/meta.ts"
 import * as config from "./config.ts"
 
-interface Detail {
+type Detail = {
 	$schema?: string
 	version?: string
 	packages?: Package[]
 	remotes?: Transport[]
 }
 
-interface Package {
+type Package = {
 	registryType?: string
 	identifier?: string
 	version?: string
@@ -21,13 +21,13 @@ interface Package {
 	environmentVariables?: Value[]
 }
 
-interface Transport {
+type Transport = {
 	type?: string
 	url?: string
 	headers?: Value[]
 }
 
-interface Value {
+type Value = {
 	description?: string
 	isRequired?: boolean
 	format?: "string" | "number" | "boolean"

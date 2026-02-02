@@ -3,8 +3,6 @@
  * @mergeModuleWith oauth
  */
 
-/* eslint-disable typescript/consistent-type-definitions */
-
 import type express from "express"
 import * as errors from "../util/errors.ts"
 import * as r from "../util/result.ts"
@@ -15,6 +13,7 @@ import {proxyError} from "./internal.ts"
 import type {ErrorResponse, IntrospectRequest, IntrospectResponse} from "./shared.ts"
 
 declare module "express-serve-static-core" {
+	// eslint-disable-next-line typescript/consistent-type-definitions
 	interface Request {
 		[oauthKey]?: Oauth
 	}

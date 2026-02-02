@@ -3,8 +3,6 @@
  * @mergeModuleWith util/fetch
  */
 
-/* eslint-disable typescript/consistent-type-definitions */
-
 import type * as context from "../context.ts"
 
 export type ForwardingContextProvider = {

@@ -11,11 +11,11 @@ import * as strings from "../strings.ts"
 
 type Level = types.LoggingMessageNotification["params"]["level"]
 
-export interface ContextProvider {
+export type ContextProvider = {
 	get(): context.Context | undefined
 }
 
-export interface Server {
+export type Server = {
 	sendLoggingMessage(
 		data: types.LoggingMessageNotification["params"],
 		sessionId?: string

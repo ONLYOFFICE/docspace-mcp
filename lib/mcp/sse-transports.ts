@@ -8,17 +8,17 @@ import type * as express from "express"
 import * as result from "../util/result.ts"
 import type {Session, SessionsCreateOptions} from "./sessions.ts"
 
-export interface SseTransportsConfig {
+export type SseTransportsConfig = {
 	logger: SseTransportsLogger
 	sessions: SseTransportsSessions
 }
 
-export interface SseTransportsLogger {
+export type SseTransportsLogger = {
 	info(msg: string, o?: object): void
 	error(msg: string, o?: object): void
 }
 
-export interface SseTransportsSessions {
+export type SseTransportsSessions = {
 	create(o: SessionsCreateOptions): result.Result<Session, Error>
 	get(id: string): result.Result<Session, Error>
 	delete(id: string): Error | undefined

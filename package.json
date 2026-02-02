@@ -27,7 +27,9 @@
 	"bin": {
 		"onlyoffice-docspace-mcp": "bin/onlyoffice-docspace-mcp.js"
 	},
-	"files": ["bin"],
+	"files": [
+		"bin"
+	],
 	"scripts": {
 		"build-app": "node scripts/build-app.ts",
 		"build-detail": "node scripts/build-detail.ts",
@@ -65,6 +67,9 @@
 		"typescript": "5.9.3",
 		"undici": "7.16.0",
 		"zod": "4.1.13"
+	},
+	"engines": {
+		"node": ">=18.0.0"
 	},
 	"mcpName": "io.github.ONLYOFFICE/docspace"
 }

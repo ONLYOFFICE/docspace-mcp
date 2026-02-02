@@ -63,9 +63,9 @@ WHERE:
 
 <p align="center">
   <picture>
-    <source width="100" media="(prefers-color-scheme: dark)" srcset="/docs/img/confirm-connection.dark.png">
-    <source width="100" media="(prefers-color-scheme: light)" srcset="/docs/img/confirm-connection.light.png">
-    <img width="100" src="/docs/img/confirm-connection.light.png" alt="This image confirms a successful client- DocSpace mcp server connection">
+    <source media="(prefers-color-scheme: dark)" srcset="/docs/img/confirm-connection.dark.png">
+    <source media="(prefers-color-scheme: light)" srcset="/docs/img/confirm-connection.light.png">
+    <img width="600" src="/docs/img/confirm-connection.light.png" alt="This image confirms a successful client- DocSpace mcp server connection">
   </picture>
 </p>
 
@@ -76,9 +76,9 @@ Now we have our connection, let us interact with DocSpace via Claude:
 1. Lets create a new room. Claude requests for permission to create this room.
 <p align="center">
   <picture>
-    <source width="100" media="(prefers-color-scheme: dark)" srcset="/docs/img/create-new-room.dark.png">
-    <source width="100" media="(prefers-color-scheme: light)" srcset="/docs/img/create-new-room.light.png">
-    <img width="100" src="/docs/img/create-new-room.light.png" alt="This image shows the command to create a room">
+    <source media="(prefers-color-scheme: dark)" srcset="/docs/img/create-new-room.dark.png">
+    <source media="(prefers-color-scheme: light)" srcset="/docs/img/create-new-room.light.png">
+    <img width="600" src="/docs/img/create-new-room.light.png" alt="This image shows the command to create a room">
   </picture>
 </p>
 
@@ -86,9 +86,9 @@ Now we have our connection, let us interact with DocSpace via Claude:
 
 <p align="center">
   <picture>
-    <source width="100" media="(prefers-color-scheme: dark)" srcset="/docs/img/confirm-room-on-docspace.dark.png">
-    <source width="100" media="(prefers-color-scheme: light)" srcset="/docs/img/confirm-room-on-docspace.light.png">
-    <img width="100" src="/docs/img/confirm-room-on-docspace.light.png" alt="This image confirms the room was successfully created ">
+    <source media="(prefers-color-scheme: dark)" srcset="/docs/img/confirm-room-on-docspace.dark.png">
+    <source media="(prefers-color-scheme: light)" srcset="/docs/img/confirm-room-on-docspace.light.png">
+    <img width="600" src="/docs/img/confirm-room-on-docspace.light.png" alt="This image confirms the room was successfully created ">
   </picture>
 </p>
 
@@ -96,18 +96,18 @@ Now we have our connection, let us interact with DocSpace via Claude:
 
 <p align="center">
   <picture>
-    <source width="100" media="(prefers-color-scheme: dark)" srcset="/docs/img/create-new-doc.dark.png">
-    <source width="100" media="(prefers-color-scheme: light)" srcset="/docs/img/create-new-doc.light.png">
-    <img width="100" src="/docs/img/create-new-doc.light.png" alt="This image shows the command for creating a new doc">
+    <source media="(prefers-color-scheme: dark)" srcset="/docs/img/create-new-doc.dark.png">
+    <source media="(prefers-color-scheme: light)" srcset="/docs/img/create-new-doc.light.png">
+    <img width="600" src="/docs/img/create-new-doc.light.png" alt="This image shows the command for creating a new doc">
   </picture>
 </p>
    
     Confirm the new doc was created
 <p align="center">
   <picture>
-    <source width="100" media="(prefers-color-scheme: dark)" srcset="/docs/img/confirm-new-doc.dark.png">
-    <source width="100" media="(prefers-color-scheme: light)" srcset="/docs/img/confirm-new-doc.light.png">
-    <img width="100" src="/docs/img/confirm-new-doc.light.png" alt="This image confirms the doc was created">
+    <source media="(prefers-color-scheme: dark)" srcset="/docs/img/confirm-new-doc.dark.png">
+    <source media="(prefers-color-scheme: light)" srcset="/docs/img/confirm-new-doc.light.png">
+    <img width="600" src="/docs/img/confirm-new-doc.light.png" alt="This image confirms the doc was created">
   </picture>
 </p>
 
@@ -115,9 +115,9 @@ Now we have our connection, let us interact with DocSpace via Claude:
     
    <p align="center">
   <picture>
-    <source width="100" media="(prefers-color-scheme: dark)" srcset="/docs/img/confirm-new-doc-in-new-room.dark.png">
-    <source width="100" media="(prefers-color-scheme: light)" srcset="/docs/img/confirm-new-doc-in-new-room.light.png">
-    <img width="100" src="/docs/img/confirm-new-doc-in-new-room.light.png" alt="This image confirms the doc was created">
+    <source media="(prefers-color-scheme: dark)" srcset="/docs/img/confirm-new-doc-in-new-room.dark.png">
+    <source media="(prefers-color-scheme: light)" srcset="/docs/img/confirm-new-doc-in-new-room.light.png">
+    <img width="600" src="/docs/img/confirm-new-doc-in-new-room.light.png" alt="This image confirms the doc was created">
   </picture>
 </p>
 

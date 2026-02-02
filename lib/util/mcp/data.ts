@@ -17,11 +17,13 @@ export type ToolsetInfo = Summary & {
 export type ToolDefinition = Summary & {
 	inputSchema?: z.ZodObject<z.ZodRawShape>
 	outputSchema?: z.ZodObject<z.ZodRawShape>
+	annotations?: ToolAnnotations
 }
 
 export type ToolInfo = Summary & {
 	inputSchema: ToolInputSchema
 	outputSchema?: ToolOutputSchema
+	annotations?: ToolAnnotations
 }
 
 // eslint-disable-next-line typescript/consistent-type-definitions
@@ -37,6 +39,11 @@ export type ToolInputSchema = Exclude<
 
 export type ToolOutputSchema = Exclude<
 	types.ListToolsResult["tools"][0]["outputSchema"],
+	undefined
+>
+
+export type ToolAnnotations = Exclude<
+	types.ListToolsResult["tools"][0]["annotations"],
 	undefined
 >
 
@@ -75,6 +82,10 @@ export function toToolInfos(defs: ToolDefinition[]): ToolInfo[] {
 
 		if (d.outputSchema) {
 			i.outputSchema = z.toJSONSchema(d.outputSchema) as ToolOutputSchema
+		}
+
+		if (d.annotations) {
+			i.annotations = d.annotations
 		}
 
 		infos.push(i)

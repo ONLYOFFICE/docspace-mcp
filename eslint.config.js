@@ -3,21 +3,18 @@ import config from "@vanyauhalin/eslint-config"
 export default [
 	...config,
 	{
-		files: ["app/main.ts"],
+		files: ["**/*.json"],
 		rules: {
-			"n/hashbang": "off",
-			"unicorn/prefer-top-level-await": "off",
+			"jsonc/array-bracket-newline": ["error", {minItems: 1}],
+			"jsonc/object-curly-newline": ["error", {minProperties: 1}],
 		},
 	},
 	{
 		files: ["**/*.ts"],
 		rules: {
-			"es-x/no-export-ns-from": "off",
-			"jsdoc/check-tag-names": ["error", {definedTags: ["mergeModuleWith"]}],
-			"new-cap": ["error", {capIsNew: false}],
+			"import-x/no-deprecated": "off",
+			"stylistic/space-before-function-paren": ["error", {anonymous: "never", asyncArrow: "never", catch: "always", named: "never"}],
 			"typescript/no-deprecated": ["error", {allow: [{from: "package", package: "@modelcontextprotocol/sdk", name: "Server"}, {from: "package", package: "@modelcontextprotocol/sdk", name: "SSEClientTransport"}, {from: "package", package: "@modelcontextprotocol/sdk", name: "SSEServerTransport"}]}],
-			"unicorn/import-style": "off",
-			"unicorn/prefer-add-event-listener": "off",
 		},
 	},
 ]

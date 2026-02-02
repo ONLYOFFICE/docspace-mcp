@@ -33,9 +33,9 @@
 		"build-detail": "node scripts/build-detail.ts",
 		"build-docs": "node scripts/build-docs.ts",
 		"build-mcpb": "node scripts/build-mcpb.ts",
-		"check": "tsc",
 		"inspect": "node scripts/inspect.ts",
-		"lint": "eslint --no-warn-ignored .github app docs lib scripts *.*",
+		"lint-code": "eslint --no-warn-ignored --concurrency=auto .github app docs lib scripts test *.*",
+		"lint-types": "tsc",
 		"serve": "node scripts/serve.ts",
 		"test": "node test/test.ts"
 	},

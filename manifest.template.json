@@ -43,6 +43,10 @@
 		"docspace"
 	],
 	"license": "MIT",
+	"privacy_policies": [
+		"https://www.onlyoffice.com/legalterms",
+		"https://www.onlyoffice.com/privacy"
+	],
 	"repository": {
 		"type": "git",
 		"url": "git+https://github.com/onlyoffice/docspace-mcp.git"

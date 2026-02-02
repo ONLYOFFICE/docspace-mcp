@@ -51,7 +51,7 @@
 		"@types/logfmt": "1.2.6",
 		"@types/node": "24.10.1",
 		"@types/web": "0.0.298",
-		"@vanyauhalin/eslint-config": "0.0.9",
+		"@vanyauhalin/eslint-config": "0.0.11",
 		"ajv": "8.17.1",
 		"ajv-formats": "3.0.1",
 		"content-type": "1.0.5",

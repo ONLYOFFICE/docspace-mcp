@@ -41,7 +41,9 @@ This document records all notable changes to the project, following the
 - Fix returning error instead of success response from the OAuth introspect
   endpoint when the token is not yet valid or expired ([38a3a75]);
 - Fix incorrect error status returned by the OAuth introspect endpoint when the
-  token is invalid ([38a3a75]).
+  token is invalid ([38a3a75]);
+- Fix returning empty error when the upstream OAuth server responds without or
+  with invalid Content-Type header ([5c52ebe]).
 
 ## [3.1.0] - 2025-11-28
 
@@ -305,6 +307,7 @@ There are no noticeable changes in version [3.0.1].
 [0.1.1]: https://github.com/onlyoffice/docspace-mcp/compare/v0.1.0...v0.1.1/
 [0.1.0]: https://github.com/onlyoffice/docspace-mcp/releases/tag/v0.1.0/
 
+[5c52ebe]: https://github.com/onlyoffice/docspace-mcp/commit/5c52ebedf15221a5e9e7c51d1ff9348a89e36b2e/
 [b6a3923]: https://github.com/onlyoffice/docspace-mcp/commit/b6a392338b4c9e92f0364dda29212a71c65be2cd/
 [38a3a75]: https://github.com/onlyoffice/docspace-mcp/commit/38a3a7587eb8bb4a4c02c136426cf1d59e108c9d/
 [a733d43]: https://github.com/onlyoffice/docspace-mcp/commit/a733d43b8881f4825399737bd3ddb172a3b51fac/

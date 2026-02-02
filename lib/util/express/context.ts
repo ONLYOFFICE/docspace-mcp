@@ -3,12 +3,11 @@
  * @mergeModuleWith util/express
  */
 
-/* eslint-disable typescript/consistent-type-definitions */
-
 import type express from "express"
 import type * as utilContext from "../context.ts"
 
 declare module "../context.ts" {
+	// eslint-disable-next-line typescript/consistent-type-definitions
 	interface Context {
 		forwardedFor?: string
 		realIp?: string

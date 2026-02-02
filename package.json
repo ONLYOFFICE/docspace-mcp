@@ -27,15 +27,17 @@
 	"bin": {
 		"onlyoffice-docspace-mcp": "bin/onlyoffice-docspace-mcp.js"
 	},
-	"files": ["bin"],
+	"files": [
+		"bin"
+	],
 	"scripts": {
 		"build-app": "node scripts/build-app.ts",
 		"build-detail": "node scripts/build-detail.ts",
 		"build-docs": "node scripts/build-docs.ts",
 		"build-mcpb": "node scripts/build-mcpb.ts",
-		"check": "tsc",
 		"inspect": "node scripts/inspect.ts",
-		"lint": "eslint --no-warn-ignored .github app docs lib scripts *.*",
+		"lint-code": "eslint --no-warn-ignored --concurrency=auto .github app docs lib scripts test *.*",
+		"lint-types": "tsc",
 		"serve": "node scripts/serve.ts",
 		"test": "node test/test.ts"
 	},
@@ -51,13 +53,13 @@
 		"@types/logfmt": "1.2.6",
 		"@types/node": "24.10.1",
 		"@types/web": "0.0.298",
-		"@vanyauhalin/eslint-config": "0.0.9",
+		"@vanyauhalin/eslint-config": "0.0.11",
 		"ajv": "8.17.1",
 		"ajv-formats": "3.0.1",
 		"content-type": "1.0.5",
 		"cors": "2.8.5",
 		"esbuild": "0.27.1",
-		"eslint": "9.39.1",
+		"eslint": "9.39.2",
 		"express": "5.2.1",
 		"express-rate-limit": "8.2.1",
 		"jsonwebtoken": "9.0.3",
@@ -65,6 +67,9 @@
 		"typescript": "5.9.3",
 		"undici": "7.16.0",
 		"zod": "4.1.13"
+	},
+	"engines": {
+		"node": ">=18.0.0"
 	},
 	"mcpName": "io.github.ONLYOFFICE/docspace"
 }

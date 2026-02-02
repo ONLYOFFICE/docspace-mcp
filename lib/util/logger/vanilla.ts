@@ -7,7 +7,7 @@ import logfmt from "logfmt"
 import * as errors from "../errors.ts"
 import * as strings from "../strings.ts"
 
-export interface Writable {
+export type Writable = {
 	write(data: string): void
 }
 

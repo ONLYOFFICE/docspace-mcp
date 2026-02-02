@@ -9,9 +9,10 @@ import * as meta from "../lib/meta.ts"
 import * as config from "./config.ts"
 import * as tools from "./tools.ts"
 
+// eslint-disable-next-line typescript/strict-void-return
 const exec = util.promisify(child.exec)
 
-interface Manifest {
+type Manifest = {
 	$schema?: string
 	version?: string
 	documentation?: string
@@ -20,20 +21,20 @@ interface Manifest {
 	user_config?: Record<string, Option>
 }
 
-interface Server {
+type Server = {
 	mcp_config?: McpConfig
 }
 
-interface McpConfig {
+type McpConfig = {
 	env?: Record<string, string>
 }
 
-interface Tool {
+type Tool = {
 	name?: string
 	description?: string
 }
 
-interface Option {
+type Option = {
 	type?: string
 	title?: string
 	description?: string

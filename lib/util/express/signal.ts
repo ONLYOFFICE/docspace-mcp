@@ -6,6 +6,7 @@
 import type express from "express"
 
 declare module "express-serve-static-core" {
+	// eslint-disable-next-line typescript/consistent-type-definitions
 	interface Request {
 		signal?: AbortSignal
 	}

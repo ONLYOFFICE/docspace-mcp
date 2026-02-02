@@ -9,7 +9,7 @@ const outgoing = "<--"
 const incoming = "-->"
 const error = "xxx"
 
-interface Payload {
+type Payload = {
 	sessionId?: string
 	method?: string
 	url?: string
@@ -18,11 +18,11 @@ interface Payload {
 	err?: unknown
 }
 
-export interface ContextProvider {
+export type ContextProvider = {
 	get(): context.Context | undefined
 }
 
-export interface Logger {
+export type Logger = {
 	info(msg: string, o?: object): void | Promise<void>
 	warn(msg: string, o?: object): void | Promise<void>
 	error(msg: string, o?: object): void | Promise<void>

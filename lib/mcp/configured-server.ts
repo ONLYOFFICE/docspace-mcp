@@ -33,7 +33,7 @@ export type CallRegularToolHandlerResult =
 	Promise<result.Result<z.core.JSONSchema.BaseSchema, Error>> |
 	Promise<result.Result<string, Error>>
 
-export interface ConfiguredServerConfig {
+export type ConfiguredServerConfig = {
 	client: api.Client
 	resolver: api.Resolver
 	uploader: api.Uploader

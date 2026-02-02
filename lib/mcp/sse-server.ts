@@ -3,8 +3,6 @@
  * @mergeModuleWith mcp
  */
 
-/* eslint-disable typescript/consistent-type-definitions */
-
 import type * as server from "@modelcontextprotocol/sdk/server/index.js"
 import type * as sse from "@modelcontextprotocol/sdk/server/sse.js"
 import express from "express"

@@ -20,7 +20,9 @@
 		"entry_point": "bin/onlyoffice-docspace-mcp.js",
 		"mcp_config": {
 			"command": "node",
-			"args": ["${__dirname}/bin/onlyoffice-docspace-mcp.js"],
+			"args": [
+				"${__dirname}/bin/onlyoffice-docspace-mcp.js"
+			],
 			"env": {}
 		}
 	},

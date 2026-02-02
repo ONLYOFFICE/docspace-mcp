@@ -1,5 +1,3 @@
-/* eslint-disable typescript/consistent-type-definitions */
-
 import assert from "node:assert/strict"
 import childProcess from "node:child_process"
 import http from "node:http"
@@ -52,7 +50,7 @@ async function randomAddress(): Promise<r.Result<net.AddressInfo, Error>> {
 		})
 	})
 
-	let listen: (port: number, host: string) => void = s.listen.bind(s)
+	let listen: (port: number, host: string) => net.Server = s.listen.bind(s)
 
 	let l = r.safeSync(listen, 0, "::")
 	if (l.err) {
@@ -411,7 +409,7 @@ async function setupHttp(t: test.TestContext): Promise<[http.Server, net.Address
 		})
 	})
 
-	let listen: (port: number, host: string) => void = s.listen.bind(s)
+	let listen: (port: number, host: string) => net.Server = s.listen.bind(s)
 
 	let l = r.safeSync(listen, 0, "::")
 	assert.ok(l.err === undefined)

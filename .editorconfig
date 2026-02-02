@@ -1,14 +1,16 @@
+; This configuration omits tab width and line length constraints to respect
+; individual accessibility needs. Tab rendering width is a personal
+; accessibility preference. Line length limits require fixed tab sizing,
+; creating an inherent conflict. These settings are best handled by individual
+; editor configurations rather than project-wide enforcement.
+
 [*]
 charset = utf-8
 end_of_line = lf
-indent_size = 2
 indent_style = tab
 insert_final_newline = true
-max_line_length = 80
 trim_trailing_whitespace = true
 
-; Do not specify the tab size explicitly to avoid overriding user preferences.
-; tab_width = 2
-
 [{*.md,*.yaml,*.yml}]
+indent_size = 2
 indent_style = space

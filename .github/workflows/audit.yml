@@ -40,11 +40,11 @@ jobs:
     - name: Build Application
       run: pnpm build-app
 
-    - name: Lint Package
-      run: pnpm lint
+    - name: Lint Types
+      run: pnpm lint-types
 
-    - name: Check Package
-      run: pnpm check
+    - name: Lint Code
+      run: pnpm lint-code
 
     - name: Test Package
       run: pnpm test

@@ -3,8 +3,6 @@
  * @mergeModuleWith settings
  */
 
-/* eslint-disable typescript/consistent-type-definitions */
-
 import * as mcp from "../mcp.ts"
 
 export type ResolveToolsOptions = {

@@ -6,22 +6,22 @@
 import * as errors from "../util/errors.ts"
 import * as result from "../util/result.ts"
 
-export interface Session {
+export type Session = {
 	id: string
 	transport: SessionTransport
 	createdAt: Date
 	expiresAt: Date
 }
 
-export interface SessionTransport {
+export type SessionTransport = {
 	close(): Promise<void>
 }
 
-export interface SessionsConfig {
+export type SessionsConfig = {
 	ttl: number
 }
 
-export interface SessionsCreateOptions {
+export type SessionsCreateOptions = {
 	id: string
 	transport: SessionTransport
 }

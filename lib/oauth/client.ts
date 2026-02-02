@@ -3,9 +3,6 @@
  * @mergeModuleWith oauth
  */
 
-/* eslint-disable typescript/consistent-type-definitions */
-/* eslint-disable unicorn/custom-error-definition */
-
 import contentType from "content-type"
 import * as z from "zod"
 import * as errors from "../util/errors.ts"
@@ -53,6 +50,7 @@ export type ClientErrorResponseOptions = {
 	message: string
 }
 
+// eslint-disable-next-line unicorn/custom-error-definition
 export class ClientErrorResponse extends Error {
 	request: Request
 	response: Response
@@ -62,7 +60,7 @@ export class ClientErrorResponse extends Error {
 
 	constructor(o: ClientErrorResponseOptions) {
 		super(o.message)
-		this.name = "ErrorResponse"
+		this.name = "ClientErrorResponse"
 		this.request = o.request
 		this.response = o.response
 		this.error = o.error

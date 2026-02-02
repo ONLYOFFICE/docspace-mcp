@@ -169,7 +169,6 @@ export const EmployeeFullDtoFieldSchema = z.union([
 	// z.literal("notes").describe("The user notes."),
 	z.literal("isAdmin").describe("Specifies if the user is an administrator or not."),
 	z.literal("isRoomAdmin").describe("Specifies if the user is a room administrator or not."),
-	// eslint-disable-next-line stylistic/max-len
 	// z.literal("isLDAP").describe("Specifies if the LDAP settings are enabled for the user or not."),
 	// z.literal("listAdminModules").describe("The list of the administrator modules."),
 	z.literal("isOwner").describe("Specifies if the user is a portal owner or not."),
@@ -188,7 +187,6 @@ export const EmployeeFullDtoFieldSchema = z.union([
 	// ...wrapUnion(EmployeeDtoFieldSchema, "createdBy").options,
 	// z.literal("registrationDate"),
 	// z.literal("hasPersonalFolder").describe("Specifies if the user has a personal folder or not."),
-	// eslint-disable-next-line stylistic/max-len
 	// z.literal("tfaAppEnabled").describe("Indicates whether the user has enabled two-factor authentication (TFA) using an authentication app."),
 ])
 
@@ -433,7 +431,6 @@ export const FileEntryDtoFieldSchema = z.union([
 	// z.literal("rootFolderType").describe("The root folder type of the file entry."),
 	// z.literal("parentRoomType").describe("The parent room type of the file entry."),
 	// ...wrapUnion(EmployeeDtoFieldSchema, "updatedBy").options,
-	// eslint-disable-next-line stylistic/max-len
 	// z.literal("providerItem").describe("Specifies if the file entry provider is specified or not."),
 	// z.literal("providerKey").describe("The provider key of the file entry."),
 	// z.literal("providerId").describe("The provider ID of the file entry."),
@@ -489,9 +486,7 @@ export const FileDtoFieldSchema = z.union([
 	// z.literal("hasDraft").describe("Specifies if the file has a draft or not."),
 	// z.literal("formFillingStatus").describe("The status of the form filling process."),
 	// z.literal("isForm").describe("Specifies if the file is a form or not."),
-	// eslint-disable-next-line stylistic/max-len
 	// z.literal("customFilterEnabled").describe("Specifies if the Custom Filter editing mode is enabled for a file or not."),
-	// eslint-disable-next-line stylistic/max-len
 	// z.literal("customFilterEnabledBy").describe("The name of the user who enabled a Custom Filter editing mode for a file."),
 	// z.literal("startFilling").describe("Specifies if the filling has started or not."),
 	// z.literal("inProcessFolderId").describe("The InProcess folder ID of the file."),
@@ -580,11 +575,9 @@ export const FilesSettingsDtoSchema = z.looseObject({
 //  * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.1.1-server/products/ASC.Files/Core/ApiModels/RoomDataLifetimeDto.cs/#L32 | DocSpace Reference}
 //  */
 // export const RoomDataLifetimeDtoFieldSchema = z.union([
-// eslint-disable-next-line stylistic/max-len
 // 	z.literal("deletePermanently").describe("Specifies whether to permanently delete the room data or not."),
 // 	z.literal("period").describe("Specifies the time period type of the room data lifetime."),
 // 	z.literal("value").describe("Specifies the time period value of the room data lifetime."),
-// eslint-disable-next-line stylistic/max-len
 // 	z.literal("enabled").describe("Specifies whether the room data lifetime setting is enabled or not."),
 // ])
 
@@ -592,7 +585,6 @@ export const FilesSettingsDtoSchema = z.looseObject({
 //  * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.1.1-server/products/ASC.Files/Core/ApiModels/ResponseDto/WatermarkDto.cs/#L32 | DocSpace Reference}
 //  */
 // export const WatermarkDtoFieldSchema = z.union([
-// eslint-disable-next-line stylistic/max-len
 // 	z.literal("additions").describe("Specifies whether to display in the watermark: username, user email, user ip-adress, current date, and room name."),
 // 	z.literal("text").describe("The watermark text."),
 // 	z.literal("rotate").describe("The watermark text and image rotate."),
@@ -644,11 +636,8 @@ export const FolderDtoFieldSchema = z.union([
 	// z.literal("quotaLimit").describe("The folder quota limit."),
 	// z.literal("isCustomQuota").describe("Specifies if the folder room has a custom quota or not."),
 	// z.literal("usedSpace").describe("How much folder space is used (counter)."),
-	// eslint-disable-next-line stylistic/max-len
 	// z.literal("external").describe("Specifies if the folder can be accessed via an external link or not."),
-	// eslint-disable-next-line stylistic/max-len
 	// z.literal("passwordProtected").describe("Specifies if the folder is password protected or not."),
-	// eslint-disable-next-line stylistic/max-len
 	// z.literal("expired").describe("Specifies if an external link to the folder is expired or not."),
 ])
 
@@ -902,13 +891,9 @@ export const GetRoomsFolderFiltersSchema = z.object({
 	withoutTags: z.boolean().optional().describe("Specifies whether to search by tags or not."),
 	tags: z.string().optional().describe("The tags in the serialized format."),
 	excludeSubject: z.boolean().optional().describe("Specifies whether to exclude search by user or group ID."),
-	// eslint-disable-next-line stylistic/max-len
 	// provider: ProviderFilterSchema.optional().describe("The filter by provider name (None, Box, DropBox, GoogleDrive, kDrive, OneDrive, SharePoint, WebDav, Yandex, Storage)."),
-	// eslint-disable-next-line stylistic/max-len
 	// subjectFilter: SubjectFilterSchema.optional().describe("The filter by user (Owner - 0, Member - 1)."),
-	// eslint-disable-next-line stylistic/max-len
 	// quotaFilter: QuotaFilterSchema.optional().describe("The filter by quota (All - 0, Default - 1, Custom - 2)."),
-	// eslint-disable-next-line stylistic/max-len
 	// storageFilter: StorageFilterSchema.optional().describe("The filter by storage (None - 0, Internal - 1, ThirdParty - 2)."),
 	count: z.number().min(1).max(50).default(30).describe("Specifies the maximum number of items to retrieve."),
 	startIndex: z.number().optional().describe("The index from which to start retrieving the room content."),

@@ -1,7 +1,5 @@
 #!/usr/bin/env node
 
-/* eslint-disable typescript/consistent-type-definitions */
-
 import * as server from "@modelcontextprotocol/sdk/server/index.js"
 import * as stdio from "@modelcontextprotocol/sdk/server/stdio.js"
 import type * as types from "@modelcontextprotocol/sdk/types.js"
@@ -783,7 +781,6 @@ function loadConfig(): r.Result<Config, Error> {
 function formatConfig(c: Config): object {
 	let m = "***"
 
-	// eslint-disable-next-line unicorn/prefer-set-has
 	let s: string[] = [
 		"root.api.shared.authorization",
 		"root.api.shared.apiKey",

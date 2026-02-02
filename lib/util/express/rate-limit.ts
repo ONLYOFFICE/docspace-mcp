@@ -3,8 +3,6 @@
  * @mergeModuleWith util/express
  */
 
-/* eslint-disable typescript/consistent-type-definitions */
-
 import type express from "express"
 import * as expressRateLimit from "express-rate-limit"
 

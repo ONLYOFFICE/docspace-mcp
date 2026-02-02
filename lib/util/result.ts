@@ -25,7 +25,7 @@ export type Result<V, E> = Ok<V, E> | Error<V, E>
 /**
  * Ok is the result of a successful operation.
  */
-export interface Ok<V, _> {
+export type Ok<V, _> = {
 	v: V
 	err: undefined
 }
@@ -33,7 +33,7 @@ export interface Ok<V, _> {
 /**
  * Error is the result of a failed operation.
  */
-export interface Error<_, E> {
+export type Error<_, E> = {
 	v: undefined
 	err: E
 }
@@ -150,7 +150,6 @@ export function safeNew<
 	...args: A
 ): Result<R, globalThis.Error> {
 	try {
-		// eslint-disable-next-line new-cap
 		return ok(new fn(...args))
 	} catch (err) {
 		if (err instanceof Error) {

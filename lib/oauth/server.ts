@@ -3,8 +3,6 @@
  * @mergeModuleWith oauth
  */
 
-/* eslint-disable typescript/consistent-type-definitions */
-
 import express from "express"
 import jwt from "jsonwebtoken"
 import * as errors from "../util/errors.ts"
@@ -955,6 +953,7 @@ function guard(r: express.Router, o: GuardOptions): void {
 }
 
 declare module "express-serve-static-core" {
+	// eslint-disable-next-line typescript/consistent-type-definitions
 	interface Request {
 		[authKey]?: Auth
 	}

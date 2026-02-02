@@ -9,7 +9,7 @@ import type * as context from "../context.ts"
 const outgoing = "<--"
 const incoming = "-->"
 
-interface Payload {
+type Payload = {
 	sessionId?: string
 	method?: string
 	url?: string
@@ -17,11 +17,11 @@ interface Payload {
 	duration?: string
 }
 
-export interface ContextProvider {
+export type ContextProvider = {
 	get(): context.Context | undefined
 }
 
-export interface Logger {
+export type Logger = {
 	info(msg: string, o?: object): void
 	warn(msg: string, o?: object): void
 	error(msg: string, o?: object): void

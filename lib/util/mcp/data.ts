@@ -26,7 +26,6 @@ export type ToolInfo = Summary & {
 	annotations?: ToolAnnotations
 }
 
-// eslint-disable-next-line typescript/consistent-type-definitions
 export type Summary = {
 	name: string
 	description: string

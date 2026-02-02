@@ -1,5 +1,3 @@
-/* eslint-disable typescript/consistent-type-definitions */
-
 import * as fs from "node:fs/promises"
 import * as mcp from "../lib/mcp.ts"
 import type * as utilMcp from "../lib/util/mcp.ts"
@@ -277,9 +275,7 @@ function createToolsetsTable(toolsets: utilMcp.ToolsetInfo[]): string {
 
 	if (c.length !== 0) {
 		c = c.slice(0, -1)
-
 		let h = "| # | Toolset Name | Toolset Description |\n|-|-|-|"
-
 		c = `${h}\n${c}`
 	}
 
@@ -299,21 +295,14 @@ function createToolsTable(toolsets: utilMcp.ToolsetInfo[]): string {
 		let b = ""
 
 		for (let [j, t] of s.tools.entries()) {
-			// eslint-disable-next-line github/unescaped-html-literal
 			b += `<tr><td>${j + 1 + i}</td><td><code>${t.name}</code></td><td>${t.description}</td></tr>\n`
 		}
 
 		if (b.length !== 0) {
 			b = b.slice(0, -1)
-
 			let n = s.name[0].toUpperCase() + s.name.slice(1)
-
-			// eslint-disable-next-line github/unescaped-html-literal
 			let h = `<tr><td></td><th scope="rowgroup">${n} Toolset</th><td></td></tr>`
-
-			// eslint-disable-next-line github/unescaped-html-literal
 			b = `<tbody>\n${h}\n${b}\n</tbody>`
-
 			c += `${b}\n`
 		}
 
@@ -322,11 +311,7 @@ function createToolsTable(toolsets: utilMcp.ToolsetInfo[]): string {
 
 	if (c.length !== 0) {
 		c = c.slice(0, -1)
-
-		// eslint-disable-next-line github/unescaped-html-literal
 		let h = "<thead>\n<tr><th>#</th><th>Tool Name</th><th>Tool Description</th></tr>\n</thead>"
-
-		// eslint-disable-next-line github/unescaped-html-literal
 		c = `<table>\n${h}\n${c}\n</table>`
 	}
 
@@ -346,9 +331,7 @@ function createMetaToolsTable(tools: utilMcp.Summary[]): string {
 
 	if (c.length !== 0) {
 		c = c.slice(0, -1)
-
 		let h = "| # | Meta Tool Name | Meta Tool Description |\n|-|-|-|"
-
 		c = `${h}\n${c}`
 	}
 

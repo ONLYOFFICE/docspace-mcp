@@ -3,8 +3,6 @@
  * @mergeModuleWith util/express
  */
 
-/* eslint-disable typescript/consistent-type-definitions */
-
 import cors_ from "cors"
 import type express from "express"
 

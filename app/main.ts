@@ -900,7 +900,10 @@ function startStdio(config: r.Result<Config, Error>): r.Result<Start, Error> {
 		defs = mcp.configuredServer(csc)
 	}
 
-	utilMcp.register(ms, defs)
+	let dr = utilMcp.register(ms, defs)
+	if (dr.err) {
+		return r.error(new Error("Registering definitions", {cause: dr.err}))
+	}
 
 	let mt = new stdio.StdioServerTransport()
 
@@ -1162,7 +1165,10 @@ function startHttp(config: Config, logger: utilLogger.VanillaLogger): r.Result<S
 
 		let defs = mcp.configuredServer(csc)
 
-		utilMcp.register(ms, defs)
+		let dr = utilMcp.register(ms, defs)
+		if (dr.err) {
+			return r.error(new Error("Registering definitions", {cause: dr.err}))
+		}
 
 		return r.ok(ms)
 	}

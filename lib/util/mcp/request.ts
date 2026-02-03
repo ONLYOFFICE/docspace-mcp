@@ -43,35 +43,42 @@ export type RequestDefinition<
 	handler(this: void, request: z.infer<S>, extra: RequestExtra<R, N>): T | Promise<T>
 }
 
-export function register(
-	s: server.Server,
-	defs: RequestDefinition[],
-): result.Result<void, Error> {
+export function register(s: server.Server, defs: RequestDefinition[]): result.Result<void, Error> {
 	let errs: Error[] = []
 
 	for (let d of defs) {
-		let r = result.safeSync(
-			s.assertCanSetRequestHandler.bind(s),
-			d.schema.shape.method.value,
-		)
-		if (r.err) {
-			errs.push(r.err)
-			continue
-		}
+		let t: result.Result<void, Error> | undefined
 
-		if (d.schema === types.CallToolRequestSchema) {
-			s.registerCapabilities({tools: {}})
-			s.setRequestHandler(d.schema, d.handler)
-			continue
-		}
+		switch (d.schema) {
+		case types.CallToolRequestSchema:
+		case types.ListToolsRequestSchema:
+			t = result.safeSync(
+				s.assertCanSetRequestHandler.bind(s),
+				d.schema.shape.method.value,
+			)
+			if (t.err) {
+				errs.push(new Error("Asserting availability", {cause: t.err}))
+				break
+			}
 
-		if (d.schema === types.ListToolsRequestSchema) {
-			s.registerCapabilities({tools: {}})
-			s.setRequestHandler(d.schema, d.handler)
-			continue
-		}
+			t = result.safeSync(s.registerCapabilities.bind(s), {tools: {}})
+			if (t.err) {
+				errs.push(new Error("Registering capabilities", {cause: t.err}))
+				break
+			}
 
-		errs.push(new Error(`Unsupported schema: ${d.schema.shape.method.value}`))
+			t = result.safeSync(s.setRequestHandler.bind(s), d.schema, d.handler)
+			if (t.err) {
+				errs.push(new Error("Setting handler", {cause: t.err}))
+				break
+			}
+
+			break
+
+		default:
+			errs.push(new Error(`Unsupported schema: ${d.schema.shape.method.value}`))
+			break
+		}
 	}
 
 	if (errs.length !== 0) {

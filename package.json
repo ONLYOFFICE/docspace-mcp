@@ -48,7 +48,7 @@
 		"@types/content-type": "1.1.9",
 		"@types/cors": "2.8.19",
 		"@types/express": "5.0.6",
-		"@types/express-serve-static-core": "5.1.0",
+		"@types/express-serve-static-core": "5.1.1",
 		"@types/jsonwebtoken": "9.0.10",
 		"@types/logfmt": "1.2.6",
 		"@types/node": "24.10.1",

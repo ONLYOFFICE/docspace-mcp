@@ -78,8 +78,8 @@ importers:
         specifier: 5.9.3
         version: 5.9.3
       undici:
-        specifier: 7.16.0
-        version: 7.16.0
+        specifier: 7.20.0
+        version: 7.20.0
       zod:
         specifier: 4.1.13
         version: 4.1.13
@@ -3651,8 +3651,8 @@ packages:
   undici-types@7.16.0:
     resolution: {integrity: sha512-Zz+aZWSj8LE6zoxD+xrjh4VfkIG8Ya6LvYkZqtUQGJPZjYl53ypCaUwWqo7eI0x66KBGeRo+mlBEkMSeSZ38Nw==}
 
-  undici@7.16.0:
-    resolution: {integrity: sha512-QEg3HPMll0o3t2ourKwOeUAZ159Kn9mx5pnzHRQO8+Wixmh88YdZRiIwat0iNzNNXn0yoEtXJqFpyW7eM8BV7g==}
+  undici@7.20.0:
+    resolution: {integrity: sha512-MJZrkjyd7DeC+uPZh+5/YaMDxFiiEEaDgbUSVMXayofAkDWF1088CDo+2RPg7B1BuS1qf1vgNE7xqwPxE0DuSQ==}
     engines: {node: '>=20.18.1'}
 
   unist-util-is@6.0.1:
@@ -5921,7 +5921,7 @@ snapshots:
       package-json: 10.0.1
       semver: 7.7.1
       synckit: 0.11.2
-      undici: 7.16.0
+      undici: 7.20.0
 
   eslint-plugin-package-json@0.88.2(@types/estree@1.0.8)(eslint@9.39.2)(jsonc-eslint-parser@2.4.2):
     dependencies:
@@ -7886,7 +7886,7 @@ snapshots:
 
   undici-types@7.16.0: {}
 
-  undici@7.16.0: {}
+  undici@7.20.0: {}
 
   unist-util-is@6.0.1:
     dependencies:

@@ -4,7 +4,7 @@
  */
 
 import * as errors from "../util/errors.ts"
-import {ClientErrorResponse} from "./client.ts"
+import {ClientResponseError} from "./client.ts"
 import type {ErrorResponse} from "./shared.ts"
 
 export function proxyError(ce: Error, fe: Error): [number, ErrorResponse] {
@@ -13,7 +13,7 @@ export function proxyError(ce: Error, fe: Error): [number, ErrorResponse] {
 	let error_description: string | undefined
 	let error_uri: string | undefined
 
-	let cr = errors.as(ce, ClientErrorResponse)
+	let cr = errors.as(ce, ClientResponseError)
 	if (cr) {
 		code = cr.response.status
 		error = cr.error

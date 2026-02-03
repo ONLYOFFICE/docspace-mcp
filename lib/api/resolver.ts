@@ -137,7 +137,7 @@ export class Resolver {
 		}
 
 		if (err) {
-			let e = new ResolverErrorResponse("Resolving operations.", {cause: err})
+			let e = new ResolverResponseError("Resolving operations.", {cause: err})
 			e.response = s
 			e.unresolved = u
 			return error(e)
@@ -145,7 +145,7 @@ export class Resolver {
 
 		if (u.length !== 0) {
 			let m = `${u.length} out of ${ops.length} operations are unresolved.`
-			let e = new ResolverErrorResponse(m)
+			let e = new ResolverResponseError(m)
 			e.response = s
 			e.unresolved = u
 			return error(e)
@@ -160,14 +160,13 @@ export class ResolverResponse {
 	operations: Operation[] = []
 }
 
-// eslint-disable-next-line unicorn/custom-error-definition
-export class ResolverErrorResponse extends Error {
+export class ResolverResponseError extends Error {
 	response = new ResolverResponse()
 	unresolved: string[] = []
 
 	constructor(message: string, options?: ErrorOptions) {
 		super(message, options)
-		this.name = "ResolverErrorResponse"
+		this.name = "ResolverResponseError"
 	}
 }
 

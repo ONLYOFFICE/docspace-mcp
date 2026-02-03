@@ -41,7 +41,7 @@ export class ClientResponse {
 	}
 }
 
-export type ClientErrorResponseOptions = {
+export type ClientResponseErrorOptions = {
 	request: Request
 	response: Response
 	error: string
@@ -50,17 +50,16 @@ export type ClientErrorResponseOptions = {
 	message: string
 }
 
-// eslint-disable-next-line unicorn/custom-error-definition
-export class ClientErrorResponse extends Error {
+export class ClientResponseError extends Error {
 	request: Request
 	response: Response
 	error: string
 	error_description: string
 	error_uri: string
 
-	constructor(o: ClientErrorResponseOptions) {
+	constructor(o: ClientResponseErrorOptions) {
 		super(o.message)
-		this.name = "ClientErrorResponse"
+		this.name = "ClientResponseError"
 		this.request = o.request
 		this.response = o.response
 		this.error = o.error
@@ -284,7 +283,7 @@ export async function checkResponse(req: Request, res: Response): Promise<r.Resu
 		return r.ok()
 	}
 
-	let o: ClientErrorResponseOptions = {
+	let o: ClientResponseErrorOptions = {
 		request: req,
 		response: res,
 		error: "",
@@ -368,7 +367,7 @@ export async function checkResponse(req: Request, res: Response): Promise<r.Resu
 
 	o.message = o.message.slice(0, -1)
 
-	let e = new ClientErrorResponse(o)
+	let e = new ClientResponseError(o)
 
 	return r.error(e)
 }

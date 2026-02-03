@@ -840,18 +840,28 @@ function formatConfig(c: Config): object {
 }
 
 function startStdio(config: r.Result<Config, Error>): r.Result<Start, Error> {
-	let msc: types.Implementation = {
+	let msi: types.Implementation = {
 		name: meta.name,
 		version: meta.version,
 	}
 
-	let ms = new server.Server(msc)
+	let ms: server.Server | undefined
 
 	let defs: utilMcp.RequestDefinition[] | undefined
 
 	if (config.err) {
+		ms = new server.Server(msi)
+
 		defs = mcp.misconfiguredServer(config.err)
 	} else {
+		let mso: server.ServerOptions = {
+			capabilities: {
+				logging: {},
+			},
+		}
+
+		ms = new server.Server(msi, mso)
+
 		let cp: utilLogger.ContextProvider = {
 			get() {
 				// eslint-disable-next-line unicorn/no-useless-undefined
@@ -860,8 +870,6 @@ function startStdio(config: r.Result<Config, Error>): r.Result<Start, Error> {
 		}
 
 		let sl = new utilLogger.ServerLogger(cp, ms)
-
-		ms.registerCapabilities({logging: {}})
 
 		let fetch = utilFetch.withLogger(context, sl, globalThis.fetch)
 
@@ -1100,16 +1108,20 @@ function startHttp(config: Config, logger: utilLogger.VanillaLogger): r.Result<S
 			return r.error(new Error("Parsing settings", {cause: s.err}))
 		}
 
-		let msc: types.Implementation = {
+		let msi: types.Implementation = {
 			name: meta.name,
 			version: meta.version,
 		}
 
-		let ms = new server.Server(msc)
+		let mso: server.ServerOptions = {
+			capabilities: {
+				logging: {},
+			},
+		}
+
+		let ms = new server.Server(msi, mso)
 
 		let sl = new utilLogger.ServerLogger(context, ms)
-
-		ms.registerCapabilities({logging: {}})
 
 		let fetch = globalThis.fetch
 

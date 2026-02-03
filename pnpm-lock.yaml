@@ -39,8 +39,8 @@ importers:
         specifier: 25.2.0
         version: 25.2.0
       '@types/web':
-        specifier: 0.0.298
-        version: 0.0.298
+        specifier: 0.0.326
+        version: 0.0.326
       '@vanyauhalin/eslint-config':
         specifier: 0.0.11
         version: 0.0.11(@types/estree@1.0.8)(eslint-import-resolver-node@0.3.9)
@@ -1024,8 +1024,8 @@ packages:
   '@types/unist@3.0.3':
     resolution: {integrity: sha512-ko/gIFJRv177XgZsZcBwnqJN5x/Gien8qNOn0D5bQU/zAzVf9Zt3BlcUiLqhV9y4ARk0GbT3tnUiPNgnTXzc/Q==}
 
-  '@types/web@0.0.298':
-    resolution: {integrity: sha512-Cs4IZkWKxmCySroKKJurweVD5TpIz+jYCz0PkQYbLvzpeOueTi2IkOy3/nbC4Fizpl4gscGJA8t1QZzZoMx9/A==}
+  '@types/web@0.0.326':
+    resolution: {integrity: sha512-VD39/FBERvah/cxDSW+K7eaCN0F5wCqWzn/vXnuc3ivtdIinzckab3Xcb7aFxlVNGALeHtyFrIFKV7RDHuVKUA==}
 
   '@types/wrap-ansi@3.0.0':
     resolution: {integrity: sha512-ltIpx+kM7g/MLRZfkbL7EsCEjfzCcScLpkg37eXEtx5kmrAKBkTJwd1GIAjDSL8wTpM6Hzn5YO4pSb91BEwu1g==}
@@ -4800,7 +4800,7 @@ snapshots:
 
   '@types/unist@3.0.3': {}
 
-  '@types/web@0.0.298': {}
+  '@types/web@0.0.326': {}
 
   '@types/wrap-ansi@3.0.0': {}
 

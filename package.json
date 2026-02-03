@@ -57,7 +57,7 @@
 		"ajv": "8.17.1",
 		"ajv-formats": "3.0.1",
 		"content-type": "1.0.5",
-		"cors": "2.8.5",
+		"cors": "2.8.6",
 		"esbuild": "0.27.2",
 		"eslint": "9.39.2",
 		"express": "5.2.1",

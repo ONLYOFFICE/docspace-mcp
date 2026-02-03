@@ -772,7 +772,7 @@ function loadConfig(): r.Result<Config, Error> {
 	}
 
 	if (errs.length !== 0) {
-		return r.error(new errors.Errors({cause: errs}))
+		return r.error(new AggregateError(errs, "Validating config"))
 	}
 
 	return r.ok(p.data)
@@ -1319,7 +1319,7 @@ function startHttp(config: Config, logger: utilLogger.VanillaLogger): r.Result<S
 					errs.push(new Error("Clearing sessions", {cause: err}))
 				}
 
-				return r.error(new errors.Errors({cause: errs}))
+				return r.error(new AggregateError(errs, "Cleaning up sessions"))
 			}
 
 			return r.ok()
@@ -1348,7 +1348,7 @@ function startHttp(config: Config, logger: utilLogger.VanillaLogger): r.Result<S
 					errs.push(new Error("Clearing sessions", {cause: err}))
 				}
 
-				return r.error(new errors.Errors({cause: errs}))
+				return r.error(new AggregateError(errs, "Cleaning up sessions"))
 			}
 
 			return r.ok()
@@ -1419,7 +1419,7 @@ function startHttp(config: Config, logger: utilLogger.VanillaLogger): r.Result<S
 		}
 
 		if (errs.length !== 0) {
-			return r.error(new errors.Errors({cause: errs}))
+			return r.error(new AggregateError(errs, "Calling cleanups"))
 		}
 
 		return r.ok()

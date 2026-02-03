@@ -5,7 +5,6 @@
 
 import type express from "express"
 import * as z from "zod"
-import * as errors from "../util/errors.ts"
 import * as r from "../util/result.ts"
 import * as zod from "../util/zod.ts"
 import type {ResolveToolsOptions} from "./tools.ts"
@@ -133,7 +132,7 @@ export class SettingsParser {
 		}
 
 		if (errs.length !== 0) {
-			return r.error(new errors.Errors({cause: errs}))
+			return r.error(new AggregateError(errs, "Parsing settings"))
 		}
 
 		let dynamic: boolean | undefined
@@ -187,7 +186,7 @@ export class SettingsParser {
 		}
 
 		if (errs.length !== 0) {
-			return r.error(new errors.Errors({cause: errs}))
+			return r.error(new AggregateError(errs, "Validating settings"))
 		}
 
 		let s: Settings = {

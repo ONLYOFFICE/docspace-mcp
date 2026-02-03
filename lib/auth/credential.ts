@@ -5,7 +5,6 @@
 
 import type express from "express"
 import * as z from "zod"
-import * as errors from "../util/errors.ts"
 import * as r from "../util/result.ts"
 import * as zod from "../util/zod.ts"
 
@@ -108,7 +107,7 @@ export class CredentialParser {
 		}
 
 		if (errs.length !== 0) {
-			return r.error(new errors.Errors({cause: errs}))
+			return r.error(new AggregateError(errs, "Parsing credentials"))
 		}
 
 		let c: Credential = {
@@ -157,7 +156,7 @@ export class CredentialParser {
 		}
 
 		if (errs.length !== 0) {
-			return r.error(new errors.Errors({cause: errs}))
+			return r.error(new AggregateError(errs, "Validating credentials"))
 		}
 
 		return r.ok(c)

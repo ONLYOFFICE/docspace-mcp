@@ -3,7 +3,6 @@
  * @mergeModuleWith mcp
  */
 
-import * as errors from "../util/errors.ts"
 import * as result from "../util/result.ts"
 
 export type Session = {
@@ -133,7 +132,7 @@ export class Sessions {
 		}
 
 		if (errs.length !== 0) {
-			return new errors.Errors({cause: errs})
+			return new AggregateError(errs, "Closing sessions")
 		}
 	}
 

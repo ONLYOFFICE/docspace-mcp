@@ -7,7 +7,6 @@ import type * as server from "@modelcontextprotocol/sdk/server/index.js"
 import type * as protocol from "@modelcontextprotocol/sdk/shared/protocol.js"
 import * as types from "@modelcontextprotocol/sdk/types.js"
 import type * as z from "zod"
-import * as errors from "../errors.ts"
 import * as result from "../result.ts"
 
 export type CallToolRequest = z.infer<typeof types.CallToolRequestSchema>
@@ -82,7 +81,7 @@ export function register(s: server.Server, defs: RequestDefinition[]): result.Re
 	}
 
 	if (errs.length !== 0) {
-		return result.error(new errors.Errors({cause: errs}))
+		return result.error(new AggregateError(errs, "Registering handlers"))
 	}
 
 	return result.ok()

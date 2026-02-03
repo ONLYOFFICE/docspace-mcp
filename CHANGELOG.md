@@ -50,7 +50,8 @@ This document records all notable changes to the project, following the
 - Fix incorrect error status returned by the OAuth introspect endpoint when the
   token is invalid ([38a3a75]);
 - Fix returning empty error when the upstream OAuth server responds without or
-  with invalid Content-Type header ([5c52ebe]).
+  with invalid Content-Type header ([5c52ebe]);
+- Fix not setting the `logging/setLevel` request handler ([7f600ab]).
 
 ## [3.1.0] - 2025-11-28
 
@@ -314,6 +315,7 @@ There are no noticeable changes in version [3.0.1].
 [0.1.1]: https://github.com/onlyoffice/docspace-mcp/compare/v0.1.0...v0.1.1/
 [0.1.0]: https://github.com/onlyoffice/docspace-mcp/releases/tag/v0.1.0/
 
+[7f600ab]: https://github.com/onlyoffice/docspace-mcp/commit/7f600abf82016efaa2462bc610155509f12b001e/
 [fc3aedb]: https://github.com/onlyoffice/docspace-mcp/commit/fc3aedb08584cc07181bd32480ff7f7add6cd1e3/
 [c045998]: https://github.com/onlyoffice/docspace-mcp/commit/fc3aedb08584cc07181bd32480ff7f7add6cd1e3/
 [382ebec]: https://github.com/onlyoffice/docspace-mcp/commit/fc3aedb08584cc07181bd32480ff7f7add6cd1e3/

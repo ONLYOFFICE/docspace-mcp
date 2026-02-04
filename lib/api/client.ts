@@ -365,13 +365,12 @@ export class Response {
 	}
 }
 
-// eslint-disable-next-line unicorn/custom-error-definition
-export class ErrorResponse extends Error {
+export class ResponseError extends Error {
 	response: Response
 
 	constructor(response: Response, message: string) {
 		super(message)
-		this.name = "ErrorResponse"
+		this.name = "ResponseError"
 		this.response = response
 	}
 }
@@ -459,12 +458,12 @@ export async function checkSharedResponse(req: Request, res: globalThis.Response
 
 		let r = new Response(req, res)
 		let m = `${req.method} ${req.url}: ${res.status} ${s.data.message}`
-		let e = new ErrorResponse(r, m)
+		let e = new ResponseError(r, m)
 
 		return e
 	})()
 
-	if (err instanceof ErrorResponse) {
+	if (err instanceof ResponseError) {
 		return err
 	}
 
@@ -474,7 +473,7 @@ export async function checkSharedResponse(req: Request, res: globalThis.Response
 
 	let r = new Response(req, res)
 	let m = `${req.method} ${req.url}: ${res.status} ${res.statusText}`
-	let e = new ErrorResponse(r, m)
+	let e = new ResponseError(r, m)
 
 	return e
 }

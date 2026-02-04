@@ -4,18 +4,6 @@
 
 import * as z from "zod"
 
-// eslint-disable-next-line unicorn/custom-error-definition
-export class Errors extends Error {
-	name: "Errors"
-	cause: Error[] = []
-
-	constructor(options: ErrorOptions & {cause: Error[]}) {
-		super("Multiple errors", options)
-		this.name = "Errors"
-		this.cause = options.cause
-	}
-}
-
 export class JsonError extends Error {
 	name: "JsonError"
 
@@ -166,8 +154,8 @@ export function format(err: Error): string {
 			return
 		}
 
-		if (err instanceof Errors) {
-			loop(err.cause)
+		if (err instanceof AggregateError) {
+			loop(err.errors)
 			return
 		}
 

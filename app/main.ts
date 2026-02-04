@@ -772,7 +772,7 @@ function loadConfig(): r.Result<Config, Error> {
 	}
 
 	if (errs.length !== 0) {
-		return r.error(new errors.Errors({cause: errs}))
+		return r.error(new AggregateError(errs, "Validating config"))
 	}
 
 	return r.ok(p.data)
@@ -900,7 +900,10 @@ function startStdio(config: r.Result<Config, Error>): r.Result<Start, Error> {
 		defs = mcp.configuredServer(csc)
 	}
 
-	utilMcp.register(ms, defs)
+	let dr = utilMcp.register(ms, defs)
+	if (dr.err) {
+		return r.error(new Error("Registering definitions", {cause: dr.err}))
+	}
 
 	let mt = new stdio.StdioServerTransport()
 
@@ -1162,7 +1165,10 @@ function startHttp(config: Config, logger: utilLogger.VanillaLogger): r.Result<S
 
 		let defs = mcp.configuredServer(csc)
 
-		utilMcp.register(ms, defs)
+		let dr = utilMcp.register(ms, defs)
+		if (dr.err) {
+			return r.error(new Error("Registering definitions", {cause: dr.err}))
+		}
 
 		return r.ok(ms)
 	}
@@ -1313,7 +1319,7 @@ function startHttp(config: Config, logger: utilLogger.VanillaLogger): r.Result<S
 					errs.push(new Error("Clearing sessions", {cause: err}))
 				}
 
-				return r.error(new errors.Errors({cause: errs}))
+				return r.error(new AggregateError(errs, "Cleaning up sessions"))
 			}
 
 			return r.ok()
@@ -1342,7 +1348,7 @@ function startHttp(config: Config, logger: utilLogger.VanillaLogger): r.Result<S
 					errs.push(new Error("Clearing sessions", {cause: err}))
 				}
 
-				return r.error(new errors.Errors({cause: errs}))
+				return r.error(new AggregateError(errs, "Cleaning up sessions"))
 			}
 
 			return r.ok()
@@ -1413,7 +1419,7 @@ function startHttp(config: Config, logger: utilLogger.VanillaLogger): r.Result<S
 		}
 
 		if (errs.length !== 0) {
-			return r.error(new errors.Errors({cause: errs}))
+			return r.error(new AggregateError(errs, "Calling cleanups"))
 		}
 
 		return r.ok()

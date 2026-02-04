@@ -13,12 +13,15 @@ This document records all notable changes to the project, following the
 
 ### Changed
 
-- Update `@modelcontextprotocol/sdk` to 1.24.3, `express` to 5.2.1,
-  `express-rate-limit` to 8.2.1, `jsonwebtoken` to 9.0.3, `zod` to 4.1.13
-  ([1da5a12], [05d37dd]);
-- Update Node.js to 24.11.1 in OCI image ([02b1525]);
+- Update `express` to v5.2.1 ([1da5a12]);
+- Update `express-rate-limit` to v8.2.1 ([1da5a12]);
+- Update `jsonwebtoken` to v9.0.3 ([1da5a12]);
+- Update Node.js to v24.11.1 in OCI image ([02b1525]);
 - Remove `enum` from output schemas ([ed5a178]);
-- Change project license from Apache 2.0 to MIT ([b6a3923]).
+- Change project license from Apache 2.0 to MIT ([b6a3923]);
+- Update `cors` to v2.8.6 ([382ebec]);
+- Update `zod` to v4.3.6 ([c045998]);
+- Update `@modelcontextprotocol/sdk` to v1.25.3 ([fc3aedb]).
 
 ### Fixed
 
@@ -311,6 +314,9 @@ There are no noticeable changes in version [3.0.1].
 [0.1.1]: https://github.com/onlyoffice/docspace-mcp/compare/v0.1.0...v0.1.1/
 [0.1.0]: https://github.com/onlyoffice/docspace-mcp/releases/tag/v0.1.0/
 
+[fc3aedb]: https://github.com/onlyoffice/docspace-mcp/commit/fc3aedb08584cc07181bd32480ff7f7add6cd1e3/
+[c045998]: https://github.com/onlyoffice/docspace-mcp/commit/fc3aedb08584cc07181bd32480ff7f7add6cd1e3/
+[382ebec]: https://github.com/onlyoffice/docspace-mcp/commit/fc3aedb08584cc07181bd32480ff7f7add6cd1e3/
 [01bc863]: https://github.com/onlyoffice/docspace-mcp/commit/01bc863b7171c9bec9dd2fd277dbd83e710e7e6c/
 [5c52ebe]: https://github.com/onlyoffice/docspace-mcp/commit/5c52ebedf15221a5e9e7c51d1ff9348a89e36b2e/
 [b6a3923]: https://github.com/onlyoffice/docspace-mcp/commit/b6a392338b4c9e92f0364dda29212a71c65be2cd/

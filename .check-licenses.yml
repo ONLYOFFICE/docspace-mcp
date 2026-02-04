@@ -1,7 +1,19 @@
 -
   - :approve
+  - "@modelcontextprotocol/inspector-cli"
+  - :why: https://github.com/modelcontextprotocol/inspector/commit/da684d0a9d5a381503aa23385d191462a8bf6818/
+
+-
+  - :approve
+  - "@modelcontextprotocol/inspector-client"
+  - :why: https://github.com/modelcontextprotocol/inspector/commit/da684d0a9d5a381503aa23385d191462a8bf6818/
+
+-
+  - :approve
+  - "@modelcontextprotocol/inspector-server"
+  - :why: https://github.com/modelcontextprotocol/inspector/commit/da684d0a9d5a381503aa23385d191462a8bf6818/
+
+-
+  - :approve
   - split
-  - :who:
-    :why: MIT
-    :versions: []
-    :when: 2025-11-07 09:55:31.982492900 Z
+  - :why: https://github.com/dominictarr/split/blob/6f26484ce4ea037dbcfe07ba558f9c150c6feb19/LICENCE

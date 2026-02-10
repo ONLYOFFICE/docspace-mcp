@@ -914,6 +914,7 @@ void test("oauth server", (t) => {
 				DOCSPACE_HOST: a.v.address,
 				DOCSPACE_PORT: `${a.v.port}`,
 				DOCSPACE_OAUTH_BASE_URL: "http://localhost/",
+				DOCSPACE_SERVER_ALLOWED_HOSTNAMES: `[${a.v.address}]`,
 				DOCSPACE_SERVER_BASE_URL: `http://[${a.v.address}]:${a.v.port}/`,
 				DOCSPACE_REQUEST_QUERY: "0", // todo: questionable
 				DOCSPACE_REQUEST_AUTHORIZATION_HEADER: "",
@@ -1132,6 +1133,210 @@ void test("oauth server", (t) => {
 		assert.ok(j)
 
 		assert.partialDeepStrictEqual(j.payload, p)
+	}
+
+	type TestAllowedHostnamesOptions = {
+		env: object
+		method: string
+		path: string
+	}
+
+	let testAllowedHostnames = (t: test.TestContext, o: TestAllowedHostnamesOptions): void => {
+		let request = async(a: net.AddressInfo, h: string): Promise<http.IncomingMessage> => {
+			let headers: Record<string, string> = {
+				Host: h,
+			}
+
+			if (o.method === "POST") {
+				headers["Content-Type"] = "application/x-www-form-urlencoded"
+				headers["Content-Length"] = "0"
+			}
+
+			let ro: http.RequestOptions = {
+				headers,
+				host: a.address,
+				method: o.method,
+				path: o.path,
+				port: a.port,
+				setHost: false,
+			}
+
+			let p = new Promise<r.Result<http.IncomingMessage, Error>>((resolve) => {
+				let req = http.request(ro, (res) => {
+					resolve(r.ok(res))
+				})
+
+				req.on("error", (err) => {
+					resolve(r.error(err))
+				})
+
+				req.end()
+			})
+
+			let w = await p
+			assert.ok(w.err === undefined)
+
+			return w.v
+		}
+
+		let ta: string[] = [
+			"localhost",
+			"127.0.0.1",
+			"[::1]",
+		]
+
+		void t.test("allowed hostnames", (t) => {
+			void t.test("allows request with default allowed hostnames", (t) => {
+				for (let tt of ta) {
+					void t.test(tt, async(t) => {
+						let e: object = {
+							...o.env,
+							DOCSPACE_SERVER_ALLOWED_HOSTNAMES: undefined,
+						}
+
+						let a = await setup(t, e)
+
+						let res = await request(a, tt)
+
+						assert.ok(res.statusCode !== 405)
+					})
+				}
+			})
+
+			void t.test("allows request when Host matches custom allowed hostname", (t) => {
+				for (let tt of ta) {
+					void t.test(tt, async(t) => {
+						let e: object = {
+							...o.env,
+							DOCSPACE_SERVER_ALLOWED_HOSTNAMES: tt,
+						}
+
+						let a = await setup(t, e)
+
+						let res = await request(a, tt)
+
+						assert.ok(res.statusCode !== 405)
+					})
+				}
+			})
+
+			void t.test("allows request when Host matches one of multiple allowed hostnames", (t) => {
+				for (let tt of ta) {
+					void t.test(tt, async(t) => {
+						let e: object = {
+							...o.env,
+							DOCSPACE_SERVER_ALLOWED_HOSTNAMES: ta.join(","),
+						}
+
+						let a = await setup(t, e)
+
+						let res = await request(a, tt)
+
+						assert.ok(res.statusCode !== 405)
+					})
+				}
+			})
+
+			void t.test("allows request when Host includes port with allowed hostname", (t) => {
+				for (let tt of ta) {
+					void t.test(tt, async(t) => {
+						let e: object = {
+							...o.env,
+							DOCSPACE_SERVER_ALLOWED_HOSTNAMES: tt,
+						}
+
+						let a = await setup(t, e)
+
+						let res = await request(a, `${tt}:8080`)
+
+						assert.ok(res.statusCode !== 405)
+					})
+				}
+			})
+
+			void t.test("allows any request when allowed hostnames list is empty", async(t) => {
+				let e: object = {
+					...o.env,
+					DOCSPACE_SERVER_ALLOWED_HOSTNAMES: "",
+				}
+
+				let a = await setup(t, e)
+
+				let res = await request(a, "evil.com")
+
+				assert.ok(res.statusCode !== 405)
+			})
+
+			void t.test("blocks request when Host header is missing", async(t) => {
+				let e: object = {
+					...o.env,
+					DOCSPACE_SERVER_ALLOWED_HOSTNAMES: "localhost",
+				}
+
+				let a = await setup(t, e)
+
+				let res = await request(a, "")
+
+				assert.ok(res.statusCode === 405)
+
+				let ab = await readHttpJson(res)
+				assert.ok(ab.err === undefined)
+
+				let eb: object = {
+					error: "invalid_request",
+					error_description: "Host header is missing",
+				}
+
+				assert.deepEqual(ab.v, eb)
+			})
+
+			void t.test("blocks request with malformed Host header", async(t) => {
+				let e: object = {
+					...o.env,
+					DOCSPACE_SERVER_ALLOWED_HOSTNAMES: "localhost",
+				}
+
+				let a = await setup(t, e)
+
+				let res = await request(a, "invalid host")
+
+				assert.ok(res.statusCode === 405)
+
+				let ab = await readHttpJson(res)
+				assert.ok(ab.err === undefined)
+
+				let eb: object = {
+					error: "invalid_request",
+					error_description: "Parsing Host header\n" +
+						"\tInvalid URL",
+				}
+
+				assert.deepEqual(ab.v, eb)
+			})
+
+			void t.test("blocks request when Host not in allowed list", async(t) => {
+				let e: object = {
+					...o.env,
+					DOCSPACE_SERVER_ALLOWED_HOSTNAMES: "localhost",
+				}
+
+				let a = await setup(t, e)
+
+				let res = await request(a, "evil.com")
+
+				assert.ok(res.statusCode === 405)
+
+				let ab = await readHttpJson(res)
+				assert.ok(ab.err === undefined)
+
+				let eb: object = {
+					error: "invalid_request",
+					error_description: "Hostname evil.com is not allowed",
+				}
+
+				assert.deepEqual(ab.v, eb)
+			})
+		})
 	}
 
 	type TestCorsOptions = {
@@ -2731,6 +2936,14 @@ void test("oauth server", (t) => {
 	}
 
 	void t.test("/.well-known/oauth-authorization-server", (t) => {
+		let ho: TestAllowedHostnamesOptions = {
+			env: {},
+			method: "GET",
+			path: "/.well-known/oauth-authorization-server",
+		}
+
+		testAllowedHostnames(t, ho)
+
 		let co: TestCorsOptions = {
 			env: {},
 			method: "GET",
@@ -2867,6 +3080,14 @@ void test("oauth server", (t) => {
 	})
 
 	void t.test("/.well-known/oauth-protected-resource", (t) => {
+		let ho: TestAllowedHostnamesOptions = {
+			env: {},
+			method: "GET",
+			path: "/.well-known/oauth-protected-resource",
+		}
+
+		testAllowedHostnames(t, ho)
+
 		let co: TestCorsOptions = {
 			env: {},
 			method: "GET",
@@ -2927,6 +3148,14 @@ void test("oauth server", (t) => {
 	})
 
 	void t.test("/oauth/authorize", (t) => {
+		let ho: TestAllowedHostnamesOptions = {
+			env: {},
+			method: "GET",
+			path: "/oauth/authorize",
+		}
+
+		testAllowedHostnames(t, ho)
+
 		let co: TestCorsOptions = {
 			env: {},
 			method: "GET",
@@ -3222,6 +3451,14 @@ void test("oauth server", (t) => {
 	})
 
 	void t.test("/oauth/callback", (t) => {
+		let ho: TestAllowedHostnamesOptions = {
+			env: {},
+			method: "GET",
+			path: "/oauth/callback",
+		}
+
+		testAllowedHostnames(t, ho)
+
 		let co: TestCorsOptions = {
 			env: {},
 			method: "GET",
@@ -3466,6 +3703,14 @@ void test("oauth server", (t) => {
 			await Promise.race([hp, tf()])
 		})
 
+		let ho: TestAllowedHostnamesOptions = {
+			env: {},
+			method: "POST",
+			path: "/oauth/introspect",
+		}
+
+		testAllowedHostnames(t, ho)
+
 		let co: TestCorsOptions = {
 			env: {},
 			method: "POST",
@@ -3532,7 +3777,7 @@ void test("oauth server", (t) => {
 
 		testUserAgent(t, uo)
 
-		let ho: TestProxyHeaderForwardingOptions = {
+		let fo: TestProxyHeaderForwardingOptions = {
 			path: "/oauth/introspect",
 			body: {
 				get token() {
@@ -3541,7 +3786,7 @@ void test("oauth server", (t) => {
 			},
 		}
 
-		testProxyHeaderForwarding(t, ho)
+		testProxyHeaderForwarding(t, fo)
 
 		let eo: TestProxyErrorHandlingOptions = {
 			path: "/oauth/introspect",
@@ -4140,6 +4385,17 @@ void test("oauth server", (t) => {
 	})
 
 	void t.test("/oauth/register", (t) => {
+		let ho: TestAllowedHostnamesOptions = {
+			env: {
+				DOCSPACE_OAUTH_CLIENT_ID: "xxx",
+				DOCSPACE_OAUTH_CLIENT_SECRET: "yyy",
+			},
+			method: "POST",
+			path: "/oauth/register",
+		}
+
+		testAllowedHostnames(t, ho)
+
 		let co: TestCorsOptions = {
 			env: {
 				DOCSPACE_OAUTH_CLIENT_ID: "xxx",
@@ -4311,6 +4567,14 @@ void test("oauth server", (t) => {
 			await Promise.race([hp, tf()])
 		})
 
+		let ho: TestAllowedHostnamesOptions = {
+			env: {},
+			method: "POST",
+			path: "/oauth/revoke",
+		}
+
+		testAllowedHostnames(t, ho)
+
 		let co: TestCorsOptions = {
 			env: {},
 			method: "POST",
@@ -4373,14 +4637,14 @@ void test("oauth server", (t) => {
 
 		testUserAgent(t, uo)
 
-		let ho: TestProxyHeaderForwardingOptions = {
+		let fo: TestProxyHeaderForwardingOptions = {
 			path: "/oauth/revoke",
 			body: {
 				token: "vvv",
 			},
 		}
 
-		testProxyHeaderForwarding(t, ho)
+		testProxyHeaderForwarding(t, fo)
 
 		let eo: TestProxyErrorHandlingOptions = {
 			path: "/oauth/revoke",
@@ -4617,6 +4881,14 @@ void test("oauth server", (t) => {
 	})
 
 	void t.test("/oauth/token", (t) => {
+		let ho: TestAllowedHostnamesOptions = {
+			env: {},
+			method: "POST",
+			path: "/oauth/token",
+		}
+
+		testAllowedHostnames(t, ho)
+
 		let co: TestCorsOptions = {
 			env: {},
 			method: "POST",
@@ -4681,7 +4953,7 @@ void test("oauth server", (t) => {
 
 		testUserAgent(t, uo)
 
-		let ho: TestProxyHeaderForwardingOptions = {
+		let fo: TestProxyHeaderForwardingOptions = {
 			path: "/oauth/token",
 			body: {
 				grant_type: "authorization_code",
@@ -4689,7 +4961,7 @@ void test("oauth server", (t) => {
 			},
 		}
 
-		testProxyHeaderForwarding(t, ho)
+		testProxyHeaderForwarding(t, fo)
 
 		let eo: TestProxyErrorHandlingOptions = {
 			path: "/oauth/token",

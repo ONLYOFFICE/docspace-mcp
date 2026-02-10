@@ -1,57 +1,60 @@
 # Changelog
 
-This document records all notable changes to the project, following the
-[Keep a Changelog] format and adhering to [Semantic Versioning].
+This document records all notable changes to the project, following the [Keep a
+Changelog] format and adhering to [Semantic Versioning].
 
 ## [Unreleased]
 
-<!-- There are no noticeable changes in version [unreleased]. -->
+<!-- There are no notable changes in this release. -->
 
 ### Added
 
-- Add tool annotations ([01bc863]);
+- Add tool annotations ([01bc863]).
 - Add the `DOCSPACE_SERVER_ALLOWED_HOSTNAMES` option ([f7be9cc]).
 
 ### Changed
 
-- Update `express` to v5.2.1 ([1da5a12]);
-- Update `express-rate-limit` to v8.2.1 ([1da5a12]);
-- Update `jsonwebtoken` to v9.0.3 ([1da5a12]);
-- Update Node.js to v24.11.1 in OCI image ([02b1525]);
-- Remove `enum` from output schemas ([ed5a178]);
-- Change project license from Apache 2.0 to MIT ([b6a3923]);
-- Update `cors` to v2.8.6 ([382ebec]);
-- Update `zod` to v4.3.6 ([c045998]);
+- Update `express` to v5.2.1 ([1da5a12]).
+- Update `express-rate-limit` to v8.2.1 ([1da5a12]).
+- Update `jsonwebtoken` to v9.0.3 ([1da5a12]).
+- Update Node.js to v24.11.1 in OCI image ([02b1525]).
+- Change project license from Apache 2.0 to MIT ([b6a3923]).
+- Update `cors` to v2.8.6 ([382ebec]).
+- Update `zod` to v4.3.6 ([c045998]).
 - Update `@modelcontextprotocol/sdk` to v1.25.3 ([fc3aedb]).
+
+### Removed
+
+- Remove `enum` from output schemas ([ed5a178]).
 
 ### Fixed
 
-- Fix validation of custom headers for username and password ([9abb089]);
-- Fix not setting the wildcard `Access-Control-Allow-Origin` header ([b8d39d4]);
-- Fix not exposing the `RateLimit-Policy` header ([a8aae98]);
+- Fix validation of custom headers for username and password ([9abb089]).
+- Fix not setting the wildcard `Access-Control-Allow-Origin` header ([b8d39d4]).
+- Fix not exposing the `RateLimit-Policy` header ([a8aae98]).
 - Move authentication middleware after guard-like middlewares in OAuth server
-  ([84ab292]);
-- Fix edge-case calculation of `expires_in` in OAuth token response ([f32f02f]);
+  ([84ab292]).
+- Fix edge-case calculation of `expires_in` in OAuth token response ([f32f02f]).
 - Fix parsing of the `Authorization` header for OAuth server endpoints
-  ([3c9432c]);
+  ([3c9432c]).
 - Fix setting of the `WWW-Authenticate` header in OAuth server authorization
-  ([54b90c5]);
+  ([54b90c5]).
 - Fix unwrapping of the access token in the OAuth revocation endpoint
-  ([f03c714]);
+  ([f03c714]).
 - Fix proxying of the not-before timestamp from the upstream OAuth service
-  ([658ffae]);
-- Fix `scope` field type in the OAuth refresh token request schema ([a733d43]);
+  ([658ffae]).
+- Fix `scope` field type in the OAuth refresh token request schema ([a733d43]).
 - Fix incorrect error status returned by the OAuth middleware when the
-  authorization token is invalid ([38a3a75]);
-- Fix proxying of errors from the upstream OAuth service ([38a3a75]);
+  authorization token is invalid ([38a3a75]).
+- Fix proxying of errors from the upstream OAuth service ([38a3a75]).
 - Fix incorrect error status returned by the OAuth callback endpoint when the
-  state token is invalid ([38a3a75]);
+  state token is invalid ([38a3a75]).
 - Fix returning error instead of success response from the OAuth introspect
-  endpoint when the token is not yet valid or expired ([38a3a75]);
+  endpoint when the token is not yet valid or expired ([38a3a75]).
 - Fix incorrect error status returned by the OAuth introspect endpoint when the
-  token is invalid ([38a3a75]);
+  token is invalid ([38a3a75]).
 - Fix returning empty error when the upstream OAuth server responds without or
-  with invalid Content-Type header ([5c52ebe]);
+  with invalid Content-Type header ([5c52ebe]).
 - Fix not setting the `logging/setLevel` request handler ([7f600ab]).
 
 ## [3.1.0] - 2025-11-28

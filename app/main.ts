@@ -191,6 +191,10 @@ const ConfigSchema = z.
 			prefault("0").
 			transform(zod.envNumber()).
 			pipe(z.number().min(0)),
+		DOCSPACE_SERVER_ALLOWED_HOSTNAMES: z.
+			string().
+			prefault("localhost,127.0.0.1,[::1]").
+			transform(zod.envHostnameList()),
 		DOCSPACE_SERVER_CORS_MCP_ORIGIN: z.
 			string().
 			prefault("*").
@@ -362,6 +366,7 @@ const ConfigSchema = z.
 			proxy: {
 				hops: o.DOCSPACE_PROXY_HOPS,
 			},
+			allowedHostnames: o.DOCSPACE_SERVER_ALLOWED_HOSTNAMES,
 			cors: {
 				mcp: {
 					origin: o.DOCSPACE_SERVER_CORS_MCP_ORIGIN,
@@ -548,6 +553,7 @@ function loadConfig(): r.Result<Config, Error> {
 				proxy: {
 					hops: 0,
 				},
+				allowedHostnames: [],
 				cors: {
 					mcp: {
 						origin: [],

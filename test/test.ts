@@ -272,6 +272,60 @@ async function readHttpForm(req: http.IncomingMessage): Promise<r.Result<Record<
 	return r.ok({...q.v})
 }
 
+async function readHttpJson(req: http.IncomingMessage): Promise<r.Result<unknown, Error>> {
+	let t = req.headers["content-type"]
+
+	if (!t) {
+		return r.error(new Error("Content-Type is missing"))
+	}
+
+	if (t !== "application/json; charset=utf-8") {
+		return r.error(new Error(`Content-Type ${t} is not 'application/json; charset=utf-8'`))
+	}
+
+	let l = req.headers["content-length"]
+
+	if (!l) {
+		return r.error(new Error("Content-Length is missing"))
+	}
+
+	let n = Number.parseInt(l, 10)
+
+	if (Number.isNaN(n)) {
+		return r.error(new Error(`Content-Length ${l} is invalid`))
+	}
+
+	let d = await readHttpData(req)
+	if (d.err) {
+		return r.error(new Error("Reading data", {cause: d.err}))
+	}
+
+	let b = r.safeSync(Buffer.concat.bind(Buffer), d.v)
+	if (b.err) {
+		return r.error(new Error("Concatenating data", {cause: b.err}))
+	}
+
+	let s = r.safeSync(b.v.toString.bind(b.v), "utf8")
+	if (s.err) {
+		return r.error(new Error("Converting data", {cause: s.err}))
+	}
+
+	let e = new TextEncoder()
+
+	let x = e.encode(s.v)
+
+	if (x.length !== n) {
+		return r.error(new Error("Content-Length mismatch"))
+	}
+
+	let j = r.safeSync(JSON.parse, s.v)
+	if (j.err) {
+		return r.error(new Error("Parsing data", {cause: j.err}))
+	}
+
+	return r.ok(j.v)
+}
+
 async function readHttpData(req: http.IncomingMessage): Promise<r.Result<Uint8Array[], Error>> {
 	if (!req.readable) {
 		return r.error(new Error("Request is not readable"))

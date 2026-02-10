@@ -1210,6 +1210,7 @@ function startHttp(config: Config, logger: utilLogger.VanillaLogger): r.Result<S
 		let st = new mcp.SseTransports(stc)
 
 		let ssc: mcp.SseServerConfig = {
+			allowedHostnames: config.server.allowedHostnames,
 			corsOrigin: config.server.cors.mcp.origin,
 			corsMaxAge: config.server.cors.mcp.maxAge,
 			corsAllowedHeaders: [

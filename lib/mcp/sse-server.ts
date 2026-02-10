@@ -11,6 +11,7 @@ import * as utilExpress from "../util/express.ts"
 import * as result from "../util/result.ts"
 
 export type SseServerConfig = {
+	allowedHostnames: string[]
 	corsOrigin: string[]
 	corsMaxAge: number
 	corsAllowedHeaders: string[]
@@ -32,6 +33,7 @@ export type SseServerTransports = {
 }
 
 export class SseServer {
+	private allowedHostnames: string[]
 	private corsOrigin: string[]
 	private corsMaxAge: number
 	private corsAllowedHeaders: string[]
@@ -43,6 +45,7 @@ export class SseServer {
 	private transports: SseServerTransports
 
 	constructor(config: SseServerConfig) {
+		this.allowedHostnames = config.allowedHostnames
 		this.corsOrigin = config.corsOrigin
 		this.corsMaxAge = config.corsMaxAge
 		this.corsAllowedHeaders = config.corsAllowedHeaders
@@ -59,6 +62,14 @@ export class SseServer {
 		// todo: add signal middleware
 		// todo: add allowedMethods middleware
 		// todo: add supportedMediaTypes middleware
+
+		let allowedHostnames = (r: express.Router): void => {
+			if (this.allowedHostnames.length !== 0) {
+				r.use(utilExpress.allowedHostnames(this.allowedHostnames, (_, res, err) => {
+					res.end(errors.format(err))
+				}))
+			}
+		}
 
 		let cors = (r: express.Router): void => {
 			if (this.corsOrigin.length !== 0) {
@@ -109,6 +120,7 @@ export class SseServer {
 
 			r.use(express.json())
 
+			allowedHostnames(r)
 			cors(r)
 
 			r.use(this.handlers)
@@ -125,6 +137,7 @@ export class SseServer {
 
 			r.use(express.json())
 
+			allowedHostnames(r)
 			cors(r)
 
 			r.use(this.handlers)

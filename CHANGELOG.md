@@ -9,7 +9,8 @@ This document records all notable changes to the project, following the
 
 ### Added
 
-- Add tool annotations ([01bc863]).
+- Add tool annotations ([01bc863]);
+- Add the `DOCSPACE_SERVER_ALLOWED_HOSTNAMES` option ([f7be9cc]).
 
 ### Changed
 
@@ -315,6 +316,7 @@ There are no noticeable changes in version [3.0.1].
 [0.1.1]: https://github.com/onlyoffice/docspace-mcp/compare/v0.1.0...v0.1.1/
 [0.1.0]: https://github.com/onlyoffice/docspace-mcp/releases/tag/v0.1.0/
 
+[f7be9cc]: https://github.com/onlyoffice/docspace-mcp/commit/f7be9ccc0cb7708948a2d281b9f780e8ebc7f224/
 [7f600ab]: https://github.com/onlyoffice/docspace-mcp/commit/7f600abf82016efaa2462bc610155509f12b001e/
 [fc3aedb]: https://github.com/onlyoffice/docspace-mcp/commit/fc3aedb08584cc07181bd32480ff7f7add6cd1e3/
 [c045998]: https://github.com/onlyoffice/docspace-mcp/commit/fc3aedb08584cc07181bd32480ff7f7add6cd1e3/

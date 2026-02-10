@@ -12,6 +12,7 @@ import * as utilExpress from "../util/express.ts"
 import * as result from "../util/result.ts"
 
 export type StreamableServerConfig = {
+	allowedHostnames: string[]
 	corsOrigin: string[]
 	corsMaxAge: number
 	corsAllowedHeaders: string[]
@@ -33,6 +34,7 @@ export type StreamableServerTransports = {
 }
 
 export class StreamableServer {
+	private allowedHostnames: string[]
 	private corsOrigin: string[]
 	private corsMaxAge: number
 	private corsAllowedHeaders: string[]
@@ -44,6 +46,7 @@ export class StreamableServer {
 	private transports: StreamableServerTransports
 
 	constructor(config: StreamableServerConfig) {
+		this.allowedHostnames = config.allowedHostnames
 		this.corsOrigin = config.corsOrigin
 		this.corsMaxAge = config.corsMaxAge
 		this.corsAllowedHeaders = config.corsAllowedHeaders
@@ -60,6 +63,24 @@ export class StreamableServer {
 		// todo: add signal middleware
 		// todo: add allowedMethods middleware
 		// todo: add supportedMediaTypes middleware
+
+		let allowedHostnames = (r: express.Router): void => {
+			if (this.allowedHostnames.length !== 0) {
+				r.use(utilExpress.allowedHostnames(this.allowedHostnames, (_, res, err) => {
+					// todo: use proper type
+					let er: object = {
+						jsonrpc: "2.0",
+						error: {
+							code: -32000,
+							message: errors.format(err),
+						},
+						id: null,
+					}
+
+					res.json(er)
+				}))
+			}
+		}
 
 		let cors = (r: express.Router): void => {
 			if (this.corsOrigin.length !== 0) {
@@ -113,6 +134,7 @@ export class StreamableServer {
 
 			r.use(express.json())
 
+			allowedHostnames(r)
 			cors(r)
 
 			r.use(...this.handlers)

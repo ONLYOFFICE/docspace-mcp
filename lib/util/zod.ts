@@ -246,6 +246,75 @@ export function envBaseUrl(): (v: string, c: z.RefinementCtx) => string | never 
 	}
 }
 
+export function envHostnameList(): (v: string, c: z.RefinementCtx) => string[] | never {
+	return (v, c) => {
+		let a: string[] = []
+
+		for (let e of v.split(",")) {
+			let t = e.trim()
+			if (!t) {
+				continue
+			}
+
+			let u = result.safeNew(URL, t)
+			if (!u.err) {
+				c.addIssue({
+					code: "custom",
+					message: `Expected a hostname, but got a URL: ${e}`,
+				})
+				continue
+			}
+
+			u = result.safeNew(URL, `http://${t}`)
+			if (u.err) {
+				c.addIssue({
+					code: "custom",
+					message: `Expected a valid hostname, but got ${e}`,
+				})
+				continue
+			}
+
+			if (u.v.port) {
+				c.addIssue({
+					code: "custom",
+					message: `Expected a hostname without port, but got ${e}`,
+				})
+				continue
+			}
+
+			if (u.v.pathname !== "/") {
+				c.addIssue({
+					code: "custom",
+					message: `Expected a hostname without path, but got ${e}`,
+				})
+				continue
+			}
+
+			if (u.v.search) {
+				c.addIssue({
+					code: "custom",
+					message: `Expected a hostname without search parameters, but got ${e}`,
+				})
+				continue
+			}
+
+			if (u.v.hash) {
+				c.addIssue({
+					code: "custom",
+					message: `Expected a hostname without hash, but got ${e}`,
+				})
+				continue
+			}
+
+			if (!a.includes(u.v.hostname)) {
+				a.push(u.v.hostname)
+			}
+		}
+
+		return a
+	}
+}
+
 export function envUrlList(): (v: string, c: z.RefinementCtx) => string[] | never {
 	return (v, c) => {
 		let a: string[] = []

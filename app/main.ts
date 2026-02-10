@@ -191,6 +191,10 @@ const ConfigSchema = z.
 			prefault("0").
 			transform(zod.envNumber()).
 			pipe(z.number().min(0)),
+		DOCSPACE_SERVER_ALLOWED_HOSTNAMES: z.
+			string().
+			prefault("localhost,127.0.0.1,[::1]").
+			transform(zod.envHostnameList()),
 		DOCSPACE_SERVER_CORS_MCP_ORIGIN: z.
 			string().
 			prefault("*").
@@ -362,6 +366,7 @@ const ConfigSchema = z.
 			proxy: {
 				hops: o.DOCSPACE_PROXY_HOPS,
 			},
+			allowedHostnames: o.DOCSPACE_SERVER_ALLOWED_HOSTNAMES,
 			cors: {
 				mcp: {
 					origin: o.DOCSPACE_SERVER_CORS_MCP_ORIGIN,
@@ -548,6 +553,7 @@ function loadConfig(): r.Result<Config, Error> {
 				proxy: {
 					hops: 0,
 				},
+				allowedHostnames: [],
 				cors: {
 					mcp: {
 						origin: [],
@@ -987,6 +993,7 @@ function startHttp(config: Config, logger: utilLogger.VanillaLogger): r.Result<S
 			baseUrl: config.server.baseUrl,
 			clientId: config.api.oauth.clientId,
 			clientSecret: config.api.oauth.clientSecret,
+			allowedHostnames: config.server.allowedHostnames,
 			corsOrigin: config.server.cors.oauth.origin,
 			corsMaxAge: config.server.cors.oauth.maxAge,
 			serverMetadataRateLimitCapacity: config.server.rateLimits.oauth.serverMetadata.capacity,
@@ -1203,6 +1210,7 @@ function startHttp(config: Config, logger: utilLogger.VanillaLogger): r.Result<S
 		let st = new mcp.SseTransports(stc)
 
 		let ssc: mcp.SseServerConfig = {
+			allowedHostnames: config.server.allowedHostnames,
 			corsOrigin: config.server.cors.mcp.origin,
 			corsMaxAge: config.server.cors.mcp.maxAge,
 			corsAllowedHeaders: [
@@ -1247,6 +1255,7 @@ function startHttp(config: Config, logger: utilLogger.VanillaLogger): r.Result<S
 		let st = new mcp.StreamableTransports(stc)
 
 		let ssc: mcp.StreamableServerConfig = {
+			allowedHostnames: config.server.allowedHostnames,
 			corsOrigin: config.server.cors.mcp.origin,
 			corsMaxAge: config.server.cors.mcp.maxAge,
 			corsAllowedHeaders: [

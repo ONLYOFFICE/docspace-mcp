@@ -993,6 +993,7 @@ function startHttp(config: Config, logger: utilLogger.VanillaLogger): r.Result<S
 			baseUrl: config.server.baseUrl,
 			clientId: config.api.oauth.clientId,
 			clientSecret: config.api.oauth.clientSecret,
+			allowedHostnames: config.server.allowedHostnames,
 			corsOrigin: config.server.cors.oauth.origin,
 			corsMaxAge: config.server.cors.oauth.maxAge,
 			serverMetadataRateLimitCapacity: config.server.rateLimits.oauth.serverMetadata.capacity,

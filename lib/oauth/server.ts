@@ -41,6 +41,7 @@ export type ServerConfig = {
 	baseUrl: string
 	clientId: string
 	clientSecret: string
+	allowedHostnames: string[]
 	corsOrigin: string[]
 	corsMaxAge: number
 	serverMetadataRateLimitCapacity: number
@@ -85,6 +86,7 @@ export type ServerStateTokens = {
 export class Server {
 	private clientId: string
 	private clientSecret: string
+	private allowedHostnames: string[]
 	private corsOrigin: string[]
 	private corsMaxAge: number
 	private serverMetadataRateLimitCapacity: number
@@ -119,6 +121,7 @@ export class Server {
 	constructor(config: ServerConfig) {
 		this.clientId = config.clientId
 		this.clientSecret = config.clientSecret
+		this.allowedHostnames = config.allowedHostnames
 		this.corsOrigin = config.corsOrigin
 		this.corsMaxAge = config.corsMaxAge
 		this.serverMetadataRateLimitCapacity = config.serverMetadataRateLimitCapacity
@@ -194,6 +197,19 @@ export class Server {
 	router(): express.Router {
 		// todo: add recovery middleware
 
+		let allowedHostnames = (r: express.Router): void => {
+			if (this.allowedHostnames.length !== 0) {
+				r.use(utilExpress.allowedHostnames(this.allowedHostnames, (_, res, err) => {
+					let er: ErrorResponse = {
+						error: "invalid_request",
+						error_description: errors.format(err),
+					}
+
+					res.json(er)
+				}))
+			}
+		}
+
 		let corsMetadata = (r: express.Router): void => {
 			if (this.corsOrigin.length !== 0) {
 				let co: utilExpress.CorsOptions = {
@@ -266,6 +282,7 @@ export class Server {
 		r.use("/.well-known/oauth-authorization-server", (() => {
 			let r = express.Router()
 
+			allowedHostnames(r)
 			corsMetadata(r)
 
 			let go: GuardOptions = {
@@ -285,6 +302,7 @@ export class Server {
 		r.use("/.well-known/oauth-protected-resource", (() => {
 			let r = express.Router()
 
+			allowedHostnames(r)
 			corsMetadata(r)
 
 			let go: GuardOptions = {
@@ -308,6 +326,7 @@ export class Server {
 			r.use(express.json())
 			r.use(express.urlencoded({extended: true}))
 
+			allowedHostnames(r)
 			corsOauth(r)
 
 			r.use("/authorize", (() => {

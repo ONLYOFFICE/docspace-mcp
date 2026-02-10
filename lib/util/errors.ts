@@ -4,6 +4,7 @@
 
 import * as z from "zod"
 
+// todo: remove these errors, just use objects directly with type declarations
 export class JsonError extends Error {
 	name: "JsonError"
 
@@ -19,6 +20,7 @@ export class JsonError extends Error {
 	}
 }
 
+// todo: remove these errors, just use objects directly with type declarations
 export class JsonrpcError extends Error {
 	name: "JsonrpcError"
 	code: number
@@ -41,6 +43,7 @@ export class JsonrpcError extends Error {
 	}
 }
 
+// todo: remove these errors, just use objects directly with type declarations
 export class MessageError extends Error {
 	name: "MessageError"
 

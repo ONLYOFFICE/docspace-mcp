@@ -11,6 +11,7 @@ import * as meta from "../lib/meta.ts"
 import * as r from "../lib/util/result.ts"
 import type {AsyncRequestListener, SetupBinOptions} from "./util.ts"
 import {
+	Deferred,
 	inDelta,
 	onRequest,
 	parseFetchLocation,
@@ -1721,6 +1722,81 @@ function testUserAgent(o: TestUserAgentOptions): void {
 	})
 }
 
+type TestAbortPropagationOptions = {
+	path: string
+	body: Record<string, string>
+}
+
+function testAbortPropagation(o: TestAbortPropagationOptions): void {
+	void test.suite("abort propagation", () => {
+		void test("aborts upstream request when client disconnects", async(t) => {
+			let [hs, ha] = await setupHttp(t)
+
+			let rd = new Deferred()
+			rd.withTimeout(3000, "Timeout waiting for upstream to receive request")
+
+			let cd = new Deferred()
+			cd.withTimeout(3000, "Timeout waiting for upstream to detect close")
+
+			t.after(() => {
+				rd.clear()
+				cd.clear()
+			})
+
+			let hl: AsyncRequestListener = async(req) => {
+				rd.resolve()
+				req.on("close", cd.resolve.bind(cd))
+				await cd.promise
+			}
+
+			let hp = onRequest(t, hs, hl)
+
+			let tf = async(): Promise<void> => {
+				let e: object = {
+					DOCSPACE_OAUTH_BASE_URL: `http://[${ha.address}]:${ha.port}/`,
+				}
+
+				let a = await setup(t, e)
+
+				let u = r.safeNew(URL, o.path, `http://[${a.address}]:${a.port}/`)
+				assert.ok(u.err === undefined)
+
+				let f = new URLSearchParams()
+
+				for (let [k, v] of Object.entries(o.body)) {
+					f.set(k, v)
+				}
+
+				let ac = new AbortController()
+
+				let i: RequestInit = {
+					method: "POST",
+					headers: {
+						"Content-Type": "application/x-www-form-urlencoded",
+					},
+					body: f.toString(),
+					signal: ac.signal,
+				}
+
+				let fetch = withAuth(globalThis.fetch)
+
+				let p = r.safeAsync(fetch, u.v, i)
+
+				await rd.promise
+
+				ac.abort()
+
+				await cd.promise
+
+				let res = await p
+				assert.ok(res.err !== undefined)
+			}
+
+			await Promise.race([hp, tf()])
+		})
+	})
+}
+
 type TestProxyHeaderForwardingOptions = {
 	path: string
 	body: Record<string, string>
@@ -2811,6 +2887,7 @@ void test.suite("oauth server", async() => {
 			TestClientAuthErrorHandlingOptions &
 			TestClientAuthOptions &
 			TestUserAgentOptions &
+			TestAbortPropagationOptions &
 			TestProxyHeaderForwardingOptions &
 			TestProxyErrorHandlingOptions
 
@@ -2840,6 +2917,7 @@ void test.suite("oauth server", async() => {
 		testClientAuthErrorHandling(o)
 		testClientAuth(o)
 		testUserAgent(o)
+		testAbortPropagation(o)
 		testProxyHeaderForwarding(o)
 		testProxyErrorHandling(o)
 
@@ -3565,6 +3643,7 @@ void test.suite("oauth server", async() => {
 			TestClientAuthErrorHandlingOptions &
 			TestClientAuthOptions &
 			TestUserAgentOptions &
+			TestAbortPropagationOptions &
 			TestProxyHeaderForwardingOptions &
 			TestProxyErrorHandlingOptions
 
@@ -3592,6 +3671,7 @@ void test.suite("oauth server", async() => {
 		testClientAuthErrorHandling(o)
 		testClientAuth(o)
 		testUserAgent(o)
+		testAbortPropagation(o)
 		testProxyHeaderForwarding(o)
 		testProxyErrorHandling(o)
 
@@ -3830,6 +3910,7 @@ void test.suite("oauth server", async() => {
 			TestClientAuthErrorHandlingOptions &
 			TestClientAuthOptions &
 			TestUserAgentOptions &
+			TestAbortPropagationOptions &
 			TestProxyHeaderForwardingOptions &
 			TestProxyErrorHandlingOptions
 
@@ -3858,6 +3939,7 @@ void test.suite("oauth server", async() => {
 		testClientAuthErrorHandling(o)
 		testClientAuth(o)
 		testUserAgent(o)
+		testAbortPropagation(o)
 		testProxyHeaderForwarding(o)
 		testProxyErrorHandling(o)
 

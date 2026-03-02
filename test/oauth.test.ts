@@ -13,6 +13,7 @@ import type {AsyncRequestListener, SetupBinOptions} from "./util.ts"
 import {
 	Deferred,
 	inDelta,
+	isUuid,
 	onRequest,
 	parseFetchLocation,
 	randomAddress,
@@ -2135,6 +2136,160 @@ function testProxyErrorHandling(o: TestProxyErrorHandlingOptions): void {
 	})
 }
 
+type TestRequestIdReflectionOptions = {
+	method: string
+	path: string
+}
+
+function testRequestIdReflection(o: TestRequestIdReflectionOptions): void {
+	void test.suite("request id reflection", () => {
+		void test("reflects X-Request-ID back to client when provided", async(t) => {
+			let a = await setup(t, {})
+
+			let u = r.safeNew(URL, o.path, `http://[${a.address}]:${a.port}/`)
+			assert.ok(u.err === undefined)
+
+			let id = "12345678-1234-1234-1234-123456789abc"
+
+			let i: RequestInit = {
+				method: o.method,
+				headers: {
+					"X-Request-ID": id,
+				},
+			}
+
+			let res = await r.safeAsync(fetch, u.v, i)
+			assert.ok(res.err === undefined)
+
+			assert.ok(res.v.headers.get("X-Request-ID") === id)
+		})
+
+		void test("generates X-Request-ID and reflects it in response when not provided", async(t) => {
+			let a = await setup(t, {})
+
+			let u = r.safeNew(URL, o.path, `http://[${a.address}]:${a.port}/`)
+			assert.ok(u.err === undefined)
+
+			let i: RequestInit = {
+				method: o.method,
+			}
+
+			let res = await r.safeAsync(fetch, u.v, i)
+			assert.ok(res.err === undefined)
+
+			let id = res.v.headers.get("X-Request-ID")
+			assert.ok(id && isUuid(id))
+		})
+	})
+}
+
+type TestRequestIdForwardingOptions = {
+	path: string
+	body: Record<string, string>
+}
+
+function testRequestIdForwarding(o: TestRequestIdForwardingOptions): void {
+	void test.suite("request id forwarding", () => {
+		void test("forwards X-Request-ID from client request to upstream", async(t) => {
+			let [hs, ha] = await setupHttp(t)
+
+			let id = "12345678-1234-1234-1234-123456789abc"
+
+			let hl = test.mock.fn<AsyncRequestListener>(async(req, res) => {
+				assert.ok(req.headers["x-request-id"] === id)
+
+				let s = await sendJson(res, 200, {})
+				assert.ok(s.err === undefined)
+			})
+
+			let hp = onRequest(t, hs, hl)
+
+			let tf = async(): Promise<void> => {
+				let e: object = {
+					DOCSPACE_OAUTH_BASE_URL: `http://[${ha.address}]:${ha.port}/`,
+				}
+
+				let a = await setup(t, e)
+
+				let u = r.safeNew(URL, o.path, `http://[${a.address}]:${a.port}/`)
+				assert.ok(u.err === undefined)
+
+				let f = new URLSearchParams()
+
+				for (let [k, v] of Object.entries(o.body)) {
+					f.set(k, v)
+				}
+
+				let i: RequestInit = {
+					method: "POST",
+					headers: {
+						"Content-Type": "application/x-www-form-urlencoded",
+						"X-Request-ID": id,
+					},
+					body: f.toString(),
+				}
+
+				let fetch = withAuth(globalThis.fetch)
+
+				let res = await r.safeAsync(fetch, u.v, i)
+				assert.ok(res.err === undefined)
+			}
+
+			await Promise.race([hp, tf()])
+
+			assert.ok(hl.mock.callCount() === 1)
+		})
+
+		void test("generates X-Request-ID and forwards it to upstream when not provided", async(t) => {
+			let [hs, ha] = await setupHttp(t)
+
+			let hl = test.mock.fn<AsyncRequestListener>(async(req, res) => {
+				let id = req.headers["x-request-id"]
+				assert.ok(typeof id === "string" && isUuid(id))
+
+				let s = await sendJson(res, 200, {})
+				assert.ok(s.err === undefined)
+			})
+
+			let hp = onRequest(t, hs, hl)
+
+			let tf = async(): Promise<void> => {
+				let e: object = {
+					DOCSPACE_OAUTH_BASE_URL: `http://[${ha.address}]:${ha.port}/`,
+				}
+
+				let a = await setup(t, e)
+
+				let u = r.safeNew(URL, o.path, `http://[${a.address}]:${a.port}/`)
+				assert.ok(u.err === undefined)
+
+				let f = new URLSearchParams()
+
+				for (let [k, v] of Object.entries(o.body)) {
+					f.set(k, v)
+				}
+
+				let i: RequestInit = {
+					method: "POST",
+					headers: {
+						"Content-Type": "application/x-www-form-urlencoded",
+					},
+					body: f.toString(),
+				}
+
+				let fetch = withAuth(globalThis.fetch)
+
+				let res = await r.safeAsync(fetch, u.v, i)
+				assert.ok(res.err === undefined)
+			}
+
+			await Promise.race([hp, tf()])
+
+			assert.ok(hl.mock.callCount() === 1)
+		})
+	})
+}
+
 void test.suite("oauth server", async() => {
 	let ot = ""
 	let wt = ""
@@ -2194,7 +2349,8 @@ void test.suite("oauth server", async() => {
 			TestAllowedHostnamesOptions &
 			TestCorsOptions &
 			TestMethodNotAllowedOptions &
-			TestRateLimitOptions
+			TestRateLimitOptions &
+			TestRequestIdReflectionOptions
 
 		let o: Options = {
 			env: {},
@@ -2212,6 +2368,7 @@ void test.suite("oauth server", async() => {
 		testCors(o)
 		testMethodNotAllowed(o)
 		testRateLimit(o)
+		testRequestIdReflection(o)
 
 		void test.suite("server metadata", () => {
 			void test("returns server metadata without dynamic client registration", async(t) => {
@@ -2324,7 +2481,8 @@ void test.suite("oauth server", async() => {
 			TestAllowedHostnamesOptions &
 			TestCorsOptions &
 			TestMethodNotAllowedOptions &
-			TestRateLimitOptions
+			TestRateLimitOptions &
+			TestRequestIdReflectionOptions
 
 		let o: Options = {
 			env: {},
@@ -2342,6 +2500,7 @@ void test.suite("oauth server", async() => {
 		testCors(o)
 		testMethodNotAllowed(o)
 		testRateLimit(o)
+		testRequestIdReflection(o)
 
 		void test.suite("resource metadata", () => {
 			void test("returns resource metadata", async(t) => {
@@ -2378,7 +2537,8 @@ void test.suite("oauth server", async() => {
 			TestAllowedHostnamesOptions &
 			TestCorsOptions &
 			TestMethodNotAllowedOptions &
-			TestRateLimitOptions
+			TestRateLimitOptions &
+			TestRequestIdReflectionOptions
 
 		let o: Options = {
 			env: {},
@@ -2396,6 +2556,7 @@ void test.suite("oauth server", async() => {
 		testCors(o)
 		testMethodNotAllowed(o)
 		testRateLimit(o)
+		testRequestIdReflection(o)
 
 		void test.suite("error handling", () => {
 			void test("returns error when query parameters are missing", async(t) => {
@@ -2667,7 +2828,8 @@ void test.suite("oauth server", async() => {
 			TestAllowedHostnamesOptions &
 			TestCorsOptions &
 			TestMethodNotAllowedOptions &
-			TestRateLimitOptions
+			TestRateLimitOptions &
+			TestRequestIdReflectionOptions
 
 		let o: Options = {
 			env: {},
@@ -2685,6 +2847,7 @@ void test.suite("oauth server", async() => {
 		testCors(o)
 		testMethodNotAllowed(o)
 		testRateLimit(o)
+		testRequestIdReflection(o)
 
 		void test.suite("error handling", () => {
 			void test("returns error when query parameters are missing", async(t) => {
@@ -2889,7 +3052,9 @@ void test.suite("oauth server", async() => {
 			TestUserAgentOptions &
 			TestAbortPropagationOptions &
 			TestProxyHeaderForwardingOptions &
-			TestProxyErrorHandlingOptions
+			TestProxyErrorHandlingOptions &
+			TestRequestIdReflectionOptions &
+			TestRequestIdForwardingOptions
 
 		let o: Options = {
 			env: {},
@@ -2920,6 +3085,8 @@ void test.suite("oauth server", async() => {
 		testAbortPropagation(o)
 		testProxyHeaderForwarding(o)
 		testProxyErrorHandling(o)
+		testRequestIdReflection(o)
+		testRequestIdForwarding(o)
 
 		void test.suite("error handling", () => {
 			void test("returns error when token parameter is missing", async(t) => {
@@ -3512,7 +3679,8 @@ void test.suite("oauth server", async() => {
 			TestCorsOptions &
 			TestMethodNotAllowedOptions &
 			TestUnsupportedMediaTypeOptions &
-			TestRateLimitOptions
+			TestRateLimitOptions &
+			TestRequestIdReflectionOptions
 
 		let o: Options = {
 			env: {
@@ -3534,6 +3702,7 @@ void test.suite("oauth server", async() => {
 		testMethodNotAllowed(o)
 		testUnsupportedMediaType(o)
 		testRateLimit(o)
+		testRequestIdReflection(o)
 
 		void test.suite("endpoint availability", () => {
 			void test("returns 404 when dynamic client registration is not enabled", async(t) => {
@@ -3645,7 +3814,9 @@ void test.suite("oauth server", async() => {
 			TestUserAgentOptions &
 			TestAbortPropagationOptions &
 			TestProxyHeaderForwardingOptions &
-			TestProxyErrorHandlingOptions
+			TestProxyErrorHandlingOptions &
+			TestRequestIdReflectionOptions &
+			TestRequestIdForwardingOptions
 
 		let o: Options = {
 			env: {},
@@ -3674,6 +3845,8 @@ void test.suite("oauth server", async() => {
 		testAbortPropagation(o)
 		testProxyHeaderForwarding(o)
 		testProxyErrorHandling(o)
+		testRequestIdReflection(o)
+		testRequestIdForwarding(o)
 
 		void test.suite("error handling", () => {
 			void test("returns error when token parameter is missing", async(t) => {
@@ -3912,7 +4085,9 @@ void test.suite("oauth server", async() => {
 			TestUserAgentOptions &
 			TestAbortPropagationOptions &
 			TestProxyHeaderForwardingOptions &
-			TestProxyErrorHandlingOptions
+			TestProxyErrorHandlingOptions &
+			TestRequestIdReflectionOptions &
+			TestRequestIdForwardingOptions
 
 		let o: Options = {
 			env: {},
@@ -3942,6 +4117,8 @@ void test.suite("oauth server", async() => {
 		testAbortPropagation(o)
 		testProxyHeaderForwarding(o)
 		testProxyErrorHandling(o)
+		testRequestIdReflection(o)
+		testRequestIdForwarding(o)
 
 		void test.suite("error handling", () => {
 			void test("returns error when grant_type is missing", async(t) => {

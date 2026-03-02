@@ -70,6 +70,10 @@ export function inDelta(a: number, e: number, d: number): boolean {
 	return Math.abs(e - a) <= d
 }
 
+export function isUuid(s: string): boolean {
+	return /^[\da-f]{8}(?:-[\da-f]{4}){3}-[\da-f]{12}$/.test(s)
+}
+
 export async function onRequest(t: test.TestContext, s: http.Server, l: AsyncRequestListener): Promise<void> {
 	let e = (_: unknown, reject: (err: Error) => void): void => {
 		let onRequest: http.RequestListener = (req, res) => {

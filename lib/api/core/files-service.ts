@@ -1,11 +1,11 @@
 /**
  * @module
- * @mergeModuleWith api
+ * @mergeModuleWith api/core
  */
 
 import * as z from "zod"
-import type {Result} from "../util/result.ts"
-import {error, ok, safeNew} from "../util/result.ts"
+import type {Result} from "../../util/result.ts"
+import {error, ok, safeNew} from "../../util/result.ts"
 import type {Client, Response} from "./client.ts"
 import type {
 	ArchiveRoomRequestSchema,

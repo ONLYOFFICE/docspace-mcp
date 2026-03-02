@@ -5,7 +5,8 @@ import * as stdio from "@modelcontextprotocol/sdk/server/stdio.js"
 import type * as types from "@modelcontextprotocol/sdk/types.js"
 import express from "express"
 import * as z from "zod"
-import * as api from "../lib/api.ts"
+import * as apiCore from "../lib/api/core.ts"
+import * as apiExtra from "../lib/api/extra.ts"
 import * as auth from "../lib/auth.ts"
 import * as mcp from "../lib/mcp.ts"
 import * as meta from "../lib/meta.ts"
@@ -877,13 +878,13 @@ function startStdio(config: r.Result<Config, Error>): r.Result<Start, Error> {
 		fetch = utilFetch.withLogger(ml, globalThis.fetch)
 		fetch = utilAbort.wrapFetch(fetch)
 
-		let cc: api.ClientConfig = {
+		let cc: apiCore.ClientConfig = {
 			userAgent: config.v.api.userAgent,
 			baseUrl: config.v.api.shared.baseUrl,
 			fetch,
 		}
 
-		let c = new api.Client(cc)
+		let c = new apiCore.Client(cc)
 
 		if (config.v.api.shared.authorization) {
 			c = c.withAuth(config.v.api.shared.authorization)
@@ -903,8 +904,8 @@ function startStdio(config: r.Result<Config, Error>): r.Result<Start, Error> {
 
 		let csc: mcp.ConfiguredServerConfig = {
 			client: c,
-			resolver: new api.Resolver(c),
-			uploader: new api.Uploader(c),
+			resolver: new apiExtra.Resolver(c),
+			uploader: new apiExtra.Uploader(c),
 			dynamic: config.v.mcp.dynamic,
 			tools: config.v.mcp.tools,
 		}
@@ -1137,7 +1138,7 @@ function startHttp(config: Config, logger: utilLogger.Logger): r.Result<Start, E
 		fetch = utilTrace.wrapFetch(fetch)
 		fetch = utilForwarded.wrapFetch(fetch)
 
-		let cc: api.ClientConfig = {
+		let cc: apiCore.ClientConfig = {
 			userAgent: config.api.userAgent,
 			baseUrl: "",
 			fetch,
@@ -1151,7 +1152,7 @@ function startHttp(config: Config, logger: utilLogger.Logger): r.Result<Start, E
 			cc.baseUrl = req[auth.authKey].baseUrl
 		}
 
-		let c = new api.Client(cc)
+		let c = new apiCore.Client(cc)
 
 		if (req[oauth.oauthKey]) {
 			c = c.withBearerAuth(req[oauth.oauthKey].token)
@@ -1175,8 +1176,8 @@ function startHttp(config: Config, logger: utilLogger.Logger): r.Result<Start, E
 
 		let csc: mcp.ConfiguredServerConfig = {
 			client: c,
-			resolver: new api.Resolver(c),
-			uploader: new api.Uploader(c),
+			resolver: new apiExtra.Resolver(c),
+			uploader: new apiExtra.Uploader(c),
 			dynamic: s.v.dynamic,
 			tools: s.v.tools,
 		}

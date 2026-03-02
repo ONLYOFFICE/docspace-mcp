@@ -1,11 +1,11 @@
 /**
  * @module
- * @mergeModuleWith api
+ * @mergeModuleWith api/core
  */
 
 import * as z from "zod"
-import type {Result} from "../util/result.ts"
-import {error, ok, safeAsync, safeNew, safeSync} from "../util/result.ts"
+import type {Result} from "../../util/result.ts"
+import {error, ok, safeAsync, safeNew, safeSync} from "../../util/result.ts"
 import {AuthService} from "./auth-service.ts"
 import {FilesService} from "./files-service.ts"
 import {PeopleService} from "./people-service.ts"

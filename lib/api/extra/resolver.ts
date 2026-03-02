@@ -1,13 +1,17 @@
+/**
+ * @module
+ * @mergeModuleWith api/extra
+ */
+
 import {setTimeout} from "node:timers/promises"
 import type * as z from "zod"
-import * as abort from "../util/abort.ts"
-import * as context from "../util/context.ts"
-import type {Result} from "../util/result.ts"
-import {error, ok, safeAsync} from "../util/result.ts"
-import type {Response} from "./client.ts"
-import type {FileOperationDtoSchema} from "./schemas.ts"
+import * as abort from "../../util/abort.ts"
+import * as context from "../../util/context.ts"
+import type {Result} from "../../util/result.ts"
+import {error, ok, safeAsync} from "../../util/result.ts"
+import type * as core from "../core.ts"
 
-export type Operation = z.output<typeof FileOperationDtoSchema>
+export type Operation = z.output<typeof core.FileOperationDtoSchema>
 
 class State {
 	id: string | undefined
@@ -20,7 +24,7 @@ export type ResolverClient = {
 }
 
 export type ResolverFilesService = {
-	getOperationStatuses(): Promise<Result<[Operation[], Response], Error>>
+	getOperationStatuses(): Promise<Result<[Operation[], core.Response], Error>>
 }
 
 export class Resolver {
@@ -54,7 +58,7 @@ export class Resolver {
 		let limit = this.limit
 		let delay = this.delay
 
-		let responses: Response[] = []
+		let responses: core.Response[] = []
 		let operations: Operation[] = []
 
 		let err: Error | undefined
@@ -160,7 +164,7 @@ export class Resolver {
 }
 
 export class ResolverResponse {
-	responses: Response[] = []
+	responses: core.Response[] = []
 	operations: Operation[] = []
 }
 

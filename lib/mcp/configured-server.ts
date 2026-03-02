@@ -5,7 +5,8 @@
 
 import * as types from "@modelcontextprotocol/sdk/types.js"
 import type * as z from "zod"
-import * as api from "../api.ts"
+import * as apiCore from "../api/core.ts"
+import type * as apiExtra from "../api/extra.ts"
 import * as errors from "../util/errors.ts"
 import type * as mcp from "../util/mcp.ts"
 import * as result from "../util/result.ts"
@@ -23,22 +24,22 @@ export type CallRegularToolHandler = (args: unknown) => CallRegularToolHandlerRe
 
 export type CallRegularToolHandlerResult =
 	result.Result<z.core.JSONSchema.BaseSchema, Error> |
-	Promise<result.Result<api.Response, Error>> |
+	Promise<result.Result<apiCore.Response, Error>> |
 	Promise<result.Result<z.core.JSONSchema.BaseSchema, Error>> |
 	Promise<result.Result<string, Error>>
 
 export type ConfiguredServerConfig = {
-	client: api.Client
-	resolver: api.Resolver
-	uploader: api.Uploader
+	client: apiCore.Client
+	resolver: apiExtra.Resolver
+	uploader: apiExtra.Uploader
 	dynamic: boolean
 	tools: string[]
 }
 
 export class ConfiguredServer {
-	client: api.Client
-	resolver: api.Resolver
-	uploader: api.Uploader
+	client: apiCore.Client
+	resolver: apiExtra.Resolver
+	uploader: apiExtra.Uploader
 
 	metaTools: MetaTools
 	regularTools: RegularTools
@@ -255,7 +256,7 @@ export class ConfiguredServer {
 			return result.error(cr.err)
 		}
 
-		if (cr.v instanceof api.Response) {
+		if (cr.v instanceof apiCore.Response) {
 			let h = cr.v.response.headers.get("Content-Type")
 			if (h === null) {
 				return result.error(new Error("Content-Type header is missing"))

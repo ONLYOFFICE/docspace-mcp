@@ -42,7 +42,7 @@ export type HandlerConfig = {
 }
 
 export type HandlerClient = {
-	introspect(s: AbortSignal | undefined, o: IntrospectRequest): Promise<r.Result<[IntrospectResponse, ClientResponse], Error>>
+	introspect(o: IntrospectRequest): Promise<r.Result<[IntrospectResponse, ClientResponse], Error>>
 }
 
 export type HandlerAuthTokens = {
@@ -125,7 +125,7 @@ export function handler(config: HandlerConfig): r.Result<express.Handler, Error>
 			token: tt,
 		}
 
-		let ci = await config.client.introspect(req.signal, io)
+		let ci = await config.client.introspect(io)
 		if (ci.err) {
 			let err = new Error("Introspecting token", {cause: ci.err})
 			let [code, er] = proxyError(ci.err, err)

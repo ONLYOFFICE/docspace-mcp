@@ -67,9 +67,9 @@ export type ServerConfig = {
 
 export type ServerClient = {
 	authorize(o: AuthorizeRequest): r.Result<URL, Error>
-	introspect(s: AbortSignal | undefined, o: IntrospectRequest): Promise<r.Result<[IntrospectResponse, ClientResponse], Error>>
-	revoke(s: AbortSignal | undefined, o: ClientRevokeRequest): Promise<r.Result<ClientResponse, Error>>
-	token(s: AbortSignal | undefined, o: ClientTokenRequest): Promise<r.Result<[TokenResponse, ClientResponse], Error>>
+	introspect(o: IntrospectRequest): Promise<r.Result<[IntrospectResponse, ClientResponse], Error>>
+	revoke(o: ClientRevokeRequest): Promise<r.Result<ClientResponse, Error>>
+	token(o: ClientTokenRequest): Promise<r.Result<[TokenResponse, ClientResponse], Error>>
 }
 
 export type ServerAuthTokens = {
@@ -322,7 +322,6 @@ export class Server {
 		r.use("/oauth", (() => {
 			let r = express.Router()
 
-			r.use(utilExpress.signal())
 			r.use(express.json())
 			r.use(express.urlencoded({extended: true}))
 
@@ -721,7 +720,7 @@ export class Server {
 			token: tt,
 		}
 
-		let ci = await this.client.introspect(req.signal, io)
+		let ci = await this.client.introspect(io)
 		if (ci.err) {
 			let err = new Error("Introspecting token", {cause: ci.err})
 			let [code, er] = proxyError(ci.err, err)
@@ -814,7 +813,7 @@ export class Server {
 			ro.token_type_hint = ib.data.token_type_hint
 		}
 
-		let cr = await this.client.revoke(req.signal, ro)
+		let cr = await this.client.revoke(ro)
 		if (cr.err) {
 			let err = new Error("Revoking token", {cause: cr.err})
 			let [code, er] = proxyError(cr.err, err)
@@ -877,7 +876,7 @@ export class Server {
 			break
 		}
 
-		let ct = await this.client.token(req.signal, to)
+		let ct = await this.client.token(to)
 		if (ct.err) {
 			let err = new Error("Requesting token", {cause: ct.err})
 			let [code, er] = proxyError(ct.err, err)

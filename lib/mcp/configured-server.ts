@@ -13,19 +13,13 @@ import {metaToolInfos, toolsetInfos} from "./data.ts"
 import {MetaTools} from "./meta-tools.ts"
 import {RegularTools} from "./regular-tools.ts"
 
-export type ConfiguredServerRouteTool = (
-	req: mcp.CallToolRequest,
-	extra: mcp.RequestExtra,
-) => Promise<result.Result<ConfiguredServerRouteToolResult, Error>>
+export type ConfiguredServerRouteTool = (req: mcp.CallToolRequest) => Promise<result.Result<ConfiguredServerRouteToolResult, Error>>
 
 export type ConfiguredServerRouteToolResult = types.CallToolResult & {
 	isError?: never
 }
 
-export type CallRegularToolHandler = (
-	signal: AbortSignal,
-	args: unknown,
-) => CallRegularToolHandlerResult
+export type CallRegularToolHandler = (args: unknown) => CallRegularToolHandlerResult
 
 export type CallRegularToolHandlerResult =
 	result.Result<z.core.JSONSchema.BaseSchema, Error> |
@@ -131,11 +125,8 @@ export class ConfiguredServer {
 		}
 	}
 
-	async callTool(
-		req: mcp.CallToolRequest,
-		extra: mcp.RequestExtra,
-	): Promise<types.CallToolResult> {
-		let pr = await this.routeTool(req, extra)
+	async callTool(req: mcp.CallToolRequest): Promise<types.CallToolResult> {
+		let pr = await this.routeTool(req)
 
 		if (pr.err) {
 			return {
@@ -152,10 +143,7 @@ export class ConfiguredServer {
 		return pr.v
 	}
 
-	async routeMetaTool(
-		req: mcp.CallToolRequest,
-		extra: mcp.RequestExtra,
-	): Promise<result.Result<ConfiguredServerRouteToolResult, Error>> {
+	async routeMetaTool(req: mcp.CallToolRequest): Promise<result.Result<ConfiguredServerRouteToolResult, Error>> {
 		let mr: result.Result<
 			mcp.Summary[] |
 			mcp.ToolInputSchema |
@@ -183,7 +171,7 @@ export class ConfiguredServer {
 				mr = this.metaTools.getToolOutputSchema(req)
 				break
 			case "call_tool":
-				rr = await this.metaTools.callTool(req, extra)
+				rr = await this.metaTools.callTool(req)
 				break
 			default:
 				mr = result.error(new Error(`Tool ${req.params.name} not found.`))
@@ -226,10 +214,7 @@ export class ConfiguredServer {
 		return result.error(new Error("Unknown result type"))
 	}
 
-	async routeRegularTool(
-		req: mcp.CallToolRequest,
-		extra: mcp.RequestExtra,
-	): Promise<result.Result<ConfiguredServerRouteToolResult, Error>> {
+	async routeRegularTool(req: mcp.CallToolRequest): Promise<result.Result<ConfiguredServerRouteToolResult, Error>> {
 		let f = false
 
 		for (let s of this.toolsetInfos) {
@@ -254,7 +239,7 @@ export class ConfiguredServer {
 		try {
 			let h = this.callRegularToolHandlers[req.params.name]
 			if (h) {
-				cr = await h(extra.signal, req.params.arguments)
+				cr = await h(req.params.arguments)
 			} else {
 				cr = result.error(new Error(`Tool ${req.params.name} not found.`))
 			}

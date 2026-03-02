@@ -27,13 +27,13 @@ export class AuthService {
 	/**
 	 * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/web/ASC.Web.Api/Api/AuthenticationController.cs/#L88 | DocSpace Reference}
 	 */
-	async getIsAuthentificated(s: AbortSignal): Promise<Result<[boolean, Response], Error>> {
+	async getIsAuthentificated(): Promise<Result<[boolean, Response], Error>> {
 		let u = this.c.createUrl("api/2.0/authentication")
 		if (u.err) {
 			return error(new Error("Creating URL.", {cause: u.err}))
 		}
 
-		let req = this.c.createRequest(s, "GET", u.v)
+		let req = this.c.createRequest("GET", u.v)
 		if (req.err) {
 			return error(new Error("Creating request.", {cause: req.err}))
 		}
@@ -56,13 +56,13 @@ export class AuthService {
 	/**
 	 * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/web/ASC.Web.Api/Api/AuthenticationController.cs/#L185 | DocSpace Reference}
 	 */
-	async authenticateMe(s: AbortSignal, o: AuthenticateMeOptions): Promise<Result<[AuthenticateMeResponse, Response], Error>> {
+	async authenticateMe(o: AuthenticateMeOptions): Promise<Result<[AuthenticateMeResponse, Response], Error>> {
 		let u = this.c.createUrl("api/2.0/authentication")
 		if (u.err) {
 			return error(new Error("Creating URL.", {cause: u.err}))
 		}
 
-		let req = this.c.createRequest(s, "POST", u.v, o)
+		let req = this.c.createRequest("POST", u.v, o)
 		if (req.err) {
 			return error(new Error("Creating request.", {cause: req.err}))
 		}

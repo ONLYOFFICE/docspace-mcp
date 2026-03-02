@@ -212,10 +212,9 @@ export class Client {
 		return ok(u.v.toString())
 	}
 
-	createRequest(signal: AbortSignal, method: string, url: string, body?: unknown): Result<Request, Error> {
+	createRequest(method: string, url: string, body?: unknown): Result<Request, Error> {
 		let c: RequestInit = {
 			method,
-			signal,
 		}
 
 		if (body !== undefined) {
@@ -254,11 +253,10 @@ export class Client {
 		return ok(r.v)
 	}
 
-	createFormRequest(signal: AbortSignal, url: string, body: FormData): Result<Request, Error> {
+	createFormRequest(url: string, body: FormData): Result<Request, Error> {
 		let c: RequestInit = {
 			body,
 			method: "POST",
-			signal,
 		}
 
 		let r = safeNew(Request, url, c)

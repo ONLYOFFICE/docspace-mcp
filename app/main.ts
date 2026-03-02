@@ -11,13 +11,15 @@ import * as mcp from "../lib/mcp.ts"
 import * as meta from "../lib/meta.ts"
 import * as oauth from "../lib/oauth.ts"
 import * as settings from "../lib/settings.ts"
-import * as context from "../lib/util/context.ts"
+import * as utilAbort from "../lib/util/abort.ts"
 import * as errors from "../lib/util/errors.ts"
 import * as utilExpress from "../lib/util/express.ts"
 import * as utilFetch from "../lib/util/fetch.ts"
+import * as utilForwarded from "../lib/util/forwarded.ts"
 import * as utilLogger from "../lib/util/logger.ts"
 import * as utilMcp from "../lib/util/mcp.ts"
 import * as r from "../lib/util/result.ts"
+import * as utilTrace from "../lib/util/trace.ts"
 import * as zod from "../lib/util/zod.ts"
 
 type Algorithm =
@@ -433,7 +435,7 @@ type Start = {
 }
 
 async function main(): Promise<void> {
-	let l = new utilLogger.VanillaLogger(process.stdout)
+	let l = new utilLogger.Logger(process.stdout, process.stderr)
 
 	try {
 		let c = loadConfig()
@@ -868,16 +870,12 @@ function startStdio(config: r.Result<Config, Error>): r.Result<Start, Error> {
 
 		ms = new server.Server(msi, mso)
 
-		let cp: utilLogger.ContextProvider = {
-			get() {
-				// eslint-disable-next-line unicorn/no-useless-undefined
-				return undefined
-			},
-		}
+		let ml = new utilMcp.Logger(ms)
 
-		let sl = new utilLogger.ServerLogger(cp, ms)
+		let fetch = globalThis.fetch
 
-		let fetch = utilFetch.withLogger(context, sl, globalThis.fetch)
+		fetch = utilFetch.withLogger(ml, globalThis.fetch)
+		fetch = utilAbort.wrapFetch(fetch)
 
 		let cc: api.ClientConfig = {
 			userAgent: config.v.api.userAgent,
@@ -950,7 +948,7 @@ function startStdio(config: r.Result<Config, Error>): r.Result<Start, Error> {
 	return r.ok(s)
 }
 
-function startHttp(config: Config, logger: utilLogger.VanillaLogger): r.Result<Start, Error> {
+function startHttp(config: Config, logger: utilLogger.Logger): r.Result<Start, Error> {
 	let oauthAuthTokens: oauth.AuthTokens | undefined
 	let oauthRouter: express.Router | undefined
 	let oauthHandler: express.Handler | undefined
@@ -958,9 +956,10 @@ function startHttp(config: Config, logger: utilLogger.VanillaLogger): r.Result<S
 	if (config.api.oauth.baseUrl) {
 		let fetch = globalThis.fetch
 
-		fetch = utilFetch.withLogger(context, logger, fetch)
-
-		fetch = utilFetch.withForwarding(context, fetch)
+		fetch = utilFetch.withLogger(logger, fetch)
+		fetch = utilAbort.wrapFetch(fetch)
+		fetch = utilTrace.wrapFetch(fetch)
+		fetch = utilForwarded.wrapFetch(fetch)
 
 		let cc: oauth.ClientConfig = {
 			userAgent: config.api.userAgent,
@@ -1128,15 +1127,15 @@ function startHttp(config: Config, logger: utilLogger.VanillaLogger): r.Result<S
 
 		let ms = new server.Server(msi, mso)
 
-		let sl = new utilLogger.ServerLogger(context, ms)
+		let ml = new utilMcp.Logger(ms)
 
 		let fetch = globalThis.fetch
 
-		fetch = utilFetch.withLogger(context, logger, fetch)
-
-		fetch = utilFetch.withLogger(context, sl, fetch)
-
-		fetch = utilFetch.withForwarding(context, fetch)
+		fetch = utilFetch.withLogger(logger, fetch)
+		fetch = utilFetch.withLogger(ml, fetch)
+		fetch = utilAbort.wrapFetch(fetch)
+		fetch = utilTrace.wrapFetch(fetch)
+		fetch = utilForwarded.wrapFetch(fetch)
 
 		let cc: api.ClientConfig = {
 			userAgent: config.api.userAgent,
@@ -1292,8 +1291,11 @@ function startHttp(config: Config, logger: utilLogger.VanillaLogger): r.Result<S
 		e.set("trust proxy", config.server.proxy.hops)
 	}
 
-	e.use(utilExpress.context(context))
-	e.use(utilExpress.logger(context, logger))
+	e.use(utilExpress.logger(logger))
+	e.use(utilAbort.expressHandler())
+	e.use(utilTrace.expressHandler())
+	e.use(utilForwarded.expressHandler())
+	e.use(utilMcp.expressHandler())
 
 	if (oauthRouter) {
 		e.use(oauthRouter)

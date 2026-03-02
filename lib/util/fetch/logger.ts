@@ -3,14 +3,11 @@
  * @mergeModuleWith util/fetch
  */
 
-import type * as context from "../context.ts"
-
 const outgoing = "<--"
 const incoming = "-->"
 const error = "xxx"
 
 type Payload = {
-	sessionId?: string
 	method?: string
 	url?: string
 	status?: number
@@ -18,44 +15,33 @@ type Payload = {
 	err?: unknown
 }
 
-export type ContextProvider = {
-	get(): context.Context | undefined
-}
-
 export type Logger = {
-	info(msg: string, o?: object): void | Promise<void>
-	warn(msg: string, o?: object): void | Promise<void>
-	error(msg: string, o?: object): void | Promise<void>
+	info(m: string, o?: object): void | Promise<void>
+	warn(m: string, o?: object): void | Promise<void>
+	error(m: string, o?: object): void | Promise<void>
 }
 
-export function withLogger(
-	p: ContextProvider,
-	l: Logger,
-	f: typeof fetch,
-): typeof fetch {
-	return async function fetch(input, init) {
-		let o: Payload = {}
-
-		let c = p.get()
-		if (c && c.sessionId) {
-			o.sessionId = c.sessionId
+export function withLogger(l: Logger, fetch: typeof globalThis.fetch): typeof globalThis.fetch {
+	return async(input, init) => {
+		if (!(input instanceof Request)) {
+			throw new Error("Input is not a Request instance")
 		}
 
-		if (input instanceof Request) {
-			o.method = input.method
-			o.url = input.url
+		let o: Payload = {
+			method: input.method,
+			url: input.url,
 		}
 
 		try {
 			await l.info(incoming, o)
 
-			let s = Date.now()
+			let now = Date.now()
 
-			let r = await f(input, init)
+			let r = await fetch(input, init)
 
 			o.status = r.status
 
-			let d = Date.now() - s
+			let d = Date.now() - now
 			if (d < 1000) {
 				o.duration = `${d}ms`
 			} else {

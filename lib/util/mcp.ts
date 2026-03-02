@@ -2,5 +2,9 @@
  * @module util/mcp
  */
 
+export * from "./mcp/context.ts"
 export * from "./mcp/data.ts"
+export * from "./mcp/express.ts"
+export * from "./mcp/handler.ts"
+export * from "./mcp/logger.ts"
 export * from "./mcp/request.ts"

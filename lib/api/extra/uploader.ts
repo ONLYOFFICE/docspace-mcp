@@ -1,11 +1,11 @@
 /**
  * @module
- * @mergeModuleWith api
+ * @mergeModuleWith api/extra
  */
 
-import type {Result} from "../util/result.ts"
-import {error, ok} from "../util/result.ts"
-import type {Response} from "./client.ts"
+import type {Result} from "../../util/result.ts"
+import {error, ok} from "../../util/result.ts"
+import type * as core from "../core.ts"
 
 const maxChunkSize = 10 * 1024 * 1024 // 10mb
 
@@ -14,7 +14,7 @@ export type UploaderClient = {
 }
 
 export type UploaderFilesService = {
-	uploadChunk(id: string, chunk: Blob): Promise<Result<[unknown, Response], Error>>
+	uploadChunk(id: string, chunk: Blob): Promise<Result<[unknown, core.Response], Error>>
 }
 
 export class Uploader {
@@ -24,9 +24,9 @@ export class Uploader {
 		this.client = client
 	}
 
-	async upload(id: string, buf: Uint8Array): Promise<Result<[unknown, Response], Error>> {
+	async upload(id: string, buf: Uint8Array): Promise<Result<[unknown, core.Response], Error>> {
 		let cd: unknown
-		let res: Response | undefined
+		let res: core.Response | undefined
 
 		let done = false
 

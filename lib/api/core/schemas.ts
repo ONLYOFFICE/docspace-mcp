@@ -1,10 +1,10 @@
 /**
  * @module
- * @mergeModuleWith api
+ * @mergeModuleWith api/core
  */
 
 import * as z from "zod"
-import * as zod from "../util/zod.ts"
+import * as zod from "../../util/zod.ts"
 
 /**
  * {@link https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/builtin-types/reference-types/#the-object-type | .NET Reference}

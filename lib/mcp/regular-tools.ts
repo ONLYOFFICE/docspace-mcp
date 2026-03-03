@@ -27,7 +27,7 @@ import {
 	SetRoomSecurityFiltersSchema,
 	SuccessApiResponseSchema,
 	UpdateRoomFiltersSchema,
-} from "../api/schemas.ts"
+} from "../api/core/schemas.ts"
 import type {
 	BulkDownloadOptions,
 	CopyBatchItemsOptions,
@@ -42,7 +42,7 @@ import type {
 	SetRoomSecurityOptions,
 	UpdateFileOptions,
 	UpdateRoomOptions,
-} from "../api.ts"
+} from "../api/core.ts"
 import type {Result} from "../util/result.ts"
 import {error, ok, safeAsync, safeSync} from "../util/result.ts"
 import {unionToEnum} from "../util/zod.ts"

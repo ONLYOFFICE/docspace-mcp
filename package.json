@@ -39,7 +39,7 @@
 		"lint-code": "eslint --no-warn-ignored --concurrency=auto .github app docs lib scripts test *.*",
 		"lint-types": "tsc",
 		"serve": "node scripts/serve.ts",
-		"test": "node test/test.ts"
+		"test": "node --test"
 	},
 	"devDependencies": {
 		"@anthropic-ai/mcpb": "2.1.2",

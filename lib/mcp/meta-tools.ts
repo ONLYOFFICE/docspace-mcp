@@ -149,7 +149,6 @@ export class MetaTools {
 
 	async callTool(
 		req: mcp.CallToolRequest,
-		extra: mcp.RequestExtra,
 	): Promise<Result<ConfiguredServerRouteToolResult, Error>> {
 		let pr = CallToolInputSchema.safeParse(req.params.arguments)
 		if (!pr.success) {
@@ -166,7 +165,7 @@ export class MetaTools {
 		req.params.name = pr.data.tool
 		req.params.arguments = pr.data.input
 
-		let cr = await this.s.routeRegularTool(req, extra)
+		let cr = await this.s.routeRegularTool(req)
 		if (cr.err) {
 			return error(new Error("Routing tool.", {cause: cr.err}))
 		}

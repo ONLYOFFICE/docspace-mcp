@@ -110,13 +110,13 @@ export class Client {
 		return r.ok(u.v)
 	}
 
-	async introspect(s: AbortSignal | undefined, o: IntrospectRequest): Promise<r.Result<[IntrospectResponse, ClientResponse], Error>> {
+	async introspect(o: IntrospectRequest): Promise<r.Result<[IntrospectResponse, ClientResponse], Error>> {
 		let u = this.createUrl("oauth2/introspect")
 		if (u.err) {
 			return r.error(new Error("Creating URL", {cause: u.err}))
 		}
 
-		let req = this.createRequest(s, u.v, o)
+		let req = this.createRequest(u.v, o)
 		if (req.err) {
 			return r.error(new Error("Creating request", {cause: req.err}))
 		}
@@ -136,13 +136,13 @@ export class Client {
 		return r.ok([p.data, res])
 	}
 
-	async revoke(s: AbortSignal | undefined, o: ClientRevokeRequest): Promise<r.Result<ClientResponse, Error>> {
+	async revoke(o: ClientRevokeRequest): Promise<r.Result<ClientResponse, Error>> {
 		let u = this.createUrl("oauth2/revoke")
 		if (u.err) {
 			return r.error(new Error("Creating URL", {cause: u.err}))
 		}
 
-		let req = this.createRequest(s, u.v, o)
+		let req = this.createRequest(u.v, o)
 		if (req.err) {
 			return r.error(new Error("Creating request", {cause: req.err}))
 		}
@@ -162,13 +162,13 @@ export class Client {
 		return r.ok(w)
 	}
 
-	async token(s: AbortSignal | undefined, o: ClientTokenRequest): Promise<r.Result<[TokenResponse, ClientResponse], Error>> {
+	async token(o: ClientTokenRequest): Promise<r.Result<[TokenResponse, ClientResponse], Error>> {
 		let u = this.createUrl("oauth2/token")
 		if (u.err) {
 			return r.error(new Error("Creating URL", {cause: u.err}))
 		}
 
-		let req = this.createRequest(s, u.v, o)
+		let req = this.createRequest(u.v, o)
 		if (req.err) {
 			return r.error(new Error("Creating request", {cause: req.err}))
 		}
@@ -211,7 +211,7 @@ export class Client {
 		return r.ok(u.v)
 	}
 
-	createRequest(s: AbortSignal | undefined, u: URL, b: object): r.Result<Request, Error> {
+	createRequest(u: URL, b: object): r.Result<Request, Error> {
 		let p = new URLSearchParams()
 
 		for (let [k, v] of Object.entries(b)) {
@@ -224,10 +224,6 @@ export class Client {
 
 		let c: RequestInit = {
 			method: "POST",
-		}
-
-		if (s) {
-			c.signal = s
 		}
 
 		if (p.size !== 0) {

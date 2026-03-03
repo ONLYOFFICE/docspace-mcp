@@ -1,5 +1,7 @@
 import {setTimeout} from "node:timers/promises"
 import type * as z from "zod"
+import * as abort from "../util/abort.ts"
+import * as context from "../util/context.ts"
 import type {Result} from "../util/result.ts"
 import {error, ok, safeAsync} from "../util/result.ts"
 import type {Response} from "./client.ts"
@@ -18,7 +20,7 @@ export type ResolverClient = {
 }
 
 export type ResolverFilesService = {
-	getOperationStatuses(s: AbortSignal): Promise<Result<[Operation[], Response], Error>>
+	getOperationStatuses(): Promise<Result<[Operation[], Response], Error>>
 }
 
 export class Resolver {
@@ -31,7 +33,9 @@ export class Resolver {
 		this.client = client
 	}
 
-	async resolve(signal: AbortSignal, ...ops: Operation[]): Promise<Result<ResolverResponse, Error>> {
+	async resolve(...ops: Operation[]): Promise<Result<ResolverResponse, Error>> {
+		let ctx = context.get()
+
 		if (ops.length === 0) {
 			return error(new Error("No operations to sync."))
 		}
@@ -56,7 +60,7 @@ export class Resolver {
 		let err: Error | undefined
 
 		while (limit > 0) {
-			let r = await this.client.files.getOperationStatuses(signal)
+			let r = await this.client.files.getOperationStatuses()
 			if (r.err) {
 				err = new Error("Calling operation statuses callback.", {cause: r.err})
 				break
@@ -113,7 +117,7 @@ export class Resolver {
 
 			limit -= 1
 
-			let t = await safeAsync(setTimeout, delay, undefined, {signal})
+			let t = await safeAsync(setTimeout, delay, undefined, {signal: ctx[abort.signalKey]})
 			if (t.err) {
 				err = new Error("Setting timeout.", {cause: t.err})
 				break

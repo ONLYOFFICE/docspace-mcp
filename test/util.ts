@@ -18,8 +18,60 @@ import * as r from "../lib/util/result.ts"
 
 export type AsyncRequestListener = (...args: Parameters<http.RequestListener>) => PromiseLike<void> | void
 
+export class Deferred {
+	private p: Promise<void>
+	private res: () => void = () => {}
+	private rej: (err: Error) => void = () => {}
+	private ca: (() => void)[] = []
+
+	get promise(): Promise<void> {
+		return this.p
+	}
+
+	constructor() {
+		let e = (res: () => void, rej: (err: Error) => void): void => {
+			this.res = res
+			this.rej = rej
+		}
+
+		this.p = new Promise<void>(e)
+	}
+
+	resolve(): void {
+		this.res()
+	}
+
+	reject(err: Error): void {
+		this.rej(err)
+	}
+
+	withTimeout(t: number, m: string): void {
+		let f = (): void => {
+			this.rej(new DOMException(m, "AbortError"))
+		}
+
+		let s = setTimeout(f, t)
+
+		let c = (): void => {
+			clearTimeout(s)
+		}
+
+		this.ca.push(c)
+	}
+
+	clear(): void {
+		for (let c of this.ca) {
+			c()
+		}
+	}
+}
+
 export function inDelta(a: number, e: number, d: number): boolean {
 	return Math.abs(e - a) <= d
+}
+
+export function isUuid(s: string): boolean {
+	return /^[\da-f]{8}(?:-[\da-f]{4}){3}-[\da-f]{12}$/.test(s)
 }
 
 export async function onRequest(t: test.TestContext, s: http.Server, l: AsyncRequestListener): Promise<void> {

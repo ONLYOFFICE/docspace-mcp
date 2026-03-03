@@ -14,7 +14,7 @@ export type UploaderClient = {
 }
 
 export type UploaderFilesService = {
-	uploadChunk(s: AbortSignal, id: string, chunk: Blob): Promise<Result<[unknown, Response], Error>>
+	uploadChunk(id: string, chunk: Blob): Promise<Result<[unknown, Response], Error>>
 }
 
 export class Uploader {
@@ -24,7 +24,7 @@ export class Uploader {
 		this.client = client
 	}
 
-	async upload(signal: AbortSignal, id: string, buf: Uint8Array): Promise<Result<[unknown, Response], Error>> {
+	async upload(id: string, buf: Uint8Array): Promise<Result<[unknown, Response], Error>> {
 		let cd: unknown
 		let res: Response | undefined
 
@@ -38,7 +38,7 @@ export class Uploader {
 			let c = buf.slice(s, e)
 			let b = new Blob([c], {type: "text/plain"})
 
-			let cr = await this.client.files.uploadChunk(signal, id, b)
+			let cr = await this.client.files.uploadChunk(id, b)
 			if (cr.err) {
 				return error(new Error(`Uploading chunk ${i + 1} of ${chunks}.`, {cause: cr.err}))
 			}

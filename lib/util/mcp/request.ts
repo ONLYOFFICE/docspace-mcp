@@ -7,7 +7,9 @@ import type * as server from "@modelcontextprotocol/sdk/server/index.js"
 import type * as protocol from "@modelcontextprotocol/sdk/shared/protocol.js"
 import * as types from "@modelcontextprotocol/sdk/types.js"
 import type * as z from "zod"
+import * as abort from "../abort.ts"
 import * as result from "../result.ts"
+import {wrapMcpHandler} from "./handler.ts"
 
 export type CallToolRequest = z.infer<typeof types.CallToolRequestSchema>
 
@@ -66,7 +68,12 @@ export function register(s: server.Server, defs: RequestDefinition[]): result.Re
 				break
 			}
 
-			t = result.safeSync(s.setRequestHandler.bind(s), d.schema, d.handler)
+			let h = d.handler
+
+			h = abort.wrapMcpHandler(h)
+			h = wrapMcpHandler(h)
+
+			t = result.safeSync(s.setRequestHandler.bind(s), d.schema, h)
 			if (t.err) {
 				errs.push(new Error("Setting handler", {cause: t.err}))
 				break

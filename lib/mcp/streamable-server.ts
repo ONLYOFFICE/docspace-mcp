@@ -60,7 +60,6 @@ export class StreamableServer {
 
 	router(): express.Router {
 		// todo: add recovery middleware
-		// todo: add signal middleware
 		// todo: add allowedMethods middleware
 		// todo: add supportedMediaTypes middleware
 

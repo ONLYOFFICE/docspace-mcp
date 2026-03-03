@@ -26,13 +26,13 @@ export class PeopleService {
 	/**
 	 * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/products/ASC.People/Server/Api/UserController.cs/#L811 | DocSpace Reference}
 	 */
-	async getFullByFilter(s: AbortSignal, filters?: GetFullByFilterFilters): Promise<Result<[GetFullByFilterResponseItem[], Response], Error>> {
+	async getFullByFilter(filters?: GetFullByFilterFilters): Promise<Result<[GetFullByFilterResponseItem[], Response], Error>> {
 		let u = this.c.createUrl("api/2.0/people/filter", filters)
 		if (u.err) {
 			return error(new Error("Creating URL.", {cause: u.err}))
 		}
 
-		let req = this.c.createRequest(s, "GET", u.v)
+		let req = this.c.createRequest("GET", u.v)
 		if (req.err) {
 			return error(new Error("Creating request.", {cause: req.err}))
 		}

@@ -1198,7 +1198,7 @@ void test("oauth server", (t) => {
 
 						let res = await request(a, tt)
 
-						assert.ok(res.statusCode !== 405)
+						assert.ok(res.statusCode !== 403)
 					})
 				}
 			})
@@ -1215,7 +1215,7 @@ void test("oauth server", (t) => {
 
 						let res = await request(a, tt)
 
-						assert.ok(res.statusCode !== 405)
+						assert.ok(res.statusCode !== 403)
 					})
 				}
 			})
@@ -1232,7 +1232,7 @@ void test("oauth server", (t) => {
 
 						let res = await request(a, tt)
 
-						assert.ok(res.statusCode !== 405)
+						assert.ok(res.statusCode !== 403)
 					})
 				}
 			})
@@ -1249,7 +1249,7 @@ void test("oauth server", (t) => {
 
 						let res = await request(a, `${tt}:8080`)
 
-						assert.ok(res.statusCode !== 405)
+						assert.ok(res.statusCode !== 403)
 					})
 				}
 			})
@@ -1264,7 +1264,7 @@ void test("oauth server", (t) => {
 
 				let res = await request(a, "evil.com")
 
-				assert.ok(res.statusCode !== 405)
+				assert.ok(res.statusCode !== 403)
 			})
 
 			void t.test("blocks request when Host header is missing", async(t) => {
@@ -1277,7 +1277,7 @@ void test("oauth server", (t) => {
 
 				let res = await request(a, "")
 
-				assert.ok(res.statusCode === 405)
+				assert.ok(res.statusCode === 403)
 
 				let ab = await readHttpJson(res)
 				assert.ok(ab.err === undefined)
@@ -1300,7 +1300,7 @@ void test("oauth server", (t) => {
 
 				let res = await request(a, "invalid host")
 
-				assert.ok(res.statusCode === 405)
+				assert.ok(res.statusCode === 403)
 
 				let ab = await readHttpJson(res)
 				assert.ok(ab.err === undefined)
@@ -1324,7 +1324,7 @@ void test("oauth server", (t) => {
 
 				let res = await request(a, "evil.com")
 
-				assert.ok(res.statusCode === 405)
+				assert.ok(res.statusCode === 403)
 
 				let ab = await readHttpJson(res)
 				assert.ok(ab.err === undefined)

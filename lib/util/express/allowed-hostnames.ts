@@ -24,7 +24,7 @@ export function allowedHostnames(hostnames: string[], cb: AllowedHostnamesCallba
 		}
 
 		if (err) {
-			res.status(405)
+			res.status(403)
 
 			cb(req, res, err)
 

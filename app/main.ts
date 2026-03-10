@@ -1,6 +1,5 @@
 #!/usr/bin/env node
 
-import * as server from "@modelcontextprotocol/sdk/server/index.js"
 import * as stdio from "@modelcontextprotocol/sdk/server/stdio.js"
 import type * as types from "@modelcontextprotocol/sdk/types.js"
 import express from "express"
@@ -849,96 +848,119 @@ function formatConfig(c: Config): object {
 }
 
 function startStdio(config: r.Result<Config, Error>): r.Result<Start, Error> {
-	let msi: types.Implementation = {
-		name: meta.name,
-		version: meta.version,
+	let create = (): r.Result<utilMcp.Protocol, Error> => {
+		let mp = new utilMcp.Protocol()
+
+		let mi: types.Implementation = {
+			name: meta.name,
+			version: meta.version,
+		}
+
+		let ms = new utilMcp.Server(mp, mi)
+
+		let mu = mp.registerRouter(ms.router())
+		if (mu.err) {
+			return r.error(new Error("Registering server router", {cause: mu.err}))
+		}
+
+		if (config.err) {
+			let ms = new mcp.MisconfiguredServer(config.err)
+
+			mu = mp.registerRouter(ms.router())
+			if (mu.err) {
+				return r.error(new Error("Registering misconfigured server router", {cause: mu.err}))
+			}
+		} else {
+			let ml = new utilMcp.Logger(mp)
+
+			mu = mp.registerRouter(ml.router())
+			if (mu.err) {
+				return r.error(new Error("Registering logger router", {cause: mu.err}))
+			}
+
+			let fetch = globalThis.fetch
+
+			fetch = utilFetch.withLogger(ml, globalThis.fetch)
+			fetch = utilAbort.wrapFetch(fetch)
+
+			let cc: apiCore.ClientConfig = {
+				userAgent: config.v.api.userAgent,
+				baseUrl: config.v.api.shared.baseUrl,
+				fetch,
+			}
+
+			let c = new apiCore.Client(cc)
+
+			if (config.v.api.shared.authorization) {
+				c = c.withAuth(config.v.api.shared.authorization)
+			}
+
+			if (config.v.api.shared.apiKey) {
+				c = c.withApiKey(config.v.api.shared.apiKey)
+			}
+
+			if (config.v.api.shared.pat) {
+				c = c.withAuthToken(config.v.api.shared.pat)
+			}
+
+			if (config.v.api.shared.username && config.v.api.shared.password) {
+				c = c.withBasicAuth(config.v.api.shared.username, config.v.api.shared.password)
+			}
+
+			let csc: mcp.ConfiguredServerConfig = {
+				client: c,
+				resolver: new apiExtra.Resolver(c),
+				uploader: new apiExtra.Uploader(c),
+				dynamic: config.v.mcp.dynamic,
+				tools: config.v.mcp.tools,
+			}
+
+			let cs = new mcp.ConfiguredServer(csc)
+
+			mu = mp.registerRouter(cs.router())
+			if (mu.err) {
+				return r.error(new Error("Registering configured server router", {cause: mu.err}))
+			}
+		}
+
+		return r.ok(mp)
 	}
 
-	let ms: server.Server | undefined
+	let mp = create()
 
-	let defs: utilMcp.RequestDefinition[] | undefined
+	let promise: Promise<r.Result<void, Error>> | undefined
+	let cleanup: (() => Promise<r.Result<void, Error>>) | undefined
 
-	if (config.err) {
-		ms = new server.Server(msi)
+	if (mp.err) {
+		promise = Promise.resolve(r.error(new Error("Creating protocol", {cause: mp.err})))
 
-		defs = mcp.misconfiguredServer(config.err)
+		// eslint-disable-next-line typescript/require-await
+		cleanup = async() => {
+			return r.ok()
+		}
 	} else {
-		let mso: server.ServerOptions = {
-			capabilities: {
-				logging: {},
-			},
+		let mt = new stdio.StdioServerTransport()
+
+		promise = new Promise<r.Result<void, Error>>((res) => {
+			mp.v.connect(mt).
+				// eslint-disable-next-line promise/prefer-await-to-then
+				then(() => {
+					res(r.ok())
+					return
+				}).
+				// eslint-disable-next-line promise/prefer-await-to-then
+				catch((err: unknown) => {
+					res(r.error(new Error("Attaching server", {cause: err})))
+				})
+		})
+
+		cleanup = async(): Promise<r.Result<void, Error>> => {
+			let c = await r.safeAsync(mt.close.bind(mt))
+			if (c.err) {
+				return r.error(new Error("Closing transport", {cause: c.err}))
+			}
+			return r.ok()
 		}
-
-		ms = new server.Server(msi, mso)
-
-		let ml = new utilMcp.Logger(ms)
-
-		let fetch = globalThis.fetch
-
-		fetch = utilFetch.withLogger(ml, globalThis.fetch)
-		fetch = utilAbort.wrapFetch(fetch)
-
-		let cc: apiCore.ClientConfig = {
-			userAgent: config.v.api.userAgent,
-			baseUrl: config.v.api.shared.baseUrl,
-			fetch,
-		}
-
-		let c = new apiCore.Client(cc)
-
-		if (config.v.api.shared.authorization) {
-			c = c.withAuth(config.v.api.shared.authorization)
-		}
-
-		if (config.v.api.shared.apiKey) {
-			c = c.withApiKey(config.v.api.shared.apiKey)
-		}
-
-		if (config.v.api.shared.pat) {
-			c = c.withAuthToken(config.v.api.shared.pat)
-		}
-
-		if (config.v.api.shared.username && config.v.api.shared.password) {
-			c = c.withBasicAuth(config.v.api.shared.username, config.v.api.shared.password)
-		}
-
-		let csc: mcp.ConfiguredServerConfig = {
-			client: c,
-			resolver: new apiExtra.Resolver(c),
-			uploader: new apiExtra.Uploader(c),
-			dynamic: config.v.mcp.dynamic,
-			tools: config.v.mcp.tools,
-		}
-
-		defs = mcp.configuredServer(csc)
-	}
-
-	let dr = utilMcp.register(ms, defs)
-	if (dr.err) {
-		return r.error(new Error("Registering definitions", {cause: dr.err}))
-	}
-
-	let mt = new stdio.StdioServerTransport()
-
-	let promise = new Promise<r.Result<void, Error>>((res) => {
-		ms.connect(mt).
-			// eslint-disable-next-line promise/prefer-await-to-then
-			then(() => {
-				res(r.ok())
-				return
-			}).
-			// eslint-disable-next-line promise/prefer-await-to-then
-			catch((err: unknown) => {
-				res(r.error(new Error("Attaching server", {cause: err})))
-			})
-	})
-
-	let cleanup = async(): Promise<r.Result<void, Error>> => {
-		let c = await r.safeAsync(mt.close.bind(mt))
-		if (c.err) {
-			return r.error(new Error("Closing transport", {cause: c.err}))
-		}
-		return r.ok()
 	}
 
 	let s: Start = {
@@ -1109,26 +1131,32 @@ function startHttp(config: Config, logger: utilLogger.Logger): r.Result<Start, E
 
 	let sp = new settings.SettingsParser(spc)
 
-	let create = (req: express.Request): r.Result<server.Server, Error> => {
+	let create = (req: express.Request): r.Result<utilMcp.Protocol, Error> => {
 		let s = sp.parse(req)
 		if (s.err) {
 			return r.error(new Error("Parsing settings", {cause: s.err}))
 		}
 
-		let msi: types.Implementation = {
+		let mp = new utilMcp.Protocol()
+
+		let mi: types.Implementation = {
 			name: meta.name,
 			version: meta.version,
 		}
 
-		let mso: server.ServerOptions = {
-			capabilities: {
-				logging: {},
-			},
+		let ms = new utilMcp.Server(mp, mi)
+
+		let mu = mp.registerRouter(ms.router())
+		if (mu.err) {
+			return r.error(new Error("Registering server router", {cause: mu.err}))
 		}
 
-		let ms = new server.Server(msi, mso)
+		let ml = new utilMcp.Logger(mp)
 
-		let ml = new utilMcp.Logger(ms)
+		mu = mp.registerRouter(ml.router())
+		if (mu.err) {
+			return r.error(new Error("Registering logger router", {cause: mu.err}))
+		}
 
 		let fetch = globalThis.fetch
 
@@ -1182,14 +1210,14 @@ function startHttp(config: Config, logger: utilLogger.Logger): r.Result<Start, E
 			tools: s.v.tools,
 		}
 
-		let defs = mcp.configuredServer(csc)
+		let cs = new mcp.ConfiguredServer(csc)
 
-		let dr = utilMcp.register(ms, defs)
-		if (dr.err) {
-			return r.error(new Error("Registering definitions", {cause: dr.err}))
+		mu = mp.registerRouter(cs.router())
+		if (mu.err) {
+			return r.error(new Error("Registering configured server router", {cause: mu.err}))
 		}
 
-		return r.ok(ms)
+		return r.ok(mp)
 	}
 
 	let sseSessions: mcp.Sessions | undefined
@@ -1225,7 +1253,7 @@ function startHttp(config: Config, logger: utilLogger.Logger): r.Result<Start, E
 			handlers: [
 				authHandler,
 			],
-			servers: {
+			protocols: {
 				create,
 			},
 			transports: st,
@@ -1270,7 +1298,7 @@ function startHttp(config: Config, logger: utilLogger.Logger): r.Result<Start, E
 			handlers: [
 				authHandler,
 			],
-			servers: {
+			protocols: {
 				create,
 			},
 			transports: st,

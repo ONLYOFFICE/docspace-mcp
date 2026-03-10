@@ -3,8 +3,8 @@
  * @mergeModuleWith mcp
  */
 
-import type * as server from "@modelcontextprotocol/sdk/server/index.js"
 import type * as streamableHttp from "@modelcontextprotocol/sdk/server/streamableHttp.js"
+import type * as transport from "@modelcontextprotocol/sdk/shared/transport.js"
 import * as types from "@modelcontextprotocol/sdk/types.js"
 import express from "express"
 import * as errors from "../util/errors.ts"
@@ -20,12 +20,16 @@ export type StreamableServerConfig = {
 	rateLimitCapacity: number
 	rateLimitWindow: number
 	handlers: express.Handler[]
-	servers: StreamableServerServers
+	protocols: StreamableServerProtocols
 	transports: StreamableServerTransports
 }
 
-export type StreamableServerServers = {
-	create(req: express.Request): result.Result<server.Server, Error>
+export type StreamableServerProtocol = {
+	connect(transport: transport.Transport): Promise<void>
+}
+
+export type StreamableServerProtocols = {
+	create(req: express.Request): result.Result<StreamableServerProtocol, Error>
 }
 
 export type StreamableServerTransports = {
@@ -42,7 +46,7 @@ export class StreamableServer {
 	private rateLimitCapacity: number
 	private rateLimitWindow: number
 	private handlers: express.Handler[]
-	private servers: StreamableServerServers
+	private protocols: StreamableServerProtocols
 	private transports: StreamableServerTransports
 
 	constructor(config: StreamableServerConfig) {
@@ -54,7 +58,7 @@ export class StreamableServer {
 		this.rateLimitCapacity = config.rateLimitCapacity
 		this.rateLimitWindow = config.rateLimitWindow
 		this.handlers = config.handlers
-		this.servers = config.servers
+		this.protocols = config.protocols
 		this.transports = config.transports
 	}
 
@@ -157,12 +161,12 @@ export class StreamableServer {
 
 			if (id === undefined || id === "") {
 				if (types.isInitializeRequest(req.body)) {
-					let s = this.servers.create(req)
+					let s = this.protocols.create(req)
 					if (s.err) {
 						// It is most likely 400, rather than 500.
 						let err = new errors.JsonrpcError(
 							-32000,
-							"Creating server",
+							"Creating protocol",
 							{cause: s.err},
 						)
 						res.status(400)

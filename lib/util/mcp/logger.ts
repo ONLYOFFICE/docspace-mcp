@@ -3,13 +3,15 @@
  * @mergeModuleWith util/mcp
  */
 
-import type * as types from "@modelcontextprotocol/sdk/types.js"
+import type * as protocol from "@modelcontextprotocol/sdk/shared/protocol.js"
+import * as types from "@modelcontextprotocol/sdk/types.js"
 import * as context from "../context.ts"
 import * as errors from "../errors.ts"
 import * as r from "../result.ts"
 import * as strings from "../strings.ts"
 import * as trace from "../trace.ts"
 import {progressTokenKey, requestIdKey, sessionIdKey, taskIdKey} from "./context.ts"
+import type {Router} from "./router.ts"
 
 type Payload = object & {
 	time?: string
@@ -21,15 +23,34 @@ type Payload = object & {
 	mcpProgressToken?: string | number
 }
 
-export type LoggerServer = {
-	sendLoggingMessage(data: types.LoggingMessageNotification["params"], sessionId?: string): Promise<void>
+export type LoggerProtocol = {
+	getServerCapabilities(): types.ServerCapabilities
+	notification(notification: types.Notification, options?: protocol.NotificationOptions): Promise<void>
 }
 
 export class Logger {
-	private server: LoggerServer
+	private protocol: LoggerProtocol
 
-	constructor(server: LoggerServer) {
-		this.server = server
+	private level: types.LoggingLevel = "info"
+
+	constructor(protocol: LoggerProtocol) {
+		this.protocol = protocol
+	}
+
+	router(): Router {
+		return {
+			capabilities: {
+				logging: {},
+			},
+			handlers: {
+				"logging/setLevel": this.handleSetLevel.bind(this),
+			},
+		}
+	}
+
+	private handleSetLevel(req: types.SetLevelRequest): types.Result {
+		this.level = req.params.level
+		return {}
 	}
 
 	async info(m: string, o?: object): Promise<void> {
@@ -44,7 +65,20 @@ export class Logger {
 		await this.log("error", m, o)
 	}
 
-	private async log(l: types.LoggingMessageNotification["params"]["level"], m: string, o?: object): Promise<void> {
+	private async log(l: types.LoggingLevel, m: string, o?: object): Promise<void> {
+		let sc = this.protocol.getServerCapabilities()
+
+		if (!sc.logging) {
+			return
+		}
+
+		let a = types.LoggingLevelSchema.options.indexOf(this.level)
+		let b = types.LoggingLevelSchema.options.indexOf(l)
+
+		if (a > b) {
+			return
+		}
+
 		let ctx = context.get()
 
 		let now = new Date()
@@ -60,15 +94,28 @@ export class Logger {
 			...o,
 		}
 
-		let d: types.LoggingMessageNotification["params"] = {
-			level: l,
-			data: format(p),
+		let n: types.Notification = {
+			method: "notifications/message",
+			params: {
+				level: l,
+				data: format(p),
+			},
+		}
+
+		let no: protocol.NotificationOptions = {}
+
+		if (ctx[requestIdKey] !== undefined) {
+			no.relatedRequestId = ctx[requestIdKey]
+		}
+
+		if (ctx[taskIdKey]) {
+			no.relatedTask = {taskId: ctx[taskIdKey]}
 		}
 
 		let _ = await r.safeAsync(
-			this.server.sendLoggingMessage.bind(this.server),
-			d,
-			ctx[sessionIdKey],
+			this.protocol.notification.bind(this.protocol),
+			n,
+			no,
 		)
 	}
 }

@@ -3,8 +3,8 @@
  * @mergeModuleWith mcp
  */
 
-import type * as server from "@modelcontextprotocol/sdk/server/index.js"
 import type * as sse from "@modelcontextprotocol/sdk/server/sse.js"
+import type * as transport from "@modelcontextprotocol/sdk/shared/transport.js"
 import express from "express"
 import * as errors from "../util/errors.ts"
 import * as utilExpress from "../util/express.ts"
@@ -19,12 +19,16 @@ export type SseServerConfig = {
 	rateLimitCapacity: number
 	rateLimitWindow: number
 	handlers: express.Handler[]
-	servers: SseServerServers
+	protocols: SseServerProtocols
 	transports: SseServerTransports
 }
 
-export type SseServerServers = {
-	create(req: express.Request): result.Result<server.Server, Error>
+export type SseServerProtocol = {
+	connect(transport: transport.Transport): Promise<void>
+}
+
+export type SseServerProtocols = {
+	create(req: express.Request): result.Result<SseServerProtocol, Error>
 }
 
 export type SseServerTransports = {
@@ -41,7 +45,7 @@ export class SseServer {
 	private rateLimitCapacity: number
 	private rateLimitWindow: number
 	private handlers: express.Handler[]
-	private servers: SseServerServers
+	private protocols: SseServerProtocols
 	private transports: SseServerTransports
 
 	constructor(config: SseServerConfig) {
@@ -53,7 +57,7 @@ export class SseServer {
 		this.rateLimitCapacity = config.rateLimitCapacity
 		this.rateLimitWindow = config.rateLimitWindow
 		this.handlers = config.handlers
-		this.servers = config.servers
+		this.protocols = config.protocols
 		this.transports = config.transports
 	}
 
@@ -153,10 +157,10 @@ export class SseServer {
 
 	private async handleSse(req: express.Request, res: express.Response): Promise<void> {
 		try {
-			let s = this.servers.create(req)
+			let s = this.protocols.create(req)
 			if (s.err) {
 				// It is most likely 400, rather than 500.
-				let err = new errors.MessageError("Creating server", {cause: s.err})
+				let err = new errors.MessageError("Creating protocol", {cause: s.err})
 				res.writeHead(400)
 				res.end(err.toString())
 				return

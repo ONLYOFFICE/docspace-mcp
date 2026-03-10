@@ -3,7 +3,7 @@
  * @mergeModuleWith mcp
  */
 
-import * as types from "@modelcontextprotocol/sdk/types.js"
+import type * as types from "@modelcontextprotocol/sdk/types.js"
 import type * as z from "zod"
 import * as apiCore from "../api/core.ts"
 import type * as apiExtra from "../api/extra.ts"
@@ -14,7 +14,7 @@ import {metaToolInfos, toolsetInfos} from "./data.ts"
 import {MetaTools} from "./meta-tools.ts"
 import {RegularTools} from "./regular-tools.ts"
 
-export type ConfiguredServerRouteTool = (req: mcp.CallToolRequest) => Promise<result.Result<ConfiguredServerRouteToolResult, Error>>
+export type ConfiguredServerRouteTool = (req: types.CallToolRequest) => Promise<result.Result<ConfiguredServerRouteToolResult, Error>>
 
 export type ConfiguredServerRouteToolResult = types.CallToolResult & {
 	isError?: never
@@ -120,13 +120,25 @@ export class ConfiguredServer {
 		}
 	}
 
+	router(): mcp.Router {
+		return {
+			capabilities: {
+				tools: {},
+			},
+			handlers: {
+				"tools/call": this.callTool.bind(this),
+				"tools/list": this.listTools.bind(this),
+			},
+		}
+	}
+
 	listTools(): types.ListToolsResult {
 		return {
 			tools: this.toolInfos,
 		}
 	}
 
-	async callTool(req: mcp.CallToolRequest): Promise<types.CallToolResult> {
+	async callTool(req: types.CallToolRequest): Promise<types.CallToolResult> {
 		let pr = await this.routeTool(req)
 
 		if (pr.err) {
@@ -144,7 +156,7 @@ export class ConfiguredServer {
 		return pr.v
 	}
 
-	async routeMetaTool(req: mcp.CallToolRequest): Promise<result.Result<ConfiguredServerRouteToolResult, Error>> {
+	async routeMetaTool(req: types.CallToolRequest): Promise<result.Result<ConfiguredServerRouteToolResult, Error>> {
 		let mr: result.Result<
 			mcp.Summary[] |
 			mcp.ToolInputSchema |
@@ -215,7 +227,7 @@ export class ConfiguredServer {
 		return result.error(new Error("Unknown result type"))
 	}
 
-	async routeRegularTool(req: mcp.CallToolRequest): Promise<result.Result<ConfiguredServerRouteToolResult, Error>> {
+	async routeRegularTool(req: types.CallToolRequest): Promise<result.Result<ConfiguredServerRouteToolResult, Error>> {
 		let f = false
 
 		for (let s of this.toolsetInfos) {
@@ -379,22 +391,4 @@ export class ConfiguredServer {
 
 		return result.error(new Error("Unknown result type"))
 	}
-}
-
-export function configuredServer(
-	config: ConfiguredServerConfig,
-): mcp.RequestDefinition[] {
-	let s = new ConfiguredServer(config)
-
-	let l: mcp.ListToolsRequestDefinition = {
-		schema: types.ListToolsRequestSchema,
-		handler: s.listTools.bind(s),
-	}
-
-	let c: mcp.CallToolRequestDefinition = {
-		schema: types.CallToolRequestSchema,
-		handler: s.callTool.bind(s),
-	}
-
-	return [l, c]
 }

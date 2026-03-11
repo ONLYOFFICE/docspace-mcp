@@ -3,14 +3,14 @@
  * @mergeModuleWith mcp
  */
 
-import * as types from "@modelcontextprotocol/sdk/types.js"
+import type * as types from "@modelcontextprotocol/sdk/types.js"
 import * as errors from "../util/errors.ts"
 import type * as mcp from "../util/mcp.ts"
 import {toolsetInfos} from "./data.ts"
 
-class MisconfiguredServer {
-	err: Error
-	toolInfos: mcp.ToolInfo[]
+export class MisconfiguredServer {
+	private err: Error
+	private toolInfos: mcp.ToolInfo[]
 
 	constructor(err: Error) {
 		this.err = err
@@ -21,13 +21,25 @@ class MisconfiguredServer {
 		}
 	}
 
-	listTools(): types.ListToolsResult {
+	router(): mcp.Router {
+		return {
+			capabilities: {
+				tools: {},
+			},
+			handlers: {
+				"tools/call": this.callTool.bind(this),
+				"tools/list": this.listTools.bind(this),
+			},
+		}
+	}
+
+	private listTools(): types.ListToolsResult {
 		return {
 			tools: this.toolInfos,
 		}
 	}
 
-	callTool(): types.CallToolResult {
+	private callTool(): types.CallToolResult {
 		return {
 			content: [
 				{
@@ -38,22 +50,4 @@ class MisconfiguredServer {
 			isError: true,
 		}
 	}
-}
-
-export function misconfiguredServer(
-	err: Error,
-): mcp.RequestDefinition[] {
-	let s = new MisconfiguredServer(err)
-
-	let l: mcp.ListToolsRequestDefinition = {
-		schema: types.ListToolsRequestSchema,
-		handler: s.listTools.bind(s),
-	}
-
-	let c: mcp.CallToolRequestDefinition = {
-		schema: types.CallToolRequestSchema,
-		handler: s.callTool.bind(s),
-	}
-
-	return [l, c]
 }

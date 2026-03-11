@@ -3,6 +3,7 @@
  * @mergeModuleWith mcp
  */
 
+import type * as types from "@modelcontextprotocol/sdk/types.js"
 import * as z from "zod"
 import type * as mcp from "../util/mcp.ts"
 import type {Result} from "../util/result.ts"
@@ -51,7 +52,7 @@ export class MetaTools {
 		return ok(summaries)
 	}
 
-	listTools(req: mcp.CallToolRequest): Result<mcp.Summary[], Error> {
+	listTools(req: types.CallToolRequest): Result<mcp.Summary[], Error> {
 		let pr = ListToolsInputSchema.safeParse(req.params.arguments)
 		if (!pr.success) {
 			return error(new Error("Parsing input.", {cause: pr.error}))
@@ -87,9 +88,7 @@ export class MetaTools {
 		return ok(summaries)
 	}
 
-	getToolInputSchema(
-		req: mcp.CallToolRequest,
-	): Result<mcp.ToolInputSchema, Error> {
+	getToolInputSchema(req: types.CallToolRequest): Result<mcp.ToolInputSchema, Error> {
 		let pr = GetToolInputSchemaInputSchema.safeParse(req.params.arguments)
 		if (!pr.success) {
 			return error(new Error("Parsing input.", {cause: pr.error}))
@@ -117,9 +116,7 @@ export class MetaTools {
 		return ok(i)
 	}
 
-	getToolOutputSchema(
-		req: mcp.CallToolRequest,
-	): Result<mcp.ToolOutputSchema, Error> {
+	getToolOutputSchema(req: types.CallToolRequest): Result<mcp.ToolOutputSchema, Error> {
 		let pr = GetToolInputSchemaInputSchema.safeParse(req.params.arguments)
 		if (!pr.success) {
 			return error(new Error("Parsing input.", {cause: pr.error}))
@@ -147,9 +144,7 @@ export class MetaTools {
 		return ok(o)
 	}
 
-	async callTool(
-		req: mcp.CallToolRequest,
-	): Promise<Result<ConfiguredServerRouteToolResult, Error>> {
+	async callTool(req: types.CallToolRequest): Promise<Result<ConfiguredServerRouteToolResult, Error>> {
 		let pr = CallToolInputSchema.safeParse(req.params.arguments)
 		if (!pr.success) {
 			return error(new Error("Parsing input.", {cause: pr.error}))

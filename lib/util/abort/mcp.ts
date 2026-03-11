@@ -3,12 +3,12 @@
  * @mergeModuleWith util/abort
  */
 
-import type * as server from "@modelcontextprotocol/sdk/server/index.js"
 import * as context from "../context.ts"
+import type * as mcp from "../mcp.ts"
 import {signalKey} from "./context.ts"
 import {Controller} from "./controller.ts"
 
-export type McpHandler = Parameters<server.Server["setRequestHandler"]>[1]
+export type McpHandler = Parameters<mcp.Protocol["setRequestHandler"]>[1]
 
 export function wrapMcpHandler(handler: McpHandler): McpHandler {
 	return async(req, extra) => {

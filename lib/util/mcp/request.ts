@@ -3,93 +3,25 @@
  * @mergeModuleWith util/mcp
  */
 
-import type * as server from "@modelcontextprotocol/sdk/server/index.js"
 import type * as protocol from "@modelcontextprotocol/sdk/shared/protocol.js"
-import * as types from "@modelcontextprotocol/sdk/types.js"
-import type * as z from "zod"
-import * as abort from "../abort.ts"
-import * as result from "../result.ts"
-import {wrapMcpHandler} from "./handler.ts"
+import type * as types from "@modelcontextprotocol/sdk/types.js"
 
-export type CallToolRequest = z.infer<typeof types.CallToolRequestSchema>
-
-export type CallToolRequestDefinition<
-	R extends types.ServerRequest = types.ServerRequest,
-	N extends types.ServerNotification = types.ServerNotification,
-	T extends types.ServerResult = types.ServerResult,
-> = RequestDefinition<R, N, T, typeof types.CallToolRequestSchema>
-
-export type ListToolsRequestDefinition<
-	R extends types.ServerRequest = types.ServerRequest,
-	N extends types.ServerNotification = types.ServerNotification,
-	T extends types.ServerResult = types.ServerResult,
-> = RequestDefinition<R, N, T, typeof types.ListToolsRequestSchema>
-
-export type RequestSchema<
-	M extends string = string,
-> = z.ZodObject<{method: z.ZodLiteral<M>}>
-
-export type RequestExtra<
-	R extends types.ServerRequest = types.ServerRequest,
-	N extends types.ServerNotification = types.ServerNotification,
-> = protocol.RequestHandlerExtra<R, N>
-
-export type RequestDefinition<
-	R extends types.ServerRequest = types.ServerRequest,
-	N extends types.ServerNotification = types.ServerNotification,
-	T extends types.ServerResult = types.ServerResult,
-	S extends RequestSchema = RequestSchema,
-> = {
-	schema: S
-	handler(this: void, request: z.infer<S>, extra: RequestExtra<R, N>): T | Promise<T>
+export type RequestHandlerMap = {
+	"elicitation/create": ElicitRequestHandler
+	"initialize": InitializeRequestHandler
+	"logging/setLevel": SetLevelRequestHandler
+	"tools/call": CallToolRequestHandler
+	"tools/list": ListToolsRequestHandler
 }
 
-export function register(s: server.Server, defs: RequestDefinition[]): result.Result<void, Error> {
-	let errs: Error[] = []
+export type ElicitRequestHandler = RequestHandler<types.ElicitRequest, types.ElicitResult>
 
-	for (let d of defs) {
-		let t: result.Result<void, Error> | undefined
+export type InitializeRequestHandler = RequestHandler<types.InitializeRequest, types.InitializeResult>
 
-		switch (d.schema) {
-		case types.CallToolRequestSchema:
-		case types.ListToolsRequestSchema:
-			t = result.safeSync(
-				s.assertCanSetRequestHandler.bind(s),
-				d.schema.shape.method.value,
-			)
-			if (t.err) {
-				errs.push(new Error("Asserting availability", {cause: t.err}))
-				break
-			}
+export type SetLevelRequestHandler = RequestHandler<types.SetLevelRequest>
 
-			t = result.safeSync(s.registerCapabilities.bind(s), {tools: {}})
-			if (t.err) {
-				errs.push(new Error("Registering capabilities", {cause: t.err}))
-				break
-			}
+export type CallToolRequestHandler = RequestHandler<types.CallToolRequest, types.CallToolResult>
 
-			let h = d.handler
+export type ListToolsRequestHandler = RequestHandler<types.ListToolsRequest, types.ListToolsResult>
 
-			h = abort.wrapMcpHandler(h)
-			h = wrapMcpHandler(h)
-
-			t = result.safeSync(s.setRequestHandler.bind(s), d.schema, h)
-			if (t.err) {
-				errs.push(new Error("Setting handler", {cause: t.err}))
-				break
-			}
-
-			break
-
-		default:
-			errs.push(new Error(`Unsupported schema: ${d.schema.shape.method.value}`))
-			break
-		}
-	}
-
-	if (errs.length !== 0) {
-		return result.error(new AggregateError(errs, "Registering handlers"))
-	}
-
-	return result.ok()
-}
+export type RequestHandler<Request extends types.Request = types.Request, Result extends types.Result = types.Result> = (this: void, request: Request, extra: protocol.RequestHandlerExtra<Request, types.Notification>) => Promise<Result> | Result

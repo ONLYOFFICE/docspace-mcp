@@ -5,7 +5,9 @@ Changelog] format and adhering to [Semantic Versioning].
 
 ## [Unreleased]
 
-<!-- There are no notable changes in this release. -->
+There are no notable changes in this release.
+
+## [3.2.0] - 2026-03-18
 
 ### Added
 
@@ -303,7 +305,8 @@ There are no noticeable changes in version [3.0.1].
 [Keep a Changelog]: https://keepachangelog.com/en/1.1.0/
 [Semantic Versioning]: https://semver.org/spec/v2.0.0.html
 
-[Unreleased]: https://github.com/onlyoffice/docspace-mcp/compare/v3.1.0...HEAD/
+[Unreleased]: https://github.com/onlyoffice/docspace-mcp/compare/v3.2.0...HEAD/
+[3.2.0]: https://github.com/onlyoffice/docspace-mcp/compare/v3.1.0...v3.2.0/
 [3.1.0]: https://github.com/onlyoffice/docspace-mcp/compare/v3.0.1...v3.1.0/
 [3.0.1]: https://github.com/onlyoffice/docspace-mcp/compare/v3.0.0...v3.0.1/
 [3.0.0]: https://github.com/onlyoffice/docspace-mcp/compare/v2.0.0...v3.0.0/

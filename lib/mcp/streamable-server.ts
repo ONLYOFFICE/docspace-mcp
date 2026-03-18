@@ -1,30 +1,10 @@
 /**
- * (c) Copyright Ascensio System SIA 2025
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- *
- * @license
- */
-
-/**
  * @module
  * @mergeModuleWith mcp
  */
 
-/* eslint-disable typescript/consistent-type-definitions */
-
-import type * as server from "@modelcontextprotocol/sdk/server/index.js"
 import type * as streamableHttp from "@modelcontextprotocol/sdk/server/streamableHttp.js"
+import type * as transport from "@modelcontextprotocol/sdk/shared/transport.js"
 import * as types from "@modelcontextprotocol/sdk/types.js"
 import express from "express"
 import * as errors from "../util/errors.ts"
@@ -32,6 +12,7 @@ import * as utilExpress from "../util/express.ts"
 import * as result from "../util/result.ts"
 
 export type StreamableServerConfig = {
+	allowedHostnames: string[]
 	corsOrigin: string[]
 	corsMaxAge: number
 	corsAllowedHeaders: string[]
@@ -39,12 +20,16 @@ export type StreamableServerConfig = {
 	rateLimitCapacity: number
 	rateLimitWindow: number
 	handlers: express.Handler[]
-	servers: StreamableServerServers
+	protocols: StreamableServerProtocols
 	transports: StreamableServerTransports
 }
 
-export type StreamableServerServers = {
-	create(req: express.Request): result.Result<server.Server, Error>
+export type StreamableServerProtocol = {
+	connect(transport: transport.Transport): Promise<void>
+}
+
+export type StreamableServerProtocols = {
+	create(req: express.Request): result.Result<StreamableServerProtocol, Error>
 }
 
 export type StreamableServerTransports = {
@@ -53,6 +38,7 @@ export type StreamableServerTransports = {
 }
 
 export class StreamableServer {
+	private allowedHostnames: string[]
 	private corsOrigin: string[]
 	private corsMaxAge: number
 	private corsAllowedHeaders: string[]
@@ -60,10 +46,11 @@ export class StreamableServer {
 	private rateLimitCapacity: number
 	private rateLimitWindow: number
 	private handlers: express.Handler[]
-	private servers: StreamableServerServers
+	private protocols: StreamableServerProtocols
 	private transports: StreamableServerTransports
 
 	constructor(config: StreamableServerConfig) {
+		this.allowedHostnames = config.allowedHostnames
 		this.corsOrigin = config.corsOrigin
 		this.corsMaxAge = config.corsMaxAge
 		this.corsAllowedHeaders = config.corsAllowedHeaders
@@ -71,15 +58,32 @@ export class StreamableServer {
 		this.rateLimitCapacity = config.rateLimitCapacity
 		this.rateLimitWindow = config.rateLimitWindow
 		this.handlers = config.handlers
-		this.servers = config.servers
+		this.protocols = config.protocols
 		this.transports = config.transports
 	}
 
 	router(): express.Router {
 		// todo: add recovery middleware
-		// todo: add signal middleware
 		// todo: add allowedMethods middleware
 		// todo: add supportedMediaTypes middleware
+
+		let allowedHostnames = (r: express.Router): void => {
+			if (this.allowedHostnames.length !== 0) {
+				r.use(utilExpress.allowedHostnames(this.allowedHostnames, (_, res, err) => {
+					// todo: use proper type
+					let er: object = {
+						jsonrpc: "2.0",
+						error: {
+							code: -32000,
+							message: errors.format(err),
+						},
+						id: null,
+					}
+
+					res.json(er)
+				}))
+			}
+		}
 
 		let cors = (r: express.Router): void => {
 			if (this.corsOrigin.length !== 0) {
@@ -133,6 +137,7 @@ export class StreamableServer {
 
 			r.use(express.json())
 
+			allowedHostnames(r)
 			cors(r)
 
 			r.use(...this.handlers)
@@ -156,12 +161,12 @@ export class StreamableServer {
 
 			if (id === undefined || id === "") {
 				if (types.isInitializeRequest(req.body)) {
-					let s = this.servers.create(req)
+					let s = this.protocols.create(req)
 					if (s.err) {
 						// It is most likely 400, rather than 500.
 						let err = new errors.JsonrpcError(
 							-32000,
-							"Creating server",
+							"Creating protocol",
 							{cause: s.err},
 						)
 						res.status(400)

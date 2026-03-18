@@ -1,27 +1,7 @@
 /**
- * (c) Copyright Ascensio System SIA 2025
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- *
- * @license
- */
-
-/**
  * @module
  * @mergeModuleWith oauth
  */
-
-/* eslint-disable typescript/consistent-type-definitions */
 
 import express from "express"
 import jwt from "jsonwebtoken"
@@ -61,6 +41,7 @@ export type ServerConfig = {
 	baseUrl: string
 	clientId: string
 	clientSecret: string
+	allowedHostnames: string[]
 	corsOrigin: string[]
 	corsMaxAge: number
 	serverMetadataRateLimitCapacity: number
@@ -86,13 +67,14 @@ export type ServerConfig = {
 
 export type ServerClient = {
 	authorize(o: AuthorizeRequest): r.Result<URL, Error>
-	introspect(s: AbortSignal | undefined, o: IntrospectRequest): Promise<r.Result<[IntrospectResponse, ClientResponse], Error>>
-	revoke(s: AbortSignal | undefined, o: ClientRevokeRequest): Promise<r.Result<ClientResponse, Error>>
-	token(s: AbortSignal | undefined, o: ClientTokenRequest): Promise<r.Result<[TokenResponse, ClientResponse], Error>>
+	introspect(o: IntrospectRequest): Promise<r.Result<[IntrospectResponse, ClientResponse], Error>>
+	revoke(o: ClientRevokeRequest): Promise<r.Result<ClientResponse, Error>>
+	token(o: ClientTokenRequest): Promise<r.Result<[TokenResponse, ClientResponse], Error>>
 }
 
 export type ServerAuthTokens = {
 	verify(t: string): r.Result<[string, AuthTokenPayload], Error>
+	decode(t: string): r.Result<[string, AuthTokenPayload], Error>
 	encode(t: string): r.Result<[string, AuthTokenPayload], Error>
 }
 
@@ -104,6 +86,7 @@ export type ServerStateTokens = {
 export class Server {
 	private clientId: string
 	private clientSecret: string
+	private allowedHostnames: string[]
 	private corsOrigin: string[]
 	private corsMaxAge: number
 	private serverMetadataRateLimitCapacity: number
@@ -138,6 +121,7 @@ export class Server {
 	constructor(config: ServerConfig) {
 		this.clientId = config.clientId
 		this.clientSecret = config.clientSecret
+		this.allowedHostnames = config.allowedHostnames
 		this.corsOrigin = config.corsOrigin
 		this.corsMaxAge = config.corsMaxAge
 		this.serverMetadataRateLimitCapacity = config.serverMetadataRateLimitCapacity
@@ -213,12 +197,18 @@ export class Server {
 	router(): express.Router {
 		// todo: add recovery middleware
 
-		let ao: AuthOptions = {
-			clientId: this.clientId,
-			clientSecret: this.clientSecret,
-		}
+		let allowedHostnames = (r: express.Router): void => {
+			if (this.allowedHostnames.length !== 0) {
+				r.use(utilExpress.allowedHostnames(this.allowedHostnames, (_, res, err) => {
+					let er: ErrorResponse = {
+						error: "invalid_request",
+						error_description: errors.format(err),
+					}
 
-		let a = auth(ao)
+					res.json(er)
+				}))
+			}
+		}
 
 		let corsMetadata = (r: express.Router): void => {
 			if (this.corsOrigin.length !== 0) {
@@ -280,11 +270,19 @@ export class Server {
 			}
 		}
 
+		let ao: AuthOptions = {
+			clientId: this.clientId,
+			clientSecret: this.clientSecret,
+		}
+
+		let a = auth(ao)
+
 		let r = express.Router()
 
 		r.use("/.well-known/oauth-authorization-server", (() => {
 			let r = express.Router()
 
+			allowedHostnames(r)
 			corsMetadata(r)
 
 			let go: GuardOptions = {
@@ -304,6 +302,7 @@ export class Server {
 		r.use("/.well-known/oauth-protected-resource", (() => {
 			let r = express.Router()
 
+			allowedHostnames(r)
 			corsMetadata(r)
 
 			let go: GuardOptions = {
@@ -323,10 +322,10 @@ export class Server {
 		r.use("/oauth", (() => {
 			let r = express.Router()
 
-			r.use(utilExpress.signal())
 			r.use(express.json())
 			r.use(express.urlencoded({extended: true}))
 
+			allowedHostnames(r)
 			corsOauth(r)
 
 			r.use("/authorize", (() => {
@@ -366,8 +365,6 @@ export class Server {
 			r.use("/introspect", (() => {
 				let r = express.Router()
 
-				r.use(a)
-
 				let go: GuardOptions = {
 					methods: ["POST"],
 					types: ["application/x-www-form-urlencoded"],
@@ -377,6 +374,7 @@ export class Server {
 
 				guard(r, go)
 
+				r.use(a)
 				r.use(this.handleIntrospect.bind(this))
 
 				return r
@@ -404,8 +402,6 @@ export class Server {
 			r.use("/revoke", (() => {
 				let r = express.Router()
 
-				r.use(a)
-
 				let go: GuardOptions = {
 					methods: ["POST"],
 					types: ["application/x-www-form-urlencoded"],
@@ -415,6 +411,7 @@ export class Server {
 
 				guard(r, go)
 
+				r.use(a)
 				r.use(this.handleRevoke.bind(this))
 
 				return r
@@ -422,8 +419,6 @@ export class Server {
 
 			r.use("/token", (() => {
 				let r = express.Router()
-
-				r.use(a)
 
 				let go: GuardOptions = {
 					methods: ["POST"],
@@ -434,6 +429,7 @@ export class Server {
 
 				guard(r, go)
 
+				r.use(a)
 				r.use(this.handleToken.bind(this))
 
 				return r
@@ -724,7 +720,7 @@ export class Server {
 			token: tt,
 		}
 
-		let ci = await this.client.introspect(req.signal, io)
+		let ci = await this.client.introspect(io)
 		if (ci.err) {
 			let err = new Error("Introspecting token", {cause: ci.err})
 			let [code, er] = proxyError(ci.err, err)
@@ -798,17 +794,26 @@ export class Server {
 			return
 		}
 
+		let tt: string | undefined
+
+		let tu = this.authTokens.decode(ib.data.token)
+		if (tu.err) {
+			tt = ib.data.token
+		} else {
+			tt = tu.v[0]
+		}
+
 		let ro: ClientRevokeRequest = {
-			token: ib.data.token,
 			client_id: req[authKey].clientId,
 			client_secret: req[authKey].clientSecret,
+			token: tt,
 		}
 
 		if (ib.data.token_type_hint) {
 			ro.token_type_hint = ib.data.token_type_hint
 		}
 
-		let cr = await this.client.revoke(req.signal, ro)
+		let cr = await this.client.revoke(ro)
 		if (cr.err) {
 			let err = new Error("Revoking token", {cause: cr.err})
 			let [code, er] = proxyError(cr.err, err)
@@ -853,25 +858,25 @@ export class Server {
 		switch (ib.data.grant_type) {
 		case "authorization_code":
 			to = {
+				client_id: req[authKey].clientId,
+				client_secret: req[authKey].clientSecret,
 				grant_type: ib.data.grant_type,
 				code: ib.data.code,
 				redirect_uri: this.callbackUrl,
-				client_id: req[authKey].clientId,
-				client_secret: req[authKey].clientSecret,
 			}
 			break
 
 		case "refresh_token":
 			to = {
-				grant_type: ib.data.grant_type,
-				refresh_token: ib.data.refresh_token,
 				client_id: req[authKey].clientId,
 				client_secret: req[authKey].clientSecret,
+				grant_type: ib.data.grant_type,
+				refresh_token: ib.data.refresh_token,
 			}
 			break
 		}
 
-		let ct = await this.client.token(req.signal, to)
+		let ct = await this.client.token(to)
 		if (ct.err) {
 			let err = new Error("Requesting token", {cause: ct.err})
 			let [code, er] = proxyError(ct.err, err)
@@ -910,7 +915,7 @@ export class Server {
 		} else if (td.expires_in) {
 			ob.expires_in = td.expires_in
 		} else if (tp.exp) {
-			ob.expires_in = tp.exp
+			ob.expires_in = tp.exp - tp.iat
 		}
 
 		res.status(200)
@@ -966,6 +971,7 @@ function guard(r: express.Router, o: GuardOptions): void {
 }
 
 declare module "express-serve-static-core" {
+	// eslint-disable-next-line typescript/consistent-type-definitions
 	interface Request {
 		[authKey]?: Auth
 	}
@@ -993,7 +999,7 @@ function auth(o: AuthOptions): express.Handler {
 					error: "invalid_client",
 					error_description: errors.format(err),
 				}
-				res.set('WWW-Authenticate: Basic realm="OAuth"')
+				res.set("WWW-Authenticate", 'Basic realm="OAuth"')
 				res.status(401)
 				res.json(er)
 				return
@@ -1050,7 +1056,7 @@ function auth(o: AuthOptions): express.Handler {
 						error: "invalid_client",
 						error_description: errors.format(err),
 					}
-					res.set('WWW-Authenticate: Basic realm="OAuth"')
+					res.set("WWW-Authenticate", 'Basic realm="OAuth"')
 					res.status(401)
 					res.json(er)
 					return
@@ -1123,13 +1129,13 @@ function parseBasic(h: string): r.Result<ClientPassword, Error> {
 		return r.error(new Error("Malformed password"))
 	}
 
-	let x = h.slice(0, i)
+	let x = v.slice(0, i)
 
 	if (!x) {
 		return r.error(new Error("No client_id"))
 	}
 
-	let y = h.slice(i + 1)
+	let y = v.slice(i + 1)
 
 	if (!y) {
 		return r.error(new Error("No client_secret"))

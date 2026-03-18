@@ -1,29 +1,11 @@
 /**
- * (c) Copyright Ascensio System SIA 2025
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- *
- * @license
- */
-
-/**
  * @module
- * @mergeModuleWith api
+ * @mergeModuleWith api/core
  */
 
 import * as z from "zod"
-import type {Result} from "../util/result.ts"
-import {error, ok, safeAsync, safeNew, safeSync} from "../util/result.ts"
+import type {Result} from "../../util/result.ts"
+import {error, ok, safeAsync, safeNew, safeSync} from "../../util/result.ts"
 import {AuthService} from "./auth-service.ts"
 import {FilesService} from "./files-service.ts"
 import {PeopleService} from "./people-service.ts"
@@ -44,7 +26,7 @@ const schemaBasicAuth = "Basic"
 const schemaBearerAuth = "Bearer"
 const cookieAuthToken = "asc_auth_key"
 
-export interface ClientConfig {
+export type ClientConfig = {
 	userAgent: string
 	baseUrl: string
 	fetch: typeof globalThis.fetch
@@ -230,10 +212,9 @@ export class Client {
 		return ok(u.v.toString())
 	}
 
-	createRequest(signal: AbortSignal, method: string, url: string, body?: unknown): Result<Request, Error> {
+	createRequest(method: string, url: string, body?: unknown): Result<Request, Error> {
 		let c: RequestInit = {
 			method,
-			signal,
 		}
 
 		if (body !== undefined) {
@@ -272,11 +253,10 @@ export class Client {
 		return ok(r.v)
 	}
 
-	createFormRequest(signal: AbortSignal, url: string, body: FormData): Result<Request, Error> {
+	createFormRequest(url: string, body: FormData): Result<Request, Error> {
 		let c: RequestInit = {
 			body,
 			method: "POST",
-			signal,
 		}
 
 		let r = safeNew(Request, url, c)
@@ -383,13 +363,12 @@ export class Response {
 	}
 }
 
-// eslint-disable-next-line unicorn/custom-error-definition
-export class ErrorResponse extends Error {
+export class ResponseError extends Error {
 	response: Response
 
 	constructor(response: Response, message: string) {
 		super(message)
-		this.name = "ErrorResponse"
+		this.name = "ResponseError"
 		this.response = response
 	}
 }
@@ -477,12 +456,12 @@ export async function checkSharedResponse(req: Request, res: globalThis.Response
 
 		let r = new Response(req, res)
 		let m = `${req.method} ${req.url}: ${res.status} ${s.data.message}`
-		let e = new ErrorResponse(r, m)
+		let e = new ResponseError(r, m)
 
 		return e
 	})()
 
-	if (err instanceof ErrorResponse) {
+	if (err instanceof ResponseError) {
 		return err
 	}
 
@@ -492,7 +471,7 @@ export async function checkSharedResponse(req: Request, res: globalThis.Response
 
 	let r = new Response(req, res)
 	let m = `${req.method} ${req.url}: ${res.status} ${res.statusText}`
-	let e = new ErrorResponse(r, m)
+	let e = new ResponseError(r, m)
 
 	return e
 }

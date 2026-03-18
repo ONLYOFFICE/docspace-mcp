@@ -1,31 +1,11 @@
 /**
- * (c) Copyright Ascensio System SIA 2025
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- *
- * @license
- */
-
-/**
  * @module
  * @mergeModuleWith oauth
  */
 
-/* eslint-disable typescript/consistent-type-definitions */
-/* eslint-disable unicorn/custom-error-definition */
-
 import contentType from "content-type"
-import z from "zod"
+import * as z from "zod"
+import * as errors from "../util/errors.ts"
 import * as r from "../util/result.ts"
 import type {
 	AuthorizeRequest,
@@ -61,7 +41,7 @@ export class ClientResponse {
 	}
 }
 
-export type ClientErrorResponseOptions = {
+export type ClientResponseErrorOptions = {
 	request: Request
 	response: Response
 	error: string
@@ -70,16 +50,16 @@ export type ClientErrorResponseOptions = {
 	message: string
 }
 
-export class ClientErrorResponse extends Error {
+export class ClientResponseError extends Error {
 	request: Request
 	response: Response
 	error: string
 	error_description: string
 	error_uri: string
 
-	constructor(o: ClientErrorResponseOptions) {
+	constructor(o: ClientResponseErrorOptions) {
 		super(o.message)
-		this.name = "ErrorResponse"
+		this.name = "ClientResponseError"
 		this.request = o.request
 		this.response = o.response
 		this.error = o.error
@@ -130,13 +110,13 @@ export class Client {
 		return r.ok(u.v)
 	}
 
-	async introspect(s: AbortSignal | undefined, o: IntrospectRequest): Promise<r.Result<[IntrospectResponse, ClientResponse], Error>> {
+	async introspect(o: IntrospectRequest): Promise<r.Result<[IntrospectResponse, ClientResponse], Error>> {
 		let u = this.createUrl("oauth2/introspect")
 		if (u.err) {
 			return r.error(new Error("Creating URL", {cause: u.err}))
 		}
 
-		let req = this.createRequest(s, u.v, o)
+		let req = this.createRequest(u.v, o)
 		if (req.err) {
 			return r.error(new Error("Creating request", {cause: req.err}))
 		}
@@ -156,13 +136,13 @@ export class Client {
 		return r.ok([p.data, res])
 	}
 
-	async revoke(s: AbortSignal | undefined, o: ClientRevokeRequest): Promise<r.Result<ClientResponse, Error>> {
+	async revoke(o: ClientRevokeRequest): Promise<r.Result<ClientResponse, Error>> {
 		let u = this.createUrl("oauth2/revoke")
 		if (u.err) {
 			return r.error(new Error("Creating URL", {cause: u.err}))
 		}
 
-		let req = this.createRequest(s, u.v, o)
+		let req = this.createRequest(u.v, o)
 		if (req.err) {
 			return r.error(new Error("Creating request", {cause: req.err}))
 		}
@@ -182,13 +162,13 @@ export class Client {
 		return r.ok(w)
 	}
 
-	async token(s: AbortSignal | undefined, o: ClientTokenRequest): Promise<r.Result<[TokenResponse, ClientResponse], Error>> {
+	async token(o: ClientTokenRequest): Promise<r.Result<[TokenResponse, ClientResponse], Error>> {
 		let u = this.createUrl("oauth2/token")
 		if (u.err) {
 			return r.error(new Error("Creating URL", {cause: u.err}))
 		}
 
-		let req = this.createRequest(s, u.v, o)
+		let req = this.createRequest(u.v, o)
 		if (req.err) {
 			return r.error(new Error("Creating request", {cause: req.err}))
 		}
@@ -231,7 +211,7 @@ export class Client {
 		return r.ok(u.v)
 	}
 
-	createRequest(s: AbortSignal | undefined, u: URL, b: object): r.Result<Request, Error> {
+	createRequest(u: URL, b: object): r.Result<Request, Error> {
 		let p = new URLSearchParams()
 
 		for (let [k, v] of Object.entries(b)) {
@@ -244,10 +224,6 @@ export class Client {
 
 		let c: RequestInit = {
 			method: "POST",
-		}
-
-		if (s) {
-			c.signal = s
 		}
 
 		if (p.size !== 0) {
@@ -303,7 +279,7 @@ export async function checkResponse(req: Request, res: Response): Promise<r.Resu
 		return r.ok()
 	}
 
-	let o: ClientErrorResponseOptions = {
+	let o: ClientResponseErrorOptions = {
 		request: req,
 		response: res,
 		error: "",
@@ -315,21 +291,40 @@ export async function checkResponse(req: Request, res: Response): Promise<r.Resu
 	await (async() => {
 		let h = res.headers.get("Content-Type")
 		if (!h) {
+			let err = new Error("Content-Type is missing")
+			o.error = "server_error"
+			o.error_description = errors.format(err)
 			return
 		}
 
 		let p = r.safeSync(contentType.parse, h)
-		if (p.err || p.v.type !== "application/json") {
+		if (p.err) {
+			let err = new Error("Parsing Content-Type", {cause: p.err})
+			o.error = "server_error"
+			o.error_description = errors.format(err)
+			return
+		}
+
+		if (p.v.type !== "application/json") {
+			let err = new Error("Content-Type is invalid")
+			o.error = "server_error"
+			o.error_description = errors.format(err)
 			return
 		}
 
 		let c = r.safeSync(res.clone.bind(res))
 		if (c.err) {
+			let err = new Error("Cloning response", {cause: c.err})
+			o.error = "server_error"
+			o.error_description = errors.format(err)
 			return
 		}
 
 		let b = await r.safeAsync(c.v.json.bind(c.v))
 		if (b.err) {
+			let err = new Error("Parsing response", {cause: b.err})
+			o.error = "server_error"
+			o.error_description = errors.format(err)
 			return
 		}
 
@@ -368,7 +363,7 @@ export async function checkResponse(req: Request, res: Response): Promise<r.Resu
 
 	o.message = o.message.slice(0, -1)
 
-	let e = new ClientErrorResponse(o)
+	let e = new ClientResponseError(o)
 
 	return r.error(e)
 }

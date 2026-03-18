@@ -1,29 +1,12 @@
 /**
- * (c) Copyright Ascensio System SIA 2025
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- *
- * @license
- */
-
-/**
  * @module
  * @mergeModuleWith mcp
  */
 
-import * as types from "@modelcontextprotocol/sdk/types.js"
-import type * as zodToJsonSchema from "zod-to-json-schema"
-import * as api from "../api.ts"
+import type * as types from "@modelcontextprotocol/sdk/types.js"
+import type * as z from "zod"
+import * as apiCore from "../api/core.ts"
+import type * as apiExtra from "../api/extra.ts"
 import * as errors from "../util/errors.ts"
 import type * as mcp from "../util/mcp.ts"
 import * as result from "../util/result.ts"
@@ -31,38 +14,32 @@ import {metaToolInfos, toolsetInfos} from "./data.ts"
 import {MetaTools} from "./meta-tools.ts"
 import {RegularTools} from "./regular-tools.ts"
 
-export type ConfiguredServerRouteTool = (
-	req: mcp.CallToolRequest,
-	extra: mcp.RequestExtra,
-) => Promise<result.Result<ConfiguredServerRouteToolResult, Error>>
+export type ConfiguredServerRouteTool = (req: types.CallToolRequest) => Promise<result.Result<ConfiguredServerRouteToolResult, Error>>
 
 export type ConfiguredServerRouteToolResult = types.CallToolResult & {
 	isError?: never
 }
 
-export type CallRegularToolHandler = (
-	signal: AbortSignal,
-	args: unknown,
-) => CallRegularToolHandlerResult
+export type CallRegularToolHandler = (args: unknown) => CallRegularToolHandlerResult
 
 export type CallRegularToolHandlerResult =
-	result.Result<zodToJsonSchema.JsonSchema7Type, Error> |
-	Promise<result.Result<api.Response, Error>> |
-	Promise<result.Result<zodToJsonSchema.JsonSchema7Type, Error>> |
+	result.Result<z.core.JSONSchema.BaseSchema, Error> |
+	Promise<result.Result<apiCore.Response, Error>> |
+	Promise<result.Result<z.core.JSONSchema.BaseSchema, Error>> |
 	Promise<result.Result<string, Error>>
 
-export interface ConfiguredServerConfig {
-	client: api.Client
-	resolver: api.Resolver
-	uploader: api.Uploader
+export type ConfiguredServerConfig = {
+	client: apiCore.Client
+	resolver: apiExtra.Resolver
+	uploader: apiExtra.Uploader
 	dynamic: boolean
 	tools: string[]
 }
 
 export class ConfiguredServer {
-	client: api.Client
-	resolver: api.Resolver
-	uploader: api.Uploader
+	client: apiCore.Client
+	resolver: apiExtra.Resolver
+	uploader: apiExtra.Uploader
 
 	metaTools: MetaTools
 	regularTools: RegularTools
@@ -143,17 +120,26 @@ export class ConfiguredServer {
 		}
 	}
 
+	router(): mcp.Router {
+		return {
+			capabilities: {
+				tools: {},
+			},
+			handlers: {
+				"tools/call": this.callTool.bind(this),
+				"tools/list": this.listTools.bind(this),
+			},
+		}
+	}
+
 	listTools(): types.ListToolsResult {
 		return {
 			tools: this.toolInfos,
 		}
 	}
 
-	async callTool(
-		req: mcp.CallToolRequest,
-		extra: mcp.RequestExtra,
-	): Promise<types.CallToolResult> {
-		let pr = await this.routeTool(req, extra)
+	async callTool(req: types.CallToolRequest): Promise<types.CallToolResult> {
+		let pr = await this.routeTool(req)
 
 		if (pr.err) {
 			return {
@@ -170,10 +156,7 @@ export class ConfiguredServer {
 		return pr.v
 	}
 
-	async routeMetaTool(
-		req: mcp.CallToolRequest,
-		extra: mcp.RequestExtra,
-	): Promise<result.Result<ConfiguredServerRouteToolResult, Error>> {
+	async routeMetaTool(req: types.CallToolRequest): Promise<result.Result<ConfiguredServerRouteToolResult, Error>> {
 		let mr: result.Result<
 			mcp.Summary[] |
 			mcp.ToolInputSchema |
@@ -201,7 +184,7 @@ export class ConfiguredServer {
 				mr = this.metaTools.getToolOutputSchema(req)
 				break
 			case "call_tool":
-				rr = await this.metaTools.callTool(req, extra)
+				rr = await this.metaTools.callTool(req)
 				break
 			default:
 				mr = result.error(new Error(`Tool ${req.params.name} not found.`))
@@ -244,10 +227,7 @@ export class ConfiguredServer {
 		return result.error(new Error("Unknown result type"))
 	}
 
-	async routeRegularTool(
-		req: mcp.CallToolRequest,
-		extra: mcp.RequestExtra,
-	): Promise<result.Result<ConfiguredServerRouteToolResult, Error>> {
+	async routeRegularTool(req: types.CallToolRequest): Promise<result.Result<ConfiguredServerRouteToolResult, Error>> {
 		let f = false
 
 		for (let s of this.toolsetInfos) {
@@ -272,7 +252,7 @@ export class ConfiguredServer {
 		try {
 			let h = this.callRegularToolHandlers[req.params.name]
 			if (h) {
-				cr = await h(extra.signal, req.params.arguments)
+				cr = await h(req.params.arguments)
 			} else {
 				cr = result.error(new Error(`Tool ${req.params.name} not found.`))
 			}
@@ -288,7 +268,7 @@ export class ConfiguredServer {
 			return result.error(cr.err)
 		}
 
-		if (cr.v instanceof api.Response) {
+		if (cr.v instanceof apiCore.Response) {
 			let h = cr.v.response.headers.get("Content-Type")
 			if (h === null) {
 				return result.error(new Error("Content-Type header is missing"))
@@ -411,22 +391,4 @@ export class ConfiguredServer {
 
 		return result.error(new Error("Unknown result type"))
 	}
-}
-
-export function configuredServer(
-	config: ConfiguredServerConfig,
-): mcp.RequestDefinition[] {
-	let s = new ConfiguredServer(config)
-
-	let l: mcp.ListToolsRequestDefinition = {
-		schema: types.ListToolsRequestSchema,
-		handler: s.listTools.bind(s),
-	}
-
-	let c: mcp.CallToolRequestDefinition = {
-		schema: types.CallToolRequestSchema,
-		handler: s.callTool.bind(s),
-	}
-
-	return [l, c]
 }

@@ -1,29 +1,17 @@
 /**
- * (c) Copyright Ascensio System SIA 2025
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- *
- * @license
+ * @module
+ * @mergeModuleWith api/extra
  */
 
 import {setTimeout} from "node:timers/promises"
 import type * as z from "zod"
-import type {Result} from "../util/result.ts"
-import {error, ok, safeAsync} from "../util/result.ts"
-import type {Response} from "./client.ts"
-import type {FileOperationDtoSchema} from "./schemas.ts"
+import * as abort from "../../util/abort.ts"
+import * as context from "../../util/context.ts"
+import type {Result} from "../../util/result.ts"
+import {error, ok, safeAsync} from "../../util/result.ts"
+import type * as core from "../core.ts"
 
-export type Operation = z.output<typeof FileOperationDtoSchema>
+export type Operation = z.output<typeof core.FileOperationDtoSchema>
 
 class State {
 	id: string | undefined
@@ -31,12 +19,12 @@ class State {
 	done = false
 }
 
-export interface ResolverClient {
+export type ResolverClient = {
 	files: ResolverFilesService
 }
 
-export interface ResolverFilesService {
-	getOperationStatuses(s: AbortSignal): Promise<Result<[Operation[], Response], Error>>
+export type ResolverFilesService = {
+	getOperationStatuses(): Promise<Result<[Operation[], core.Response], Error>>
 }
 
 export class Resolver {
@@ -49,7 +37,9 @@ export class Resolver {
 		this.client = client
 	}
 
-	async resolve(signal: AbortSignal, ...ops: Operation[]): Promise<Result<ResolverResponse, Error>> {
+	async resolve(...ops: Operation[]): Promise<Result<ResolverResponse, Error>> {
+		let ctx = context.get()
+
 		if (ops.length === 0) {
 			return error(new Error("No operations to sync."))
 		}
@@ -68,13 +58,13 @@ export class Resolver {
 		let limit = this.limit
 		let delay = this.delay
 
-		let responses: Response[] = []
+		let responses: core.Response[] = []
 		let operations: Operation[] = []
 
 		let err: Error | undefined
 
 		while (limit > 0) {
-			let r = await this.client.files.getOperationStatuses(signal)
+			let r = await this.client.files.getOperationStatuses()
 			if (r.err) {
 				err = new Error("Calling operation statuses callback.", {cause: r.err})
 				break
@@ -131,7 +121,7 @@ export class Resolver {
 
 			limit -= 1
 
-			let t = await safeAsync(setTimeout, delay, undefined, {signal})
+			let t = await safeAsync(setTimeout, delay, undefined, {signal: ctx[abort.signalKey]})
 			if (t.err) {
 				err = new Error("Setting timeout.", {cause: t.err})
 				break
@@ -155,7 +145,7 @@ export class Resolver {
 		}
 
 		if (err) {
-			let e = new ResolverErrorResponse("Resolving operations.", {cause: err})
+			let e = new ResolverResponseError("Resolving operations.", {cause: err})
 			e.response = s
 			e.unresolved = u
 			return error(e)
@@ -163,7 +153,7 @@ export class Resolver {
 
 		if (u.length !== 0) {
 			let m = `${u.length} out of ${ops.length} operations are unresolved.`
-			let e = new ResolverErrorResponse(m)
+			let e = new ResolverResponseError(m)
 			e.response = s
 			e.unresolved = u
 			return error(e)
@@ -174,18 +164,17 @@ export class Resolver {
 }
 
 export class ResolverResponse {
-	responses: Response[] = []
+	responses: core.Response[] = []
 	operations: Operation[] = []
 }
 
-// eslint-disable-next-line unicorn/custom-error-definition
-export class ResolverErrorResponse extends Error {
+export class ResolverResponseError extends Error {
 	response = new ResolverResponse()
 	unresolved: string[] = []
 
 	constructor(message: string, options?: ErrorOptions) {
 		super(message, options)
-		this.name = "ResolverErrorResponse"
+		this.name = "ResolverResponseError"
 	}
 }
 

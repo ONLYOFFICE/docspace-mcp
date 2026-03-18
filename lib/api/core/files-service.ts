@@ -1,29 +1,11 @@
 /**
- * (c) Copyright Ascensio System SIA 2025
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- *
- * @license
- */
-
-/**
  * @module
- * @mergeModuleWith api
+ * @mergeModuleWith api/core
  */
 
 import * as z from "zod"
-import type {Result} from "../util/result.ts"
-import {error, ok, safeNew} from "../util/result.ts"
+import type {Result} from "../../util/result.ts"
+import {error, ok, safeNew} from "../../util/result.ts"
 import type {Client, Response} from "./client.ts"
 import type {
 	ArchiveRoomRequestSchema,
@@ -153,13 +135,13 @@ export class FilesService {
 	/**
 	 * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/products/ASC.Files/Server/Api/FilesController.cs/#L239 | DocSpace Reference}
 	 */
-	async deleteFile(s: AbortSignal, id: number, o: DeleteFileOptions): Promise<Result<[DeleteFileResponseItem[], Response], Error>> {
+	async deleteFile(id: number, o: DeleteFileOptions): Promise<Result<[DeleteFileResponseItem[], Response], Error>> {
 		let u = this.c.createUrl(`api/2.0/files/file/${id}`)
 		if (u.err) {
 			return error(new Error("Creating URL.", {cause: u.err}))
 		}
 
-		let req = this.c.createRequest(s, "DELETE", u.v, o)
+		let req = this.c.createRequest("DELETE", u.v, o)
 		if (req.err) {
 			return error(new Error("Creating request.", {cause: req.err}))
 		}
@@ -182,13 +164,13 @@ export class FilesService {
 	/**
 	 * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/products/ASC.Files/Server/Api/FilesController.cs/#L305 | DocSpace Reference}
 	 */
-	async getFileInfo(s: AbortSignal, id: number, filters?: GetFileInfoFilters): Promise<Result<[GetFileInfoResponse, Response], Error>> {
+	async getFileInfo(id: number, filters?: GetFileInfoFilters): Promise<Result<[GetFileInfoResponse, Response], Error>> {
 		let u = this.c.createUrl(`api/2.0/files/file/${id}`, filters)
 		if (u.err) {
 			return error(new Error("Creating URL.", {cause: u.err}))
 		}
 
-		let req = this.c.createRequest(s, "GET", u.v)
+		let req = this.c.createRequest("GET", u.v)
 		if (req.err) {
 			return error(new Error("Creating request.", {cause: req.err}))
 		}
@@ -211,13 +193,13 @@ export class FilesService {
 	/**
 	 * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/products/ASC.Files/Server/Api/FilesController.cs/#L399 | DocSpace Reference}
 	 */
-	async updateFile(s: AbortSignal, id: number, o: UpdateFileOptions): Promise<Result<[UpdateFileResponse, Response], Error>> {
+	async updateFile(id: number, o: UpdateFileOptions): Promise<Result<[UpdateFileResponse, Response], Error>> {
 		let u = this.c.createUrl(`api/2.0/files/file/${id}`)
 		if (u.err) {
 			return error(new Error("Creating URL.", {cause: u.err}))
 		}
 
-		let req = this.c.createRequest(s, "PUT", u.v, o)
+		let req = this.c.createRequest("PUT", u.v, o)
 		if (req.err) {
 			return error(new Error("Creating request.", {cause: req.err}))
 		}
@@ -244,13 +226,13 @@ export class FilesService {
 	/**
 	 * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/products/ASC.Files/Server/Api/FoldersController.cs/#L110 | DocSpace Reference}
 	 */
-	async createFolder(s: AbortSignal, id: number, o: CreateFolderOptions, filters?: CreateFolderFilters): Promise<Result<[CreateFolderResponse, Response], Error>> {
+	async createFolder(id: number, o: CreateFolderOptions, filters?: CreateFolderFilters): Promise<Result<[CreateFolderResponse, Response], Error>> {
 		let u = this.c.createUrl(`api/2.0/files/folder/${id}`, filters)
 		if (u.err) {
 			return error(new Error("Creating URL.", {cause: u.err}))
 		}
 
-		let req = this.c.createRequest(s, "POST", u.v, o)
+		let req = this.c.createRequest("POST", u.v, o)
 		if (req.err) {
 			return error(new Error("Creating request.", {cause: req.err}))
 		}
@@ -273,13 +255,13 @@ export class FilesService {
 	/**
 	 * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/products/ASC.Files/Server/Api/FoldersController.cs/#L126 | DocSpace Reference}
 	 */
-	async deleteFolder(s: AbortSignal, id: number, o: DeleteFolderOptions): Promise<Result<[DeleteFolderResponseItem[], Response], Error>> {
+	async deleteFolder(id: number, o: DeleteFolderOptions): Promise<Result<[DeleteFolderResponseItem[], Response], Error>> {
 		let u = this.c.createUrl(`api/2.0/files/folder/${id}`)
 		if (u.err) {
 			return error(new Error("Creating URL.", {cause: u.err}))
 		}
 
-		let req = this.c.createRequest(s, "DELETE", u.v, o)
+		let req = this.c.createRequest("DELETE", u.v, o)
 		if (req.err) {
 			return error(new Error("Creating request.", {cause: req.err}))
 		}
@@ -302,13 +284,13 @@ export class FilesService {
 	/**
 	 * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/products/ASC.Files/Server/Api/FoldersController.cs/#L161 | DocSpace Reference}
 	 */
-	async getFolder(s: AbortSignal, id: number, filters?: GetFolderFilters): Promise<Result<[GetFolderResponse, Response], Error>> {
+	async getFolder(id: number, filters?: GetFolderFilters): Promise<Result<[GetFolderResponse, Response], Error>> {
 		let u = this.c.createUrl(`api/2.0/files/${id}`, filters)
 		if (u.err) {
 			return error(new Error("Creating URL.", {cause: u.err}))
 		}
 
-		let req = this.c.createRequest(s, "GET", u.v)
+		let req = this.c.createRequest("GET", u.v)
 		if (req.err) {
 			return error(new Error("Creating request.", {cause: req.err}))
 		}
@@ -331,13 +313,13 @@ export class FilesService {
 	/**
 	 * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/products/ASC.Files/Server/Api/FoldersController.cs/#L180 | DocSpace Reference}
 	 */
-	async getFolderInfo(s: AbortSignal, id: number, filters?: GetFolderInfoFilters): Promise<Result<[GetFolderInfoResponse, Response], Error>> {
+	async getFolderInfo(id: number, filters?: GetFolderInfoFilters): Promise<Result<[GetFolderInfoResponse, Response], Error>> {
 		let u = this.c.createUrl(`api/2.0/files/folder/${id}`, filters)
 		if (u.err) {
 			return error(new Error("Creating URL.", {cause: u.err}))
 		}
 
-		let req = this.c.createRequest(s, "GET", u.v)
+		let req = this.c.createRequest("GET", u.v)
 		if (req.err) {
 			return error(new Error("Creating request.", {cause: req.err}))
 		}
@@ -360,13 +342,13 @@ export class FilesService {
 	/**
 	 * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/products/ASC.Files/Server/Api/FoldersController.cs/#L255 | DocSpace Reference}
 	 */
-	async renameFolder(s: AbortSignal, id: number, o: RenameFolderOptions, filters?: RenameFolderFilters): Promise<Result<[RenameFolderResponse, Response], Error>> {
+	async renameFolder(id: number, o: RenameFolderOptions, filters?: RenameFolderFilters): Promise<Result<[RenameFolderResponse, Response], Error>> {
 		let u = this.c.createUrl(`api/2.0/files/folder/${id}`, filters)
 		if (u.err) {
 			return error(new Error("Creating URL.", {cause: u.err}))
 		}
 
-		let req = this.c.createRequest(s, "PUT", u.v, o)
+		let req = this.c.createRequest("PUT", u.v, o)
 		if (req.err) {
 			return error(new Error("Creating request.", {cause: req.err}))
 		}
@@ -389,13 +371,13 @@ export class FilesService {
 	/**
 	 * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/products/ASC.Files/Server/Api/FoldersController.cs/#L348 | DocSpace Reference}
 	 */
-	async getMyFolder(s: AbortSignal, filters?: GetMyFolderFilters): Promise<Result<[GetMyFolderResponse, Response], Error>> {
+	async getMyFolder(filters?: GetMyFolderFilters): Promise<Result<[GetMyFolderResponse, Response], Error>> {
 		let u = this.c.createUrl("api/2.0/files/@my", filters)
 		if (u.err) {
 			return error(new Error("Creating URL.", {cause: u.err}))
 		}
 
-		let req = this.c.createRequest(s, "GET", u.v)
+		let req = this.c.createRequest("GET", u.v)
 		if (req.err) {
 			return error(new Error("Creating request.", {cause: req.err}))
 		}
@@ -418,13 +400,13 @@ export class FilesService {
 	/**
 	 * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/products/ASC.Files/Server/Api/FoldersController.cs/#L474 | DocSpace Reference}
 	 */
-	async getTrashFolder(s: AbortSignal): Promise<Result<[GetFolderResponse, Response], Error>> {
+	async getTrashFolder(): Promise<Result<[GetFolderResponse, Response], Error>> {
 		let u = this.c.createUrl("api/2.0/files/@trash")
 		if (u.err) {
 			return error(new Error("Creating URL.", {cause: u.err}))
 		}
 
-		let req = this.c.createRequest(s, "GET", u.v)
+		let req = this.c.createRequest("GET", u.v)
 		if (req.err) {
 			return error(new Error("Creating request.", {cause: req.err}))
 		}
@@ -451,13 +433,13 @@ export class FilesService {
 	/**
 	 * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/products/ASC.Files/Server/Api/OperationController.cs/#L51 | DocSpace Reference}
 	 */
-	async bulkDownload(s: AbortSignal, o: BulkDownloadOptions): Promise<Result<[BulkDownloadResponseItem[], Response], Error>> {
+	async bulkDownload(o: BulkDownloadOptions): Promise<Result<[BulkDownloadResponseItem[], Response], Error>> {
 		let u = this.c.createUrl("api/2.0/files/fileops/bulkdownload")
 		if (u.err) {
 			return error(new Error("Creating URL.", {cause: u.err}))
 		}
 
-		let req = this.c.createRequest(s, "PUT", u.v, o)
+		let req = this.c.createRequest("PUT", u.v, o)
 		if (req.err) {
 			return error(new Error("Creating request.", {cause: req.err}))
 		}
@@ -480,13 +462,13 @@ export class FilesService {
 	/**
 	 * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/products/ASC.Files/Server/Api/OperationController.cs/#L74 | DocSpace Reference}
 	 */
-	async copyBatchItems(s: AbortSignal, o: CopyBatchItemsOptions): Promise<Result<[CopyBatchItemsResponseItem[], Response], Error>> {
+	async copyBatchItems(o: CopyBatchItemsOptions): Promise<Result<[CopyBatchItemsResponseItem[], Response], Error>> {
 		let u = this.c.createUrl("api/2.0/files/fileops/copy")
 		if (u.err) {
 			return error(new Error("Creating URL.", {cause: u.err}))
 		}
 
-		let req = this.c.createRequest(s, "PUT", u.v, o)
+		let req = this.c.createRequest("PUT", u.v, o)
 		if (req.err) {
 			return error(new Error("Creating request.", {cause: req.err}))
 		}
@@ -509,13 +491,13 @@ export class FilesService {
 	/**
 	 * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/products/ASC.Files/Server/Api/OperationController.cs/#L136 | DocSpace Reference}
 	 */
-	async getOperationStatuses(s: AbortSignal): Promise<Result<[GetOperationStatusesResponseItem[], Response], Error>> {
+	async getOperationStatuses(): Promise<Result<[GetOperationStatusesResponseItem[], Response], Error>> {
 		let u = this.c.createUrl("api/2.0/files/fileops")
 		if (u.err) {
 			return error(new Error("Creating URL.", {cause: u.err}))
 		}
 
-		let req = this.c.createRequest(s, "GET", u.v)
+		let req = this.c.createRequest("GET", u.v)
 		if (req.err) {
 			return error(new Error("Creating request.", {cause: req.err}))
 		}
@@ -538,13 +520,13 @@ export class FilesService {
 	/**
 	 * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/products/ASC.Files/Server/Api/OperationController.cs/#L173 | DocSpace Reference}
 	 */
-	async moveBatchItems(s: AbortSignal, o: MoveBatchItemsOptions): Promise<Result<[MoveBatchItemsResponseItem[], Response], Error>> {
+	async moveBatchItems(o: MoveBatchItemsOptions): Promise<Result<[MoveBatchItemsResponseItem[], Response], Error>> {
 		let u = this.c.createUrl("api/2.0/files/fileops/move")
 		if (u.err) {
 			return error(new Error("Creating URL.", {cause: u.err}))
 		}
 
-		let req = this.c.createRequest(s, "PUT", u.v, o)
+		let req = this.c.createRequest("PUT", u.v, o)
 		if (req.err) {
 			return error(new Error("Creating request.", {cause: req.err}))
 		}
@@ -571,13 +553,13 @@ export class FilesService {
 	/**
 	 * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.1.1-server/products/ASC.Files/Server/Api/SettingsController.cs/#L199 | DocSpace Reference}
 	 */
-	async getFilesSettings(s: AbortSignal): Promise<Result<[GetFilesSettingsResponse, Response], Error>> {
+	async getFilesSettings(): Promise<Result<[GetFilesSettingsResponse, Response], Error>> {
 		let u = this.c.createUrl("api/2.0/files/settings")
 		if (u.err) {
 			return error(new Error("Creating URL.", {cause: u.err}))
 		}
 
-		let req = this.c.createRequest(s, "GET", u.v)
+		let req = this.c.createRequest("GET", u.v)
 		if (req.err) {
 			return error(new Error("Creating request.", {cause: req.err}))
 		}
@@ -604,13 +586,13 @@ export class FilesService {
 	/**
 	 * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/products/ASC.Files/Server/Api/UploadController.cs/#L76 | DocSpace Reference}
 	 */
-	async createUploadSession(s: AbortSignal, id: number, o: CreateUploadSessionOptions): Promise<Result<[CreateUploadSessionResponse, Response], Error>> {
+	async createUploadSession(id: number, o: CreateUploadSessionOptions): Promise<Result<[CreateUploadSessionResponse, Response], Error>> {
 		let u = this.c.createUrl(`api/2.0/files/${id}/upload/create_session`)
 		if (u.err) {
 			return error(new Error("Creating URL.", {cause: u.err}))
 		}
 
-		let req = this.c.createRequest(s, "POST", u.v, o)
+		let req = this.c.createRequest("POST", u.v, o)
 		if (req.err) {
 			return error(new Error("Creating request.", {cause: req.err}))
 		}
@@ -637,13 +619,13 @@ export class FilesService {
 	/**
 	 * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/products/ASC.Files/Server/Api/VirtualRoomsController.cs/#L70 | DocSpace Reference}
 	 */
-	async createRoom(s: AbortSignal, o: CreateRoomOptions, filters?: CreateRoomFilters): Promise<Result<[CreateRoomResponse, Response], Error>> {
+	async createRoom(o: CreateRoomOptions, filters?: CreateRoomFilters): Promise<Result<[CreateRoomResponse, Response], Error>> {
 		let u = this.c.createUrl("api/2.0/files/rooms", filters)
 		if (u.err) {
 			return error(new Error("Creating URL.", {cause: u.err}))
 		}
 
-		let req = this.c.createRequest(s, "POST", u.v, o)
+		let req = this.c.createRequest("POST", u.v, o)
 		if (req.err) {
 			return error(new Error("Creating request.", {cause: req.err}))
 		}
@@ -666,13 +648,13 @@ export class FilesService {
 	/**
 	 * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/products/ASC.Files/Server/Api/VirtualRoomsController.cs/#L165 | DocSpace Reference}
 	 */
-	async getRoomInfo(s: AbortSignal, id: number, filters?: GetRoomInfoFilters): Promise<Result<[GetRoomInfoResponse, Response], Error>> {
+	async getRoomInfo(id: number, filters?: GetRoomInfoFilters): Promise<Result<[GetRoomInfoResponse, Response], Error>> {
 		let u = this.c.createUrl(`api/2.0/files/rooms/${id}`, filters)
 		if (u.err) {
 			return error(new Error("Creating URL.", {cause: u.err}))
 		}
 
-		let req = this.c.createRequest(s, "GET", u.v)
+		let req = this.c.createRequest("GET", u.v)
 		if (req.err) {
 			return error(new Error("Creating request.", {cause: req.err}))
 		}
@@ -695,13 +677,13 @@ export class FilesService {
 	/**
 	 * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/products/ASC.Files/Server/Api/VirtualRoomsController.cs/#L180 | DocSpace Reference}
 	 */
-	async updateRoom(s: AbortSignal, id: number, o: UpdateRoomOptions, filters?: UpdateRoomFilters): Promise<Result<[UpdateRoomResponse, Response], Error>> {
+	async updateRoom(id: number, o: UpdateRoomOptions, filters?: UpdateRoomFilters): Promise<Result<[UpdateRoomResponse, Response], Error>> {
 		let u = this.c.createUrl(`api/2.0/files/rooms/${id}`, filters)
 		if (u.err) {
 			return error(new Error("Creating URL.", {cause: u.err}))
 		}
 
-		let req = this.c.createRequest(s, "PUT", u.v, o)
+		let req = this.c.createRequest("PUT", u.v, o)
 		if (req.err) {
 			return error(new Error("Creating request.", {cause: req.err}))
 		}
@@ -724,13 +706,13 @@ export class FilesService {
 	/**
 	 * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/products/ASC.Files/Server/Api/VirtualRoomsController.cs/#L275 | DocSpace Reference}
 	 */
-	async archiveRoom(s: AbortSignal, id: number, o: ArchiveRoomOptions): Promise<Result<[ArchiveRoomResponse, Response], Error>> {
+	async archiveRoom(id: number, o: ArchiveRoomOptions): Promise<Result<[ArchiveRoomResponse, Response], Error>> {
 		let u = this.c.createUrl(`api/2.0/files/rooms/${id}/archive`)
 		if (u.err) {
 			return error(new Error("Creating URL.", {cause: u.err}))
 		}
 
-		let req = this.c.createRequest(s, "PUT", u.v, o)
+		let req = this.c.createRequest("PUT", u.v, o)
 		if (req.err) {
 			return error(new Error("Creating request.", {cause: req.err}))
 		}
@@ -753,13 +735,13 @@ export class FilesService {
 	/**
 	 * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/products/ASC.Files/Server/Api/VirtualRoomsController.cs/#L311 | DocSpace Reference}
 	 */
-	async setRoomSecurity(s: AbortSignal, id: number, o: SetRoomSecurityOptions, filters?: SetRoomSecurityFilters): Promise<Result<[SetRoomSecurityResponse, Response], Error>> {
+	async setRoomSecurity(id: number, o: SetRoomSecurityOptions, filters?: SetRoomSecurityFilters): Promise<Result<[SetRoomSecurityResponse, Response], Error>> {
 		let u = this.c.createUrl(`api/2.0/files/rooms/${id}/share`, filters)
 		if (u.err) {
 			return error(new Error("Creating URL.", {cause: u.err}))
 		}
 
-		let req = this.c.createRequest(s, "PUT", u.v, o)
+		let req = this.c.createRequest("PUT", u.v, o)
 		if (req.err) {
 			return error(new Error("Creating request.", {cause: req.err}))
 		}
@@ -782,13 +764,13 @@ export class FilesService {
 	/**
 	 * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/products/ASC.Files/Server/Api/VirtualRoomsController.cs/#L349 | DocSpace Reference}
 	 */
-	async getRoomSecurityInfo(s: AbortSignal, id: number, filters?: GetRoomSecurityFilters): Promise<Result<[GetRoomSecurityInfoResponse[], Response], Error>> {
+	async getRoomSecurityInfo(id: number, filters?: GetRoomSecurityFilters): Promise<Result<[GetRoomSecurityInfoResponse[], Response], Error>> {
 		let u = this.c.createUrl(`api/2.0/files/rooms/${id}/share`, filters)
 		if (u.err) {
 			return error(new Error("Creating URL.", {cause: u.err}))
 		}
 
-		let req = this.c.createRequest(s, "GET", u.v)
+		let req = this.c.createRequest("GET", u.v)
 		if (req.err) {
 			return error(new Error("Creating request.", {cause: req.err}))
 		}
@@ -811,13 +793,13 @@ export class FilesService {
 	/**
 	 * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/products/ASC.Files/Server/Api/VirtualRoomsController.cs/#L649 | DocSpace Reference}
 	 */
-	async getRoomsFolder(s: AbortSignal, filters?: GetRoomsFolderFilters): Promise<Result<[GetRoomFolderResponse, Response], Error>> {
+	async getRoomsFolder(filters?: GetRoomsFolderFilters): Promise<Result<[GetRoomFolderResponse, Response], Error>> {
 		let u = this.c.createUrl("api/2.0/files/rooms", filters)
 		if (u.err) {
 			return error(new Error("Creating URL.", {cause: u.err}))
 		}
 
-		let req = this.c.createRequest(s, "GET", u.v)
+		let req = this.c.createRequest("GET", u.v)
 		if (req.err) {
 			return error(new Error("Creating request.", {cause: req.err}))
 		}
@@ -844,7 +826,7 @@ export class FilesService {
 	/**
 	 * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/products/ASC.Files/Server/Startup.cs/#L76 | DocSpace Reference}
 	 */
-	async uploadChunk(s: AbortSignal, id: string, chunk: Blob): Promise<Result<[unknown, Response], Error>> {
+	async uploadChunk(id: string, chunk: Blob): Promise<Result<[unknown, Response], Error>> {
 		let u = this.c.createUrl(`ChunkedUploader.ashx?uid=${id}`)
 		if (u.err) {
 			return error(new Error("Creating URL.", {cause: u.err}))
@@ -857,7 +839,7 @@ export class FilesService {
 
 		d.v.append("file", chunk)
 
-		let req = this.c.createFormRequest(s, u.v, d.v)
+		let req = this.c.createFormRequest(u.v, d.v)
 		if (req.err) {
 			return error(new Error("Creating request.", {cause: req.err}))
 		}

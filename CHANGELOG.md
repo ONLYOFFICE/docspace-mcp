@@ -1,11 +1,63 @@
 # Changelog
 
-This document records all notable changes to the project, following the
-[Keep a Changelog] format and adhering to [Semantic Versioning].
+This document records all notable changes to the project, following the [Keep a
+Changelog] format and adhering to [Semantic Versioning].
 
 ## [Unreleased]
 
-There are no noticeable changes in version [unreleased].
+There are no notable changes in this release.
+
+## [3.2.0] - 2026-03-18
+
+### Added
+
+- Add tool annotations ([01bc863]).
+- Add the `DOCSPACE_SERVER_ALLOWED_HOSTNAMES` option ([f7be9cc]).
+
+### Changed
+
+- Update `express` to v5.2.1 ([1da5a12]).
+- Update `express-rate-limit` to v8.2.1 ([1da5a12]).
+- Update `jsonwebtoken` to v9.0.3 ([1da5a12]).
+- Update Node.js to v24.11.1 in OCI image ([02b1525]).
+- Change project license from Apache 2.0 to MIT ([b6a3923]).
+- Update `cors` to v2.8.6 ([382ebec]).
+- Update `zod` to v4.3.6 ([c045998]).
+- Update `@modelcontextprotocol/sdk` to v1.25.3 ([fc3aedb]).
+
+### Removed
+
+- Remove `enum` from output schemas ([ed5a178]).
+
+### Fixed
+
+- Fix validation of custom headers for username and password ([9abb089]).
+- Fix not setting the wildcard `Access-Control-Allow-Origin` header ([b8d39d4]).
+- Fix not exposing the `RateLimit-Policy` header ([a8aae98]).
+- Move authentication middleware after guard-like middlewares in OAuth server
+  ([84ab292]).
+- Fix edge-case calculation of `expires_in` in OAuth token response ([f32f02f]).
+- Fix parsing of the `Authorization` header for OAuth server endpoints
+  ([3c9432c]).
+- Fix setting of the `WWW-Authenticate` header in OAuth server authorization
+  ([54b90c5]).
+- Fix unwrapping of the access token in the OAuth revocation endpoint
+  ([f03c714]).
+- Fix proxying of the not-before timestamp from the upstream OAuth service
+  ([658ffae]).
+- Fix `scope` field type in the OAuth refresh token request schema ([a733d43]).
+- Fix incorrect error status returned by the OAuth middleware when the
+  authorization token is invalid ([38a3a75]).
+- Fix proxying of errors from the upstream OAuth service ([38a3a75]).
+- Fix incorrect error status returned by the OAuth callback endpoint when the
+  state token is invalid ([38a3a75]).
+- Fix returning error instead of success response from the OAuth introspect
+  endpoint when the token is not yet valid or expired ([38a3a75]).
+- Fix incorrect error status returned by the OAuth introspect endpoint when the
+  token is invalid ([38a3a75]).
+- Fix returning empty error when the upstream OAuth server responds without or
+  with invalid Content-Type header ([5c52ebe]).
+- Fix not setting the `logging/setLevel` request handler ([7f600ab]).
 
 ## [3.1.0] - 2025-11-28
 
@@ -253,7 +305,8 @@ There are no noticeable changes in version [3.0.1].
 [Keep a Changelog]: https://keepachangelog.com/en/1.1.0/
 [Semantic Versioning]: https://semver.org/spec/v2.0.0.html
 
-[Unreleased]: https://github.com/onlyoffice/docspace-mcp/compare/v3.1.0...HEAD/
+[Unreleased]: https://github.com/onlyoffice/docspace-mcp/compare/v3.2.0...HEAD/
+[3.2.0]: https://github.com/onlyoffice/docspace-mcp/compare/v3.1.0...v3.2.0/
 [3.1.0]: https://github.com/onlyoffice/docspace-mcp/compare/v3.0.1...v3.1.0/
 [3.0.1]: https://github.com/onlyoffice/docspace-mcp/compare/v3.0.0...v3.0.1/
 [3.0.0]: https://github.com/onlyoffice/docspace-mcp/compare/v2.0.0...v3.0.0/
@@ -269,6 +322,29 @@ There are no noticeable changes in version [3.0.1].
 [0.1.1]: https://github.com/onlyoffice/docspace-mcp/compare/v0.1.0...v0.1.1/
 [0.1.0]: https://github.com/onlyoffice/docspace-mcp/releases/tag/v0.1.0/
 
+[f7be9cc]: https://github.com/onlyoffice/docspace-mcp/commit/f7be9ccc0cb7708948a2d281b9f780e8ebc7f224/
+[7f600ab]: https://github.com/onlyoffice/docspace-mcp/commit/7f600abf82016efaa2462bc610155509f12b001e/
+[fc3aedb]: https://github.com/onlyoffice/docspace-mcp/commit/fc3aedb08584cc07181bd32480ff7f7add6cd1e3/
+[c045998]: https://github.com/onlyoffice/docspace-mcp/commit/fc3aedb08584cc07181bd32480ff7f7add6cd1e3/
+[382ebec]: https://github.com/onlyoffice/docspace-mcp/commit/fc3aedb08584cc07181bd32480ff7f7add6cd1e3/
+[01bc863]: https://github.com/onlyoffice/docspace-mcp/commit/01bc863b7171c9bec9dd2fd277dbd83e710e7e6c/
+[5c52ebe]: https://github.com/onlyoffice/docspace-mcp/commit/5c52ebedf15221a5e9e7c51d1ff9348a89e36b2e/
+[b6a3923]: https://github.com/onlyoffice/docspace-mcp/commit/b6a392338b4c9e92f0364dda29212a71c65be2cd/
+[38a3a75]: https://github.com/onlyoffice/docspace-mcp/commit/38a3a7587eb8bb4a4c02c136426cf1d59e108c9d/
+[a733d43]: https://github.com/onlyoffice/docspace-mcp/commit/a733d43b8881f4825399737bd3ddb172a3b51fac/
+[658ffae]: https://github.com/onlyoffice/docspace-mcp/commit/658ffae49f0f8d253346c29f9b0bebb752329f79/
+[f03c714]: https://github.com/onlyoffice/docspace-mcp/commit/f03c714cf646bea44bc48bc3dcd3dcc368e90ef6/
+[54b90c5]: https://github.com/onlyoffice/docspace-mcp/commit/54b90c565d66dd35b77f738ffee3189759b9bd52/
+[3c9432c]: https://github.com/onlyoffice/docspace-mcp/commit/3c9432c16994515dbbc6d6f5f52303c55f868f9a/
+[f32f02f]: https://github.com/onlyoffice/docspace-mcp/commit/f32f02fc6e788022954abf114f97bb43e214626c/
+[84ab292]: https://github.com/onlyoffice/docspace-mcp/commit/84ab29288f6fad7d9f4fbae862876725d959eb58/
+[a8aae98]: https://github.com/onlyoffice/docspace-mcp/commit/a8aae9841413b815d4023ff3e7ca9b47425b230b/
+[b8d39d4]: https://github.com/onlyoffice/docspace-mcp/commit/b8d39d4ebfb8824eb5f298aeae63a437219c5801/
+[ed5a178]: https://github.com/onlyoffice/docspace-mcp/commit/ed5a1781da629eed4c66b3cddd05a69d6c130bb2/
+[02b1525]: https://github.com/onlyoffice/docspace-mcp/commit/02b152547f2ff35b2d17ecb9b8491e97036a0659/
+[05d37dd]: https://github.com/onlyoffice/docspace-mcp/commit/05d37ddc35739c496ca307b4b7358558c5db470f/
+[1da5a12]: https://github.com/onlyoffice/docspace-mcp/commit/1da5a12c446f1926f63d8b08d302b034e59b7013/
+[9abb089]: https://github.com/onlyoffice/docspace-mcp/commit/9abb0898d91ad49aeb450dc41d48b77659a4cd81/
 [c7dc55c]: https://github.com/onlyoffice/docspace-mcp/commit/c7dc55cdea38aceb250f08109797e4e9898fc125/
 [081bf37]: https://github.com/onlyoffice/docspace-mcp/commit/081bf376dccbfb4b2103b914f4e78687781673ec/
 [577ff31]: https://github.com/onlyoffice/docspace-mcp/commit/577ff31bb72def7fe946f70515872ba7b08c8edd/

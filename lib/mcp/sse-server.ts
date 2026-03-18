@@ -1,36 +1,17 @@
 /**
- * (c) Copyright Ascensio System SIA 2025
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- *
- * @license
- */
-
-/**
  * @module
  * @mergeModuleWith mcp
  */
 
-/* eslint-disable typescript/consistent-type-definitions */
-
-import type * as server from "@modelcontextprotocol/sdk/server/index.js"
 import type * as sse from "@modelcontextprotocol/sdk/server/sse.js"
+import type * as transport from "@modelcontextprotocol/sdk/shared/transport.js"
 import express from "express"
 import * as errors from "../util/errors.ts"
 import * as utilExpress from "../util/express.ts"
 import * as result from "../util/result.ts"
 
 export type SseServerConfig = {
+	allowedHostnames: string[]
 	corsOrigin: string[]
 	corsMaxAge: number
 	corsAllowedHeaders: string[]
@@ -38,12 +19,16 @@ export type SseServerConfig = {
 	rateLimitCapacity: number
 	rateLimitWindow: number
 	handlers: express.Handler[]
-	servers: SseServerServers
+	protocols: SseServerProtocols
 	transports: SseServerTransports
 }
 
-export type SseServerServers = {
-	create(req: express.Request): result.Result<server.Server, Error>
+export type SseServerProtocol = {
+	connect(transport: transport.Transport): Promise<void>
+}
+
+export type SseServerProtocols = {
+	create(req: express.Request): result.Result<SseServerProtocol, Error>
 }
 
 export type SseServerTransports = {
@@ -52,6 +37,7 @@ export type SseServerTransports = {
 }
 
 export class SseServer {
+	private allowedHostnames: string[]
 	private corsOrigin: string[]
 	private corsMaxAge: number
 	private corsAllowedHeaders: string[]
@@ -59,10 +45,11 @@ export class SseServer {
 	private rateLimitCapacity: number
 	private rateLimitWindow: number
 	private handlers: express.Handler[]
-	private servers: SseServerServers
+	private protocols: SseServerProtocols
 	private transports: SseServerTransports
 
 	constructor(config: SseServerConfig) {
+		this.allowedHostnames = config.allowedHostnames
 		this.corsOrigin = config.corsOrigin
 		this.corsMaxAge = config.corsMaxAge
 		this.corsAllowedHeaders = config.corsAllowedHeaders
@@ -70,15 +57,22 @@ export class SseServer {
 		this.rateLimitCapacity = config.rateLimitCapacity
 		this.rateLimitWindow = config.rateLimitWindow
 		this.handlers = config.handlers
-		this.servers = config.servers
+		this.protocols = config.protocols
 		this.transports = config.transports
 	}
 
 	router(): express.Router {
 		// todo: add recovery middleware
-		// todo: add signal middleware
 		// todo: add allowedMethods middleware
 		// todo: add supportedMediaTypes middleware
+
+		let allowedHostnames = (r: express.Router): void => {
+			if (this.allowedHostnames.length !== 0) {
+				r.use(utilExpress.allowedHostnames(this.allowedHostnames, (_, res, err) => {
+					res.end(errors.format(err))
+				}))
+			}
+		}
 
 		let cors = (r: express.Router): void => {
 			if (this.corsOrigin.length !== 0) {
@@ -129,6 +123,7 @@ export class SseServer {
 
 			r.use(express.json())
 
+			allowedHostnames(r)
 			cors(r)
 
 			r.use(this.handlers)
@@ -145,6 +140,7 @@ export class SseServer {
 
 			r.use(express.json())
 
+			allowedHostnames(r)
 			cors(r)
 
 			r.use(this.handlers)
@@ -161,10 +157,10 @@ export class SseServer {
 
 	private async handleSse(req: express.Request, res: express.Response): Promise<void> {
 		try {
-			let s = this.servers.create(req)
+			let s = this.protocols.create(req)
 			if (s.err) {
 				// It is most likely 400, rather than 500.
-				let err = new errors.MessageError("Creating server", {cause: s.err})
+				let err = new errors.MessageError("Creating protocol", {cause: s.err})
 				res.writeHead(400)
 				res.end(err.toString())
 				return

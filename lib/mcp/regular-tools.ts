@@ -1,30 +1,10 @@
 /**
- * (c) Copyright Ascensio System SIA 2025
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- *
- * @license
- */
-
-/**
  * @module
  * @mergeModuleWith mcp
  */
 
 import path from "node:path"
 import * as z from "zod"
-import type {JsonSchema7Type} from "zod-to-json-schema"
-import {zodToJsonSchema} from "zod-to-json-schema"
 import {
 	CreateFolderFiltersSchema,
 	CreateRoomFiltersSchema,
@@ -47,7 +27,7 @@ import {
 	SetRoomSecurityFiltersSchema,
 	SuccessApiResponseSchema,
 	UpdateRoomFiltersSchema,
-} from "../api/schemas.ts"
+} from "../api/core/schemas.ts"
 import type {
 	BulkDownloadOptions,
 	CopyBatchItemsOptions,
@@ -62,10 +42,10 @@ import type {
 	SetRoomSecurityOptions,
 	UpdateFileOptions,
 	UpdateRoomOptions,
-} from "../api.ts"
+} from "../api/core.ts"
 import type {Result} from "../util/result.ts"
 import {error, ok, safeAsync, safeSync} from "../util/result.ts"
-import {numberUnionToEnum} from "../util/zod.ts"
+import {unionToEnum} from "../util/zod.ts"
 import type {ConfiguredServer} from "./configured-server.ts"
 
 //
@@ -217,52 +197,52 @@ const RoomInvitationAccessSchema = z.union([
 
 const FormFillingRoomInvitationAccessSchema = z.union([
 	/* eslint-disable no-underscore-dangle */
-	RoomInvitationAccessSchema._def.options[4],
-	RoomInvitationAccessSchema._def.options[5],
-	RoomInvitationAccessSchema._def.options[7],
+	RoomInvitationAccessSchema._zod.def.options[4],
+	RoomInvitationAccessSchema._zod.def.options[5],
+	RoomInvitationAccessSchema._zod.def.options[7],
 	/* eslint-enable no-underscore-dangle */
 ])
 
 const CollaborationRoomInvitationAccessSchema = z.union([
 	/* eslint-disable no-underscore-dangle */
-	RoomInvitationAccessSchema._def.options[1],
-	RoomInvitationAccessSchema._def.options[5],
-	RoomInvitationAccessSchema._def.options[6],
-	RoomInvitationAccessSchema._def.options[7],
+	RoomInvitationAccessSchema._zod.def.options[1],
+	RoomInvitationAccessSchema._zod.def.options[5],
+	RoomInvitationAccessSchema._zod.def.options[6],
+	RoomInvitationAccessSchema._zod.def.options[7],
 	/* eslint-enable no-underscore-dangle */
 ])
 
 const CustomRoomInvitationAccessSchema = z.union([
 	/* eslint-disable no-underscore-dangle */
-	RoomInvitationAccessSchema._def.options[1],
-	RoomInvitationAccessSchema._def.options[2],
-	RoomInvitationAccessSchema._def.options[3],
-	RoomInvitationAccessSchema._def.options[5],
-	RoomInvitationAccessSchema._def.options[6],
-	RoomInvitationAccessSchema._def.options[7],
+	RoomInvitationAccessSchema._zod.def.options[1],
+	RoomInvitationAccessSchema._zod.def.options[2],
+	RoomInvitationAccessSchema._zod.def.options[3],
+	RoomInvitationAccessSchema._zod.def.options[5],
+	RoomInvitationAccessSchema._zod.def.options[6],
+	RoomInvitationAccessSchema._zod.def.options[7],
 	/* eslint-enable no-underscore-dangle */
 ])
 
 const PublicRoomInvitationAccessSchema = z.union([
 	/* eslint-disable no-underscore-dangle */
-	RoomInvitationAccessSchema._def.options[5],
-	RoomInvitationAccessSchema._def.options[7],
+	RoomInvitationAccessSchema._zod.def.options[5],
+	RoomInvitationAccessSchema._zod.def.options[7],
 	/* eslint-enable no-underscore-dangle */
 ])
 
 const VirtualDataRoomInvitationAccessSchema = z.union([
 	/* eslint-disable no-underscore-dangle */
-	RoomInvitationAccessSchema._def.options[1],
-	RoomInvitationAccessSchema._def.options[4],
-	RoomInvitationAccessSchema._def.options[5],
-	RoomInvitationAccessSchema._def.options[6],
-	RoomInvitationAccessSchema._def.options[7],
+	RoomInvitationAccessSchema._zod.def.options[1],
+	RoomInvitationAccessSchema._zod.def.options[4],
+	RoomInvitationAccessSchema._zod.def.options[5],
+	RoomInvitationAccessSchema._zod.def.options[6],
+	RoomInvitationAccessSchema._zod.def.options[7],
 	/* eslint-enable no-underscore-dangle */
 ])
 
 export const CreateRoomInputSchema = z.object({
 	title: z.string().describe("The title of the room to create."),
-	roomType: numberUnionToEnum(RoomTypeSchema, "The type of the room to create.").optional().default(6),
+	roomType: unionToEnum(RoomTypeSchema, "The type of the room to create.").optional().default(6),
 	filters: CreateRoomFiltersSchema.describe("The filters to apply to the room creation."),
 })
 
@@ -309,7 +289,7 @@ export const SetRoomSecurityInputSchema = z.object({
 						string().
 						optional().
 						describe("The email of the user to invite or remove. Mutually exclusive with User ID."),
-					access: numberUnionToEnum(RoomInvitationAccessSchema, "The access level to grant to the user. May vary depending on the type of room.").
+					access: unionToEnum(RoomInvitationAccessSchema, "The access level to grant to the user. May vary depending on the type of room.").
 						optional(),
 				}).
 				describe("The invitation or removal of a user. Must contain either User ID or User Email.").
@@ -385,13 +365,13 @@ export class RegularTools {
 	// Files
 	//
 
-	async deleteFile(signal: AbortSignal, p: unknown): Promise<Result<string, Error>> {
+	async deleteFile(p: unknown): Promise<Result<string, Error>> {
 		let pr = DeleteFileInputSchema.safeParse(p)
 		if (!pr.success) {
 			return error(new Error("Parsing input.", {cause: pr.error}))
 		}
 
-		let tr = await this.s.client.files.getTrashFolder(signal)
+		let tr = await this.s.client.files.getTrashFolder()
 		if (tr.err) {
 			return error(new Error("Getting trash folder.", {cause: tr.err}))
 		}
@@ -406,7 +386,7 @@ export class RegularTools {
 			return error(new Error("Trash folder ID is not defined."))
 		}
 
-		let fr = await this.s.client.files.getFileInfo(signal, pr.data.fileId)
+		let fr = await this.s.client.files.getFileInfo(pr.data.fileId)
 		if (fr.err) {
 			return error(new Error("Getting file info.", {cause: fr.err}))
 		}
@@ -426,14 +406,14 @@ export class RegularTools {
 			immediately: false,
 		}
 
-		let dr = await this.s.client.files.deleteFile(signal, pr.data.fileId, dp)
+		let dr = await this.s.client.files.deleteFile(pr.data.fileId, dp)
 		if (dr.err) {
 			return error(new Error("Deleting file.", {cause: dr.err}))
 		}
 
 		let [dd] = dr.v
 
-		let rr = await this.s.resolver.resolve(signal, ...dd)
+		let rr = await this.s.resolver.resolve(...dd)
 		if (rr.err) {
 			return error(new Error("Resolving delete file operations.", {cause: rr.err}))
 		}
@@ -441,13 +421,13 @@ export class RegularTools {
 		return ok("File deleted.")
 	}
 
-	async getFileInfo(signal: AbortSignal, p: unknown): Promise<Result<Response, Error>> {
+	async getFileInfo(p: unknown): Promise<Result<Response, Error>> {
 		let pr = GetFileInfoInputSchema.safeParse(p)
 		if (!pr.success) {
 			return error(new Error("Parsing input.", {cause: pr.error}))
 		}
 
-		let gr = await this.s.client.files.getFileInfo(signal, pr.data.fileId, pr.data.filters)
+		let gr = await this.s.client.files.getFileInfo(pr.data.fileId, pr.data.filters)
 		if (gr.err) {
 			return error(new Error("Getting file info.", {cause: gr.err}))
 		}
@@ -457,7 +437,7 @@ export class RegularTools {
 		return ok(res)
 	}
 
-	async updateFile(signal: AbortSignal, p: unknown): Promise<Result<Response, Error>> {
+	async updateFile(p: unknown): Promise<Result<Response, Error>> {
 		let pr = UpdateFileInputSchema.safeParse(p)
 		if (!pr.success) {
 			return error(new Error("Parsing input.", {cause: pr.error}))
@@ -467,7 +447,7 @@ export class RegularTools {
 			title: pr.data.title,
 		}
 
-		let ur = await this.s.client.files.updateFile(signal, pr.data.fileId, uo)
+		let ur = await this.s.client.files.updateFile(pr.data.fileId, uo)
 		if (ur.err) {
 			return error(new Error("Updating file.", {cause: ur.err}))
 		}
@@ -477,7 +457,7 @@ export class RegularTools {
 		return ok(res)
 	}
 
-	async copyBatchItems(signal: AbortSignal, p: unknown): Promise<Result<string, Error>> {
+	async copyBatchItems(p: unknown): Promise<Result<string, Error>> {
 		let pr = CopyBatchItemsInputSchema.safeParse(p)
 		if (!pr.success) {
 			return error(new Error("Parsing input.", {cause: pr.error}))
@@ -494,14 +474,14 @@ export class RegularTools {
 			deleteAfter: false,
 		}
 
-		let cr = await this.s.client.files.copyBatchItems(signal, co)
+		let cr = await this.s.client.files.copyBatchItems(co)
 		if (cr.err) {
 			return error(new Error("Copying batch items.", {cause: cr.err}))
 		}
 
 		let [cd] = cr.v
 
-		let rr = await this.s.resolver.resolve(signal, ...cd)
+		let rr = await this.s.resolver.resolve(...cd)
 		if (rr.err) {
 			return error(new Error("Resolving copy batch items operations.", {cause: rr.err}))
 		}
@@ -509,7 +489,7 @@ export class RegularTools {
 		return ok("Batch items copied.")
 	}
 
-	async moveBatchItems(signal: AbortSignal, p: unknown): Promise<Result<string, Error>> {
+	async moveBatchItems(p: unknown): Promise<Result<string, Error>> {
 		let pr = MoveBatchItemsInputSchema.safeParse(p)
 		if (!pr.success) {
 			return error(new Error("Parsing input.", {cause: pr.error}))
@@ -526,14 +506,14 @@ export class RegularTools {
 			deleteAfter: false,
 		}
 
-		let mr = await this.s.client.files.moveBatchItems(signal, mo)
+		let mr = await this.s.client.files.moveBatchItems(mo)
 		if (mr.err) {
 			return error(new Error("Moving batch items.", {cause: mr.err}))
 		}
 
 		let [md] = mr.v
 
-		let rr = await this.s.resolver.resolve(signal, ...md)
+		let rr = await this.s.resolver.resolve(...md)
 		if (rr.err) {
 			return error(new Error("Resolving move batch items operations.", {cause: rr.err}))
 		}
@@ -541,13 +521,13 @@ export class RegularTools {
 		return ok("Batch items moved.")
 	}
 
-	async downloadFileAsText(signal: AbortSignal, p: unknown): Promise<Result<string, Error>> {
+	async downloadFileAsText(p: unknown): Promise<Result<string, Error>> {
 		let pr = DownloadFileAsTextInputSchema.safeParse(p)
 		if (!pr.success) {
 			return error(new Error("Parsing input.", {cause: pr.error}))
 		}
 
-		let ir = await this.s.client.files.getFileInfo(signal, pr.data.fileId)
+		let ir = await this.s.client.files.getFileInfo(pr.data.fileId)
 		if (ir.err) {
 			return error(new Error("Getting file info.", {cause: ir.err}))
 		}
@@ -563,7 +543,7 @@ export class RegularTools {
 		if (id.fileExst === ".csv" || id.fileExst === ".txt") {
 			ex = id.fileExst
 		} else {
-			let sr = await this.s.client.files.getFilesSettings(signal)
+			let sr = await this.s.client.files.getFilesSettings()
 			if (sr.err) {
 				return error(new Error("Getting files settings.", {cause: sr.err}))
 			}
@@ -596,14 +576,14 @@ export class RegularTools {
 			fileConvertIds: [{key: pr.data.fileId, value: ex}],
 		}
 
-		let br = await this.s.client.files.bulkDownload(signal, bo)
+		let br = await this.s.client.files.bulkDownload(bo)
 		if (br.err) {
 			return error(new Error("Making bulk download.", {cause: br.err}))
 		}
 
 		let [bd] = br.v
 
-		let rr = await this.s.resolver.resolve(signal, ...bd)
+		let rr = await this.s.resolver.resolve(...bd)
 		if (rr.err) {
 			return error(new Error("Resolving bulk download operations.", {cause: rr.err}))
 		}
@@ -622,7 +602,7 @@ export class RegularTools {
 			return error(new Error("Resolved operation has no URL."))
 		}
 
-		let dr = this.s.client.createRequest(signal, "GET", rd.url)
+		let dr = this.s.client.createRequest("GET", rd.url)
 		if (dr.err) {
 			return error(new Error("Creating download request.", {cause: dr.err}))
 		}
@@ -645,7 +625,7 @@ export class RegularTools {
 		return ok(tt.v)
 	}
 
-	async uploadFile(signal: AbortSignal, p: unknown): Promise<Result<Response, Error>> {
+	async uploadFile(p: unknown): Promise<Result<Response, Error>> {
 		let pr = UploadFileInputSchema.safeParse(p)
 		if (!pr.success) {
 			return error(new Error("Parsing input.", {cause: pr.error}))
@@ -668,7 +648,7 @@ export class RegularTools {
 			createNewIfExist: true,
 		}
 
-		let sr = await this.s.client.files.createUploadSession(signal, pr.data.parentId, so)
+		let sr = await this.s.client.files.createUploadSession(pr.data.parentId, so)
 		if (sr.err) {
 			return error(new Error("Creating upload session.", {cause: sr.err}))
 		}
@@ -679,7 +659,7 @@ export class RegularTools {
 			return error(new Error("Upload session ID is not defined."))
 		}
 
-		let ur = await this.s.uploader.upload(signal, sd.id, buf)
+		let ur = await this.s.uploader.upload(sd.id, buf)
 		if (ur.err) {
 			return error(new Error("Uploading file.", {cause: ur.err}))
 		}
@@ -693,7 +673,7 @@ export class RegularTools {
 	// Folders
 	//
 
-	async createFolder(signal: AbortSignal, p: unknown): Promise<Result<Response, Error>> {
+	async createFolder(p: unknown): Promise<Result<Response, Error>> {
 		let pr = CreateFolderInputSchema.safeParse(p)
 		if (!pr.success) {
 			return error(new Error("Parsing input.", {cause: pr.error}))
@@ -703,7 +683,7 @@ export class RegularTools {
 			title: pr.data.title,
 		}
 
-		let cr = await this.s.client.files.createFolder(signal, pr.data.parentId, co, pr.data.filters)
+		let cr = await this.s.client.files.createFolder(pr.data.parentId, co, pr.data.filters)
 		if (cr.err) {
 			return error(new Error("Creating folder.", {cause: cr.err}))
 		}
@@ -713,7 +693,7 @@ export class RegularTools {
 		return ok(res)
 	}
 
-	async deleteFolder(signal: AbortSignal, p: unknown): Promise<Result<string, Error>> {
+	async deleteFolder(p: unknown): Promise<Result<string, Error>> {
 		let pr = DeleteFolderInputSchema.safeParse(p)
 		if (!pr.success) {
 			return error(new Error("Parsing input.", {cause: pr.error}))
@@ -724,14 +704,14 @@ export class RegularTools {
 			immediately: false,
 		}
 
-		let dr = await this.s.client.files.deleteFolder(signal, pr.data.folderId, dp)
+		let dr = await this.s.client.files.deleteFolder(pr.data.folderId, dp)
 		if (dr.err) {
 			return error(new Error("Deleting folder.", {cause: dr.err}))
 		}
 
 		let [dd] = dr.v
 
-		let rr = await this.s.resolver.resolve(signal, ...dd)
+		let rr = await this.s.resolver.resolve(...dd)
 		if (rr.err) {
 			return error(new Error("Resolving delete folder operations.", {cause: rr.err}))
 		}
@@ -739,13 +719,13 @@ export class RegularTools {
 		return ok("Folder deleted.")
 	}
 
-	async getFolderContent(signal: AbortSignal, p: unknown): Promise<Result<Response, Error>> {
+	async getFolderContent(p: unknown): Promise<Result<Response, Error>> {
 		let pr = GetFolderContentInputSchema.safeParse(p)
 		if (!pr.success) {
 			return error(new Error("Parsing input.", {cause: pr.error}))
 		}
 
-		let gr = await this.s.client.files.getFolder(signal, pr.data.folderId, pr.data.filters)
+		let gr = await this.s.client.files.getFolder(pr.data.folderId, pr.data.filters)
 		if (gr.err) {
 			return error(new Error("Getting folder.", {cause: gr.err}))
 		}
@@ -755,13 +735,13 @@ export class RegularTools {
 		return ok(res)
 	}
 
-	async getFolderInfo(signal: AbortSignal, p: unknown): Promise<Result<Response, Error>> {
+	async getFolderInfo(p: unknown): Promise<Result<Response, Error>> {
 		let pr = GetFolderInfoInputSchema.safeParse(p)
 		if (!pr.success) {
 			return error(new Error("Parsing input.", {cause: pr.error}))
 		}
 
-		let gr = await this.s.client.files.getFolderInfo(signal, pr.data.folderId, pr.data.filters)
+		let gr = await this.s.client.files.getFolderInfo(pr.data.folderId, pr.data.filters)
 		if (gr.err) {
 			return error(new Error("Getting folder info.", {cause: gr.err}))
 		}
@@ -771,7 +751,7 @@ export class RegularTools {
 		return ok(res)
 	}
 
-	async renameFolder(signal: AbortSignal, p: unknown): Promise<Result<Response, Error>> {
+	async renameFolder(p: unknown): Promise<Result<Response, Error>> {
 		let pr = RenameFolderInputSchema.safeParse(p)
 		if (!pr.success) {
 			return error(new Error("Parsing input.", {cause: pr.error}))
@@ -781,7 +761,7 @@ export class RegularTools {
 			title: pr.data.title,
 		}
 
-		let rr = await this.s.client.files.renameFolder(signal, pr.data.folderId, ro, pr.data.filters)
+		let rr = await this.s.client.files.renameFolder(pr.data.folderId, ro, pr.data.filters)
 		if (rr.err) {
 			return error(new Error("Renaming folder.", {cause: rr.err}))
 		}
@@ -791,13 +771,13 @@ export class RegularTools {
 		return ok(res)
 	}
 
-	async getMyFolder(signal: AbortSignal, p: unknown): Promise<Result<Response, Error>> {
+	async getMyFolder(p: unknown): Promise<Result<Response, Error>> {
 		let pr = GetMyFolderInputSchema.safeParse(p)
 		if (!pr.success) {
 			return error(new Error("Parsing input.", {cause: pr.error}))
 		}
 
-		let gr = await this.s.client.files.getMyFolder(signal, pr.data.filters)
+		let gr = await this.s.client.files.getMyFolder(pr.data.filters)
 		if (gr.err) {
 			return error(new Error("Getting my folder.", {cause: gr.err}))
 		}
@@ -811,7 +791,7 @@ export class RegularTools {
 	// Rooms
 	//
 
-	async createRoom(signal: AbortSignal, p: unknown): Promise<Result<Response, Error>> {
+	async createRoom(p: unknown): Promise<Result<Response, Error>> {
 		let pr = CreateRoomInputSchema.safeParse(p)
 		if (!pr.success) {
 			return error(new Error("Parsing input.", {cause: pr.error}))
@@ -822,7 +802,7 @@ export class RegularTools {
 			roomType: pr.data.roomType,
 		}
 
-		let cr = await this.s.client.files.createRoom(signal, co, pr.data.filters)
+		let cr = await this.s.client.files.createRoom(co, pr.data.filters)
 		if (cr.err) {
 			return error(new Error("Creating room.", {cause: cr.err}))
 		}
@@ -832,13 +812,13 @@ export class RegularTools {
 		return ok(res)
 	}
 
-	async getRoomInfo(signal: AbortSignal, p: unknown): Promise<Result<Response, Error>> {
+	async getRoomInfo(p: unknown): Promise<Result<Response, Error>> {
 		let pr = GetRoomInfoInputSchema.safeParse(p)
 		if (!pr.success) {
 			return error(new Error("Parsing input.", {cause: pr.error}))
 		}
 
-		let gr = await this.s.client.files.getRoomInfo(signal, pr.data.roomId, pr.data.filters)
+		let gr = await this.s.client.files.getRoomInfo(pr.data.roomId, pr.data.filters)
 		if (gr.err) {
 			return error(new Error("Getting room info.", {cause: gr.err}))
 		}
@@ -848,7 +828,7 @@ export class RegularTools {
 		return ok(res)
 	}
 
-	async updateRoom(signal: AbortSignal, p: unknown): Promise<Result<Response, Error>> {
+	async updateRoom(p: unknown): Promise<Result<Response, Error>> {
 		let pr = UpdateRoomInputSchema.safeParse(p)
 		if (!pr.success) {
 			return error(new Error("Parsing input.", {cause: pr.error}))
@@ -858,7 +838,7 @@ export class RegularTools {
 			title: pr.data.title,
 		}
 
-		let ur = await this.s.client.files.updateRoom(signal, pr.data.roomId, uo, pr.data.filters)
+		let ur = await this.s.client.files.updateRoom(pr.data.roomId, uo, pr.data.filters)
 		if (ur.err) {
 			return error(new Error("Updating room.", {cause: ur.err}))
 		}
@@ -868,20 +848,20 @@ export class RegularTools {
 		return ok(res)
 	}
 
-	async archiveRoom(signal: AbortSignal, p: unknown): Promise<Result<string, Error>> {
+	async archiveRoom(p: unknown): Promise<Result<string, Error>> {
 		let pr = ArchiveRoomInputSchema.safeParse(p)
 		if (!pr.success) {
 			return error(new Error("Parsing input.", {cause: pr.error}))
 		}
 
-		let ar = await this.s.client.files.archiveRoom(signal, pr.data.roomId, {})
+		let ar = await this.s.client.files.archiveRoom(pr.data.roomId, {})
 		if (ar.err) {
 			return error(new Error("Archiving room.", {cause: ar.err}))
 		}
 
 		let [ad] = ar.v
 
-		let rr = await this.s.resolver.resolve(signal, ad)
+		let rr = await this.s.resolver.resolve(ad)
 		if (rr.err) {
 			return error(new Error("Resolving archive room operations.", {cause: rr.err}))
 		}
@@ -889,7 +869,7 @@ export class RegularTools {
 		return ok("Room archived.")
 	}
 
-	async setRoomSecurity(signal: AbortSignal, p: unknown): Promise<Result<Response, Error>> {
+	async setRoomSecurity(p: unknown): Promise<Result<Response, Error>> {
 		let pr = SetRoomSecurityInputSchema.safeParse(p)
 		if (!pr.success) {
 			return error(new Error("Parsing input.", {cause: pr.error}))
@@ -901,7 +881,7 @@ export class RegularTools {
 			message: pr.data.message,
 		}
 
-		let sr = await this.s.client.files.setRoomSecurity(signal, pr.data.roomId, so, pr.data.filters)
+		let sr = await this.s.client.files.setRoomSecurity(pr.data.roomId, so, pr.data.filters)
 		if (sr.err) {
 			return error(new Error("Setting room security.", {cause: sr.err}))
 		}
@@ -911,13 +891,13 @@ export class RegularTools {
 		return ok(res)
 	}
 
-	async getRoomSecurityInfo(signal: AbortSignal, p: unknown): Promise<Result<Response, Error>> {
+	async getRoomSecurityInfo(p: unknown): Promise<Result<Response, Error>> {
 		let pr = GetRoomSecurityInfoInputSchema.safeParse(p)
 		if (!pr.success) {
 			return error(new Error("Parsing input.", {cause: pr.error}))
 		}
 
-		let gr = await this.s.client.files.getRoomSecurityInfo(signal, pr.data.roomId, pr.data.filters)
+		let gr = await this.s.client.files.getRoomSecurityInfo(pr.data.roomId, pr.data.filters)
 		if (gr.err) {
 			return error(new Error("Getting room security info.", {cause: gr.err}))
 		}
@@ -927,13 +907,13 @@ export class RegularTools {
 		return ok(res)
 	}
 
-	async getRoomsFolder(signal: AbortSignal, p: unknown): Promise<Result<Response, Error>> {
+	async getRoomsFolder(p: unknown): Promise<Result<Response, Error>> {
 		let pr = GetRoomsFolderInputSchema.safeParse(p)
 		if (!pr.success) {
 			return error(new Error("Parsing input.", {cause: pr.error}))
 		}
 
-		let gr = await this.s.client.files.getRoomsFolder(signal, pr.data.filters)
+		let gr = await this.s.client.files.getRoomsFolder(pr.data.filters)
 		if (gr.err) {
 			return error(new Error("Getting rooms folder.", {cause: gr.err}))
 		}
@@ -943,17 +923,17 @@ export class RegularTools {
 		return ok(res)
 	}
 
-	getRoomTypes(): Result<JsonSchema7Type, Error> {
-		return ok(zodToJsonSchema(RoomTypeSchema))
+	getRoomTypes(): Result<z.core.JSONSchema.BaseSchema, Error> {
+		return ok(z.toJSONSchema(RoomTypeSchema))
 	}
 
-	async getRoomAccessLevels(signal: AbortSignal, p: unknown): Promise<Result<JsonSchema7Type, Error>> {
+	async getRoomAccessLevels(p: unknown): Promise<Result<z.core.JSONSchema.BaseSchema, Error>> {
 		let pr = GetRoomAccessLevelsSchema.safeParse(p)
 		if (!pr.success) {
 			return error(new Error("Parsing input.", {cause: pr.error}))
 		}
 
-		let gr = await this.s.client.files.getRoomInfo(signal, pr.data.roomId)
+		let gr = await this.s.client.files.getRoomInfo(pr.data.roomId)
 		if (gr.err) {
 			return error(new Error("Getting room info.", {cause: gr.err}))
 		}
@@ -964,7 +944,7 @@ export class RegularTools {
 			return error(new Error("Room type is not defined."))
 		}
 
-		let sh: z.ZodSchema<unknown>
+		let sh: z.ZodType
 
 		switch (gd.roomType) {
 		case 1:
@@ -987,20 +967,20 @@ export class RegularTools {
 			break
 		}
 
-		return ok(zodToJsonSchema(sh))
+		return ok(z.toJSONSchema(sh))
 	}
 
 	//
 	// People
 	//
 
-	async getAllPeople(signal: AbortSignal, p: unknown): Promise<Result<Response, Error>> {
+	async getAllPeople(p: unknown): Promise<Result<Response, Error>> {
 		let pr = GetAllPeopleInputSchema.safeParse(p)
 		if (!pr.success) {
 			return error(new Error("Parsing input.", {cause: pr.error}))
 		}
 
-		let gr = await this.s.client.people.getFullByFilter(signal, pr.data.filters)
+		let gr = await this.s.client.people.getFullByFilter(pr.data.filters)
 		if (gr.err) {
 			return error(new Error("Getting people.", {cause: gr.err}))
 		}

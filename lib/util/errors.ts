@@ -1,39 +1,10 @@
 /**
- * (c) Copyright Ascensio System SIA 2025
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- *
- * @license
- */
-
-/**
  * @module util/errors
  */
 
 import * as z from "zod"
 
-// eslint-disable-next-line unicorn/custom-error-definition
-export class Errors extends Error {
-	name: "Errors"
-	cause: Error[] = []
-
-	constructor(options: ErrorOptions & {cause: Error[]}) {
-		super("Multiple errors", options)
-		this.name = "Errors"
-		this.cause = options.cause
-	}
-}
-
+// todo: remove these errors, just use objects directly with type declarations
 export class JsonError extends Error {
 	name: "JsonError"
 
@@ -49,6 +20,7 @@ export class JsonError extends Error {
 	}
 }
 
+// todo: remove these errors, just use objects directly with type declarations
 export class JsonrpcError extends Error {
 	name: "JsonrpcError"
 	code: number
@@ -71,6 +43,7 @@ export class JsonrpcError extends Error {
 	}
 }
 
+// todo: remove these errors, just use objects directly with type declarations
 export class MessageError extends Error {
 	name: "MessageError"
 
@@ -116,7 +89,7 @@ export function as<
 	t: new (...args: A) => R,
 ): R | undefined {
 	if (err instanceof Error) {
-		if (err.constructor === t.constructor) {
+		if (err.constructor === t) {
 			return err as unknown as R
 		}
 
@@ -165,7 +138,7 @@ export function format(err: Error): string {
 					if (typeof e === "number") {
 						p += `[${e}]`
 					} else {
-						p += `.${e}`
+						p += `.${e.toString()}`
 					}
 				}
 
@@ -184,8 +157,8 @@ export function format(err: Error): string {
 			return
 		}
 
-		if (err instanceof Errors) {
-			loop(err.cause)
+		if (err instanceof AggregateError) {
+			loop(err.errors)
 			return
 		}
 

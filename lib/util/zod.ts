@@ -1,55 +1,91 @@
 /**
- * (c) Copyright Ascensio System SIA 2025
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- *
- * @license
- */
-
-/**
  * @module util/zod
  */
 
-/* eslint-disable no-underscore-dangle */
-
 import * as z from "zod"
+import type * as core from "zod/v4/core"
 import * as result from "./result.ts"
 
 export function wrapUnion<
-	A extends [z.ZodLiteral<string>, z.ZodLiteral<string>, ...z.ZodLiteral<string>[]],
+	A extends readonly [z.ZodLiteral<string>, z.ZodLiteral<string>, ...z.ZodLiteral<string>[]],
 >(v: z.ZodUnion<A>, f: string): z.ZodUnion<A> {
-	let a = [] as unknown as A
+	let a: z.core.SomeType[] = []
+
 	for (let o of v.options) {
-		let c = z.literal(`${f}.${o._def.value}`)
-		if (o._def.description !== undefined) {
-			c = c.describe(o._def.description)
+		if (o.values.size !== 0) {
+			let [v] = o.values
+
+			let c = z.literal(`${f}.${v}`)
+
+			if (o.description) {
+				c = c.describe(o.description)
+			}
+
+			a.push(c)
 		}
-		a.push(c)
 	}
-	return z.union(a)
+
+	return z.union(a as unknown as A)
 }
 
-export function stringUnionToEnum<
-	A extends [z.ZodLiteral<string>, z.ZodLiteral<string>, ...z.ZodLiteral<string>[]],
->(u: z.ZodUnion<A>, d: string): z.ZodEnum<[string, ...string[]]> {
-	let a = [] as unknown as [string, ...string[]]
+export function unionToEnum<T extends string | number>(
+	u: z.ZodUnion<readonly [z.ZodLiteral<T>, z.ZodLiteral<T>, ...z.ZodLiteral<T>[]]>,
+	d: string,
+): T extends string ? z.ZodString : T extends number ? z.ZodNumber : never {
+	let t: z.ZodString | z.ZodNumber | undefined
+	let r: Record<string, T> = {}
 	let c = ""
 
-	for (let o of u.options) {
-		a.push(o._def.value)
-		if (o._def.description !== undefined) {
-			c += `${o._def.value} - ${o._def.description}\n`
+	let errs: Error[] = []
+
+	if (u.options.length === 0) {
+		errs.push(new Error("Union has no options"))
+	} else {
+		for (let o of u.options) {
+			if (o.values.size !== 1) {
+				errs.push(new Error("Union option must have exactly one literal value"))
+			} else {
+				let [v] = o.values
+
+				if (t) {
+					if (typeof v !== t.type) {
+						errs.push(new Error("Union options must have consistent types"))
+					}
+				} else {
+					switch (typeof v) {
+					case "string":
+						t = z.string()
+						break
+					case "number":
+						t = z.number()
+						break
+					default:
+						errs.push(new Error("Union option type must be string or number"))
+						break
+					}
+				}
+
+				let k = `_${v}`
+
+				if (k in r) {
+					errs.push(new Error("Duplicate value in union options"))
+				} else {
+					r[k] = v
+
+					if (o.description) {
+						c += `${v} - ${o.description}\n`
+					}
+				}
+			}
 		}
+	}
+
+	if (errs.length !== 0) {
+		throw new Error("Converting union to enum", {cause: errs})
+	}
+
+	if (!t) {
+		throw new Error("Could not determine union type")
 	}
 
 	if (c !== "") {
@@ -62,48 +98,30 @@ export function stringUnionToEnum<
 		c = d
 	}
 
-	let e = z.enum(a)
+	let e = z.enum(r)
 
 	if (c !== "") {
 		e = e.describe(c)
 	}
 
-	return e
-}
-
-export function numberUnionToEnum<
-	A extends [z.ZodLiteral<number>, z.ZodLiteral<number>, ...z.ZodLiteral<number>[]],
->(u: z.ZodUnion<A>, d: string): z.ZodNativeEnum<z.EnumLike> {
-	let r: z.EnumLike = {}
-	let c = ""
-
-	for (let o of u.options) {
-		r[`_${o._def.value}`] = o._def.value
-		if (o._def.description !== undefined) {
-			c += `${o._def.value} - ${o._def.description}\n`
+	t = t.superRefine((v, ctx) => {
+		let p = e.safeParse(v)
+		if (!p.success) {
+			for (let i of p.error.issues) {
+				ctx.addIssue(i as core.$ZodSuperRefineIssue)
+			}
 		}
-	}
+	})
 
 	if (c !== "") {
-		c = c.slice(0, -1)
+		t = t.describe(c)
 	}
 
-	if (d !== "" && c !== "") {
-		c = `${d}\n\n${c}`
-	} else if (d !== "") {
-		c = d
-	}
-
-	let e = z.nativeEnum(r)
-
-	if (c !== "") {
-		e = e.describe(c)
-	}
-
-	return e
+	// It is hard to write the return type without using any.
+	// eslint-disable-next-line typescript/no-explicit-any
+	return t as any
 }
 
-// eslint-disable-next-line stylistic/max-len
 export function envOptionalBoolean(): (v: string | undefined, c: z.RefinementCtx) => boolean | undefined | never {
 	return (v, c) => {
 		if (v === undefined) {
@@ -129,7 +147,7 @@ export function envBoolean(): (v: string, c: z.RefinementCtx) => boolean | never
 		}
 
 		c.addIssue({
-			code: z.ZodIssueCode.custom,
+			code: "custom",
 			message: `Expected one of: yes, y, true, 1, no, n, false, 0, but got ${v}`,
 			fatal: true,
 		})
@@ -148,7 +166,7 @@ export function envNumber(): (v: string, c: z.RefinementCtx) => number | never {
 		let n = Number.parseInt(t, 10)
 		if (Number.isNaN(n)) {
 			c.addIssue({
-				code: z.ZodIssueCode.custom,
+				code: "custom",
 				message: `Expected a number, but got ${v}`,
 				fatal: true,
 			})
@@ -169,7 +187,7 @@ export function envUrl(): (v: string, c: z.RefinementCtx) => string | never {
 		let r = result.safeNew(URL, t)
 		if (r.err) {
 			c.addIssue({
-				code: z.ZodIssueCode.custom,
+				code: "custom",
 				message: `Expected a valid URL, but got ${v}`,
 				fatal: true,
 			})
@@ -180,7 +198,6 @@ export function envUrl(): (v: string, c: z.RefinementCtx) => string | never {
 	}
 }
 
-// eslint-disable-next-line stylistic/max-len
 export function envOptionalBaseUrl(): (v: string | undefined, c: z.RefinementCtx) => string | undefined | never {
 	return (v, c) => {
 		if (v === undefined) {
@@ -200,7 +217,7 @@ export function envBaseUrl(): (v: string, c: z.RefinementCtx) => string | never 
 		let r = result.safeNew(URL, t)
 		if (r.err) {
 			c.addIssue({
-				code: z.ZodIssueCode.custom,
+				code: "custom",
 				message: `Expected a valid URL, but got ${v}`,
 				fatal: true,
 			})
@@ -209,14 +226,14 @@ export function envBaseUrl(): (v: string, c: z.RefinementCtx) => string | never 
 
 		if (r.v.search) {
 			c.addIssue({
-				code: z.ZodIssueCode.custom,
+				code: "custom",
 				message: `Expected a URL without search parameters, but got ${v}`,
 			})
 		}
 
 		if (r.v.hash) {
 			c.addIssue({
-				code: z.ZodIssueCode.custom,
+				code: "custom",
 				message: `Expected a URL without hash, but got ${v}`,
 			})
 		}
@@ -226,6 +243,75 @@ export function envBaseUrl(): (v: string, c: z.RefinementCtx) => string | never 
 		}
 
 		return r.v.toString()
+	}
+}
+
+export function envHostnameList(): (v: string, c: z.RefinementCtx) => string[] | never {
+	return (v, c) => {
+		let a: string[] = []
+
+		for (let e of v.split(",")) {
+			let t = e.trim()
+			if (!t) {
+				continue
+			}
+
+			let u = result.safeNew(URL, t)
+			if (!u.err) {
+				c.addIssue({
+					code: "custom",
+					message: `Expected a hostname, but got a URL: ${e}`,
+				})
+				continue
+			}
+
+			u = result.safeNew(URL, `http://${t}`)
+			if (u.err) {
+				c.addIssue({
+					code: "custom",
+					message: `Expected a valid hostname, but got ${e}`,
+				})
+				continue
+			}
+
+			if (u.v.port) {
+				c.addIssue({
+					code: "custom",
+					message: `Expected a hostname without port, but got ${e}`,
+				})
+				continue
+			}
+
+			if (u.v.pathname !== "/") {
+				c.addIssue({
+					code: "custom",
+					message: `Expected a hostname without path, but got ${e}`,
+				})
+				continue
+			}
+
+			if (u.v.search) {
+				c.addIssue({
+					code: "custom",
+					message: `Expected a hostname without search parameters, but got ${e}`,
+				})
+				continue
+			}
+
+			if (u.v.hash) {
+				c.addIssue({
+					code: "custom",
+					message: `Expected a hostname without hash, but got ${e}`,
+				})
+				continue
+			}
+
+			if (!a.includes(u.v.hostname)) {
+				a.push(u.v.hostname)
+			}
+		}
+
+		return a
 	}
 }
 
@@ -242,7 +328,7 @@ export function envUrlList(): (v: string, c: z.RefinementCtx) => string[] | neve
 			let r = result.safeNew(URL, t)
 			if (r.err) {
 				c.addIssue({
-					code: z.ZodIssueCode.custom,
+					code: "custom",
 					message: `Expected a valid URL, but got ${u}`,
 				})
 				continue
@@ -267,7 +353,7 @@ export function envUnion<T extends string>(a: T[]): (v: string, c: z.RefinementC
 		}
 
 		c.addIssue({
-			code: z.ZodIssueCode.custom,
+			code: "custom",
 			message: `Expected one of: ${a.join(", ")}, but got ${v}`,
 			fatal: true,
 		})
@@ -276,7 +362,6 @@ export function envUnion<T extends string>(a: T[]): (v: string, c: z.RefinementC
 	}
 }
 
-// eslint-disable-next-line stylistic/max-len
 export function envOptionalOptions(a: string[]): (v: string | undefined, c: z.RefinementCtx) => string[] | undefined | never {
 	return (v, c) => {
 		if (v === undefined) {
@@ -318,7 +403,7 @@ export function envOptions(a: string[]): (v: string, c: z.RefinementCtx) => stri
 		if (g.length !== 0) {
 			for (let u of g) {
 				c.addIssue({
-					code: z.ZodIssueCode.custom,
+					code: "custom",
 					message: `Unknown value: ${u}`,
 				})
 			}

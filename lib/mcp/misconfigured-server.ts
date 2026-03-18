@@ -1,34 +1,16 @@
 /**
- * (c) Copyright Ascensio System SIA 2025
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- *
- * @license
- */
-
-/**
  * @module
  * @mergeModuleWith mcp
  */
 
-import * as types from "@modelcontextprotocol/sdk/types.js"
+import type * as types from "@modelcontextprotocol/sdk/types.js"
 import * as errors from "../util/errors.ts"
 import type * as mcp from "../util/mcp.ts"
 import {toolsetInfos} from "./data.ts"
 
-class MisconfiguredServer {
-	err: Error
-	toolInfos: mcp.ToolInfo[]
+export class MisconfiguredServer {
+	private err: Error
+	private toolInfos: mcp.ToolInfo[]
 
 	constructor(err: Error) {
 		this.err = err
@@ -39,13 +21,25 @@ class MisconfiguredServer {
 		}
 	}
 
-	listTools(): types.ListToolsResult {
+	router(): mcp.Router {
+		return {
+			capabilities: {
+				tools: {},
+			},
+			handlers: {
+				"tools/call": this.callTool.bind(this),
+				"tools/list": this.listTools.bind(this),
+			},
+		}
+	}
+
+	private listTools(): types.ListToolsResult {
 		return {
 			tools: this.toolInfos,
 		}
 	}
 
-	callTool(): types.CallToolResult {
+	private callTool(): types.CallToolResult {
 		return {
 			content: [
 				{
@@ -56,22 +50,4 @@ class MisconfiguredServer {
 			isError: true,
 		}
 	}
-}
-
-export function misconfiguredServer(
-	err: Error,
-): mcp.RequestDefinition[] {
-	let s = new MisconfiguredServer(err)
-
-	let l: mcp.ListToolsRequestDefinition = {
-		schema: types.ListToolsRequestSchema,
-		handler: s.listTools.bind(s),
-	}
-
-	let c: mcp.CallToolRequestDefinition = {
-		schema: types.CallToolRequestSchema,
-		handler: s.callTool.bind(s),
-	}
-
-	return [l, c]
 }

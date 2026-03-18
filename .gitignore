@@ -1,6 +1,5 @@
 .pnpm-store
 bin
-coverage
 node_modules
 tmp
 .env

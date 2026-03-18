@@ -8,6 +8,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     outputs:
       version: ${{steps.version.outputs.version}}
     steps:
@@ -64,10 +66,12 @@ jobs:
         if-no-files-found: error
 
   npm:
-    needs: build
+    needs:
+    - build
     runs-on: ubuntu-latest
-    env:
-      NODE_AUTH_TOKEN: ${{secrets.NPM_PUBLISH_TOKEN}}
+    permissions:
+      contents: read
+      id-token: write
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v4
@@ -87,16 +91,17 @@ jobs:
         name: package
 
     - name: Configure Registry
-      run: |
-        pnpm config set //registry.npmjs.org/:_authToken "\${NODE_AUTH_TOKEN}"
-        pnpm config set registry https://registry.npmjs.org
+      run: pnpm config set registry https://registry.npmjs.org
 
     - name: Publish Package
-      run: pnpm publish *.tgz --access public --no-git-checks
+      run: pnpm publish *.tgz --no-git-checks --provenance --access public
 
   docker:
-    needs: build
+    needs:
+    - build
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     env:
       DOCKERHUB_NAMESPACE: onlyoffice
       DOCKERHUB_REPOSITORY: docspace-mcp
@@ -169,7 +174,10 @@ jobs:
         repository: ${{env.DOCKERHUB_NAMESPACE}}/${{env.DOCKERHUB_REPOSITORY}}
 
   gh:
-    needs: [build, npm, docker]
+    needs:
+    - build
+    - npm
+    - docker
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -198,7 +206,8 @@ jobs:
       run: gh release upload "v${{needs.build.outputs.version}}" *.tgz
 
   mcp:
-    needs: gh
+    needs:
+    - gh
     runs-on: ubuntu-latest
     permissions:
       id-token: write

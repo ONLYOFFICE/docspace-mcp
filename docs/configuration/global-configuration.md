@@ -38,6 +38,7 @@ are organized by their functional area.
     - [DOCSPACE_HOST](#docspace_host)
     - [DOCSPACE_PORT](#docspace_port)
     - [DOCSPACE_SERVER_PROXY_HOPS](#docspace_server_proxy_hops)
+    - [DOCSPACE_SERVER_ALLOWED_HOSTNAMES](#docspace_server_allowed_hostnames)
     - [DOCSPACE_SERVER_CORS_MCP_ORIGIN](#docspace_server_cors_mcp_origin)
     - [DOCSPACE_SERVER_CORS_MCP_MAX_AGE](#docspace_server_cors_mcp_max_age)
     - [DOCSPACE_SERVER_CORS_OAUTH_ORIGIN](#docspace_server_cors_oauth_origin)
@@ -219,7 +220,7 @@ The user agent to include in the `User-Agent` header for API requests.
 
 - Type: string
 - Attributes: trimmable
-- Default: `@onlyoffice/docspace-mcp v3.1.0`
+- Default: `@onlyoffice/docspace-mcp v3.2.0`
 - Transports: `stdio`, `sse`, `streamable-http`, `http`
 
 ##### References
@@ -634,6 +635,23 @@ The `0` is a special value that indicates no proxy servers are used.
 
 - [Express: Express Behind Proxies]
 - [Express: Troubleshooting Proxy Issues]
+
+#### DOCSPACE_SERVER_ALLOWED_HOSTNAMES
+
+The list of allowed hostnames.
+
+The empty string is a special value that disables hostname validation.
+
+##### Signature
+
+- Type: comma-separated list of hostnames
+- Attributes: trimmable
+- Default: `localhost,127.0.0.1,[::1]`
+- Transports: `sse`, `streamable-http`, `http`
+
+##### References
+
+- [GitHub Blog: DNS Rebinding Attacks Explained]
 
 #### DOCSPACE_SERVER_CORS_MCP_ORIGIN
 
@@ -1110,6 +1128,8 @@ DOCSPACE_SERVER_CORS_MCP_MAX_AGE=1800000 # 30 minutes
 [MDN: Access-Control-Allow-Origin Header]: https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Access-Control-Allow-Origin
 [MDN: Access-Control-Max-Age Header]: https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Access-Control-Max-Age
 [MDN: User-Agent Header]: https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/User-Agent
+
+[GitHub Blog: DNS Rebinding Attacks Explained]: https://github.blog/security/application-security/dns-rebinding-attacks-explained-the-lookup-is-coming-from-inside-the-house/
 
 [Express: Express Behind Proxies]: https://expressjs.com/en/guide/behind-proxies.html
 [Express: Troubleshooting Proxy Issues]: https://express-rate-limit.mintlify.app/guides/troubleshooting-proxy-issues

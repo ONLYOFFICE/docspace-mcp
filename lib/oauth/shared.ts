@@ -1,63 +1,39 @@
 /**
- * (c) Copyright Ascensio System SIA 2025
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- *
- * @license
- */
-
-/**
  * @module
  * @mergeModuleWith oauth
  */
 
-/* eslint-disable unicorn/prefer-top-level-await */
-
-import z from "zod"
+import * as z from "zod"
 
 /**
  * {@link https://www.rfc-editor.org/rfc/rfc7515#section-4.1 | RFC 7515 Reference}
  */
-export const JwsHeaderSchema = z.
-	object({
-		"alg": z.string(),
-		"jku": z.string().optional(),
-		"jwk": z.string().optional(),
-		"kid": z.string().optional(),
-		"x5u": z.union([z.string(), z.array(z.string())]).optional(),
-		"x5c": z.union([z.string(), z.array(z.string())]).optional(),
-		"x5t": z.string().optional(),
-		"x5t#S256": z.string().optional(),
-		"typ": z.string().optional(),
-		"cty": z.string().optional(),
-		"crit": z.union([z.string(), z.array(z.string())]).optional(),
-	}).
-	passthrough()
+export const JwsHeaderSchema = z.looseObject({
+	"alg": z.string(),
+	"jku": z.string().optional(),
+	"jwk": z.string().optional(),
+	"kid": z.string().optional(),
+	"x5u": z.union([z.string(), z.array(z.string())]).optional(),
+	"x5c": z.union([z.string(), z.array(z.string())]).optional(),
+	"x5t": z.string().optional(),
+	"x5t#S256": z.string().optional(),
+	"typ": z.string().optional(),
+	"cty": z.string().optional(),
+	"crit": z.union([z.string(), z.array(z.string())]).optional(),
+})
 
 /**
  * {@link https://www.rfc-editor.org/rfc/rfc7519#section-4 | RFC 7519 Reference}
  */
-export const JwtClaimsSchema = z.
-	object({
-		iss: z.string().optional(),
-		sub: z.string().optional(),
-		aud: z.union([z.string(), z.array(z.string())]).optional(),
-		exp: z.number().optional(),
-		nbf: z.number().optional(),
-		iat: z.number().optional(),
-		jti: z.string().optional(),
-	}).
-	passthrough()
+export const JwtClaimsSchema = z.looseObject({
+	iss: z.string().optional(),
+	sub: z.string().optional(),
+	aud: z.union([z.string(), z.array(z.string())]).optional(),
+	exp: z.number().optional(),
+	nbf: z.number().optional(),
+	iat: z.number().optional(),
+	jti: z.string().optional(),
+})
 
 /**
  * {@link https://www.rfc-editor.org/rfc/rfc6749#section-2.3.1 | RFC 6749 Reference}
@@ -124,7 +100,7 @@ export const AccessTokenRequestSchema = z.object({
 export const RefreshTokenRequestSchema = z.object({
 	grant_type: z.literal("refresh_token"),
 	refresh_token: z.string(),
-	scope: z.array(z.string()).optional(),
+	scope: z.string().optional(),
 })
 
 export const TokenRequestSchema = z.union([
@@ -197,11 +173,9 @@ export const IntrospectResponseSchema = z.object({
 /**
  * {@link https://www.rfc-editor.org/rfc/rfc7591#section-3.2.1 | RFC 7591 Reference}
  */
-export const RegisterResponseSchema = z.
-	object({
-		client_id: z.string(),
-	}).
-	passthrough()
+export const RegisterResponseSchema = z.looseObject({
+	client_id: z.string(),
+})
 
 /**
  * {@link https://www.rfc-editor.org/rfc/rfc6749#section-5.1 | RFC 6749 Reference}

@@ -1,31 +1,10 @@
 /**
- * (c) Copyright Ascensio System SIA 2025
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- *
- * @license
- */
-
-/**
  * @module
  * @mergeModuleWith auth
  */
 
-/* eslint-disable typescript/consistent-type-definitions */
-
 import type express from "express"
 import * as z from "zod"
-import * as errors from "../util/errors.ts"
 import * as r from "../util/result.ts"
 import * as zod from "../util/zod.ts"
 
@@ -85,8 +64,8 @@ export class CredentialParser {
 					[baseUrl]: z.string().optional().transform(zod.envOptionalBaseUrl()),
 					[apiKey]: z.string().trim().optional(),
 					[pat]: z.string().trim().optional(),
-					[username]: z.string().time().optional(),
-					[password]: z.string().time().optional(),
+					[username]: z.string().trim().optional(),
+					[password]: z.string().trim().optional(),
 				}).
 				transform((o) => ({
 					baseUrl: o[baseUrl],
@@ -128,7 +107,7 @@ export class CredentialParser {
 		}
 
 		if (errs.length !== 0) {
-			return r.error(new errors.Errors({cause: errs}))
+			return r.error(new AggregateError(errs, "Parsing credentials"))
 		}
 
 		let c: Credential = {
@@ -177,7 +156,7 @@ export class CredentialParser {
 		}
 
 		if (errs.length !== 0) {
-			return r.error(new errors.Errors({cause: errs}))
+			return r.error(new AggregateError(errs, "Validating credentials"))
 		}
 
 		return r.ok(c)

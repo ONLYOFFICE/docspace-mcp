@@ -63,7 +63,16 @@ Insert the following block into the `mcpServers` section of your `.json` configu
 	"mcpServers": {
 		"onlyoffice-docspace": {
 			"command": "docker",
-			"args": ["run", "--interactive", "--rm", "--env", "DOCSPACE_BASE_URL", "--env", "DOCSPACE_API_KEY", "onlyoffice/docspace-mcp"],
+			"args": [
+				"run",
+				"--interactive",
+				"--rm",
+				"--env",
+				"DOCSPACE_BASE_URL",
+				"--env",
+				"DOCSPACE_API_KEY",
+				"onlyoffice/docspace-mcp"
+			],
 			"env": {
 				"DOCSPACE_BASE_URL": "https://your-instance.onlyoffice.com",
 				"DOCSPACE_API_KEY": "your-api-key"
@@ -97,10 +106,14 @@ All DocSpace MCP server tools are described [here](docs/features/tools.md).
 
 The documentation is available in the [docs] directory.
 
+## Privacy Policy
+
+The policies are available at [Legal Terms] and [Privacy Policy].
+
 ## License
 
-The DocSpace MCP server is distributed under the Apache-2.0 license found in
-the [LICENSE] file.
+The DocSpace MCP server is distributed under the MIT license found in the
+[LICENSE] file.
 
 <!-- Footnotes -->
 
@@ -109,5 +122,8 @@ the [LICENSE] file.
 
 [Model Context Protocol]: https://modelcontextprotocol.io/
 [ONLYOFFICE DocSpace]: https://www.onlyoffice.com/docspace.aspx
+
+[Legal Terms]: https://www.onlyoffice.com/legalterms
+[Privacy Policy]: https://www.onlyoffice.com/privacy
 
 [MCP specification]: https://modelcontextprotocol.io/specification/2025-11-25/server/tools/

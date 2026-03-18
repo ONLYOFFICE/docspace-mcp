@@ -1,26 +1,9 @@
 /**
- * (c) Copyright Ascensio System SIA 2025
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- *
- * @license
- */
-
-/**
  * @module
  * @mergeModuleWith mcp
  */
 
+import type * as types from "@modelcontextprotocol/sdk/types.js"
 import * as z from "zod"
 import type * as mcp from "../util/mcp.ts"
 import type {Result} from "../util/result.ts"
@@ -41,7 +24,7 @@ export const GetToolOutputSchemaInputSchema = z.object({
 
 export const CallToolInputSchema = z.object({
 	tool: z.string().describe("The name of the tool to call."),
-	input: z.object({}).passthrough().optional().describe("The value that corresponds to the input schema of the tool."),
+	input: z.looseObject({}).optional().describe("The value that corresponds to the input schema of the tool."),
 })
 
 export class MetaTools {
@@ -69,7 +52,7 @@ export class MetaTools {
 		return ok(summaries)
 	}
 
-	listTools(req: mcp.CallToolRequest): Result<mcp.Summary[], Error> {
+	listTools(req: types.CallToolRequest): Result<mcp.Summary[], Error> {
 		let pr = ListToolsInputSchema.safeParse(req.params.arguments)
 		if (!pr.success) {
 			return error(new Error("Parsing input.", {cause: pr.error}))
@@ -105,9 +88,7 @@ export class MetaTools {
 		return ok(summaries)
 	}
 
-	getToolInputSchema(
-		req: mcp.CallToolRequest,
-	): Result<mcp.ToolInputSchema, Error> {
+	getToolInputSchema(req: types.CallToolRequest): Result<mcp.ToolInputSchema, Error> {
 		let pr = GetToolInputSchemaInputSchema.safeParse(req.params.arguments)
 		if (!pr.success) {
 			return error(new Error("Parsing input.", {cause: pr.error}))
@@ -135,9 +116,7 @@ export class MetaTools {
 		return ok(i)
 	}
 
-	getToolOutputSchema(
-		req: mcp.CallToolRequest,
-	): Result<mcp.ToolOutputSchema, Error> {
+	getToolOutputSchema(req: types.CallToolRequest): Result<mcp.ToolOutputSchema, Error> {
 		let pr = GetToolInputSchemaInputSchema.safeParse(req.params.arguments)
 		if (!pr.success) {
 			return error(new Error("Parsing input.", {cause: pr.error}))
@@ -165,10 +144,7 @@ export class MetaTools {
 		return ok(o)
 	}
 
-	async callTool(
-		req: mcp.CallToolRequest,
-		extra: mcp.RequestExtra,
-	): Promise<Result<ConfiguredServerRouteToolResult, Error>> {
+	async callTool(req: types.CallToolRequest): Promise<Result<ConfiguredServerRouteToolResult, Error>> {
 		let pr = CallToolInputSchema.safeParse(req.params.arguments)
 		if (!pr.success) {
 			return error(new Error("Parsing input.", {cause: pr.error}))
@@ -184,7 +160,7 @@ export class MetaTools {
 		req.params.name = pr.data.tool
 		req.params.arguments = pr.data.input
 
-		let cr = await this.s.routeRegularTool(req, extra)
+		let cr = await this.s.routeRegularTool(req)
 		if (cr.err) {
 			return error(new Error("Routing tool.", {cause: cr.err}))
 		}

@@ -1,43 +1,25 @@
 #!/usr/bin/env node
 
-/**
- * (c) Copyright Ascensio System SIA 2025
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- *
- * @license
- */
-
-/* eslint-disable typescript/consistent-type-definitions */
-
-import * as server from "@modelcontextprotocol/sdk/server/index.js"
 import * as stdio from "@modelcontextprotocol/sdk/server/stdio.js"
 import type * as types from "@modelcontextprotocol/sdk/types.js"
 import express from "express"
 import * as z from "zod"
-import * as api from "../lib/api.ts"
+import * as apiCore from "../lib/api/core.ts"
+import * as apiExtra from "../lib/api/extra.ts"
 import * as auth from "../lib/auth.ts"
 import * as mcp from "../lib/mcp.ts"
 import * as meta from "../lib/meta.ts"
 import * as oauth from "../lib/oauth.ts"
 import * as settings from "../lib/settings.ts"
-import * as context from "../lib/util/context.ts"
+import * as utilAbort from "../lib/util/abort.ts"
 import * as errors from "../lib/util/errors.ts"
 import * as utilExpress from "../lib/util/express.ts"
 import * as utilFetch from "../lib/util/fetch.ts"
+import * as utilForwarded from "../lib/util/forwarded.ts"
 import * as utilLogger from "../lib/util/logger.ts"
 import * as utilMcp from "../lib/util/mcp.ts"
 import * as r from "../lib/util/result.ts"
+import * as utilTrace from "../lib/util/trace.ts"
 import * as zod from "../lib/util/zod.ts"
 
 type Algorithm =
@@ -86,20 +68,20 @@ const ConfigSchema = z.
 	object({
 		DOCSPACE_INTERNAL: z.
 			string().
-			default("0").
+			prefault("0").
 			transform(zod.envBoolean()),
 		DOCSPACE_TRANSPORT: z.
 			string().
 			toLowerCase().
-			default("stdio").
+			prefault("stdio").
 			transform(zod.envUnion(availableTransports)),
 		DOCSPACE_DYNAMIC: z.
 			string().
-			default("0").
+			prefault("0").
 			transform(zod.envBoolean()),
 		DOCSPACE_TOOLSETS: z.
 			string().
-			default("all").
+			prefault("all").
 			transform(zod.envOptions(["all", ...availableToolsets])).
 			transform((o) => {
 				if (o.includes("all")) {
@@ -109,229 +91,233 @@ const ConfigSchema = z.
 			}),
 		DOCSPACE_ENABLED_TOOLS: z.
 			string().
-			default("").
+			prefault("").
 			transform(zod.envOptions(availableTools)),
 		DOCSPACE_DISABLED_TOOLS: z.
 			string().
-			default("").
+			prefault("").
 			transform(zod.envOptions(availableTools)),
 		DOCSPACE_SESSION_TTL: z.
 			string().
-			default("28800000"). // 8 hours
+			prefault("28800000"). // 8 hours
 			transform(zod.envNumber()).
 			pipe(z.number().min(0)),
 		DOCSPACE_SESSION_INTERVAL: z.
 			string().
-			default("240000"). // 4 minutes
+			prefault("240000"). // 4 minutes
 			transform(zod.envNumber()).
 			pipe(z.number().min(0)),
 		DOCSPACE_USER_AGENT: z.
 			string().
 			trim().
-			default(`${meta.name} v${meta.version}`),
+			prefault(`${meta.name} v${meta.version}`),
 		DOCSPACE_BASE_URL: z.
 			string().
-			default("").
+			prefault("").
 			transform(zod.envBaseUrl()),
 		DOCSPACE_AUTHORIZATION: z.
 			string().
 			trim().
-			default(""),
+			prefault(""),
 		DOCSPACE_API_KEY: z.
 			string().
 			trim().
-			default(""),
+			prefault(""),
 		DOCSPACE_AUTH_TOKEN: z.
 			string().
 			trim().
-			default(""),
+			prefault(""),
 		DOCSPACE_USERNAME: z.
 			string().
 			trim().
-			default(""),
+			prefault(""),
 		DOCSPACE_PASSWORD: z.
 			string().
 			trim().
-			default(""),
+			prefault(""),
 		DOCSPACE_OAUTH_BASE_URL: z.
 			string().
-			default("").
+			prefault("").
 			transform(zod.envBaseUrl()),
 		DOCSPACE_OAUTH_CLIENT_ID: z.
 			string().
 			trim().
-			default(""),
+			prefault(""),
 		DOCSPACE_OAUTH_CLIENT_SECRET: z.
 			string().
 			trim().
-			default(""),
+			prefault(""),
 		DOCSPACE_OAUTH_AUTH_TOKEN_ALGORITHM: z.
 			string().
 			toUpperCase().
-			default("HS256").
+			prefault("HS256").
 			transform(zod.envUnion<Algorithm | "">(["", ...availableAlgorithms])),
 		DOCSPACE_OAUTH_AUTH_TOKEN_TTL: z.
 			string().
-			default("3600000").
+			prefault("3600000").
 			transform(zod.envNumber()).
 			pipe(z.number().min(0)), // 1 hour
 		DOCSPACE_OAUTH_AUTH_TOKEN_SECRET_KEY: z.
 			string().
 			trim().
-			default(""),
+			prefault(""),
 		DOCSPACE_OAUTH_STATE_TOKEN_ALGORITHM: z.
 			string().
 			toUpperCase().
-			default("HS256").
+			prefault("HS256").
 			transform(zod.envUnion<Algorithm | "">(["", ...availableAlgorithms])),
 		DOCSPACE_OAUTH_STATE_TOKEN_TTL: z.
 			string().
-			default("3600000").
+			prefault("3600000").
 			transform(zod.envNumber()).
 			pipe(z.number().min(0)), // 1 hour
 		DOCSPACE_OAUTH_STATE_TOKEN_SECRET_KEY: z.
 			string().
 			trim().
-			default(""),
+			prefault(""),
 		DOCSPACE_SERVER_BASE_URL: z.
 			string().
-			default("").
+			prefault("").
 			transform(zod.envBaseUrl()),
 		DOCSPACE_HOST: z.
 			string().
 			trim().
-			default("127.0.0.1"),
+			prefault("127.0.0.1"),
 		DOCSPACE_PORT: z.
 			string().
-			default("8080").
+			prefault("8080").
 			transform(zod.envNumber()).
 			pipe(z.number().min(0).max(65535)),
 		DOCSPACE_PROXY_HOPS: z.
 			string().
-			default("0").
+			prefault("0").
 			transform(zod.envNumber()).
 			pipe(z.number().min(0)),
+		DOCSPACE_SERVER_ALLOWED_HOSTNAMES: z.
+			string().
+			prefault("localhost,127.0.0.1,[::1]").
+			transform(zod.envHostnameList()),
 		DOCSPACE_SERVER_CORS_MCP_ORIGIN: z.
 			string().
-			default("*").
+			prefault("*").
 			transform(zod.envList()),
 		DOCSPACE_SERVER_CORS_MCP_MAX_AGE: z.
 			string().
-			default("86400000"). // 1 day
+			prefault("86400000"). // 1 day
 			transform(zod.envNumber()).
 			pipe(z.number().min(0)),
 		DOCSPACE_SERVER_CORS_OAUTH_ORIGIN: z.
 			string().
-			default("*").
+			prefault("*").
 			transform(zod.envList()),
 		DOCSPACE_SERVER_CORS_OAUTH_MAX_AGE: z.
 			string().
-			default("86400000"). // 1 day
+			prefault("86400000"). // 1 day
 			transform(zod.envNumber()).
 			pipe(z.number().min(0)),
 		DOCSPACE_SERVER_RATE_LIMITS_MCP_CAPACITY: z.
 			string().
-			default("1000").
+			prefault("1000").
 			transform(zod.envNumber()).
 			pipe(z.number().min(0)),
 		DOCSPACE_SERVER_RATE_LIMITS_MCP_WINDOW: z.
 			string().
-			default("1000"). // 1 second
+			prefault("1000"). // 1 second
 			transform(zod.envNumber()).
 			pipe(z.number().min(0)),
 		DOCSPACE_SERVER_RATE_LIMITS_OAUTH_SERVER_METADATA_CAPACITY: z.
 			string().
-			default("200").
+			prefault("200").
 			transform(zod.envNumber()).
 			pipe(z.number().min(0)),
 		DOCSPACE_SERVER_RATE_LIMITS_OAUTH_SERVER_METADATA_WINDOW: z.
 			string().
-			default("60000"). // 1 minute
+			prefault("60000"). // 1 minute
 			transform(zod.envNumber()).
 			pipe(z.number().min(0)),
 		DOCSPACE_SERVER_RATE_LIMITS_OAUTH_RESOURCE_METADATA_CAPACITY: z.
 			string().
-			default("200").
+			prefault("200").
 			transform(zod.envNumber()).
 			pipe(z.number().min(0)),
 		DOCSPACE_SERVER_RATE_LIMITS_OAUTH_RESOURCE_METADATA_WINDOW: z.
 			string().
-			default("60000"). // 1 minute
+			prefault("60000"). // 1 minute
 			transform(zod.envNumber()).
 			pipe(z.number().min(0)),
 		DOCSPACE_SERVER_RATE_LIMITS_OAUTH_AUTHORIZE_CAPACITY: z.
 			string().
-			default("200").
+			prefault("200").
 			transform(zod.envNumber()).
 			pipe(z.number().min(0)),
 		DOCSPACE_SERVER_RATE_LIMITS_OAUTH_AUTHORIZE_WINDOW: z.
 			string().
-			default("60000"). // 1 minute
+			prefault("60000"). // 1 minute
 			transform(zod.envNumber()).
 			pipe(z.number().min(0)),
 		DOCSPACE_SERVER_RATE_LIMITS_OAUTH_CALLBACK_CAPACITY: z.
 			string().
-			default("200").
+			prefault("200").
 			transform(zod.envNumber()).
 			pipe(z.number().min(0)),
 		DOCSPACE_SERVER_RATE_LIMITS_OAUTH_CALLBACK_WINDOW: z.
 			string().
-			default("60000"). // 1 minute
+			prefault("60000"). // 1 minute
 			transform(zod.envNumber()).
 			pipe(z.number().min(0)),
 		DOCSPACE_SERVER_RATE_LIMITS_OAUTH_INTROSPECT_CAPACITY: z.
 			string().
-			default("10").
+			prefault("10").
 			transform(zod.envNumber()).
 			pipe(z.number().min(0)),
 		DOCSPACE_SERVER_RATE_LIMITS_OAUTH_INTROSPECT_WINDOW: z.
 			string().
-			default("60000"). // 1 minute
+			prefault("60000"). // 1 minute
 			transform(zod.envNumber()).
 			pipe(z.number().min(0)),
 		DOCSPACE_SERVER_RATE_LIMITS_OAUTH_REGISTER_CAPACITY: z.
 			string().
-			default("10").
+			prefault("10").
 			transform(zod.envNumber()).
 			pipe(z.number().min(0)),
 		DOCSPACE_SERVER_RATE_LIMITS_OAUTH_REGISTER_WINDOW: z.
 			string().
-			default("60000"). // 1 minute
+			prefault("60000"). // 1 minute
 			transform(zod.envNumber()).
 			pipe(z.number().min(0)),
 		DOCSPACE_SERVER_RATE_LIMITS_OAUTH_REVOKE_CAPACITY: z.
 			string().
-			default("10").
+			prefault("10").
 			transform(zod.envNumber()).
 			pipe(z.number().min(0)),
 		DOCSPACE_SERVER_RATE_LIMITS_OAUTH_REVOKE_WINDOW: z.
 			string().
-			default("60000"). // 1 minute
+			prefault("60000"). // 1 minute
 			transform(zod.envNumber()).
 			pipe(z.number().min(0)),
 		DOCSPACE_SERVER_RATE_LIMITS_OAUTH_TOKEN_CAPACITY: z.
 			string().
-			default("10").
+			prefault("10").
 			transform(zod.envNumber()).
 			pipe(z.number().min(0)),
 		DOCSPACE_SERVER_RATE_LIMITS_OAUTH_TOKEN_WINDOW: z.
 			string().
-			default("60000"). // 1 minute
+			prefault("60000"). // 1 minute
 			transform(zod.envNumber()).
 			pipe(z.number().min(0)),
 		DOCSPACE_REQUEST_QUERY: z.
 			string().
-			default("1").
+			prefault("1").
 			transform(zod.envBoolean()),
 		DOCSPACE_REQUEST_AUTHORIZATION_HEADER: z.
 			string().
-			default("1").
+			prefault("1").
 			transform(zod.envBoolean()),
 		DOCSPACE_REQUEST_HEADER_PREFIX: z.
 			string().
 			trim().
 			toLowerCase().
-			default("x-mcp-"),
+			prefault("x-mcp-"),
 	}).
 	transform((o) => ({
 		internal: o.DOCSPACE_INTERNAL,
@@ -382,6 +368,7 @@ const ConfigSchema = z.
 			proxy: {
 				hops: o.DOCSPACE_PROXY_HOPS,
 			},
+			allowedHostnames: o.DOCSPACE_SERVER_ALLOWED_HOSTNAMES,
 			cors: {
 				mcp: {
 					origin: o.DOCSPACE_SERVER_CORS_MCP_ORIGIN,
@@ -448,7 +435,7 @@ type Start = {
 }
 
 async function main(): Promise<void> {
-	let l = new utilLogger.VanillaLogger(process.stdout)
+	let l = new utilLogger.Logger(process.stdout, process.stderr)
 
 	try {
 		let c = loadConfig()
@@ -568,6 +555,7 @@ function loadConfig(): r.Result<Config, Error> {
 				proxy: {
 					hops: 0,
 				},
+				allowedHostnames: [],
 				cors: {
 					mcp: {
 						origin: [],
@@ -640,24 +628,11 @@ function loadConfig(): r.Result<Config, Error> {
 
 	let errs: Error[] = []
 
-	if (p.data.mcp.toolsets.length === 0) {
-		errs.push(new Error("No toolsets left"))
-	}
-
 	if (p.data.mcp.tools.length === 0) {
 		errs.push(new Error("No tools left"))
 	}
 
 	if (
-		(
-			p.data.mcp.transport === "stdio" ||
-			(
-				p.data.mcp.transport === "sse" ||
-				p.data.mcp.transport === "streamable-http" ||
-				p.data.mcp.transport === "http"
-			) &&
-			!p.data.api.oauth.baseUrl
-		) &&
 		p.data.api.shared.username &&
 		!p.data.api.shared.password
 	) {
@@ -665,19 +640,23 @@ function loadConfig(): r.Result<Config, Error> {
 	}
 
 	if (
-		(
-			p.data.mcp.transport === "stdio" ||
-			(
-				p.data.mcp.transport === "sse" ||
-				p.data.mcp.transport === "streamable-http" ||
-				p.data.mcp.transport === "http"
-			) &&
-			!p.data.api.oauth.baseUrl
-		) &&
 		!p.data.api.shared.username &&
 		p.data.api.shared.password
 	) {
 		errs.push(new Error("No username"))
+	}
+
+	if (
+		(
+			p.data.api.shared.authorization ||
+			p.data.api.shared.apiKey ||
+			p.data.api.shared.pat ||
+			p.data.api.shared.username &&
+			p.data.api.shared.password
+		) &&
+		!p.data.api.shared.baseUrl
+	) {
+		errs.push(new Error("No API base URL"))
 	}
 
 	if (
@@ -713,10 +692,8 @@ function loadConfig(): r.Result<Config, Error> {
 			!p.data.api.shared.authorization &&
 			!p.data.api.shared.apiKey &&
 			!p.data.api.shared.pat &&
-			(
-				!p.data.api.shared.username ||
-				!p.data.api.shared.password
-			) ||
+			!p.data.api.shared.username &&
+			!p.data.api.shared.password ||
 			(
 				p.data.mcp.transport === "sse" ||
 				p.data.mcp.transport === "streamable-http" ||
@@ -725,10 +702,8 @@ function loadConfig(): r.Result<Config, Error> {
 			!p.data.api.shared.authorization &&
 			!p.data.api.shared.apiKey &&
 			!p.data.api.shared.pat &&
-			(
-				!p.data.api.shared.username ||
-				!p.data.api.shared.password
-			) &&
+			!p.data.api.shared.username &&
+			!p.data.api.shared.password &&
 			!p.data.api.oauth.baseUrl &&
 			!p.data.request.headerPrefix &&
 			(
@@ -741,34 +716,21 @@ function loadConfig(): r.Result<Config, Error> {
 	}
 
 	if (
-		(
-			p.data.mcp.transport === "stdio" ||
-			(
-				p.data.mcp.transport === "sse" ||
-				p.data.mcp.transport === "streamable-http" ||
-				p.data.mcp.transport === "http"
-			) &&
-			!p.data.api.oauth.baseUrl
-		) &&
+		p.data.mcp.transport === "stdio" &&
 		(
 			p.data.api.shared.authorization ||
 			p.data.api.shared.apiKey ||
 			p.data.api.shared.pat ||
-			p.data.api.shared.username ||
+			p.data.api.shared.username &&
 			p.data.api.shared.password
 		) &&
 		Number(Boolean(p.data.api.shared.authorization)) +
 		Number(Boolean(p.data.api.shared.apiKey)) +
 		Number(Boolean(p.data.api.shared.pat)) +
 		Number(
-			Boolean(p.data.api.shared.username) ||
+			Boolean(p.data.api.shared.username) &&
 			Boolean(p.data.api.shared.password),
-		) !== 1
-	) {
-		errs.push(new Error("Multiple authentication methods"))
-	}
-
-	if (
+		) !== 1 ||
 		(
 			p.data.mcp.transport === "sse" ||
 			p.data.mcp.transport === "streamable-http" ||
@@ -778,34 +740,20 @@ function loadConfig(): r.Result<Config, Error> {
 			p.data.api.shared.authorization ||
 			p.data.api.shared.apiKey ||
 			p.data.api.shared.pat ||
-			p.data.api.shared.username ||
-			p.data.api.shared.password
+			p.data.api.shared.username &&
+			p.data.api.shared.password ||
+			p.data.api.oauth.baseUrl
 		) &&
-		p.data.api.oauth.baseUrl
+		Number(Boolean(p.data.api.shared.authorization)) +
+		Number(Boolean(p.data.api.shared.apiKey)) +
+		Number(Boolean(p.data.api.shared.pat)) +
+		Number(
+			Boolean(p.data.api.shared.username) &&
+			Boolean(p.data.api.shared.password),
+		) +
+		Number(Boolean(p.data.api.oauth.baseUrl)) !== 1
 	) {
-		errs.push(new Error("Mixed authentication methods"))
-	}
-
-	if (
-		(
-			p.data.mcp.transport === "stdio" ||
-			(
-				p.data.mcp.transport === "sse" ||
-				p.data.mcp.transport === "streamable-http" ||
-				p.data.mcp.transport === "http"
-			) &&
-			!p.data.api.oauth.baseUrl
-		) &&
-		(
-			p.data.api.shared.authorization ||
-			p.data.api.shared.apiKey ||
-			p.data.api.shared.pat ||
-			p.data.api.shared.username ||
-			p.data.api.shared.password
-		) &&
-		!p.data.api.shared.baseUrl
-	) {
-		errs.push(new Error("No API base URL"))
+		errs.push(new Error("Multiple authentication methods"))
 	}
 
 	if (
@@ -832,7 +780,7 @@ function loadConfig(): r.Result<Config, Error> {
 	}
 
 	if (errs.length !== 0) {
-		return r.error(new errors.Errors({cause: errs}))
+		return r.error(new AggregateError(errs, "Validating config"))
 	}
 
 	return r.ok(p.data)
@@ -841,7 +789,6 @@ function loadConfig(): r.Result<Config, Error> {
 function formatConfig(c: Config): object {
 	let m = "***"
 
-	// eslint-disable-next-line unicorn/prefer-set-has
 	let s: string[] = [
 		"root.api.shared.authorization",
 		"root.api.shared.apiKey",
@@ -901,89 +848,119 @@ function formatConfig(c: Config): object {
 }
 
 function startStdio(config: r.Result<Config, Error>): r.Result<Start, Error> {
-	let msc: types.Implementation = {
-		name: meta.name,
-		version: meta.version,
+	let create = (): r.Result<utilMcp.Protocol, Error> => {
+		let mp = new utilMcp.Protocol()
+
+		let mi: types.Implementation = {
+			name: meta.name,
+			version: meta.version,
+		}
+
+		let ms = new utilMcp.Server(mp, mi)
+
+		let mu = mp.registerRouter(ms.router())
+		if (mu.err) {
+			return r.error(new Error("Registering server router", {cause: mu.err}))
+		}
+
+		if (config.err) {
+			let ms = new mcp.MisconfiguredServer(config.err)
+
+			mu = mp.registerRouter(ms.router())
+			if (mu.err) {
+				return r.error(new Error("Registering misconfigured server router", {cause: mu.err}))
+			}
+		} else {
+			let ml = new utilMcp.Logger(mp)
+
+			mu = mp.registerRouter(ml.router())
+			if (mu.err) {
+				return r.error(new Error("Registering logger router", {cause: mu.err}))
+			}
+
+			let fetch = globalThis.fetch
+
+			fetch = utilFetch.withLogger(ml, globalThis.fetch)
+			fetch = utilAbort.wrapFetch(fetch)
+
+			let cc: apiCore.ClientConfig = {
+				userAgent: config.v.api.userAgent,
+				baseUrl: config.v.api.shared.baseUrl,
+				fetch,
+			}
+
+			let c = new apiCore.Client(cc)
+
+			if (config.v.api.shared.authorization) {
+				c = c.withAuth(config.v.api.shared.authorization)
+			}
+
+			if (config.v.api.shared.apiKey) {
+				c = c.withApiKey(config.v.api.shared.apiKey)
+			}
+
+			if (config.v.api.shared.pat) {
+				c = c.withAuthToken(config.v.api.shared.pat)
+			}
+
+			if (config.v.api.shared.username && config.v.api.shared.password) {
+				c = c.withBasicAuth(config.v.api.shared.username, config.v.api.shared.password)
+			}
+
+			let csc: mcp.ConfiguredServerConfig = {
+				client: c,
+				resolver: new apiExtra.Resolver(c),
+				uploader: new apiExtra.Uploader(c),
+				dynamic: config.v.mcp.dynamic,
+				tools: config.v.mcp.tools,
+			}
+
+			let cs = new mcp.ConfiguredServer(csc)
+
+			mu = mp.registerRouter(cs.router())
+			if (mu.err) {
+				return r.error(new Error("Registering configured server router", {cause: mu.err}))
+			}
+		}
+
+		return r.ok(mp)
 	}
 
-	let ms = new server.Server(msc)
+	let mp = create()
 
-	let defs: utilMcp.RequestDefinition[] | undefined
+	let promise: Promise<r.Result<void, Error>> | undefined
+	let cleanup: (() => Promise<r.Result<void, Error>>) | undefined
 
-	if (config.err) {
-		defs = mcp.misconfiguredServer(config.err)
+	if (mp.err) {
+		promise = Promise.resolve(r.error(new Error("Creating protocol", {cause: mp.err})))
+
+		// eslint-disable-next-line typescript/require-await
+		cleanup = async() => {
+			return r.ok()
+		}
 	} else {
-		let cp: utilLogger.ContextProvider = {
-			get() {
-				// eslint-disable-next-line unicorn/no-useless-undefined
-				return undefined
-			},
+		let mt = new stdio.StdioServerTransport()
+
+		promise = new Promise<r.Result<void, Error>>((res) => {
+			mp.v.connect(mt).
+				// eslint-disable-next-line promise/prefer-await-to-then
+				then(() => {
+					res(r.ok())
+					return
+				}).
+				// eslint-disable-next-line promise/prefer-await-to-then
+				catch((err: unknown) => {
+					res(r.error(new Error("Attaching server", {cause: err})))
+				})
+		})
+
+		cleanup = async(): Promise<r.Result<void, Error>> => {
+			let c = await r.safeAsync(mt.close.bind(mt))
+			if (c.err) {
+				return r.error(new Error("Closing transport", {cause: c.err}))
+			}
+			return r.ok()
 		}
-
-		let sl = new utilLogger.ServerLogger(cp, ms)
-
-		ms.registerCapabilities({logging: {}})
-
-		let fetch = utilFetch.withLogger(context, sl, globalThis.fetch)
-
-		let cc: api.ClientConfig = {
-			userAgent: config.v.api.userAgent,
-			baseUrl: config.v.api.shared.baseUrl,
-			fetch,
-		}
-
-		let c = new api.Client(cc)
-
-		if (config.v.api.shared.authorization) {
-			c = c.withAuth(config.v.api.shared.authorization)
-		}
-
-		if (config.v.api.shared.apiKey) {
-			c = c.withApiKey(config.v.api.shared.apiKey)
-		}
-
-		if (config.v.api.shared.pat) {
-			c = c.withAuthToken(config.v.api.shared.pat)
-		}
-
-		if (config.v.api.shared.username && config.v.api.shared.password) {
-			c = c.withBasicAuth(config.v.api.shared.username, config.v.api.shared.password)
-		}
-
-		let csc: mcp.ConfiguredServerConfig = {
-			client: c,
-			resolver: new api.Resolver(c),
-			uploader: new api.Uploader(c),
-			dynamic: config.v.mcp.dynamic,
-			tools: config.v.mcp.tools,
-		}
-
-		defs = mcp.configuredServer(csc)
-	}
-
-	utilMcp.register(ms, defs)
-
-	let mt = new stdio.StdioServerTransport()
-
-	let promise = new Promise<r.Result<void, Error>>((res) => {
-		ms.connect(mt).
-			// eslint-disable-next-line promise/prefer-await-to-then
-			then(() => {
-				res(r.ok())
-				return
-			}).
-			// eslint-disable-next-line promise/prefer-await-to-then
-			catch((err: unknown) => {
-				res(r.error(new Error("Attaching server", {cause: err})))
-			})
-	})
-
-	let cleanup = async(): Promise<r.Result<void, Error>> => {
-		let c = await r.safeAsync(mt.close.bind(mt))
-		if (c.err) {
-			return r.error(new Error("Closing transport", {cause: c.err}))
-		}
-		return r.ok()
 	}
 
 	let s: Start = {
@@ -994,7 +971,7 @@ function startStdio(config: r.Result<Config, Error>): r.Result<Start, Error> {
 	return r.ok(s)
 }
 
-function startHttp(config: Config, logger: utilLogger.VanillaLogger): r.Result<Start, Error> {
+function startHttp(config: Config, logger: utilLogger.Logger): r.Result<Start, Error> {
 	let oauthAuthTokens: oauth.AuthTokens | undefined
 	let oauthRouter: express.Router | undefined
 	let oauthHandler: express.Handler | undefined
@@ -1002,9 +979,10 @@ function startHttp(config: Config, logger: utilLogger.VanillaLogger): r.Result<S
 	if (config.api.oauth.baseUrl) {
 		let fetch = globalThis.fetch
 
-		fetch = utilFetch.withLogger(context, logger, fetch)
-
-		fetch = utilFetch.withForwarding(context, fetch)
+		fetch = utilFetch.withLogger(logger, fetch)
+		fetch = utilAbort.wrapFetch(fetch)
+		fetch = utilTrace.wrapFetch(fetch)
+		fetch = utilForwarded.wrapFetch(fetch)
 
 		let cc: oauth.ClientConfig = {
 			userAgent: config.api.userAgent,
@@ -1037,6 +1015,7 @@ function startHttp(config: Config, logger: utilLogger.VanillaLogger): r.Result<S
 			baseUrl: config.server.baseUrl,
 			clientId: config.api.oauth.clientId,
 			clientSecret: config.api.oauth.clientSecret,
+			allowedHostnames: config.server.allowedHostnames,
 			corsOrigin: config.server.cors.oauth.origin,
 			corsMaxAge: config.server.cors.oauth.maxAge,
 			serverMetadataRateLimitCapacity: config.server.rateLimits.oauth.serverMetadata.capacity,
@@ -1152,32 +1131,42 @@ function startHttp(config: Config, logger: utilLogger.VanillaLogger): r.Result<S
 
 	let sp = new settings.SettingsParser(spc)
 
-	let create = (req: express.Request): r.Result<server.Server, Error> => {
+	let create = (req: express.Request): r.Result<utilMcp.Protocol, Error> => {
 		let s = sp.parse(req)
 		if (s.err) {
 			return r.error(new Error("Parsing settings", {cause: s.err}))
 		}
 
-		let msc: types.Implementation = {
+		let mp = new utilMcp.Protocol()
+
+		let mi: types.Implementation = {
 			name: meta.name,
 			version: meta.version,
 		}
 
-		let ms = new server.Server(msc)
+		let ms = new utilMcp.Server(mp, mi)
 
-		let sl = new utilLogger.ServerLogger(context, ms)
+		let mu = mp.registerRouter(ms.router())
+		if (mu.err) {
+			return r.error(new Error("Registering server router", {cause: mu.err}))
+		}
 
-		ms.registerCapabilities({logging: {}})
+		let ml = new utilMcp.Logger(mp)
+
+		mu = mp.registerRouter(ml.router())
+		if (mu.err) {
+			return r.error(new Error("Registering logger router", {cause: mu.err}))
+		}
 
 		let fetch = globalThis.fetch
 
-		fetch = utilFetch.withLogger(context, logger, fetch)
+		fetch = utilFetch.withLogger(logger, fetch)
+		fetch = utilFetch.withLogger(ml, fetch)
+		fetch = utilAbort.wrapFetch(fetch)
+		fetch = utilTrace.wrapFetch(fetch)
+		fetch = utilForwarded.wrapFetch(fetch)
 
-		fetch = utilFetch.withLogger(context, sl, fetch)
-
-		fetch = utilFetch.withForwarding(context, fetch)
-
-		let cc: api.ClientConfig = {
+		let cc: apiCore.ClientConfig = {
 			userAgent: config.api.userAgent,
 			baseUrl: "",
 			fetch,
@@ -1191,7 +1180,7 @@ function startHttp(config: Config, logger: utilLogger.VanillaLogger): r.Result<S
 			cc.baseUrl = req[auth.authKey].baseUrl
 		}
 
-		let c = new api.Client(cc)
+		let c = new apiCore.Client(cc)
 
 		if (req[oauth.oauthKey]) {
 			c = c.withBearerAuth(req[oauth.oauthKey].token)
@@ -1215,17 +1204,20 @@ function startHttp(config: Config, logger: utilLogger.VanillaLogger): r.Result<S
 
 		let csc: mcp.ConfiguredServerConfig = {
 			client: c,
-			resolver: new api.Resolver(c),
-			uploader: new api.Uploader(c),
+			resolver: new apiExtra.Resolver(c),
+			uploader: new apiExtra.Uploader(c),
 			dynamic: s.v.dynamic,
 			tools: s.v.tools,
 		}
 
-		let defs = mcp.configuredServer(csc)
+		let cs = new mcp.ConfiguredServer(csc)
 
-		utilMcp.register(ms, defs)
+		mu = mp.registerRouter(cs.router())
+		if (mu.err) {
+			return r.error(new Error("Registering configured server router", {cause: mu.err}))
+		}
 
-		return r.ok(ms)
+		return r.ok(mp)
 	}
 
 	let sseSessions: mcp.Sessions | undefined
@@ -1246,6 +1238,7 @@ function startHttp(config: Config, logger: utilLogger.VanillaLogger): r.Result<S
 		let st = new mcp.SseTransports(stc)
 
 		let ssc: mcp.SseServerConfig = {
+			allowedHostnames: config.server.allowedHostnames,
 			corsOrigin: config.server.cors.mcp.origin,
 			corsMaxAge: config.server.cors.mcp.maxAge,
 			corsAllowedHeaders: [
@@ -1260,7 +1253,7 @@ function startHttp(config: Config, logger: utilLogger.VanillaLogger): r.Result<S
 			handlers: [
 				authHandler,
 			],
-			servers: {
+			protocols: {
 				create,
 			},
 			transports: st,
@@ -1290,6 +1283,7 @@ function startHttp(config: Config, logger: utilLogger.VanillaLogger): r.Result<S
 		let st = new mcp.StreamableTransports(stc)
 
 		let ssc: mcp.StreamableServerConfig = {
+			allowedHostnames: config.server.allowedHostnames,
 			corsOrigin: config.server.cors.mcp.origin,
 			corsMaxAge: config.server.cors.mcp.maxAge,
 			corsAllowedHeaders: [
@@ -1304,7 +1298,7 @@ function startHttp(config: Config, logger: utilLogger.VanillaLogger): r.Result<S
 			handlers: [
 				authHandler,
 			],
-			servers: {
+			protocols: {
 				create,
 			},
 			transports: st,
@@ -1326,8 +1320,11 @@ function startHttp(config: Config, logger: utilLogger.VanillaLogger): r.Result<S
 		e.set("trust proxy", config.server.proxy.hops)
 	}
 
-	e.use(utilExpress.context(context))
-	e.use(utilExpress.logger(context, logger))
+	e.use(utilExpress.logger(logger))
+	e.use(utilAbort.expressHandler())
+	e.use(utilTrace.expressHandler())
+	e.use(utilForwarded.expressHandler())
+	e.use(utilMcp.expressHandler())
 
 	if (oauthRouter) {
 		e.use(oauthRouter)
@@ -1374,7 +1371,7 @@ function startHttp(config: Config, logger: utilLogger.VanillaLogger): r.Result<S
 					errs.push(new Error("Clearing sessions", {cause: err}))
 				}
 
-				return r.error(new errors.Errors({cause: errs}))
+				return r.error(new AggregateError(errs, "Cleaning up sessions"))
 			}
 
 			return r.ok()
@@ -1403,7 +1400,7 @@ function startHttp(config: Config, logger: utilLogger.VanillaLogger): r.Result<S
 					errs.push(new Error("Clearing sessions", {cause: err}))
 				}
 
-				return r.error(new errors.Errors({cause: errs}))
+				return r.error(new AggregateError(errs, "Cleaning up sessions"))
 			}
 
 			return r.ok()
@@ -1474,7 +1471,7 @@ function startHttp(config: Config, logger: utilLogger.VanillaLogger): r.Result<S
 		}
 
 		if (errs.length !== 0) {
-			return r.error(new errors.Errors({cause: errs}))
+			return r.error(new AggregateError(errs, "Calling cleanups"))
 		}
 
 		return r.ok()

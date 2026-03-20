@@ -48,7 +48,7 @@ const availableTransports: Transport[] = [
 
 const availableToolsets = (() => {
 	let a: string[] = []
-	for (let s of mcp.toolsetInfos) {
+	for (let s of mcp.regularToolsets) {
 		a.push(s.name)
 	}
 	return a
@@ -56,7 +56,7 @@ const availableToolsets = (() => {
 
 const availableTools = (() => {
 	let a: string[] = []
-	for (let s of mcp.toolsetInfos) {
+	for (let s of mcp.regularToolsets) {
 		for (let t of s.tools) {
 			a.push(t.name)
 		}
@@ -864,11 +864,11 @@ function startStdio(config: r.Result<Config, Error>): r.Result<Start, Error> {
 		}
 
 		if (config.err) {
-			let ms = new mcp.MisconfiguredServer(config.err)
+			let ms = new mcp.ErroredServer(config.err)
 
 			mu = mp.registerRouter(ms.router())
 			if (mu.err) {
-				return r.error(new Error("Registering misconfigured server router", {cause: mu.err}))
+				return r.error(new Error("Registering errored server router", {cause: mu.err}))
 			}
 		} else {
 			let ml = new utilMcp.Logger(mp)
@@ -907,7 +907,7 @@ function startStdio(config: r.Result<Config, Error>): r.Result<Start, Error> {
 				c = c.withBasicAuth(config.v.api.shared.username, config.v.api.shared.password)
 			}
 
-			let csc: mcp.ConfiguredServerConfig = {
+			let csc: mcp.ServerConfig = {
 				client: c,
 				resolver: new apiExtra.Resolver(c),
 				uploader: new apiExtra.Uploader(c),
@@ -915,11 +915,11 @@ function startStdio(config: r.Result<Config, Error>): r.Result<Start, Error> {
 				tools: config.v.mcp.tools,
 			}
 
-			let cs = new mcp.ConfiguredServer(csc)
+			let cs = new mcp.Server(csc)
 
 			mu = mp.registerRouter(cs.router())
 			if (mu.err) {
-				return r.error(new Error("Registering configured server router", {cause: mu.err}))
+				return r.error(new Error("Registering server router", {cause: mu.err}))
 			}
 		}
 
@@ -1202,7 +1202,7 @@ function startHttp(config: Config, logger: utilLogger.Logger): r.Result<Start, E
 			c = c.withBasicAuth(req[auth.authKey].username, req[auth.authKey].password)
 		}
 
-		let csc: mcp.ConfiguredServerConfig = {
+		let csc: mcp.ServerConfig = {
 			client: c,
 			resolver: new apiExtra.Resolver(c),
 			uploader: new apiExtra.Uploader(c),
@@ -1210,11 +1210,11 @@ function startHttp(config: Config, logger: utilLogger.Logger): r.Result<Start, E
 			tools: s.v.tools,
 		}
 
-		let cs = new mcp.ConfiguredServer(csc)
+		let cs = new mcp.Server(csc)
 
 		mu = mp.registerRouter(cs.router())
 		if (mu.err) {
-			return r.error(new Error("Registering configured server router", {cause: mu.err}))
+			return r.error(new Error("Registering server router", {cause: mu.err}))
 		}
 
 		return r.ok(mp)

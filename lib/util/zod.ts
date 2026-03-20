@@ -3,7 +3,6 @@
  */
 
 import * as z from "zod"
-import type * as core from "zod/v4/core"
 import * as result from "./result.ts"
 
 export function wrapUnion<
@@ -108,7 +107,7 @@ export function unionToEnum<T extends string | number>(
 		let p = e.safeParse(v)
 		if (!p.success) {
 			for (let i of p.error.issues) {
-				ctx.addIssue(i as core.$ZodSuperRefineIssue)
+				ctx.addIssue(i as z.core.$ZodSuperRefineIssue)
 			}
 		}
 	})

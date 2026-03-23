@@ -1,6 +1,6 @@
 import type * as mcp from "../lib/util/mcp.ts"
 
-export function sortToolsets(toolsets: mcp.ToolsetInfo[]): mcp.ToolsetInfo[] {
+export function sortToolsets(toolsets: mcp.Toolset[]): mcp.Toolset[] {
 	toolsets = toolsets.sort((a, b) => {
 		return a.name.localeCompare(b.name)
 	})
@@ -12,7 +12,7 @@ export function sortToolsets(toolsets: mcp.ToolsetInfo[]): mcp.ToolsetInfo[] {
 	return toolsets
 }
 
-export function sortTools<T extends mcp.Summary>(tools: T[]): T[] {
+export function sortTools<T extends mcp.ToolSummary>(tools: T[]): T[] {
 	return tools.sort((a, b) => {
 		return a.name.localeCompare(b.name)
 	})

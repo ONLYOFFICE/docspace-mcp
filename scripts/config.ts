@@ -12,7 +12,7 @@ const availableTransports: string[] = [
 
 const availableToolsets = (() => {
 	let a: string[] = []
-	for (let s of mcp.toolsetInfos) {
+	for (let s of mcp.regularToolsets) {
 		a.push(s.name)
 	}
 	return a
@@ -20,7 +20,7 @@ const availableToolsets = (() => {
 
 const availableTools = (() => {
 	let a: string[] = []
-	for (let s of mcp.toolsetInfos) {
+	for (let s of mcp.regularToolsets) {
 		for (let t of s.tools) {
 			a.push(t.name)
 		}

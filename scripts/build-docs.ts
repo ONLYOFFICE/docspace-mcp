@@ -52,8 +52,8 @@ async function main(): Promise<void> {
 async function updateTools(f: string): Promise<void> {
 	let s = await fs.readFile(f, "utf8")
 
-	let toolsets = tools.sortToolsets(mcp.toolsetInfos)
-	let metaTools = tools.sortTools(mcp.metaToolInfos)
+	let toolsets = tools.sortToolsets(mcp.regularToolsets)
+	let metaTools = tools.sortTools(mcp.metaTools)
 
 	let o = createToolsetsTable(toolsets)
 	s = insert("toolsets", s, o)
@@ -266,7 +266,7 @@ function createNpxConfig(e: ConfigEnv): Config {
 	}
 }
 
-function createToolsetsTable(toolsets: utilMcp.ToolsetInfo[]): string {
+function createToolsetsTable(toolsets: utilMcp.Toolset[]): string {
 	let c = ""
 
 	for (let [i, t] of toolsets.entries()) {
@@ -286,7 +286,7 @@ function createToolsetsTable(toolsets: utilMcp.ToolsetInfo[]): string {
 	return c
 }
 
-function createToolsTable(toolsets: utilMcp.ToolsetInfo[]): string {
+function createToolsTable(toolsets: utilMcp.Toolset[]): string {
 	let c = ""
 
 	let i = 0
@@ -322,7 +322,7 @@ function createToolsTable(toolsets: utilMcp.ToolsetInfo[]): string {
 	return c
 }
 
-function createMetaToolsTable(tools: utilMcp.Summary[]): string {
+function createMetaToolsTable(tools: utilMcp.ToolSummary[]): string {
 	let c = ""
 
 	for (let [i, t] of tools.entries()) {

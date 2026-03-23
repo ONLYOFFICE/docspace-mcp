@@ -106,7 +106,7 @@ async function main(): Promise<void> {
 		}
 	}
 
-	for (let s of tools.sortToolsets(mcp.toolsetInfos)) {
+	for (let s of tools.sortToolsets(mcp.regularToolsets)) {
 		for (let t of s.tools) {
 			let o: Tool = {
 				name: t.name,

@@ -24,7 +24,7 @@ export function resolveTools(o: ResolveToolsOptions): ResolveToolsResult {
 	for (let n of o.toolsets) {
 		x.push(n)
 
-		for (let s of mcp.toolsetInfos) {
+		for (let s of mcp.regularToolsets) {
 			if (s.name === n) {
 				for (let t of s.tools) {
 					y.push(t.name)
@@ -35,7 +35,7 @@ export function resolveTools(o: ResolveToolsOptions): ResolveToolsResult {
 	}
 
 	for (let n of o.enabledTools) {
-		for (let s of mcp.toolsetInfos) {
+		for (let s of mcp.regularToolsets) {
 			let h = false
 			for (let t of s.tools) {
 				if (t.name === n) {
@@ -65,7 +65,7 @@ export function resolveTools(o: ResolveToolsOptions): ResolveToolsResult {
 	}
 
 	for (let sn of x) {
-		for (let s of mcp.toolsetInfos) {
+		for (let s of mcp.regularToolsets) {
 			if (s.name === sn) {
 				let h = false
 

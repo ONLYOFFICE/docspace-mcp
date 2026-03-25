@@ -1,4 +1,4 @@
-import * as child from "node:child_process"
+import child from "node:child_process"
 import * as env from "./env.ts"
 
 function main(): void {
@@ -10,13 +10,7 @@ function main(): void {
 		args.push("-e", e)
 	}
 
-	args.push("--", "node")
-
-	if (process.env.HTTP_PROXY !== undefined) {
-		args.push("--require", "./scripts/proxy.ts")
-	}
-
-	args.push("app/main.ts")
+	args.push("--", "node", "app/main.ts")
 
 	child.spawn("pnpm", args, {
 		env: process.env,

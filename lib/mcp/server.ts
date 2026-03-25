@@ -714,9 +714,14 @@ const regularTools = (() => {
 export type ServerConfig = {
 	dynamic: boolean
 	tools: string[]
+	elicitation: ServerElicitation
 	client: apiCore.Client
 	resolver: apiExtra.Resolver
 	uploader: apiExtra.Uploader
+}
+
+export type ServerElicitation = {
+	form(m: string, s: mcp.ElicitationFormRequestedSchema): Promise<r.Result<types.ElicitResult, Error>>
 }
 
 export class Server {
@@ -758,6 +763,7 @@ export class Server {
 	private regularToolsets: mcp.Toolset[] = []
 	private regularTools: mcp.Tool[] = []
 
+	private elicitation: ServerElicitation
 	private client: apiCore.Client
 	private resolver: apiExtra.Resolver
 	private uploader: apiExtra.Uploader
@@ -802,6 +808,7 @@ export class Server {
 			}
 		}
 
+		this.elicitation = config.elicitation
 		this.client = config.client
 		this.resolver = config.resolver
 		this.uploader = config.uploader

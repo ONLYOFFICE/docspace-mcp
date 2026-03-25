@@ -1,12 +1,13 @@
 /**
  * @module
- * @mergeModuleWith settings
+ * @mergeModuleWith config
  */
 
 import type express from "express"
 import * as z from "zod"
 import * as r from "../util/result.ts"
 import * as zod from "../util/zod.ts"
+import * as spec from "./spec.ts"
 import type {ResolveToolsOptions} from "./tools.ts"
 import {resolveTools} from "./tools.ts"
 
@@ -48,24 +49,24 @@ export class SettingsParser {
 		if (config.queryEnabled) {
 			this.querySchema = z.
 				object({
-					dynamic: z.string().optional().transform(zod.envOptionalBoolean()),
-					toolsets: z.string().optional().transform(zod.envOptionalOptions([])),
-					enabled_tools: z.string().optional().transform(zod.envOptionalOptions([])),
-					disabled_tools: z.string().optional().transform(zod.envOptionalOptions([])),
+					[spec.dynamic.query]: z.string().optional().transform(zod.envOptionalBoolean()),
+					[spec.toolsets.query]: z.string().optional().transform(zod.envOptionalOptions([])),
+					[spec.enabledTools.query]: z.string().optional().transform(zod.envOptionalOptions([])),
+					[spec.disabledTools.query]: z.string().optional().transform(zod.envOptionalOptions([])),
 				}).
 				transform((o) => ({
-					dynamic: o.dynamic,
-					toolsets: o.toolsets,
-					enabledTools: o.enabled_tools,
-					disabledTools: o.disabled_tools,
+					dynamic: o[spec.dynamic.query] as boolean | undefined,
+					toolsets: o[spec.toolsets.query] as string[] | undefined,
+					enabledTools: o[spec.enabledTools.query] as string[] | undefined,
+					disabledTools: o[spec.disabledTools.query] as string[] | undefined,
 				}))
 		}
 
 		if (config.headerPrefix) {
-			let dynamic = `${config.headerPrefix}dynamic`
-			let toolsets = `${config.headerPrefix}toolsets`
-			let enabledTools = `${config.headerPrefix}enabled-tools`
-			let disabledTools = `${config.headerPrefix}disabled-tools`
+			let dynamic = `${config.headerPrefix}${spec.dynamic.header}`.toLowerCase()
+			let toolsets = `${config.headerPrefix}${spec.toolsets.header}`.toLowerCase()
+			let enabledTools = `${config.headerPrefix}${spec.enabledTools.header}`.toLowerCase()
+			let disabledTools = `${config.headerPrefix}${spec.disabledTools.header}`.toLowerCase()
 
 			this.requestHeaders.push(
 				dynamic,

@@ -103,6 +103,18 @@ export async function onRequest(t: test.TestContext, s: http.Server, l: AsyncReq
 	await new Promise(e)
 }
 
+export function once<R>(fn: () => R): typeof fn {
+	let f = false
+	let r: R
+	return (): R => {
+		if (!f) {
+			f = true
+			r = fn()
+		}
+		return r
+	}
+}
+
 export function parseFetchLocation(res: Response): r.Result<URL, Error> {
 	let s = res.headers.get("Location")
 	if (!s) {

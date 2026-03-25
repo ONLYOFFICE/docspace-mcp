@@ -40,6 +40,12 @@ jobs:
     - name: Build Application
       run: pnpm build-app
 
+    - name: Build MCP Bundle
+      run: pnpm build-mcpb
+
+    - name: Build Server Detail
+      run: pnpm build-detail
+
     - name: Lint Types
       run: pnpm lint-types
 

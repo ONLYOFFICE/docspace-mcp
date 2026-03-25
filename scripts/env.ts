@@ -1,4 +1,5 @@
 import * as fs from "node:fs"
+import * as config from "../lib/config.ts"
 
 const envs: string[] = [
 	"HTTP_PROXY",
@@ -25,7 +26,7 @@ export function environ(): string[] {
 	let environ: string[] = []
 
 	for (let [k, v] of Object.entries(process.env)) {
-		if (v !== undefined && (envs.includes(k) || k.startsWith("DOCSPACE_"))) {
+		if (v !== undefined && (envs.includes(k) || k.startsWith(config.envPrefix))) {
 			environ.push(`${k}=${v}`)
 		}
 	}

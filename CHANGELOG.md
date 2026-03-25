@@ -5,7 +5,19 @@ Changelog] format and adhering to [Semantic Versioning].
 
 ## [Unreleased]
 
-There are no notable changes in this release.
+<!-- There are no notable changes in this release. -->
+
+### Removed
+
+- Remove choices from toolsets, enabled tools and disabled tools in distributed
+  metadata files ([cd38376]).
+
+### Fixed
+
+- Fix environment variable for proxy hops in distributed metadata files
+  ([cd38376]).
+- Add missing option for allowed headers in distributed metadata files
+  ([cd38376]).
 
 ## [3.2.0] - 2026-03-18
 
@@ -322,6 +334,7 @@ There are no noticeable changes in version [3.0.1].
 [0.1.1]: https://github.com/onlyoffice/docspace-mcp/compare/v0.1.0...v0.1.1/
 [0.1.0]: https://github.com/onlyoffice/docspace-mcp/releases/tag/v0.1.0/
 
+[cd38376]: https://github.com/onlyoffice/docspace-mcp/commit/cd3837673680c79bea998ec287cceee07729a91f/
 [f7be9cc]: https://github.com/onlyoffice/docspace-mcp/commit/f7be9ccc0cb7708948a2d281b9f780e8ebc7f224/
 [7f600ab]: https://github.com/onlyoffice/docspace-mcp/commit/7f600abf82016efaa2462bc610155509f12b001e/
 [fc3aedb]: https://github.com/onlyoffice/docspace-mcp/commit/fc3aedb08584cc07181bd32480ff7f7add6cd1e3/

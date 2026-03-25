@@ -127,6 +127,8 @@ function startStdio(env: z.ZodSafeParseResult<config.Env>): r.Result<Start, Erro
 
 			let me = new utilMcp.Elicitation(mp)
 
+			let mr = new utilMcp.Progress(mp)
+
 			let fetch = globalThis.fetch
 
 			fetch = utilFetch.withLogger(ml, globalThis.fetch)
@@ -158,6 +160,7 @@ function startStdio(env: z.ZodSafeParseResult<config.Env>): r.Result<Start, Erro
 
 			let csc: mcp.ServerConfig = {
 				elicitation: me,
+				progress: mr,
 				client: c,
 				resolver: new apiExtra.Resolver(c),
 				uploader: new apiExtra.Uploader(c),
@@ -410,6 +413,8 @@ function startHttp(env: config.Env, logger: utilLogger.Logger): r.Result<Start, 
 
 		let me = new utilMcp.Elicitation(mp)
 
+		let mr = new utilMcp.Progress(mp)
+
 		let fetch = globalThis.fetch
 
 		fetch = utilFetch.withLogger(logger, fetch)
@@ -456,6 +461,7 @@ function startHttp(env: config.Env, logger: utilLogger.Logger): r.Result<Start, 
 
 		let csc: mcp.ServerConfig = {
 			elicitation: me,
+			progress: mr,
 			client: c,
 			resolver: new apiExtra.Resolver(c),
 			uploader: new apiExtra.Uploader(c),

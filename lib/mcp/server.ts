@@ -715,6 +715,7 @@ export type ServerConfig = {
 	dynamic: boolean
 	tools: string[]
 	elicitation: ServerElicitation
+	progress: ServerProgress
 	client: apiCore.Client
 	resolver: apiExtra.Resolver
 	uploader: apiExtra.Uploader
@@ -722,6 +723,10 @@ export type ServerConfig = {
 
 export type ServerElicitation = {
 	form(m: string, s: mcp.ElicitationFormRequestedSchema): Promise<r.Result<types.ElicitResult, Error>>
+}
+
+export type ServerProgress = {
+	notify(p: number, m: string): Promise<void>
 }
 
 export class Server {

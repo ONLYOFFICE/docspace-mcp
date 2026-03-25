@@ -5,12 +5,41 @@
 import assert from "node:assert/strict"
 import test from "node:test"
 import * as types from "@modelcontextprotocol/sdk/types.js"
-import type * as z from "zod"
+import * as spec from "../lib/config/spec.ts"
+import * as config from "../lib/config.ts"
 import * as r from "../lib/util/result.ts"
 import type {SetupMcpOptions} from "./util.ts"
 import {powerSet, setupMcp} from "./util.ts"
 
 void test.suite("global config", () => {
+	void test("declared all env variables", () => {
+		let x = Object.keys(config.EnvSchema.def.in.def.in.def.shape)
+
+		let y = Object.values(spec)
+
+		let i: spec.Item = {
+			title: "",
+			description: "",
+			distributions: [],
+			transports: [],
+			type: "boolean",
+			choices: [],
+			default: false,
+			sensitive: false,
+			env: "INTERNAL",
+			query: "",
+			header: "",
+		}
+
+		y.push(i)
+
+		for (let i of y) {
+			assert.ok(x.includes(`${config.envPrefix}${i.env}`))
+		}
+
+		assert.ok(x.length === y.length)
+	})
+
 	void test.suite("validates complex combinations", () => {
 		type Suite = {
 			name: string
@@ -306,11 +335,11 @@ void test.suite("global config", () => {
 						let a = await r.safeAsync(cl.request.bind(cl), req, types.CallToolResultSchema)
 						assert.ok(a.err === undefined)
 
-						let e: z.infer<typeof types.CallToolResultSchema> = {
+						let e: types.CallToolResult = {
 							content: [
 								{
 									type: "text",
-									text: c.text,
+									text: `\tcustom: ${c.text}`,
 								},
 							],
 							isError: true,

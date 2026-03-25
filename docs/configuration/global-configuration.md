@@ -37,7 +37,7 @@ are organized by their functional area.
     - [DOCSPACE_SERVER_BASE_URL](#docspace_server_base_url)
     - [DOCSPACE_HOST](#docspace_host)
     - [DOCSPACE_PORT](#docspace_port)
-    - [DOCSPACE_SERVER_PROXY_HOPS](#docspace_server_proxy_hops)
+    - [DOCSPACE_PROXY_HOPS](#docspace_proxy_hops)
     - [DOCSPACE_SERVER_ALLOWED_HOSTNAMES](#docspace_server_allowed_hostnames)
     - [DOCSPACE_SERVER_CORS_MCP_ORIGIN](#docspace_server_cors_mcp_origin)
     - [DOCSPACE_SERVER_CORS_MCP_MAX_AGE](#docspace_server_cors_mcp_max_age)
@@ -617,7 +617,7 @@ The `0` is a special value that binds the server to a random port.
 - Default: `8080`
 - Transports: `sse`, `streamable-http`, `http`
 
-#### DOCSPACE_SERVER_PROXY_HOPS
+#### DOCSPACE_PROXY_HOPS
 
 The number of proxy servers between the server and the client.
 
@@ -1041,7 +1041,7 @@ The empty string is a special value that disables custom configuration headers.
 
 - Type: string
 - Attributes: trimmable, lowercase
-- Default: `x-mcp-`
+- Default: `X-Mcp-`
 - Transports: `sse`, `streamable-http`, `http`
 
 ## Examples

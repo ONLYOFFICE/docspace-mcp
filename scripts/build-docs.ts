@@ -37,6 +37,7 @@ type Config = {
 	env: ConfigEnv
 }
 
+// todo: use envPrefix var from lib/config.ts
 type ConfigEnv = {
 	DOCSPACE_BASE_URL: string
 	DOCSPACE_API_KEY: string

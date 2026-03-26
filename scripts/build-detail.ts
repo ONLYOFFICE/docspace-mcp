@@ -1,66 +1,18 @@
 import crypto from "node:crypto"
 import fs from "node:fs/promises"
-import ajv from "ajv"
-import ajvFormats from "ajv-formats"
+import * as spec from "../lib/config/spec.ts"
+import * as config from "../lib/config.ts"
+import type * as dist from "../lib/dist.ts"
 import * as meta from "../lib/meta.ts"
-import * as config from "./config.ts"
-
-type Detail = {
-	$schema?: string
-	version?: string
-	packages?: Package[]
-	remotes?: Transport[]
-}
-
-type Package = {
-	registryType?: string
-	identifier?: string
-	version?: string
-	fileSha256?: string
-	transport?: Transport
-	environmentVariables?: Value[]
-}
-
-type Transport = {
-	type?: string
-	url?: string
-	headers?: Value[]
-}
-
-type Value = {
-	description?: string
-	isRequired?: boolean
-	format?: "string" | "number" | "boolean"
-	isSecret?: boolean
-	default?: string
-	choices?: string[]
-	name?: string
-}
 
 async function main(): Promise<void> {
-	let aa = new ajv.Ajv()
-	aa.addKeyword("example")
-	ajvFormats.default(aa)
+	let mc = await fs.readFile("./server.template.json", "utf8")
 
-	let mc = await fs.readFile("server.template.json", "utf8")
-	let mo = JSON.parse(mc) as Detail
-
-	if (!mo.$schema) {
-		throw new Error("Manifest schema is not defined")
-	}
-
-	if (!mo.packages) {
-		throw new Error("Manifest packages is not defined")
-	}
-
-	let sc = await fetch(mo.$schema)
-	let so = await sc.json() as ajv.AnySchema
-
-	let av = aa.compile(so)
+	let mo = JSON.parse(mc) as dist.Detail
 
 	mo.version = meta.version
 
-	let envs: Record<config.Distribution, Record<config.Transport, Value[]>> = {
+	let envs: Record<spec.ItemDistribution, Record<spec.ItemTransport, dist.DetailValue[]>> = {
 		js: {
 			"stdio": [],
 			"sse": [],
@@ -78,20 +30,20 @@ async function main(): Promise<void> {
 		},
 	}
 
-	let headers: Value[] = []
+	let headers: dist.DetailValue[] = []
 
-	for (let o of config.options) {
-		let v: Value = {
+	for (let o of Object.values(spec)) {
+		let v: dist.DetailValue = {
 			description: o.description,
 			isRequired: false,
 			format: o.type,
 			isSecret: o.sensitive,
 			default: o.default.toString(),
 			choices: o.choices,
-			name: o.env,
+			name: `${config.envPrefix}${o.env}`,
 		}
 
-		for (let d of o.distribution) {
+		for (let d of o.distributions) {
 			for (let t of o.transports) {
 				envs[d][t].push(v)
 			}
@@ -100,13 +52,13 @@ async function main(): Promise<void> {
 		if (o.header) {
 			v = {...v}
 
-			v.name = o.header
+			v.name = `${spec.requestHeaderPrefix.default}${o.header}`
 
 			headers.push(v)
 		}
 	}
 
-	let packages: Package[] = []
+	let packages: dist.DetailPackage[] = []
 
 	for (let p of mo.packages) {
 		if (!p.registryType) {
@@ -119,7 +71,7 @@ async function main(): Promise<void> {
 
 		switch (p.registryType) {
 		case "mcpb":
-			let a = await fs.readFile("onlyoffice-docspace-mcp-3.2.0.mcpb")
+			let a = await fs.readFile(`./onlyoffice-docspace-mcp-${meta.version}.mcpb`)
 
 			p.identifier = p.identifier.replaceAll("{{version}}", meta.version)
 			p.version = meta.version
@@ -226,13 +178,9 @@ async function main(): Promise<void> {
 		},
 	]
 
-	if (!av(mo)) {
-		throw new Error("Validating manifest", {cause: av.errors})
-	}
-
 	mc = JSON.stringify(mo, null, 2)
 
-	await fs.writeFile("server.json", mc)
+	await fs.writeFile("./server.json", mc)
 }
 
 await main()

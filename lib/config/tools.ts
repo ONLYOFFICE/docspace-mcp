@@ -1,9 +1,28 @@
 /**
  * @module
- * @mergeModuleWith settings
+ * @mergeModuleWith config
+ * @hidden
  */
 
 import * as mcp from "../mcp.ts"
+
+export const availableToolsets: string[] = (() => {
+	let a: string[] = ["all"]
+	for (let s of mcp.regularToolsets) {
+		a.push(s.name)
+	}
+	return a
+})()
+
+export const availableTools: string[] = (() => {
+	let a: string[] = []
+	for (let s of mcp.regularToolsets) {
+		for (let t of s.tools) {
+			a.push(t.name)
+		}
+	}
+	return a
+})()
 
 export type ResolveToolsOptions = {
 	toolsets: string[]
@@ -18,10 +37,17 @@ export type ResolveToolsResult = {
 
 // todo: the behavior of this function is unclear
 export function resolveTools(o: ResolveToolsOptions): ResolveToolsResult {
+	let t = o.toolsets
+
+	let i = t.indexOf("all")
+	if (i !== -1) {
+		t = availableToolsets
+	}
+
 	let x: string[] = []
 	let y: string[] = []
 
-	for (let n of o.toolsets) {
+	for (let n of t) {
 		x.push(n)
 
 		for (let s of mcp.regularToolsets) {

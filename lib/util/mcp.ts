@@ -3,6 +3,7 @@
  */
 
 export * from "./mcp/context.ts"
+export * from "./mcp/elicitation.ts"
 export * from "./mcp/express.ts"
 export * from "./mcp/logger.ts"
 export * from "./mcp/protocol.ts"

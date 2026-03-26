@@ -106,6 +106,10 @@ All DocSpace MCP server tools are described [here](docs/features/tools.md).
 
 The documentation is available in the [docs] directory.
 
+## Samples
+
+The following [examples] show how to use ONLYOFFICE DocSpace MCP server.
+
 ## Privacy Policy
 
 The policies are available at [Legal Terms] and [Privacy Policy].
@@ -127,3 +131,5 @@ The DocSpace MCP server is distributed under the MIT license found in the
 [Privacy Policy]: https://www.onlyoffice.com/privacy
 
 [MCP specification]: https://modelcontextprotocol.io/specification/2025-11-25/server/tools/
+
+[examples]: https://api.onlyoffice.com/docspace/mcp-server/

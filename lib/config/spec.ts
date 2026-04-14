@@ -353,6 +353,34 @@ export const oauthStateTokenSecretKey: Item = {
 	header: "",
 }
 
+export const fileOperationInterval: Item = {
+	title: "File Operation Interval",
+	description: "The interval for polling the status of in-progress file operations in milliseconds.",
+	distributions: ["js", "mcpb", "oci"],
+	transports: ["stdio", "sse", "streamable-http"],
+	type: "number",
+	choices: [],
+	default: 300, // 300 milliseconds
+	sensitive: false,
+	env: "FILE_OPERATION_INTERVAL",
+	query: "",
+	header: "",
+}
+
+export const fileOperationTimeout: Item = {
+	title: "File Operation Timeout",
+	description: "The maximum time to wait for a file operation to complete in milliseconds.",
+	distributions: ["js", "mcpb", "oci"],
+	transports: ["stdio", "sse", "streamable-http"],
+	type: "number",
+	choices: [],
+	default: 3600000, // 1 hour
+	sensitive: false,
+	env: "FILE_OPERATION_TIMEOUT",
+	query: "",
+	header: "",
+}
+
 export const serverBaseUrl: Item = {
 	title: "Server Base URL",
 	description: "The base URL of the server.",

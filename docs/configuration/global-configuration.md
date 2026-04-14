@@ -33,6 +33,9 @@ are organized by their functional area.
     - [DOCSPACE_OAUTH_STATE_TOKEN_ALGORITHM](#docspace_oauth_state_token_algorithm)
     - [DOCSPACE_OAUTH_STATE_TOKEN_TTL](#docspace_oauth_state_token_ttl)
     - [DOCSPACE_OAUTH_STATE_TOKEN_SECRET_KEY](#docspace_oauth_state_token_secret_key)
+  - [File Operation Options](#file-operation-options)
+    - [DOCSPACE_FILE_OPERATION_INTERVAL](#docspace_file_operation_interval)
+    - [DOCSPACE_FILE_OPERATION_TIMEOUT](#docspace_file_operation_timeout)
   - [Server Options](#server-options)
     - [DOCSPACE_SERVER_BASE_URL](#docspace_server_base_url)
     - [DOCSPACE_HOST](#docspace_host)
@@ -566,6 +569,38 @@ This option is used in conjunction with
 ##### References
 
 - [RFC 7518: HMAC with SHA-2 Functions]
+
+### File Operation Options
+
+The following options are used to configure how the server waits for
+long-running file operations to complete.
+
+#### DOCSPACE_FILE_OPERATION_INTERVAL
+
+The interval for polling the status of in-progress file operations in
+milliseconds.
+
+##### Signature
+
+- Type: number
+- Attributes: trimmable
+- Minimum: `0`
+- Default: `300` (300 milliseconds)
+- Transports: `stdio`, `sse`, `streamable-http`, `http`
+
+#### DOCSPACE_FILE_OPERATION_TIMEOUT
+
+The maximum time to wait for a file operation to complete in milliseconds.
+
+The `0` is a special value that disables the timeout.
+
+##### Signature
+
+- Type: number
+- Attributes: trimmable
+- Minimum: `0`
+- Default: `3600000` (1 hour)
+- Transports: `stdio`, `sse`, `streamable-http`, `http`
 
 ### Server Options
 

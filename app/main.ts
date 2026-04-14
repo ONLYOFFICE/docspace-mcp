@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+import events from "node:events"
 import * as stdio from "@modelcontextprotocol/sdk/server/stdio.js"
 import type * as types from "@modelcontextprotocol/sdk/types.js"
 import express from "express"
@@ -96,6 +97,8 @@ async function main(): Promise<void> {
 
 function startStdio(env: z.ZodSafeParseResult<config.Env>): r.Result<Start, Error> {
 	let create = (): r.Result<utilMcp.Protocol, Error> => {
+		let ca: (() => void)[] = []
+
 		let mp = new utilMcp.Protocol()
 
 		let mi: types.Implementation = {
@@ -158,14 +161,46 @@ function startStdio(env: z.ZodSafeParseResult<config.Env>): r.Result<Start, Erro
 				c = c.withBasicAuth(env.data.api.shared.username, env.data.api.shared.password)
 			}
 
+			let fb = new events.EventEmitter<apiExtra.FileOperationBusEventMap>()
+
+			let onError = (): void => {}
+
+			let onClose = (): void => {
+				fb.removeListener("error", onError)
+			}
+
+			fb.addListener("error", onError)
+
+			ca.push(onClose)
+
+			let fpc: apiExtra.FileOperationPollerConfig = {
+				interval: env.data.fileOperation.interval,
+				client: c,
+				bus: fb,
+			}
+
+			let fp = new apiExtra.FileOperationPoller(fpc)
+
+			ca.push(fp.close.bind(fp))
+
+			fp.listen()
+
+			let fcc: apiExtra.FileOperationCallerConfig = {
+				timeout: env.data.fileOperation.timeout,
+				bus: fb,
+			}
+
+			let fc = new apiExtra.FileOperationCaller(fcc)
+
 			let csc: mcp.ServerConfig = {
+				dynamic: env.data.mcp.dynamic,
+				tools: env.data.mcp.tools,
 				elicitation: me,
 				progress: mr,
 				client: c,
 				resolver: new apiExtra.Resolver(c),
 				uploader: new apiExtra.Uploader(c),
-				dynamic: env.data.mcp.dynamic,
-				tools: env.data.mcp.tools,
+				fileOperationCaller: fc,
 			}
 
 			let cs = new mcp.Server(csc)
@@ -173,6 +208,12 @@ function startStdio(env: z.ZodSafeParseResult<config.Env>): r.Result<Start, Erro
 			mu = mp.registerRouter(cs.router())
 			if (mu.err) {
 				return r.error(new Error("Registering server router", {cause: mu.err}))
+			}
+		}
+
+		mp.onclose = () => {
+			for (let cf of ca) {
+				cf()
 			}
 		}
 
@@ -390,6 +431,8 @@ function startHttp(env: config.Env, logger: utilLogger.Logger): r.Result<Start, 
 			return r.error(new Error("Parsing settings", {cause: s.err}))
 		}
 
+		let ca: (() => void)[] = []
+
 		let mp = new utilMcp.Protocol()
 
 		let mi: types.Implementation = {
@@ -459,14 +502,46 @@ function startHttp(env: config.Env, logger: utilLogger.Logger): r.Result<Start, 
 			c = c.withBasicAuth(req[auth.authKey].username, req[auth.authKey].password)
 		}
 
+		let fb = new events.EventEmitter<apiExtra.FileOperationBusEventMap>()
+
+		let onError = (): void => {}
+
+		let onClose = (): void => {
+			fb.removeListener("error", onError)
+		}
+
+		fb.addListener("error", onError)
+
+		ca.push(onClose)
+
+		let fpc: apiExtra.FileOperationPollerConfig = {
+			interval: env.fileOperation.interval,
+			client: c,
+			bus: fb,
+		}
+
+		let fp = new apiExtra.FileOperationPoller(fpc)
+
+		ca.push(fp.close.bind(fp))
+
+		fp.listen()
+
+		let fcc: apiExtra.FileOperationCallerConfig = {
+			timeout: env.fileOperation.timeout,
+			bus: fb,
+		}
+
+		let fc = new apiExtra.FileOperationCaller(fcc)
+
 		let csc: mcp.ServerConfig = {
+			dynamic: s.v.dynamic,
+			tools: s.v.tools,
 			elicitation: me,
 			progress: mr,
 			client: c,
 			resolver: new apiExtra.Resolver(c),
 			uploader: new apiExtra.Uploader(c),
-			dynamic: s.v.dynamic,
-			tools: s.v.tools,
+			fileOperationCaller: fc,
 		}
 
 		let cs = new mcp.Server(csc)
@@ -474,6 +549,12 @@ function startHttp(env: config.Env, logger: utilLogger.Logger): r.Result<Start, 
 		mu = mp.registerRouter(cs.router())
 		if (mu.err) {
 			return r.error(new Error("Registering server router", {cause: mu.err}))
+		}
+
+		mp.onclose = () => {
+			for (let cf of ca) {
+				cf()
+			}
 		}
 
 		return r.ok(mp)

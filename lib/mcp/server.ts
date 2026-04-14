@@ -719,6 +719,7 @@ export type ServerConfig = {
 	client: apiCore.Client
 	resolver: apiExtra.Resolver
 	uploader: apiExtra.Uploader
+	fileOperationCaller: apiExtra.FileOperationCaller
 }
 
 export type ServerElicitation = {
@@ -727,6 +728,10 @@ export type ServerElicitation = {
 
 export type ServerProgress = {
 	notify(p: number, m: string): Promise<void>
+}
+
+export type ServerFileOperationCaller = {
+	call(fn: apiExtra.FileOperationFn): Promise<apiExtra.FileOperationIter>
 }
 
 export class Server {
@@ -772,6 +777,7 @@ export class Server {
 	private client: apiCore.Client
 	private resolver: apiExtra.Resolver
 	private uploader: apiExtra.Uploader
+	private fileOperationCaller: apiExtra.FileOperationCaller
 
 	constructor(config: ServerConfig) {
 		this.dynamic = config.dynamic
@@ -817,6 +823,7 @@ export class Server {
 		this.client = config.client
 		this.resolver = config.resolver
 		this.uploader = config.uploader
+		this.fileOperationCaller = config.fileOperationCaller
 	}
 
 	router(): mcp.Router {

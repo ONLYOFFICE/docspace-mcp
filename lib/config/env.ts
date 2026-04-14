@@ -118,6 +118,16 @@ export const EnvSchema = z.
 			string().
 			trim().
 			prefault(prefault(spec.oauthStateTokenSecretKey.default)),
+		[`${envPrefix}${spec.fileOperationInterval.env}`]: z.
+			string().
+			prefault(prefault(spec.fileOperationInterval.default)).
+			transform(zod.envNumber()).
+			pipe(z.number().min(0)),
+		[`${envPrefix}${spec.fileOperationTimeout.env}`]: z.
+			string().
+			prefault(prefault(spec.fileOperationTimeout.default)).
+			transform(zod.envNumber()).
+			pipe(z.number().min(0)),
 		[`${envPrefix}${spec.serverBaseUrl.env}`]: z.
 			string().
 			prefault(prefault(spec.serverBaseUrl.default)).
@@ -304,6 +314,10 @@ export const EnvSchema = z.
 				secretKey: o[`${envPrefix}${spec.oauthStateTokenSecretKey.env}`] as string,
 			},
 		},
+		fileOperation: {
+			interval: o[`${envPrefix}${spec.fileOperationInterval.env}`] as number,
+			timeout: o[`${envPrefix}${spec.fileOperationTimeout.env}`] as number,
+		},
 		proxy: {
 			hops: o[`${envPrefix}${spec.proxyHops.env}`] as number,
 		},
@@ -409,6 +423,10 @@ export const EnvSchema = z.
 						ttl: 0,
 						secretKey: "",
 					},
+				},
+				fileOperation: {
+					interval: o.fileOperation.interval,
+					timeout: o.fileOperation.timeout,
 				},
 				proxy: {
 					hops: 0,

@@ -77,7 +77,7 @@ DocSpace operation.
 
 <!--generate tools-end-->
 
-\* Supported file formats: `txt`, `md`, `csv`, `tsv`.
+\* Supported file formats: `txt`, `md`.
 
 ## Meta Tools
 

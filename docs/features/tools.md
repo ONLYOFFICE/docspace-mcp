@@ -46,7 +46,7 @@ DocSpace operation.
 <tr><td>4</td><td><code>get_file_info</code></td><td>Get file information.</td></tr>
 <tr><td>5</td><td><code>move_batch_items</code></td><td>Move to a folder.</td></tr>
 <tr><td>6</td><td><code>update_file</code></td><td>Update a file.</td></tr>
-<tr><td>7</td><td><code>upload_file</code></td><td>Upload a file.</td></tr>
+<tr><td>7</td><td><code>upload_file</code></td><td>Upload a file.*</td></tr>
 </tbody>
 <tbody>
 <tr><td></td><th scope="rowgroup">Folders Toolset</th><td></td></tr>
@@ -76,6 +76,8 @@ DocSpace operation.
 </table>
 
 <!--generate tools-end-->
+
+\* Supported file formats: `txt`, `md`.
 
 ## Meta Tools
 

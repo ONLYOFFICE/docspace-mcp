@@ -557,6 +557,12 @@ function startHttp(env: config.Env, logger: utilLogger.Logger): r.Result<Start, 
 			}
 		}
 
+		// todo: here you can fetch @root; store in ctx
+		// archiveFolderId
+		// myDocumentsFolderId
+		// roomsFolderId
+		// trashFolderId
+
 		return r.ok(mp)
 	}
 

@@ -97,6 +97,22 @@ const VirtualDataRoomInvitationAccessSchema = z.union([
 	/* eslint-enable no-underscore-dangle */
 ])
 
+// new
+
+const DeleteFileImmediatelyInputSchema = z.object({
+	fileId: z.number().meta({title: "File ID", description: "The ID of the file to immediately delete"}),
+})
+
+const DeleteFileImmediatelyInputJsonSchema = z.toJSONSchema(DeleteFileImmediatelyInputSchema)
+
+const DeleteFolderImmediatelyInputSchema = z.object({
+	folderId: z.number().meta({title: "Folder ID", description: "The ID of the folder to immediately delete"}),
+})
+
+const DeleteFolderImmediatelyInputJsonSchema = z.toJSONSchema(DeleteFolderImmediatelyInputSchema)
+
+// new
+
 const ArchiveRoomInputSchema = z.object({
 	roomId: z.number().describe("The ID of the room to archive."),
 })
@@ -744,6 +760,13 @@ export class Server {
 	}
 
 	private callRegularToolHandlers: Record<string, CallToolHandler | undefined> = {
+		// 390e66b5ee603f09eed1b50573bc304194e7754540744307f932ef0767d599bb
+		// delete_file_immediately: this.handleDeleteFileImmediately.bind(this)
+		// delete_folder_immediately: this.handleDeleteFolderImmediately.bind(this)
+		// delete_room_immediately: this.handleDeleteRoomImmediately.bind(this)
+		// move_file_to_trash: this.handleMoveFileToTrash.bind(this)
+		// move_folder_to_trash: this.handleMoveFolderToTrash.bind(this)
+		// move_room_to_archive: this.handleMoveRoomToArchive.bind(this)
 		archive_room: this.handleArchiveRoom.bind(this),
 		copy_batch_items: this.handleCopyBatchItems.bind(this),
 		create_folder: this.handleCreateFolder.bind(this),
@@ -774,6 +797,7 @@ export class Server {
 	private regularTools: mcp.Tool[] = []
 
 	private elicitation: ServerElicitation
+	private progress: ServerProgress
 	private client: apiCore.Client
 	private resolver: apiExtra.Resolver
 	private uploader: apiExtra.Uploader
@@ -820,6 +844,7 @@ export class Server {
 		}
 
 		this.elicitation = config.elicitation
+		this.progress = config.progress
 		this.client = config.client
 		this.resolver = config.resolver
 		this.uploader = config.uploader
@@ -1014,6 +1039,644 @@ export class Server {
 
 		return fromObject(summaries)
 	}
+
+	// new
+
+	private async handleDeleteFileImmediately(req: types.CallToolRequest): Promise<types.CallToolResult> {
+		let ap = DeleteFileImmediatelyInputSchema.safeParse(req.params.arguments)
+		if (ap.error) {
+			return fromError(new Error("Parsing arguments", {cause: ap.error}))
+		}
+
+		let fr = await this.client.files.getFileInfo(ap.data.fileId)
+		if (fr.err) {
+			return fromError(new Error("Getting file info", {cause: fr.err}))
+		}
+
+		let [fd] = fr.v
+
+		if (fd.title === undefined) {
+			return fromError(new Error("File title is not defined"))
+		}
+
+		if (fd.fileStatus === undefined) {
+			return fromError(new Error("File status is not defined"))
+		}
+
+		if (fd.fileStatus & core.FileStatus.isEditing) {
+			return fromError(new Error("The file cannot be deleted while it is being edited"))
+		}
+
+		if (fd.fileStatus & core.FileStatus.isConverting) {
+			return fromError(new Error("The file cannot be deleted while it is being converted"))
+		}
+
+		if (fd.fileStatus & core.FileStatus.isEditingAlone) {
+			return fromError(new Error("The file cannot be deleted while it is being edited"))
+		}
+
+		let DeleteFileImmediatelyElicitationSchema = z.object({
+			delete: z.
+				boolean().
+				default(false).
+				meta({
+					title: "Delete forever",
+					description: `You are about to delete ${fd.title}. The file will be permanently deleted immediately. Are you sure you want to continue?`,
+				}),
+		})
+
+		let DeleteFileImmediatelyElicitationJsonSchema =
+			z.toJSONSchema(DeleteFileImmediatelyElicitationSchema) as
+			mcp.ElicitationFormRequestedSchema
+
+		let er = await this.elicitation.form(
+			"Delete forever?",
+			DeleteFileImmediatelyElicitationJsonSchema,
+		)
+		if (er.err) {
+			return fromError(new Error("Making elicitation", {cause: er.err}))
+		}
+
+		switch (er.v.action) {
+		case "cancel":
+			return fromError(new Error("x"))
+		case "decline":
+			return fromError(new Error("x"))
+		default:
+			// continue
+		}
+
+		let ep = DeleteFileImmediatelyElicitationSchema.safeParse(er.v.content)
+		if (ep.error) {
+			return fromError(new Error("Parsing elicitation", {cause: ep.error}))
+		}
+
+		if (!ep.data.delete) {
+			return fromError(new Error("todo"))
+		}
+
+		let df: apiExtra.FileOperationFn = async() => {
+			let da: core.DeleteBatchRequestDto = {
+				returnSingleOperation: true,
+				folderIds: [],
+				fileIds: [ap.data.fileId],
+				deleteAfter: false,
+				immediately: true,
+			}
+
+			let dr = await this.client.files.deleteBatchItems(da)
+			if (dr.err) {
+				return r.error(new Error("Deleting items", {cause: dr.err}))
+			}
+
+			let [dd, res] = dr.v
+
+			if (dd.length !== 1) {
+				return r.error(new Error(`Expected single operation, got ${dd.length}`))
+			}
+
+			let [de] = dd
+
+			return r.ok([de, res])
+		}
+
+		let di = await this.fileOperationCaller.call(df)
+
+		let dg = -1
+
+		for await (let dd of di) {
+			if (dd.progress !== undefined && dd.progress > dg) {
+				await this.progress.notify(dd.progress, "todo")
+			}
+		}
+
+		let dr = di.result()
+		if (dr.err) {
+			// todo: if we hit a timeout
+			// check if file got deleted
+			// if not, return the error
+			// file is still deleting
+			// but we cannot wait any longer
+			return fromError(new Error("Deleting file", {cause: dr.err}))
+		}
+
+		fr = await this.client.files.getFileInfo(ap.data.fileId)
+		if (fr.err) {
+			// todo: if not found, its good
+			return fromError(new Error("Getting file info", {cause: fr.err}))
+		}
+
+		return fromString("File deleted")
+	}
+
+	private async handleDeleteFolderImmediately(req: types.CallToolRequest): Promise<types.CallToolResult> {
+		let ap = DeleteFolderImmediatelyInputSchema.safeParse(req.params.arguments)
+		if (ap.error) {
+			return fromError(new Error("Parsing arguments", {cause: ap.error}))
+		}
+
+		let fr = await this.client.files.getFolderInfo(ap.data.folderId)
+		if (fr.err) {
+			return fromError(new Error("Getting folder info", {cause: fr.err}))
+		}
+
+		let [fd] = fr.v
+
+		if (fd.title === undefined) {
+			return fromError(new Error("File title is not defined"))
+		}
+
+		let DeleteFolderImmediatelyElicitationSchema = z.object({
+			delete: z.
+				boolean().
+				default(false).
+				meta({
+					title: "Delete forever",
+					description: `You are about to delete ${fd.title}. The folder will be permanently deleted immediately. Are you sure you want to continue?`,
+				}),
+		})
+
+		let DeleteFolderImmediatelyElicitationJsonSchema =
+			z.toJSONSchema(DeleteFolderImmediatelyElicitationSchema) as
+			mcp.ElicitationFormRequestedSchema
+
+		let er = await this.elicitation.form(
+			"Delete forever?",
+			DeleteFolderImmediatelyElicitationJsonSchema,
+		)
+		if (er.err) {
+			return fromError(new Error("Making elicitation", {cause: er.err}))
+		}
+
+		switch (er.v.action) {
+		case "cancel":
+			return fromError(new Error("x"))
+		case "decline":
+			return fromError(new Error("x"))
+		default:
+			// continue
+		}
+
+		let ep = DeleteFolderImmediatelyElicitationSchema.safeParse(er.v.content)
+		if (ep.error) {
+			return fromError(new Error("Parsing elicitation", {cause: ep.error}))
+		}
+
+		if (!ep.data.delete) {
+			return fromError(new Error("todo"))
+		}
+
+		let df: apiExtra.FileOperationFn = async() => {
+			let da: core.DeleteBatchRequestDto = {
+				returnSingleOperation: true,
+				folderIds: [ap.data.folderId],
+				fileIds: [],
+				deleteAfter: false,
+				immediately: true,
+			}
+
+			let dr = await this.client.files.deleteBatchItems(da)
+			if (dr.err) {
+				return r.error(new Error("Deleting items", {cause: dr.err}))
+			}
+
+			let [dd, res] = dr.v
+
+			if (dd.length !== 1) {
+				return r.error(new Error(`Expected single operation, got ${dd.length}`))
+			}
+
+			let [de] = dd
+
+			return r.ok([de, res])
+		}
+
+		let di = await this.fileOperationCaller.call(df)
+
+		let dg = -1
+
+		for await (let dd of di) {
+			if (dd.progress !== undefined && dd.progress > dg) {
+				await this.progress.notify(dd.progress, "todo")
+			}
+		}
+
+		let dr = di.result()
+		if (dr.err) {
+			return fromError(new Error("Deleting folder", {cause: dr.err}))
+		}
+
+		fr = await this.client.files.getFolderInfo(ap.data.folderId)
+		if (fr.err) {
+			// todo: if not found, its good
+			return fromError(new Error("Getting folder info", {cause: fr.err}))
+		}
+
+		return fromString("Folder deleted")
+	}
+
+	private async handleDeleteRoomImmediately(req: types.CallToolRequest): Promise<types.CallToolResult> {
+		let ap = {}.safeParse(req.params.arguments)
+		if (ap.error) {
+			return fromError(new Error("Parsing arguments", {cause: ap.error}))
+		}
+
+		let gr = await this.client.files.getRoomInfo(ap.data.roomId)
+		if (gr.err) {
+			return fromError(new Error("Getting room info", {cause: gr.err}))
+		}
+
+		let [gd] = gr.v
+
+		if (gd.title === undefined) {
+			return fromError(new Error("Room title is not defined"))
+		}
+
+		let DeleteRoomImmediatelyElicitationSchema = z.object({
+			delete: z.
+				boolean().
+				default(false).
+				meta({
+					title: "Delete forever",
+					description: `You are about to delete ${gd.title}. The room will be permanently deleted immediately. Are you sure you want to continue?`,
+				}),
+		})
+
+		let DeleteRoomImmediatelyElicitationJsonSchema =
+			z.toJSONSchema(DeleteRoomImmediatelyElicitationSchema) as
+			mcp.ElicitationFormRequestedSchema
+
+		let er = await this.elicitation.form(
+			"Delete forever?",
+			DeleteRoomImmediatelyElicitationJsonSchema,
+		)
+		if (er.err) {
+			return fromError(new Error("Making elicitation", {cause: er.err}))
+		}
+
+		switch (er.v.action) {
+		case "cancel":
+			return fromError(new Error("x"))
+		case "decline":
+			return fromError(new Error("x"))
+		default:
+			// continue
+		}
+
+		let ep = DeleteRoomImmediatelyElicitationSchema.safeParse(er.v.content)
+		if (ep.error) {
+			return fromError(new Error("Parsing elicitation", {cause: ep.error}))
+		}
+
+		if (!ep.data.delete) {
+			return fromError(new Error("todo"))
+		}
+
+		let df: apiExtra.FileOperationFn = async() => {
+			let da: core.DeleteBatchRequestDto = {
+				returnSingleOperation: true,
+				folderIds: [ap.data.roomId],
+				fileIds: [],
+				deleteAfter: false,
+				immediately: true,
+			}
+
+			let dr = await this.client.files.deleteBatchItems(da)
+			if (dr.err) {
+				return r.error(new Error("Deleting items", {cause: dr.err}))
+			}
+
+			let [dd, res] = dr.v
+
+			if (dd.length !== 1) {
+				return r.error(new Error(`Expected single operation, got ${dd.length}`))
+			}
+
+			let [de] = dd
+
+			return r.ok([de, res])
+		}
+
+		let di = await this.fileOperationCaller.call(df)
+
+		let dg = -1
+
+		for await (let dd of di) {
+			if (dd.progress !== undefined && dd.progress > dg) {
+				await this.progress.notify(dd.progress, "todo")
+			}
+		}
+
+		let dr = di.result()
+		if (dr.err) {
+			return fromError(new Error("Deleting room", {cause: dr.err}))
+		}
+
+		gr = await this.client.files.getRoomInfo(ap.data.roomId)
+		if (gr.err) {
+			// todo: if not found, its good
+			return fromError(new Error("Getting room info", {cause: gr.err}))
+		}
+
+		return fromString("Folder deleted")
+	}
+
+	private async handleMoveFileToTrash(req: types.CallToolRequest): Promise<types.CallToolResult> {
+		let ap = {}.safeParse(req.params.arguments)
+		if (ap.error) {
+			return fromError(new Error("Parsing arguments", {cause: ap.error}))
+		}
+
+		let fr = await this.client.files.getFileInfo(ap.data.fileId)
+		if (fr.err) {
+			return fromError(new Error("Getting file info", {cause: fr.err}))
+		}
+
+		let [fd] = fr.v
+
+		if (fd.title === undefined) {
+			return fromError(new Error("File title is not defined"))
+		}
+
+		if (fd.folderId === undefined) {
+			return fromError(new Error("File folder ID is not defined"))
+		}
+
+		if (fd.fileStatus === undefined) {
+			return fromError(new Error("File status is not defined"))
+		}
+
+		if (fd.fileStatus & core.FileStatus.isEditing) {
+			return fromError(new Error("The file cannot be move to Trash while it is being edited"))
+		}
+
+		if (fd.fileStatus & core.FileStatus.isConverting) {
+			return fromError(new Error("The file cannot be move to Trash while it is being converted"))
+		}
+
+		if (fd.fileStatus & core.FileStatus.isEditingAlone) {
+			return fromError(new Error("The file cannot be move to Trash while it is being edited"))
+		}
+
+		let tr = await this.client.files.getTrashFolder()
+		if (tr.err) {
+			return fromError(new Error("Getting trash folder", {cause: tr.err}))
+		}
+
+		let [td] = tr.v
+
+		if (td.current === undefined) {
+			return fromError(new Error("Trash folder is not defined"))
+		}
+
+		if (td.current.id === undefined) {
+			return fromError(new Error("Trash folder ID is not defined"))
+		}
+
+		if (fd.folderId === td.current.id) {
+			return fromError(new Error("The file is already in Trash"))
+		}
+
+		let MoveFileToTrashElicitationSchema = z.object({
+			delete: z.
+				boolean().
+				default(false).
+				meta({
+					title: "Move to",
+					description: `You are about to move ${fd.title} to Trash. The file will be permanently deleted in 30 days. Are you sure you want to continue?`,
+				}),
+		})
+
+		let MoveFileToTrashElicitationJsonSchema =
+			z.toJSONSchema(MoveFileToTrashElicitationSchema) as
+			mcp.ElicitationFormRequestedSchema
+
+		let er = await this.elicitation.form(
+			"Move to Trash?",
+			MoveFileToTrashElicitationJsonSchema,
+		)
+		if (er.err) {
+			return fromError(new Error("Making elicitation", {cause: er.err}))
+		}
+
+		switch (er.v.action) {
+		case "cancel":
+			return fromError(new Error("x"))
+		case "decline":
+			return fromError(new Error("x"))
+		default:
+			// continue
+		}
+
+		let ep = MoveFileToTrashElicitationSchema.safeParse(er.v.content)
+		if (ep.error) {
+			return fromError(new Error("Parsing elicitation", {cause: ep.error}))
+		}
+
+		if (!ep.data.delete) {
+			return fromError(new Error("todo"))
+		}
+
+		let df: apiExtra.FileOperationFn = async() => {
+			let da: core.DeleteBatchRequestDto = {
+				returnSingleOperation: true,
+				folderIds: [],
+				fileIds: [ap.data.fileId],
+				deleteAfter: false,
+				immediately: false,
+			}
+
+			let dr = await this.client.files.deleteBatchItems(da)
+			if (dr.err) {
+				return r.error(new Error("Deleting items", {cause: dr.err}))
+			}
+
+			let [dd, res] = dr.v
+
+			if (dd.length !== 1) {
+				return r.error(new Error(`Expected single operation, got ${dd.length}`))
+			}
+
+			let [de] = dd
+
+			return r.ok([de, res])
+		}
+
+		let di = await this.fileOperationCaller.call(df)
+
+		let dg = -1
+
+		for await (let dd of di) {
+			if (dd.progress !== undefined && dd.progress > dg) {
+				await this.progress.notify(dd.progress, "todo")
+			}
+		}
+
+		let dr = di.result()
+		if (dr.err) {
+			return fromError(new Error("Deleting file", {cause: dr.err}))
+		}
+
+		// todo: maybe take it from the dr?
+
+		// fr = await this.client.files.getFileInfo(ap.data.fileId)
+		// if (fr.err) {
+		// 	return fromError(new Error("Getting file info", {cause: fr.err}))
+		// }
+
+		// if (fd.folderId !== td.current.id) {
+		// 	return fromError(new Error("x"))
+		// }
+
+		return fromString("File moved")
+	}
+
+	private async handleMoveFolderToTrash(req: types.CallToolRequest): Promise<types.CallToolResult> {
+		let ap = {}.safeParse(req.params.arguments)
+		if (ap.error) {
+			return fromError(new Error("Parsing arguments", {cause: ap.error}))
+		}
+
+		// todo: mention the no way to check if any file inside is being edited
+
+		let gr = await this.client.files.getFolderInfo(ap.data.folderId)
+		if (gr.err) {
+			return fromError(new Error("Getting folder info", {cause: gr.err}))
+		}
+
+		let [gd] = gr.v
+
+		if (gd.title === undefined) {
+			return fromError(new Error("folder title is not defined"))
+		}
+
+		if (gd.parentId === undefined) {
+			return fromError(new Error("Folder parent ID is not defined"))
+		}
+
+		let tr = await this.client.files.getTrashFolder()
+		if (tr.err) {
+			return fromError(new Error("Getting trash folder", {cause: tr.err}))
+		}
+
+		let [td] = tr.v
+
+		if (td.current === undefined) {
+			return fromError(new Error("Trash folder is not defined"))
+		}
+
+		if (td.current.id === undefined) {
+			return fromError(new Error("Trash folder ID is not defined"))
+		}
+
+		if (gd.parentId === td.current.id) {
+			return fromError(new Error("The folder is already in Trash"))
+		}
+
+		let MoveFolderToTrashElicitationSchema = z.object({
+			delete: z.
+				boolean().
+				default(false).
+				meta({
+					title: "Move to",
+					description: `You are about to move ${gd.title} to Trash. The folder will be permanently deleted in 30 days. Are you sure you want to continue?`,
+				}),
+		})
+
+		let MoveFolderToTrashElicitationJsonSchema =
+			z.toJSONSchema(MoveFolderToTrashElicitationSchema) as
+			mcp.ElicitationFormRequestedSchema
+
+		let er = await this.elicitation.form(
+			"Move to Trash?",
+			MoveFolderToTrashElicitationJsonSchema,
+		)
+		if (er.err) {
+			return fromError(new Error("Making elicitation", {cause: er.err}))
+		}
+
+		switch (er.v.action) {
+		case "cancel":
+			return fromError(new Error("x"))
+		case "decline":
+			return fromError(new Error("x"))
+		default:
+			// continue
+		}
+
+		let ep = MoveFolderToTrashElicitationSchema.safeParse(er.v.content)
+		if (ep.error) {
+			return fromError(new Error("Parsing elicitation", {cause: ep.error}))
+		}
+
+		if (!ep.data.delete) {
+			return fromError(new Error("todo"))
+		}
+
+		let df: apiExtra.FileOperationFn = async() => {
+			let da: core.DeleteBatchRequestDto = {
+				returnSingleOperation: true,
+				folderIds: [ap.data.folderId],
+				fileIds: [],
+				deleteAfter: false,
+				immediately: false,
+			}
+
+			let dr = await this.client.files.deleteBatchItems(da)
+			if (dr.err) {
+				return r.error(new Error("Deleting items", {cause: dr.err}))
+			}
+
+			let [dd, res] = dr.v
+
+			if (dd.length !== 1) {
+				return r.error(new Error(`Expected single operation, got ${dd.length}`))
+			}
+
+			let [de] = dd
+
+			return r.ok([de, res])
+		}
+
+		let di = await this.fileOperationCaller.call(df)
+
+		let dg = -1
+
+		for await (let dd of di) {
+			if (dd.progress !== undefined && dd.progress > dg) {
+				await this.progress.notify(dd.progress, "todo")
+			}
+		}
+
+		let dr = di.result()
+		if (dr.err) {
+			return fromError(new Error("Deleting folder", {cause: dr.err}))
+		}
+
+		// todo: verify that the file got moved
+
+		return fromString("Folder moved")
+	}
+
+	private async handleMoveRoomToArchive(req: types.CallToolRequest): Promise<types.CallToolResult> {
+		let ap = {}.safeParse(req.params.arguments)
+		if (ap.error) {
+			return fromError(new Error("Parsing arguments", {cause: ap.error}))
+		}
+
+		let gr = await this.client.files.getRoomInfo(ap.data.roomId)
+		if (gr.err) {
+			return fromError(new Error("Getting room info", {cause: gr.err}))
+		}
+
+		let [gd] = gr.v
+
+		if (gd.title === undefined) {
+			return fromError(new Error("Room title is not defined"))
+		}
+	}
+
+	// new
 
 	private async handleArchiveRoom(req: types.CallToolRequest): Promise<types.CallToolResult> {
 		let pr = ArchiveRoomInputSchema.safeParse(req.params.arguments)

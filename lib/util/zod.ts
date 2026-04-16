@@ -5,6 +5,30 @@
 import * as z from "zod"
 import * as result from "./result.ts"
 
+export function bitflags(o: Record<string, number>): z.ZodNumber {
+	let s = ""
+	let m = 0
+
+	for (let e of Object.values(o)) {
+		s += `${e}, `
+		m |= e
+	}
+
+	if (s) {
+		s = s.slice(0, -2)
+	}
+
+	let S = z.
+		number().
+		int().
+		nonnegative().
+		refine((v) => (v & ~m) === 0, {
+			message: `Unknown flag bits; allowed bits are ${s}`,
+		})
+
+	return S
+}
+
 export function wrapUnion<
 	A extends readonly [z.ZodLiteral<string>, z.ZodLiteral<string>, ...z.ZodLiteral<string>[]],
 >(v: z.ZodUnion<A>, f: string): z.ZodUnion<A> {

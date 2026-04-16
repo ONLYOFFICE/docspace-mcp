@@ -14,9 +14,11 @@ import type {
 	CreateFolderSchema,
 	CreateRoomFiltersSchema,
 	CreateRoomRequestDtoSchema,
+	DeleteBatchRequestDto,
 	DeleteFolderSchema,
 	DeleteSchema,
 	DownloadRequestDtoSchema,
+	FileOperationDto,
 	GetFileInfoFiltersSchema,
 	GetFolderFiltersSchema,
 	GetFolderInfoFiltersSchema,
@@ -426,6 +428,35 @@ export class FilesService {
 		return ok([e.data, res])
 	}
 
+	/**
+	 * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.6.1-server/products/ASC.Files/Server/Api/FoldersController.cs#L573 | DocSpace Reference}
+	 */
+	async getRootFolders(): Promise<Result<[GetFolderResponse[], Response], Error>> {
+		let u = this.c.createUrl("api/2.0/files/@trash")
+		if (u.err) {
+			return error(new Error("Creating URL.", {cause: u.err}))
+		}
+
+		let req = this.c.createRequest("GET", u.v)
+		if (req.err) {
+			return error(new Error("Creating request.", {cause: req.err}))
+		}
+
+		let f = await this.c.fetch(req.v)
+		if (f.err) {
+			return error(new Error("Fetching request.", {cause: f.err}))
+		}
+
+		let [p, res] = f.v
+
+		let e = z.array(FolderContentDtoSchema).safeParse(p)
+		if (!e.success) {
+			return error(new Error("Parsing response.", {cause: e.error}))
+		}
+
+		return ok([e.data, res])
+	}
+
 	//
 	// OperationController
 	//
@@ -464,6 +495,35 @@ export class FilesService {
 	 */
 	async copyBatchItems(o: CopyBatchItemsOptions): Promise<Result<[CopyBatchItemsResponseItem[], Response], Error>> {
 		let u = this.c.createUrl("api/2.0/files/fileops/copy")
+		if (u.err) {
+			return error(new Error("Creating URL.", {cause: u.err}))
+		}
+
+		let req = this.c.createRequest("PUT", u.v, o)
+		if (req.err) {
+			return error(new Error("Creating request.", {cause: req.err}))
+		}
+
+		let f = await this.c.fetch(req.v)
+		if (f.err) {
+			return error(new Error("Fetching request.", {cause: f.err}))
+		}
+
+		let [p, res] = f.v
+
+		let e = z.array(FileOperationDtoSchema).safeParse(p)
+		if (!e.success) {
+			return error(new Error("Parsing response.", {cause: e.error}))
+		}
+
+		return ok([e.data, res])
+	}
+
+	/**
+	 * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.6.1-server/products/ASC.Files/Server/Api/OperationController.cs#L99 | DocSpace Reference}
+	 */
+	async deleteBatchItems(o: DeleteBatchRequestDto): Promise<Result<[FileOperationDto[], Response], Error>> {
+		let u = this.c.createUrl("api/2.0/files/fileops/delete")
 		if (u.err) {
 			return error(new Error("Creating URL.", {cause: u.err}))
 		}

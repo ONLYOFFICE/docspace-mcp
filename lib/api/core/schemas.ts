@@ -198,37 +198,6 @@ export const ArchiveRoomRequestSchema = z.object({
 })
 
 /**
- * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/products/ASC.Files/Core/ApiModels/RequestDto/BatchModelRequestDto.cs/#L43 | DocSpace Reference}
- */
-export const BaseBatchRequestDtoSchema = z.object({
-	folderIds: z.array(JsonElementSchema).optional(),
-	fileIds: z.array(JsonElementSchema).optional(),
-})
-
-/**
- * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/products/ASC.Files/Core/ApiModels/RequestDto/BatchModelRequestDto.cs/#L67 | DocSpace Reference}
- */
-export const DownloadRequestItemDtoSchema = z.object({
-	key: JsonElementSchema.optional(),
-	value: z.string().optional(),
-})
-
-/**
- * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/products/ASC.Files/Core/ApiModels/RequestDto/BatchModelRequestDto.cs/#L59 | DocSpace Reference}
- */
-export const DownloadRequestDtoSchema = BaseBatchRequestDtoSchema.extend({
-	fileConvertIds: z.array(DownloadRequestItemDtoSchema).optional(),
-})
-
-/**
- * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/products/ASC.Files/Core/ApiModels/RequestDto/BatchModelRequestDto.cs/#L93 | DocSpace Reference}
- */
-export const DeleteSchema = z.object({
-	deleteAfter: z.boolean().optional(),
-	immediately: z.boolean().optional(),
-})
-
-/**
  * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/products/ASC.Files/Core/Services/WCFService/FileOperations/FileConflictResolveType.cs/#L31 | DocSpace Reference}
  */
 export const FileConflictResolveTypeSchema = z.union([
@@ -238,13 +207,156 @@ export const FileConflictResolveTypeSchema = z.union([
 ])
 
 /**
- * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/products/ASC.Files/Core/ApiModels/RequestDto/BatchModelRequestDto.cs/#L127 | DocSpace Reference}
+ * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.6.1-server/products/ASC.Files/Core/ApiModels/RequestDto/BatchModelRequestDto.cs#L32 | DocSpace Reference}
  */
-export const BatchRequestDtoSchema = BaseBatchRequestDtoSchema.extend({
-	destFolderId: JsonElementSchema.optional(),
-	conflictResolveType: FileConflictResolveTypeSchema.optional(),
-	deleteAfter: z.boolean().optional(),
+export const FileOperationRequestBaseDtoSchema = z.object({
+	/**
+	 * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.6.1-server/products/ASC.Files/Core/ApiModels/RequestDto/BatchModelRequestDto.cs#L37 | DocSpace Reference}
+	 */
+	returnSingleOperation: z.boolean(),
 })
+
+export type FileOperationRequestBaseDto = z.infer<typeof FileOperationRequestBaseDtoSchema>
+
+/**
+ * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.6.1-server/products/ASC.Files/Core/ApiModels/RequestDto/BatchModelRequestDto.cs#L43 | DocSpace Reference}
+ */
+export const BaseBatchRequestDtoSchema = z.object({
+	...FileOperationRequestBaseDtoSchema.shape,
+
+	/**
+	 * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.6.1-server/products/ASC.Files/Core/ApiModels/RequestDto/BatchModelRequestDto.cs#L48 | DocSpace Reference}
+	 */
+	folderIds: z.array(JsonElementSchema),
+
+	/**
+	 * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.6.1-server/products/ASC.Files/Core/ApiModels/RequestDto/BatchModelRequestDto.cs#L53 | DocSpace Reference}
+	 */
+	fileIds: z.array(JsonElementSchema),
+})
+
+export type BaseBatchRequestDto = z.infer<typeof BaseBatchRequestDtoSchema>
+
+/**
+ * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.6.1-server/products/ASC.Files/Core/ApiModels/RequestDto/BatchModelRequestDto.cs#L80 | DocSpace Reference}
+ */
+export const DownloadRequestItemDtoSchema = z.object({
+	/**
+	 * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.6.1-server/products/ASC.Files/Core/ApiModels/RequestDto/BatchModelRequestDto.cs#L85 | DocSpace Reference}
+	 */
+	key: JsonElementSchema,
+
+	/**
+	 * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.6.1-server/products/ASC.Files/Core/ApiModels/RequestDto/BatchModelRequestDto.cs#L90 | DocSpace Reference}
+	 */
+	value: z.string(),
+})
+
+export type DownloadRequestItemDto = z.infer<typeof DownloadRequestItemDtoSchema>
+
+/**
+ * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.6.1-server/products/ASC.Files/Core/ApiModels/RequestDto/BatchModelRequestDto.cs#L59 | DocSpace Reference}
+ */
+export const DownloadRequestDtoSchema = z.object({
+	...FileOperationRequestBaseDtoSchema.shape,
+
+	/**
+	 * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.6.1-server/products/ASC.Files/Core/ApiModels/RequestDto/BatchModelRequestDto.cs#L64 | DocSpace Reference}
+	 */
+	folderIds: z.array(JsonElementSchema),
+
+	/**
+	 * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.6.1-server/products/ASC.Files/Core/ApiModels/RequestDto/BatchModelRequestDto.cs#L69 | DocSpace Reference}
+	 */
+	fileIds: z.array(JsonElementSchema),
+
+	/**
+	 * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.6.1-server/products/ASC.Files/Core/ApiModels/RequestDto/BatchModelRequestDto.cs#L74 | DocSpace Reference}
+	 */
+	fileConvertIds: z.array(DownloadRequestItemDtoSchema),
+})
+
+export type DownloadRequestDto = z.infer<typeof DownloadRequestDtoSchema>
+
+/**
+ * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.6.1-server/products/ASC.Files/Core/ApiModels/RequestDto/BatchModelRequestDto.cs#L101 | DocSpace Reference}
+ */
+export const DeleteBatchRequestDtoSchema = z.object({
+	...FileOperationRequestBaseDtoSchema.shape,
+
+	/**
+	 * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.6.1-server/products/ASC.Files/Core/ApiModels/RequestDto/BatchModelRequestDto.cs#L106 | DocSpace Reference}
+	 */
+	folderIds: z.array(JsonElementSchema),
+
+	/**
+	 * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.6.1-server/products/ASC.Files/Core/ApiModels/RequestDto/BatchModelRequestDto.cs#L111 | DocSpace Reference}
+	 */
+	fileIds: z.array(JsonElementSchema),
+
+	/**
+	 * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.6.1-server/products/ASC.Files/Core/ApiModels/RequestDto/BatchModelRequestDto.cs#L116 | DocSpace Reference}
+	 */
+	deleteAfter: z.boolean(),
+
+	/**
+	 * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.6.1-server/products/ASC.Files/Core/ApiModels/RequestDto/BatchModelRequestDto.cs#L121 | DocSpace Reference}
+	 */
+	immediately: z.boolean(),
+})
+
+export type DeleteBatchRequestDto = z.infer<typeof DeleteBatchRequestDtoSchema>
+
+/**
+ * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.6.1-server/products/ASC.Files/Core/ApiModels/RequestDto/BatchModelRequestDto.cs#L148 | DocSpace Reference}
+ */
+export const DeleteSchema = z.object({
+	/**
+	 * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.6.1-server/products/ASC.Files/Core/ApiModels/RequestDto/BatchModelRequestDto.cs#L153 | DocSpace Reference}
+	 */
+	deleteAfter: z.boolean(),
+
+	/**
+	 * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.6.1-server/products/ASC.Files/Core/ApiModels/RequestDto/BatchModelRequestDto.cs#L158 | DocSpace Reference}
+	 */
+	immediately: z.boolean(),
+})
+
+export type Delete = z.infer<typeof DeleteSchema>
+
+/**
+ * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.6.1-server/products/ASC.Files/Core/ApiModels/RequestDto/BatchModelRequestDto.cs#L182 | DocSpace Reference}
+ */
+export const BatchRequestDtoSchema = z.object({
+	...FileOperationRequestBaseDtoSchema.shape,
+
+	/**
+	 * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.6.1-server/products/ASC.Files/Core/ApiModels/RequestDto/BatchModelRequestDto.cs#L187 | DocSpace Reference}
+	 */
+	folderIds: z.array(JsonElementSchema),
+
+	/**
+	 * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.6.1-server/products/ASC.Files/Core/ApiModels/RequestDto/BatchModelRequestDto.cs#L192 | DocSpace Reference}
+	 */
+	fileIds: z.array(JsonElementSchema),
+
+	/**
+	 * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.6.1-server/products/ASC.Files/Core/ApiModels/RequestDto/BatchModelRequestDto.cs#L197 | DocSpace Reference}
+	 */
+	destFolderId: JsonElementSchema,
+
+	/**
+	 * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.6.1-server/products/ASC.Files/Core/ApiModels/RequestDto/BatchModelRequestDto.cs#L202 | DocSpace Reference}
+	 */
+	conflictResolveType: FileConflictResolveTypeSchema,
+
+	/**
+	 * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.6.1-server/products/ASC.Files/Core/ApiModels/RequestDto/BatchModelRequestDto.cs#L207 | DocSpace Reference}
+	 */
+	deleteAfter: z.boolean(),
+})
+
+export type BatchRequestDto = z.infer<typeof BatchRequestDtoSchema>
 
 /**
  * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/products/ASC.Files/Core/ApiModels/RequestDto/CreateFolderRequestDto.cs/#L32 | DocSpace Reference}
@@ -439,10 +551,68 @@ export const FileEntryDtoFieldSchema = z.union([
 ])
 
 /**
+ * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.6.1-server/products/ASC.Files/Core/Core/Entries/File.cs#L35 | DocSpace Reference}
+ */
+export const FileStatus = {
+	/**
+	 * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.6.1-server/products/ASC.Files/Core/Core/Entries/File.cs#L38 | DocSpace Reference}
+	 */
+	none: 0,
+
+	/**
+	 * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.6.1-server/products/ASC.Files/Core/Core/Entries/File.cs#L41 | DocSpace Reference}
+	 */
+	isEditing: 1 << 0, // eslint-disable-line math/prefer-math-trunc, unicorn/prefer-math-trunc
+
+	/**
+	 * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.6.1-server/products/ASC.Files/Core/Core/Entries/File.cs#L44 | DocSpace Reference}
+	 */
+	isNew: 1 << 1,
+
+	/**
+	 * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.6.1-server/products/ASC.Files/Core/Core/Entries/File.cs#L47 | DocSpace Reference}
+	 */
+	isConverting: 1 << 2,
+
+	/**
+	 * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.6.1-server/products/ASC.Files/Core/Core/Entries/File.cs#L50 | DocSpace Reference}
+	 */
+	isOriginal: 1 << 3,
+
+	/**
+	 * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.6.1-server/products/ASC.Files/Core/Core/Entries/File.cs#L53 | DocSpace Reference}
+	 */
+	isEditingAlone: 1 << 4,
+
+	/**
+	 * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.6.1-server/products/ASC.Files/Core/Core/Entries/File.cs#L56 | DocSpace Reference}
+	 */
+	isFavorite: 1 << 5,
+
+	/**
+	 * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.6.1-server/products/ASC.Files/Core/Core/Entries/File.cs#L59 | DocSpace Reference}
+	 */
+	isTemplate: 1 << 6,
+
+	/**
+	 * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.6.1-server/products/ASC.Files/Core/Core/Entries/File.cs#L62 | DocSpace Reference}
+	 */
+	isFillFormDraft: 1 << 7,
+
+	/**
+	 * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.6.1-server/products/ASC.Files/Core/Core/Entries/File.cs#L65 | DocSpace Reference}
+	 */
+	isCompletedForm: 1 << 8,
+}
+
+export const FileStatusSchema = zod.bitflags(FileStatus)
+
+/**
  * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.2.1-server/products/ASC.Files/Core/ApiModels/ResponseDto/FileDto.cs/#L32 | DocSpace Reference}
  */
 export const FileDtoSchema = FileEntryDtoSchema.extend({
 	folderId: JsonElementSchema.optional().describe("The folder ID where the file is located."),
+	fileStatus: FileStatusSchema.optional().describe("The current status of the file."),
 	fileType: zod.unionToEnum(FileTypeSchema, "The file type.").optional(),
 	fileExst: z.string().optional().describe("The file extension."),
 	comment: z.string().optional().describe("The comment to the file."),
@@ -508,6 +678,8 @@ export const FileOperationDtoSchema = z.looseObject({
 	finished: z.boolean().optional(),
 	url: z.string().optional(),
 })
+
+export type FileOperationDto = z.infer<typeof FileOperationDtoSchema>
 
 /**
  * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.2.1-server/products/ASC.Files/Core/Core/Security/SubjectType.cs/#L61 | DocSpace Reference}

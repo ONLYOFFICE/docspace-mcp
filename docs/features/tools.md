@@ -34,50 +34,52 @@ DocSpace operation.
 
 <!--generate tools-start-->
 
-<table>
-<thead>
-<tr><th>#</th><th>Tool Name</th><th>Tool Description</th></tr>
-</thead>
-<tbody>
-<tr><td></td><th scope="rowgroup">Files Toolset</th><td></td></tr>
-<tr><td>1</td><td><code>copy_batch_items</code></td><td>Copy to a folder.</td></tr>
-<tr><td>2</td><td><code>delete_file</code></td><td>Delete a file.</td></tr>
-<tr><td>3</td><td><code>download_file_as_text</code></td><td>Download a file as text.</td></tr>
-<tr><td>4</td><td><code>get_file_info</code></td><td>Get file information.</td></tr>
-<tr><td>5</td><td><code>move_batch_items</code></td><td>Move to a folder.</td></tr>
-<tr><td>6</td><td><code>update_file</code></td><td>Update a file.</td></tr>
-<tr><td>7</td><td><code>upload_file</code></td><td>Upload a file.*</td></tr>
-</tbody>
-<tbody>
-<tr><td></td><th scope="rowgroup">Folders Toolset</th><td></td></tr>
-<tr><td>8</td><td><code>create_folder</code></td><td>Create a folder.</td></tr>
-<tr><td>9</td><td><code>delete_folder</code></td><td>Delete a folder.</td></tr>
-<tr><td>10</td><td><code>get_folder_content</code></td><td>Get content of a folder.</td></tr>
-<tr><td>11</td><td><code>get_folder_info</code></td><td>Get folder information.</td></tr>
-<tr><td>12</td><td><code>get_my_folder</code></td><td>Get the 'My Documents' folder.</td></tr>
-<tr><td>13</td><td><code>rename_folder</code></td><td>Rename a folder.</td></tr>
-</tbody>
-<tbody>
-<tr><td></td><th scope="rowgroup">People Toolset</th><td></td></tr>
-<tr><td>14</td><td><code>get_all_people</code></td><td>Get all people.</td></tr>
-</tbody>
-<tbody>
-<tr><td></td><th scope="rowgroup">Rooms Toolset</th><td></td></tr>
-<tr><td>15</td><td><code>archive_room</code></td><td>Archive a room.</td></tr>
-<tr><td>16</td><td><code>create_room</code></td><td>Create a room.</td></tr>
-<tr><td>17</td><td><code>get_room_access_levels</code></td><td>Get a list of available room invitation access levels.</td></tr>
-<tr><td>18</td><td><code>get_room_info</code></td><td>Get room information.</td></tr>
-<tr><td>19</td><td><code>get_room_security_info</code></td><td>Get a list of users with their access levels to a room.</td></tr>
-<tr><td>20</td><td><code>get_room_types</code></td><td>Get a list of available room types.</td></tr>
-<tr><td>21</td><td><code>get_rooms_folder</code></td><td>Get the 'Rooms' folder.</td></tr>
-<tr><td>22</td><td><code>set_room_security</code></td><td>Invite or remove users from a room.</td></tr>
-<tr><td>23</td><td><code>update_room</code></td><td>Update a room.</td></tr>
-</tbody>
-</table>
+### Files Toolset
+
+| #   | Tool Name              | Tool Description       |
+| --- | ---------------------- | ---------------------- |
+| 1   | `copy_batch_items`     | Copy to a folder.      |
+| 2   | `delete_file`          | Delete a file.         |
+| 3   | `download_file_as_text`| Download a file as text.|
+| 4   | `get_file_info`        | Get file information.  |
+| 5   | `move_batch_items`     | Move to a folder.      |
+| 6   | `update_file`          | Update a file.         |
+| 7   | `upload_file`          | Upload a file.*        |
+
+\* Supported file formats for uploading: `txt`, `md`.
+
+### Folders Toolset
+
+| #   | Tool Name            | Tool Description                   |
+| --- | -------------------- | ---------------------------------- |
+| 8   | `create_folder`      | Create a folder.                   |
+| 9   | `delete_folder`      | Delete a folder.                   |
+| 10  | `get_folder_content` | Get content of a folder.           |
+| 11  | `get_folder_info`    | Get folder information.            |
+| 12  | `get_my_folder`      | Get the 'My Documents' folder.     |
+| 13  | `rename_folder`      | Rename a folder.                   |
+
+### People Toolset
+
+| #   | Tool Name        | Tool Description |
+| --- | ---------------- | ---------------- |
+| 14  | `get_all_people` | Get all people.  |
+
+### Rooms Toolset
+
+| #   | Tool Name                | Tool Description                                          |
+| --- | ------------------------ | --------------------------------------------------------- |
+| 15  | `archive_room`           | Archive a room.                                           |
+| 16  | `create_room`            | Create a room.                                            |
+| 17  | `get_room_access_levels` | Get a list of available room invitation access levels.    |
+| 18  | `get_room_info`          | Get room information.                                     |
+| 19  | `get_room_security_info` | Get a list of users with their access levels to a room.   |
+| 20  | `get_room_types`         | Get a list of available room types.                       |
+| 21  | `get_rooms_folder`       | Get the 'Rooms' folder.                                   |
+| 22  | `set_room_security`      | Invite or remove users from a room.                       |
+| 23  | `update_room`            | Update a room.                                            |
 
 <!--generate tools-end-->
-
-\* Supported file formats: `txt`, `md`.
 
 ## Meta Tools
 

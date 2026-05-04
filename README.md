@@ -11,11 +11,11 @@ The DocSpace MCP Server connects AI tools directly to ONLYOFFICE DocSpace. This 
 - **Tools with granular control** - Access to [tools](/docs/reference/tools.md) organized into logical
   toolsets with fine-grained enable/disable capabilities and meta tools.
 - **Multiple transport protocols** - Support for stdio, SSE, and Streamable HTTP
-  [transports](/docs/reference/configuration/global-configuration.md#docspace_transport).
+  [transports](/docs/reference/global-configuration.md#docspace_transport).
 - **Different authentication methods** - Supports API keys, Personal Access
   Tokens, Basic authentication, and OAuth 2.0 with dynamic client registration. See [examples](/docs/getting-started/installation.md#authenticating-the-remote-mcp-server-client-connection).
 - **Request-level configuration** - Configure authentication and tool selection
-  during session initialization using [custom HTTP headers](/docs/reference/configuration/request-configuration.md#header-options).
+  during session initialization using [custom HTTP headers](/docs/reference/request-configuration.md#header-options).
 - **Various distribution formats** - Available as [Docker image](/docs/distribution/distribution-combined.md#pull-from-docker-hub), [Docker MCP
   Server](/docs/distribution/distribution-combined.md#build-with-docker-mcp-toolkit), [MCP bundle](/docs/distribution/distribution-combined.md#mcp-bundle), and [Node.js application](/docs/distribution/distribution-combined.md#build-with-npm-registry).
 
@@ -29,7 +29,7 @@ The DocSpace MCP Server connects AI tools directly to ONLYOFFICE DocSpace. This 
 
 ## Connecting Clients to DocSpace MCP Server
 
-You can connect to the DocSpace MCP server using any MCP clients. We have covered some popular clients, such as Claude Desktop, Cursor, Windsurf, etc., and [here](docs/getting-started/clients.md) you can read about it.
+You can connect to the DocSpace MCP server using any MCP clients. We have covered some popular clients, such as Claude Desktop, Cursor, Windsurf, etc., and [here](/docs/getting-started/clients.md) you can read about it.
 
 ### Remote DocSpace MCP Server
 
@@ -87,7 +87,7 @@ Insert the following block into the `mcpServers` section of your `.json` configu
 - `DOCSPACE_BASE_URL` - the URL of your DocSpace instance (e.g. https://portal.onlyoffice.com).
 - `DOCSPACE_API_KEY` - your personal API key generated in DocSpace settings -> Developer Tools -> API keys.
 
-All available parameters are listed [here](/docs/reference/configuration/global-configuration.md).
+All available parameters are listed [here](/docs/reference/global-configuration.md).
 
 #### Step 4. Restart the client
 
@@ -100,7 +100,7 @@ Close and reopen your client. In most cases, the DocSpace MCP Server will start 
 
 The DocSpace MCP server implements the Tools concept described in the [MCP specification].
 
-All DocSpace MCP server tools are described [here](docs/reference/tools.md).
+All DocSpace MCP server tools are described [here](/docs/reference/tools.md).
 
 ## Documentation
 

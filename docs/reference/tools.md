@@ -99,4 +99,4 @@ tools, providing the same level of control over available functionality.
 
 ## Resolving Tools
 
-The tools resolution process follows a sequence that starts with toolsets, adds explicitly enabled tools, and removes explicitly disabled tools. For the full flowcharts and worked examples, see [Tools resolution](./configuration/tools-resolution.md).
+The tools resolution process follows a sequence that starts with toolsets, adds explicitly enabled tools, and removes explicitly disabled tools. For the full flowcharts and worked examples, see [Tools resolution](./tools-resolution.md).

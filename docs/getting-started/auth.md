@@ -69,4 +69,4 @@ Aside from authenticating with OAuth, the DocSpace MCP server also allows you to
 
 ## Resolving authentication
 
-The authentication resolution process depends on the transport type used and the authentication methods configured. For detailed flowcharts of each scenario, see [Authentication resolution](../reference/configuration/authentication-resolution.md).
+The authentication resolution process depends on the transport type used and the authentication methods configured. For detailed flowcharts of each scenario, see [Authentication resolution](../reference/authentication-resolution.md).

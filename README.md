@@ -132,4 +132,4 @@ The DocSpace MCP server is distributed under the MIT license found in the
 
 [MCP specification]: https://modelcontextprotocol.io/specification/2025-11-25/server/tools/
 
-[examples]: https://api.onlyoffice.com/docspace/mcp-server/
+[examples]: https://api.onlyoffice.com/docspace/mcp-server/getting-started/

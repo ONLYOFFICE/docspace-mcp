@@ -1,6 +1,6 @@
 # DocSpace MCP server troubleshooting
 
-This documentation helps you to diagnose and fix potential issues when configuring and interacting with the DocSpace MCP server. These issues cover:
+This section helps you diagnose and resolve issues when configuring and interacting with the DocSpace MCP server. It covers both common issues that apply to any MCP client and client-specific guidance for popular integrations:
 
 - [Common issues you can encounter with any of the MCP clients](common-issues.md)
 - Client-specific issues affecting

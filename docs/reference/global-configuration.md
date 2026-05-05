@@ -310,6 +310,34 @@ Secret key for signing OAuth state tokens. Used together with `DOCSPACE_OAUTH_ST
 | **Attributes** | sensitive, trimmable |
 | **Transports** | `sse` `streamable-http` `http` |
 
+## File Operation Options
+
+The following options are used to configure how the server waits for long-running file operations to complete.
+
+### DOCSPACE_FILE_OPERATION_INTERVAL
+
+The interval for polling the status of in-progress file operations in milliseconds.
+
+| | |
+|---|---|
+| **Type** | number |
+| **Default** | `300` (300 milliseconds) |
+| **Minimum** | `0` |
+| **Attributes** | trimmable |
+| **Transports** | all |
+
+### DOCSPACE_FILE_OPERATION_TIMEOUT
+
+The maximum time to wait for a file operation to complete in milliseconds. Set to `0` to disable the timeout.
+
+| | |
+|---|---|
+| **Type** | number |
+| **Default** | `3600000` (1 hour) |
+| **Minimum** | `0` |
+| **Attributes** | trimmable |
+| **Transports** | all |
+
 ## Server Options
 
 The following options are used to configure the behavior of the HTTP server.

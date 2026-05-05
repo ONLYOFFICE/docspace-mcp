@@ -360,7 +360,7 @@ The `0` is a special value that binds the server to a random port.
 | **Default** | `8080` |
 | **Transports** | `sse` `streamable-http` `http` |
 
-### DOCSPACE_SERVER_PROXY_HOPS
+### DOCSPACE_PROXY_HOPS
 
 The number of proxy servers between the server and the client.
 
@@ -724,7 +724,7 @@ Prefix for custom configuration headers. Set to an empty string to disable custo
 | | |
 |---|---|
 | **Type** | string |
-| **Default** | `x-mcp-` |
+| **Default** | `X-Mcp-` |
 | **Attributes** | trimmable, lowercase |
 | **Transports** | `sse`, `streamable-http`, `http` |
 

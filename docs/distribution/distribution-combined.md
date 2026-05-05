@@ -216,7 +216,7 @@ Use this format if your MCP client supports `.mcpb` bundle files natively (e.g.,
 1. Download the latest release:
 
    ```sh
-   VERSION=3.1.0 curl --location --output docspace-mcp.mcpb https://github.com/ONLYOFFICE/docspace-mcp/releases/download/v$VERSION/onlyoffice-docspace-mcp-$VERSION.mcpb
+   VERSION=3.2.0 curl --location --output docspace-mcp.mcpb https://github.com/ONLYOFFICE/docspace-mcp/releases/download/v$VERSION/onlyoffice-docspace-mcp-$VERSION.mcpb
    ```
 
    To download a specific version:
@@ -234,7 +234,7 @@ Use this format if you prefer to run the server as a standard Node.js process.
 1. Download the latest release:
 
    ```sh
-   VERSION=3.1.0 curl --location --output docspace-mcp.tgz https://github.com/ONLYOFFICE/docspace-mcp/releases/download/v$VERSION/onlyoffice-docspace-mcp-$VERSION.tgz
+   VERSION=3.2.0 curl --location --output docspace-mcp.tgz https://github.com/ONLYOFFICE/docspace-mcp/releases/download/v$VERSION/onlyoffice-docspace-mcp-$VERSION.tgz
    ```
 
    To download a specific version:

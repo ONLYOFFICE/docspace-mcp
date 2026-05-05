@@ -38,7 +38,16 @@ Insert the following block into the `mcpServers` section of your `.json` configu
     "mcpServers": {
         "onlyoffice-docspace": {
             "command": "docker",
-            "args": ["run", "--interactive", "--rm", "--env", "DOCSPACE_BASE_URL", "--env", "DOCSPACE_API_KEY", "onlyoffice/docspace-mcp"],
+            "args": [
+                "run",
+                "--interactive",
+                "--rm",
+                "--env",
+                "DOCSPACE_BASE_URL",
+                "--env",
+                "DOCSPACE_API_KEY",
+                "onlyoffice/docspace-mcp"
+            ],
             "env": {
                 "DOCSPACE_BASE_URL": "https://your-instance.onlyoffice.com",
                 "DOCSPACE_API_KEY": "your-api-key"
@@ -105,7 +114,10 @@ configuration to your client's configuration file:
     "mcpServers": {
         "onlyoffice-docspace": {
             "command": "npx",
-            "args": ["--yes", "@onlyoffice/docspace-mcp"],
+            "args": [
+                "--yes",
+                "@onlyoffice/docspace-mcp"
+            ],
             "env": {
                 "DOCSPACE_BASE_URL": "https://your-instance.onlyoffice.com",
                 "DOCSPACE_API_KEY": "your-api-key"

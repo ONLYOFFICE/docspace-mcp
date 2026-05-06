@@ -34,25 +34,25 @@ Connect to the locally running MCP server using stdio transport.
 
 ```json
 {
-    "mcpServers": {
-        "onlyoffice-docspace": {
-            "command": "docker",
-            "args": [
-                "run",
-                "--interactive",
-                "--rm",
-                "--env",
-                "DOCSPACE_BASE_URL",
-                "--env",
-                "DOCSPACE_API_KEY",
-                "onlyoffice/docspace-mcp"
-            ],
-            "env": {
-                "DOCSPACE_BASE_URL": "https://your-instance.onlyoffice.com",
-                "DOCSPACE_API_KEY": "your-api-key"
-            }
-        }
-    }
+	"mcpServers": {
+		"onlyoffice-docspace": {
+			"command": "docker",
+			"args": [
+				"run",
+				"--interactive",
+				"--rm",
+				"--env",
+				"DOCSPACE_BASE_URL",
+				"--env",
+				"DOCSPACE_API_KEY",
+				"onlyoffice/docspace-mcp"
+			],
+			"env": {
+				"DOCSPACE_BASE_URL": "https://your-instance.onlyoffice.com",
+				"DOCSPACE_API_KEY": "your-api-key"
+			}
+		}
+	}
 }
 ```
 
@@ -116,25 +116,25 @@ Connect to the locally running MCP server using Claude's Local MCP servers.
 6. Add a new record to the `mcpServers` section:
    ```json
    {
-    "mcpServers": {
-        "onlyoffice-docspace": {
-            "command": "docker",
-            "args": [
-                "run",
-                "--interactive",
-                "--rm",
-                "--env",
-                "DOCSPACE_BASE_URL",
-                "--env",
-                "DOCSPACE_API_KEY",
-                "onlyoffice/docspace-mcp"
-            ],
-            "env": {
-                "DOCSPACE_BASE_URL": "https://your-instance.onlyoffice.com",
-                "DOCSPACE_API_KEY": "your-api-key"
-            }
-        }
-    }
+   	"mcpServers": {
+   		"onlyoffice-docspace": {
+   			"command": "docker",
+   			"args": [
+   				"run",
+   				"--interactive",
+   				"--rm",
+   				"--env",
+   				"DOCSPACE_BASE_URL",
+   				"--env",
+   				"DOCSPACE_API_KEY",
+   				"onlyoffice/docspace-mcp"
+   			],
+   			"env": {
+   				"DOCSPACE_BASE_URL": "https://your-instance.onlyoffice.com",
+   				"DOCSPACE_API_KEY": "your-api-key"
+   			}
+   		}
+   	}
    }
    ```
 7. Save the file.
@@ -180,12 +180,12 @@ Connect to the MCP server running remotely using Streamable-HTTP transport.
 5. Add a new record to the `mcpServers` section:
    ```json
    {
-    "mcpServers": {
-        "onlyoffice-docspace": {
-            "type": "http",
-            "url": "https://mcp.onlyoffice.com/mcp"
-        }
-    }
+   	"mcpServers": {
+   		"onlyoffice-docspace": {
+   			"type": "http",
+   			"url": "https://mcp.onlyoffice.com/mcp"
+   		}
+   	}
    }
    ```
 6. Save the file.
@@ -207,25 +207,25 @@ Connect to the locally running MCP server using stdio transport.
 5. Add a new record to the `mcpServers` section:
    ```json
    {
-    "mcpServers": {
-        "onlyoffice-docspace": {
-            "command": "docker",
-            "args": [
-                "run",
-                "--interactive",
-                "--rm",
-                "--env",
-                "DOCSPACE_BASE_URL",
-                "--env",
-                "DOCSPACE_API_KEY",
-                "onlyoffice/docspace-mcp"
-            ],
-            "env": {
-                "DOCSPACE_BASE_URL": "https://your-instance.onlyoffice.com",
-                "DOCSPACE_API_KEY": "your-api-key"
-            }
-        }
-    }
+   	"mcpServers": {
+   		"onlyoffice-docspace": {
+   			"command": "docker",
+   			"args": [
+   				"run",
+   				"--interactive",
+   				"--rm",
+   				"--env",
+   				"DOCSPACE_BASE_URL",
+   				"--env",
+   				"DOCSPACE_API_KEY",
+   				"onlyoffice/docspace-mcp"
+   			],
+   			"env": {
+   				"DOCSPACE_BASE_URL": "https://your-instance.onlyoffice.com",
+   				"DOCSPACE_API_KEY": "your-api-key"
+   			}
+   		}
+   	}
    }
    ```
 6. Enter the values of the `DOCSPACE_BASE_URL` and `DOCSPACE_API_KEY` environment variables. 
@@ -271,12 +271,12 @@ This is the preferred connection method and connects to the remote MCP server us
 4. Add a new record to the `servers` section:
    ```json
    {
-    "servers": {
-        "onlyoffice-docspace": {
-            "type": "http",
-            "url": "https://mcp.onlyoffice.com/mcp"
-        }
-    }
+   	"servers": {
+   		"onlyoffice-docspace": {
+   			"type": "http",
+   			"url": "https://mcp.onlyoffice.com/mcp"
+   		}
+   	}
    }
    ```
 5. Save the file.
@@ -299,25 +299,25 @@ Connect to the locally running MCP server using stdio transport.
 4. Add a new record to the `servers` section:
    ```json
    {
-    "servers": {
-        "onlyoffice-docspace": {
-            "command": "docker",
-            "args": [
-                "run",
-                "--interactive",
-                "--rm",
-                "--env",
-                "DOCSPACE_BASE_URL",
-                "--env",
-                "DOCSPACE_API_KEY",
-                "onlyoffice/docspace-mcp"
-            ],
-            "env": {
-                "DOCSPACE_BASE_URL": "https://your-instance.onlyoffice.com",
-                "DOCSPACE_API_KEY": "your-api-key"
-            }
-        }
-    }
+   	"servers": {
+   		"onlyoffice-docspace": {
+   			"command": "docker",
+   			"args": [
+   				"run",
+   				"--interactive",
+   				"--rm",
+   				"--env",
+   				"DOCSPACE_BASE_URL",
+   				"--env",
+   				"DOCSPACE_API_KEY",
+   				"onlyoffice/docspace-mcp"
+   			],
+   			"env": {
+   				"DOCSPACE_BASE_URL": "https://your-instance.onlyoffice.com",
+   				"DOCSPACE_API_KEY": "your-api-key"
+   			}
+   		}
+   	}
    }
    ```
 5. Save the file.
@@ -346,11 +346,11 @@ This is the recommended method and connects to the remote MCP server using Strea
 7. Add a new record to the `mcpServers` section:
    ```json
    {
-    "mcpServers": {
-        "onlyoffice-docspace": {
-            "serverUrl": "https://mcp.onlyoffice.com/mcp"
-        }
-    }
+   	"mcpServers": {
+   		"onlyoffice-docspace": {
+   			"serverUrl": "https://mcp.onlyoffice.com/mcp"
+   		}
+   	}
    }
    ```
 8. Save the file.
@@ -372,25 +372,25 @@ This method uses stdio transport to connect to a locally running MCP server.
 7. Add a new record to the `mcpServers` section:
    ```json
    {
-    "mcpServers": {
-        "onlyoffice-docspace": {
-            "command": "docker",
-            "args": [
-                "run",
-                "--interactive",
-                "--rm",
-                "--env",
-                "DOCSPACE_BASE_URL",
-                "--env",
-                "DOCSPACE_API_KEY",
-                "onlyoffice/docspace-mcp"
-            ],
-            "env": {
-                "DOCSPACE_BASE_URL": "https://your-instance.onlyoffice.com",
-                "DOCSPACE_API_KEY": "your-api-key"
-            }
-        }
-    }
+   	"mcpServers": {
+   		"onlyoffice-docspace": {
+   			"command": "docker",
+   			"args": [
+   				"run",
+   				"--interactive",
+   				"--rm",
+   				"--env",
+   				"DOCSPACE_BASE_URL",
+   				"--env",
+   				"DOCSPACE_API_KEY",
+   				"onlyoffice/docspace-mcp"
+   			],
+   			"env": {
+   				"DOCSPACE_BASE_URL": "https://your-instance.onlyoffice.com",
+   				"DOCSPACE_API_KEY": "your-api-key"
+   			}
+   		}
+   	}
    }
    ```
 8. Save the file.

@@ -35,7 +35,10 @@ Connection timeout or `ERR_NAME_NOT_RESOLVED` when the server tries to reach `DO
 - On Linux, you may need to configure Docker DNS settings in `/etc/docker/daemon.json`:
   ```json
   {
-    "dns": ["8.8.8.8", "8.8.4.4"]
+  	"dns": [
+  		"8.8.8.8",
+  		"8.8.4.4"
+  	]
   }
   ```
 

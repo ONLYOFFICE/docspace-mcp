@@ -14,7 +14,7 @@ The DocSpace MCP Server connects AI tools directly to ONLYOFFICE DocSpace. This 
 - **Customize per conversation** - Different AI assistants can have different permissions and access levels in the same DocSpace instance.
 - **Deploy anywhere** - The numerous [distribution formats](../distribution/README.md) available allow you to run in Docker, your existing Node.js environment, or as a standalone service - whatever fits your stack best.
 
-## Use Cases
+## Use cases
 
 - **Project Management**: [Set up rooms](../tutorials/setup-project-room.md) and manage membership to these rooms based on access levels. Track who can access what files, and [archive rooms once they are completed](../tutorials/project-archival.md).
 - **[Bulk document operations](../tutorials/doc-lifecycle-management.md)**: Create folders, upload documents, copy or move items in batches, rename or delete content, and check file or folder details.

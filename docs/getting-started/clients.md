@@ -104,7 +104,7 @@ Connect to the locally running MCP server using Claude's Extensions. Before conn
 6. Select the downloaded MCP bundle.
 7. Click "Install".
 
-### Connect via Local MCP
+### Connect via local MCP
 
 Connect to the locally running MCP server using Claude's Local MCP servers.
 

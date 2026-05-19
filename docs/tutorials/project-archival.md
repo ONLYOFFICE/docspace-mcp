@@ -26,7 +26,7 @@ With the Meridian Corp website redesign project officially complete and signed o
 
 - Make sure you [connect your DocSpace MCP server to your MCP client of choice](../getting-started/clients.md).
 
-### Step 1: Conduct a Full Access Audit
+### Step 1: Conduct a full access audit
 
 Before deleting or changing anything, it's important to get a complete picture of who still has access to the room.
 
@@ -48,7 +48,7 @@ For this scenario, you find:
 - **Aisha Okafor** (Content Writer) — **remove** (reassigned to another project)
 - **Marcus Webb** (Client Success Manager) — **keep for now**
 
-### Step 2: Remove External Access
+### Step 2: Remove external access
 
 Revoke access for all external parties.
 
@@ -68,7 +68,7 @@ Show me the updated access list for "Meridian Corp — Website Redesign".
 
 Confirm that the reassigned team members no longer have access. This is a critical security step — team members should not retain access to rooms for projects they are no longer working on.
 
-### Step 3: Audit the Room Contents
+### Step 3: Audit the room contents
 
 Now inspect the contents of the room to decide what stays and what should be deleted before archiving.
 
@@ -85,7 +85,7 @@ This calls `get_folder_content` on the room and its subfolders. Your results wil
 - `03 — Drafts & Work in Progress` — **clean up** (old drafts no longer needed)
 - `04 — Final Deliverables` — **keep** (approved outputs)
 
-### Step 4: Identify Files for Deletion
+### Step 4: Identify files for deletion
 
 Inspect the Drafts folder to confirm what can safely be deleted.
 
@@ -105,7 +105,7 @@ Download and read the contents of "old-brief-draft.docx". Is there anything in i
 
 The AI calls `download_file_as_text` and compares content — useful for ensuring you're not deleting anything unique before you delete it.
 
-### Step 5: Clean Up the Drafts Folder
+### Step 5: Clean up the drafts folder
 
 Once you're confident about what to delete:
 
@@ -130,7 +130,7 @@ Delete the "03 — Drafts & Work in Progress" folder.
 The AI calls `delete_folder`.
 **Note:** DocSpace will prevent deletion of a folder that still contains files, so you must empty it first.
 
-### Step 6: Final Pre-Archive Verification
+### Step 6: Final pre-archive verification
 
 Before archiving, perform a final check to confirm the room is in the state you want to preserve.
 
@@ -147,7 +147,7 @@ The AI calls `get_room_security_info` and `get_folder_content` and produces a fi
 - Final deliverables are intact
 - The room structure is clean
 
-### Step 7: Archive the Room
+### Step 7: Archive the room
 
 Now close the room from active use.
 

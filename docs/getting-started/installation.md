@@ -139,7 +139,7 @@ configuration to your client's configuration file:
 
 Another way to use the DocSpace MCP server is to access it via a public DocSpace MCP Server instance hosted by ONLYOFFICE. This eliminates the need to run your own server infrastructure while providing access to DocSpace functionality through your AI assistant. To do this, provide the DocSpace MCP server public instance URL when [connecting to any of the MCP clients](clients.md). 
 
-## Public Instance
+## Public instance
 
 The public instance is available at two endpoints:
 
@@ -150,7 +150,7 @@ The public instance is available at two endpoints:
 
 The public instance provides access to all available tools by default. Tool selection can be customized using query parameters or custom headers. However, we recommend using the MCP client interface for tool configuration when supported.
 
-## Tool Configuration
+## Tool configuration
 
 Tool selection can be customized using the following options:
 
@@ -172,7 +172,7 @@ The public instance supports multiple authentication methods to meet different s
 | API Key (Authorization header) | Connect using API key in `Authorization` header and base URL in query parameter | Connection URL, API key                  | Ideal when working with clients that support Bearer token authentication but don't allow custom headers                                          |
 | Username & password in URL     | Connect using URL-encoded credentials and base URL in query parameter           | Connection URL, username, password       | Ideal for quick setup, testing, or when using clients with limited authentication options                                             |
 
-## After Installation
+## After installation
 
 - [Test MCP server-client installation](quickstart.md#step-2-confirm-the-connection)
 - [Start exploring with the MCP server by creating a new room](quickstart.md#step-3-interact-with-your-docspace-using-the-newly-connected-client)

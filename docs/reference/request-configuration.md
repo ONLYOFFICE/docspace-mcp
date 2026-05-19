@@ -4,7 +4,7 @@ Configure the DocSpace MCP server behavior at the request level using query para
 
 > **Note:** The request configuration parameters are only available for HTTP-like transports.
 
-## Query Options
+## Query options
 
 These options can be configured using query parameters in the request
 URL and are divided into the MCP and API options.
@@ -12,7 +12,7 @@ URL and are divided into the MCP and API options.
 Query parameters are only available if the MCP server is configured to accept
 configuration via query parameters.
 
-### MCP Options
+### MCP options
 
 The following options are used to configure the behavior of the MCP server.
 
@@ -57,7 +57,7 @@ Comma-separated list of tools to explicitly disable. Available tools depend on t
 | **Example** | `get_file_info,get_all_people` |
 | **Attributes** | trimmable, case-insensitive |
 
-### API Options
+### API options
 
 The following options are used to configure the behavior for API requests.
 
@@ -71,14 +71,14 @@ Base URL of the DocSpace instance for API requests. Must use HTTP or HTTPS with 
 | **Example** | `https://your-instance.onlyoffice.com/` |
 | **Attributes** | trimmable |
 
-## Header Options
+## Header options
 
 The following options can be configured using custom HTTP headers.
 
 HTTP headers are only available if the MCP server is configured to accept
 configuration via HTTP headers.
 
-### MCP Options
+### MCP options
 
 The following options are used to configure the behavior of the MCP server.
 
@@ -133,7 +133,7 @@ X-Mcp-Enabled-Tools: get_all_people
 X-Mcp-Disabled-Tools: delete_file,delete_folder
 ```
 
-### API Options
+### API options
 
 The following options are used to configure the behavior for API requests.
 
@@ -202,7 +202,7 @@ Password for basic authentication. Used together with `X-Mcp-Username`. Required
 The following examples show how to use request configuration headers to
 customize server behavior for specific requests.
 
-### Authentication with API Key
+### Authentication with API key
 
 This sample configuration uses an API key for authentication.
 

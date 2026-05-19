@@ -8,7 +8,7 @@ The tools resolution process follows a sequence that starts with toolsets, adds
 explicitly enabled tools, and removes explicitly disabled tools. The flowcharts
 below illustrate this process for both global and request-level configuration.
 
-### Global Configuration
+### Global configuration
 
 During server initialization, the global configuration determines the baseline
 set of available tools.
@@ -49,7 +49,7 @@ flowchart TD
 	M7 -->|Yes| M1
 ```
 
-### Request Configuration
+### Request configuration
 
 For HTTP-like transports, request-specific headers can override the global tool
 configuration using the same resolution process. However, the available toolsets
@@ -66,7 +66,7 @@ examples, just a few are enough:
 | `files`   | `create_file`, `get_file`, `delete_file`       |
 | `folders` | `create_folder`, `get_folder`, `delete_folder` |
 
-### Enable a Tool From Not Specified Toolset
+### Enable a Tool from unspecified Toolset
 
 Configuration:
 
@@ -82,7 +82,7 @@ Result:
 | `files`   | `create_file`, `get_file`, `delete_file` |
 | `folders` | `create_folder`                          |
 
-### Disable a Tool From Specified Toolset
+### Disable a Tool from specified Toolset
 
 Configuration:
 
@@ -99,7 +99,7 @@ Result:
 | `files`   | `create_file`, `delete_file` |
 | `folders` | `create_folder`              |
 
-### Manually Specify Tools to Be Available
+### Manually specify Tools to be available
 
 Configuration:
 

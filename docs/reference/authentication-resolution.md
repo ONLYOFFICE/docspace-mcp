@@ -8,12 +8,12 @@ The authentication resolution process depends on the transport type used and the
 authentication methods configured. The following flowcharts illustrate how
 authentication is resolved for different scenarios.
 
-### Global Configuration
+### Global configuration
 
 During application startup, the DocSpace MCP server validates the configured
 authentication methods based on the selected transport protocol.
 
-#### stdio Transport
+#### stdio transport
 
 For stdio transport, exactly one authentication method must be configured.
 
@@ -26,7 +26,7 @@ flowchart TD
 	C -->|Multiple configured| D[Error: Only one authentication method allowed]
 ```
 
-#### HTTP-like Transport
+#### HTTP-like transport
 
 HTTP-like transports support optional authentication, allowing servers to run
 with or without authentication depending on the use case.
@@ -42,7 +42,7 @@ flowchart TD
 	I -->|Yes| P[Start server with OAuth]
 ```
 
-### Request Configuration
+### Request configuration
 
 For HTTP-like transports, authentication can be configured on the request level
 using query parameters and custom headers, unless OAuth is being used.

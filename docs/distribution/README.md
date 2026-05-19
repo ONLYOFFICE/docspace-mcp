@@ -2,7 +2,7 @@
 
 The DocSpace MCP server is available in several formats from different distribution sources.
 
-## Available Formats
+## Available formats
 
 The DocSpace MCP server is distributed in four formats.
 
@@ -11,7 +11,7 @@ The DocSpace MCP server is distributed in four formats.
 - **MCP Bundle**: A bundled MCP server for applications that support the MCP Bundles format.
 - **Node.js Application**: A standalone application that can be run on systems with Node.js.
 
-## Distribution Matrix
+## Distribution matrix
 
 The following table shows which formats are available from each distribution
 source:

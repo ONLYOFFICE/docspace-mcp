@@ -19,14 +19,14 @@ DocSpace functionality into manageable categories.
 
 <!--generate toolsets-end-->
 
-## Regular Tools
+## Regular tools
 
 Regular tools are standard MCP Tools. Each tool corresponds to a specific
 DocSpace operation.
 
 <!--generate tools-start-->
 
-### Files Toolset
+### Files toolset
 
 | #   | Tool Name              | Tool Description        |
 | --- | ---------------------- | ----------------------- |
@@ -40,7 +40,7 @@ DocSpace operation.
 
 > **Note:** Supported file formats for uploading: `txt`, `md`.
 
-### Folders Toolset
+### Folders toolset
 
 | #   | Tool Name            | Tool Description                   |
 | --- | -------------------- | ---------------------------------- |
@@ -51,13 +51,13 @@ DocSpace operation.
 | 12  | `get_my_folder`      | Get the 'My Documents' folder.     |
 | 13  | `rename_folder`      | Rename a folder.                   |
 
-### People Toolset
+### People toolset
 
 | #   | Tool Name        | Tool Description |
 | --- | ---------------- | ---------------- |
 | 14  | `get_all_people` | Get all people.  |
 
-### Rooms Toolset
+### Rooms toolset
 
 | #   | Tool Name                | Tool Description                                          |
 | --- | ------------------------ | --------------------------------------------------------- |
@@ -73,7 +73,7 @@ DocSpace operation.
 
 <!--generate tools-end-->
 
-## Meta Tools
+## Meta tools
 
 Meta tools are a DocSpace MCP server extension to the standard MCP Tools
 concept. They provide a dynamic interface for tool discovery and execution,
@@ -97,6 +97,6 @@ tools, providing the same level of control over available functionality.
 <!--generate meta-tools-end-->
 
 
-## Resolving Tools
+## Resolving tools
 
 The tools resolution process follows a sequence that starts with toolsets, adds explicitly enabled tools, and removes explicitly disabled tools. For the full flowcharts and worked examples, see [Tools resolution](./tools-resolution.md).

@@ -2,7 +2,7 @@
 
 Terms used across the DocSpace MCP Server documentation, grouped by category.
 
-## MCP Concepts
+## MCP concepts
 
 ### Model Context Protocol (MCP)
 An open, standardized protocol that lets large language models (LLMs) communicate
@@ -46,7 +46,7 @@ A named group of related tools. Toolsets let you enable or disable a whole
 category of functionality at once. For example, enabling the `files` toolset
 gives access to all file-related tools without listing each one individually.
 
-### Meta Tools
+### Meta tools
 A DocSpace MCP Server-specific feature. When enabled, meta tools allow an MCP
 client to dynamically discover and select toolsets at session time, rather than
 having them fixed at server startup. Useful when different clients or users need

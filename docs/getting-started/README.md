@@ -16,9 +16,9 @@ The DocSpace MCP Server connects AI tools directly to ONLYOFFICE DocSpace. This 
 
 ## Use cases
 
-- **Project Management**: [Set up rooms](../tutorials/setup-project-room.md) and manage membership to these rooms based on access levels. Track who can access what files, and [archive rooms once they are completed](../tutorials/project-archival.md).
+- **Project management**: [Set up rooms](../tutorials/setup-project-room.md) and manage membership to these rooms based on access levels. Track who can access what files, and [archive rooms once they are completed](../tutorials/project-archival.md).
 - **[Bulk document operations](../tutorials/doc-lifecycle-management.md)**: Create folders, upload documents, copy or move items in batches, rename or delete content, and check file or folder details.
 - **Compliance and audits**: [Control document access with precision](../tutorials/onboarding.md#step-4-define-who-has-access), especially for legal and finance teams with strict data regulations, by controlling access to confidential files and conducting audits to determine who accessed certain files and when.
 - **[Remote team collaboration](../tutorials/onboarding.md)**: Work with distributed teams by inviting or removing users, adjusting security settings, and reviewing current access rights for rooms and shared spaces.
 - **Content discovery**: Retrieve "My documents" or "Rooms" folders, get folder contents, download files as text, and monitor ongoing file operations.
-- **People Directory**: List all people in the portal to streamline invitations and access management.
+- **People directory**: List all people in the portal to streamline invitations and access management.

@@ -154,7 +154,7 @@ The public instance provides access to all available tools by default. Tool sele
 
 Tool selection can be customized using the following options:
 
-- **MCP Client Interface**: (Preferred) Most MCP clients provide a built-in interface for [enabling or disabling specific tools](../reference/tools-resolution.md#enable-a-tool-from-not-specified-toolset). Use this method when your client supports it.
+- **MCP Client Interface**: (Preferred) Most MCP clients provide a built-in interface for [enabling or disabling specific tools](../reference/tools-resolution.md#enable-a-tool-from-unspecified-toolset). Use this method when your client supports it.
 
 - **Query Parameters or Custom Headers**: For clients without a tool configuration interface, you can [customize tool availability by passing parameters in the connection URL or via custom HTTP headers](../reference/request-configuration.md#enabled_tools).
 

@@ -74,7 +74,8 @@
 	"pnpm": {
 		"overrides": {
 			"picomatch@2": "2.3.2",
-			"brace-expansion@1": "1.1.16"
+			"brace-expansion@1": "1.1.16",
+			"node-forge": "1.4.0"
 		}
 	}
 }

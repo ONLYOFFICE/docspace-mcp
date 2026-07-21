@@ -70,5 +70,10 @@
 	"engines": {
 		"node": ">=18.0.0"
 	},
-	"mcpName": "io.github.ONLYOFFICE/docspace"
+	"mcpName": "io.github.ONLYOFFICE/docspace",
+	"pnpm": {
+		"overrides": {
+			"picomatch@2": "2.3.2"
+		}
+	}
 }

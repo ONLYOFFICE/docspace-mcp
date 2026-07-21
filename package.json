@@ -73,7 +73,8 @@
 	"mcpName": "io.github.ONLYOFFICE/docspace",
 	"pnpm": {
 		"overrides": {
-			"picomatch@2": "2.3.2"
+			"picomatch@2": "2.3.2",
+			"brace-expansion@1": "1.1.16"
 		}
 	}
 }

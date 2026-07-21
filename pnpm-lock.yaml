@@ -8,6 +8,7 @@ overrides:
   picomatch@2: 2.3.2
   brace-expansion@1: 1.1.16
   node-forge: 1.4.0
+  ws@8: 8.21.0
 
 importers:
 
@@ -3771,8 +3772,8 @@ packages:
   wrappy@1.0.2:
     resolution: {integrity: sha512-l4Sp/DRseor9wL6EvV2+TuQn63dMkPjZ/sp9XkghTEbV9KlPS1xUsZ3u7/IQO4wxtcFB4bgpQPRcR3QCvezPcQ==}
 
-  ws@8.18.2:
-    resolution: {integrity: sha512-DMricUmwGZUVr++AEAe2uiVM7UoO9MAVZMDu05UQOaUII0lp+zOzLLU4Xqh/JvTqklB1T4uELaaPBKyjE1r4fQ==}
+  ws@8.21.0:
+    resolution: {integrity: sha512-Vsp28b7DRcimFQvrqu2Wek3z1iYxDCWqHYB8Qsnk/S4RfaCQzPGPyBNuVjJV3cd6UiKtUtp6sNM77gWvzcCH+g==}
     engines: {node: '>=10.0.0'}
     peerDependencies:
       bufferutil: ^4.0.1
@@ -4250,7 +4251,7 @@ snapshots:
       express: 5.2.1
       shell-quote: 1.8.3
       spawn-rx: 5.1.2
-      ws: 8.18.2
+      ws: 8.21.0
       zod: 3.25.76
     transitivePeerDependencies:
       - '@cfworker/json-schema'
@@ -8038,7 +8039,7 @@ snapshots:
 
   wrappy@1.0.2: {}
 
-  ws@8.18.2: {}
+  ws@8.21.0: {}
 
   wsl-utils@0.1.0:
     dependencies:

@@ -1,0 +1,416 @@
+{
+	"$schema": "https://developers.openai.com/apps-sdk/schemas/chatgpt-app-submission.v1.json",
+	"schema_version": 1,
+	"app_info": {
+		"display_name": "ONLYOFFICE DocSpace",
+		"subtitle": "Manage DocSpace rooms & files",
+		"description": "ONLYOFFICE DocSpace connects ChatGPT to a DocSpace instance so users can manage rooms, files, and folders, collaborate on documents, and control access through natural language. Supported workflows include creating and archiving rooms, uploading and downloading files, organizing folders, copying or moving items in batches, inviting or removing room members, and looking up people and access levels in the portal.",
+		"category": "COLLABORATION"
+	},
+	"tools": {
+		"list_toolsets": {
+			"annotations": {
+				"readOnlyHint": true,
+				"openWorldHint": false,
+				"destructiveHint": false
+			},
+			"justifications": {
+				"read_only_justification": "Only returns the static list of available tool groups without changing any state.",
+				"open_world_justification": "Only reads local tool metadata and does not reach any external or public system.",
+				"destructive_justification": "Does not delete, overwrite, or perform any irreversible action."
+			}
+		},
+		"list_tools": {
+			"annotations": {
+				"readOnlyHint": true,
+				"openWorldHint": false,
+				"destructiveHint": false
+			},
+			"justifications": {
+				"read_only_justification": "Only returns the list of tools within a requested toolset without changing any state.",
+				"open_world_justification": "Only reads local tool metadata and does not reach any external or public system.",
+				"destructive_justification": "Does not delete, overwrite, or perform any irreversible action."
+			}
+		},
+		"get_tool_input_schema": {
+			"annotations": {
+				"readOnlyHint": true,
+				"openWorldHint": false,
+				"destructiveHint": false
+			},
+			"justifications": {
+				"read_only_justification": "Only returns the input schema for a named tool without changing any state.",
+				"open_world_justification": "Only reads local tool metadata and does not reach any external or public system.",
+				"destructive_justification": "Does not delete, overwrite, or perform any irreversible action."
+			}
+		},
+		"get_tool_output_schema": {
+			"annotations": {
+				"readOnlyHint": true,
+				"openWorldHint": false,
+				"destructiveHint": false
+			},
+			"justifications": {
+				"read_only_justification": "Only returns the output schema for a named tool without changing any state.",
+				"open_world_justification": "Only reads local tool metadata and does not reach any external or public system.",
+				"destructive_justification": "Does not delete, overwrite, or perform any irreversible action."
+			}
+		},
+		"call_tool": {
+			"annotations": {
+				"readOnlyHint": false,
+				"openWorldHint": true,
+				"destructiveHint": true
+			},
+			"justifications": {
+				"read_only_justification": "Acts as a dispatcher that can invoke any other tool, including ones that write or delete data in the user's DocSpace instance.",
+				"open_world_justification": "Can dispatch to tools such as inviting room members, which sends invitation emails to addresses supplied by the caller.",
+				"destructive_justification": "Can dispatch to tools that delete or irreversibly modify data, since it forwards the call to whichever tool is named."
+			}
+		},
+		"delete_file": {
+			"annotations": {
+				"readOnlyHint": false,
+				"openWorldHint": false,
+				"destructiveHint": true
+			},
+			"justifications": {
+				"read_only_justification": "Removes the file from its current folder, which changes state.",
+				"open_world_justification": "Only operates on files within the user's own private DocSpace instance.",
+				"destructive_justification": "Removes the file from view by moving it to the instance's trash folder; the move is recoverable from the trash but the file is no longer in its original location."
+			}
+		},
+		"get_file_info": {
+			"annotations": {
+				"readOnlyHint": true,
+				"openWorldHint": false,
+				"destructiveHint": false
+			},
+			"justifications": {
+				"read_only_justification": "Only retrieves metadata about an existing file.",
+				"open_world_justification": "Only operates on files within the user's own private DocSpace instance.",
+				"destructive_justification": "Does not delete, overwrite, or perform any irreversible action."
+			}
+		},
+		"update_file": {
+			"annotations": {
+				"readOnlyHint": false,
+				"openWorldHint": false,
+				"destructiveHint": true
+			},
+			"justifications": {
+				"read_only_justification": "Changes the file's title, which modifies stored data.",
+				"open_world_justification": "Only operates on files within the user's own private DocSpace instance.",
+				"destructive_justification": "Overwrites the file's existing title with no way to recover the previous value through the tool itself."
+			}
+		},
+		"copy_batch_items": {
+			"annotations": {
+				"readOnlyHint": false,
+				"openWorldHint": false,
+				"destructiveHint": false
+			},
+			"justifications": {
+				"read_only_justification": "Creates new copies of files and folders in a destination folder.",
+				"open_world_justification": "Only operates on files and folders within the user's own private DocSpace instance.",
+				"destructive_justification": "Only adds copies and leaves the source items untouched; on a name conflict it creates a duplicate instead of overwriting the existing item."
+			}
+		},
+		"move_batch_items": {
+			"annotations": {
+				"readOnlyHint": false,
+				"openWorldHint": false,
+				"destructiveHint": false
+			},
+			"justifications": {
+				"read_only_justification": "Relocates files and folders to a destination folder.",
+				"open_world_justification": "Only operates on files and folders within the user's own private DocSpace instance.",
+				"destructive_justification": "Changes an item's location but does not delete data; on a name conflict it creates a duplicate instead of overwriting the existing item."
+			}
+		},
+		"download_file_as_text": {
+			"annotations": {
+				"readOnlyHint": true,
+				"openWorldHint": false,
+				"destructiveHint": false
+			},
+			"justifications": {
+				"read_only_justification": "Only reads and returns the text content of an existing file.",
+				"open_world_justification": "Only operates on files within the user's own private DocSpace instance.",
+				"destructive_justification": "Does not delete, overwrite, or perform any irreversible action."
+			}
+		},
+		"upload_file": {
+			"annotations": {
+				"readOnlyHint": false,
+				"openWorldHint": false,
+				"destructiveHint": false
+			},
+			"justifications": {
+				"read_only_justification": "Creates a new file with the supplied content in the target room or folder.",
+				"open_world_justification": "Only operates within the user's own private DocSpace instance.",
+				"destructive_justification": "Always creates a new file and, on a name conflict, creates an additional file rather than overwriting an existing one."
+			}
+		},
+		"create_folder": {
+			"annotations": {
+				"readOnlyHint": false,
+				"openWorldHint": false,
+				"destructiveHint": true
+			},
+			"justifications": {
+				"read_only_justification": "Creates a new folder in the target room or folder.",
+				"open_world_justification": "Only operates within the user's own private DocSpace instance.",
+				"destructive_justification": "Marked destructive because it writes new state; the operation itself is additive and does not remove or overwrite existing items."
+			}
+		},
+		"delete_folder": {
+			"annotations": {
+				"readOnlyHint": false,
+				"openWorldHint": false,
+				"destructiveHint": true
+			},
+			"justifications": {
+				"read_only_justification": "Removes the folder from its current location, which changes state.",
+				"open_world_justification": "Only operates within the user's own private DocSpace instance.",
+				"destructive_justification": "Removes the folder from view by moving it to the instance's trash folder; the move is recoverable from the trash but the folder is no longer in its original location."
+			}
+		},
+		"get_folder_content": {
+			"annotations": {
+				"readOnlyHint": true,
+				"openWorldHint": false,
+				"destructiveHint": false
+			},
+			"justifications": {
+				"read_only_justification": "Only lists the files and subfolders inside an existing folder.",
+				"open_world_justification": "Only operates within the user's own private DocSpace instance.",
+				"destructive_justification": "Does not delete, overwrite, or perform any irreversible action."
+			}
+		},
+		"get_folder_info": {
+			"annotations": {
+				"readOnlyHint": true,
+				"openWorldHint": false,
+				"destructiveHint": false
+			},
+			"justifications": {
+				"read_only_justification": "Only retrieves metadata about an existing folder.",
+				"open_world_justification": "Only operates within the user's own private DocSpace instance.",
+				"destructive_justification": "Does not delete, overwrite, or perform any irreversible action."
+			}
+		},
+		"rename_folder": {
+			"annotations": {
+				"readOnlyHint": false,
+				"openWorldHint": false,
+				"destructiveHint": true
+			},
+			"justifications": {
+				"read_only_justification": "Changes the folder's title, which modifies stored data.",
+				"open_world_justification": "Only operates within the user's own private DocSpace instance.",
+				"destructive_justification": "Overwrites the folder's existing title with no way to recover the previous value through the tool itself."
+			}
+		},
+		"get_my_folder": {
+			"annotations": {
+				"readOnlyHint": true,
+				"openWorldHint": false,
+				"destructiveHint": false
+			},
+			"justifications": {
+				"read_only_justification": "Only retrieves the contents of the user's personal 'My Documents' folder.",
+				"open_world_justification": "Only operates within the user's own private DocSpace instance.",
+				"destructive_justification": "Does not delete, overwrite, or perform any irreversible action."
+			}
+		},
+		"create_room": {
+			"annotations": {
+				"readOnlyHint": false,
+				"openWorldHint": false,
+				"destructiveHint": true
+			},
+			"justifications": {
+				"read_only_justification": "Creates a new room in the DocSpace instance.",
+				"open_world_justification": "Only operates within the user's own private DocSpace instance.",
+				"destructive_justification": "Marked destructive because it writes new state; the operation itself is additive and does not remove or overwrite existing items."
+			}
+		},
+		"get_room_info": {
+			"annotations": {
+				"readOnlyHint": true,
+				"openWorldHint": false,
+				"destructiveHint": false
+			},
+			"justifications": {
+				"read_only_justification": "Only retrieves metadata about an existing room.",
+				"open_world_justification": "Only operates within the user's own private DocSpace instance.",
+				"destructive_justification": "Does not delete, overwrite, or perform any irreversible action."
+			}
+		},
+		"update_room": {
+			"annotations": {
+				"readOnlyHint": false,
+				"openWorldHint": false,
+				"destructiveHint": true
+			},
+			"justifications": {
+				"read_only_justification": "Changes the room's title, which modifies stored data.",
+				"open_world_justification": "Only operates within the user's own private DocSpace instance.",
+				"destructive_justification": "Overwrites the room's existing title with no way to recover the previous value through the tool itself."
+			}
+		},
+		"archive_room": {
+			"annotations": {
+				"readOnlyHint": false,
+				"openWorldHint": false,
+				"destructiveHint": false
+			},
+			"justifications": {
+				"read_only_justification": "Moves the room into the archived state, which changes state.",
+				"open_world_justification": "Only operates within the user's own private DocSpace instance.",
+				"destructive_justification": "Only changes the room's visibility to archived; no data is deleted or overwritten and the room can be unarchived."
+			}
+		},
+		"set_room_security": {
+			"annotations": {
+				"readOnlyHint": false,
+				"openWorldHint": true,
+				"destructiveHint": true
+			},
+			"justifications": {
+				"read_only_justification": "Adds, updates, or removes a user's access to a room.",
+				"open_world_justification": "Can send an email invitation to an address supplied by the caller, which reaches outside the DocSpace instance.",
+				"destructive_justification": "Can revoke a user's access to a room with no automatic way to restore the prior access level through the tool itself."
+			}
+		},
+		"get_room_security_info": {
+			"annotations": {
+				"readOnlyHint": true,
+				"openWorldHint": false,
+				"destructiveHint": false
+			},
+			"justifications": {
+				"read_only_justification": "Only lists users and their access levels for an existing room.",
+				"open_world_justification": "Only operates within the user's own private DocSpace instance.",
+				"destructive_justification": "Does not delete, overwrite, or perform any irreversible action."
+			}
+		},
+		"get_rooms_folder": {
+			"annotations": {
+				"readOnlyHint": true,
+				"openWorldHint": false,
+				"destructiveHint": false
+			},
+			"justifications": {
+				"read_only_justification": "Only retrieves the contents of the top-level 'Rooms' folder.",
+				"open_world_justification": "Only operates within the user's own private DocSpace instance.",
+				"destructive_justification": "Does not delete, overwrite, or perform any irreversible action."
+			}
+		},
+		"get_room_types": {
+			"annotations": {
+				"readOnlyHint": true,
+				"openWorldHint": false,
+				"destructiveHint": false
+			},
+			"justifications": {
+				"read_only_justification": "Only returns the static list of available room types.",
+				"open_world_justification": "Only reads local schema data and does not reach any external or public system.",
+				"destructive_justification": "Does not delete, overwrite, or perform any irreversible action."
+			}
+		},
+		"get_room_access_levels": {
+			"annotations": {
+				"readOnlyHint": true,
+				"openWorldHint": false,
+				"destructiveHint": false
+			},
+			"justifications": {
+				"read_only_justification": "Only returns the invitation access levels available for an existing room.",
+				"open_world_justification": "Only operates within the user's own private DocSpace instance.",
+				"destructive_justification": "Does not delete, overwrite, or perform any irreversible action."
+			}
+		},
+		"get_all_people": {
+			"annotations": {
+				"readOnlyHint": true,
+				"openWorldHint": false,
+				"destructiveHint": false
+			},
+			"justifications": {
+				"read_only_justification": "Only lists people already registered in the DocSpace portal.",
+				"open_world_justification": "Only operates within the user's own private DocSpace instance.",
+				"destructive_justification": "Does not delete, overwrite, or perform any irreversible action."
+			}
+		}
+	},
+	"test_cases": [
+		{
+			"description": "Create a room and invite a teammate with editor access.",
+			"user_prompt": "Create a new project room called 'Q3 Launch' and invite anna@example.com as an editor.",
+			"file_attachment_urls": null,
+			"tools_triggered": "create_room, set_room_security",
+			"expected_output": "Confirms the room was created and that an editor invitation was sent to the specified email address.",
+			"expected_output_url": null
+		},
+		{
+			"description": "List the contents of the user's personal documents folder.",
+			"user_prompt": "What's in my documents right now?",
+			"file_attachment_urls": null,
+			"tools_triggered": "get_my_folder",
+			"expected_output": "Returns a list of the files and folders currently in the user's 'My Documents' folder.",
+			"expected_output_url": null
+		},
+		{
+			"description": "Upload a file into a specific room.",
+			"user_prompt": "Upload a text file named notes.txt with the content 'Kickoff meeting at 10am' into the Q3 Launch room.",
+			"file_attachment_urls": null,
+			"tools_triggered": "upload_file",
+			"expected_output": "Confirms the file was created in the specified room with the given name and content.",
+			"expected_output_url": null
+		},
+		{
+			"description": "Read the text content of an existing file.",
+			"user_prompt": "Download the meeting-notes file as text so I can read it here.",
+			"file_attachment_urls": null,
+			"tools_triggered": "download_file_as_text",
+			"expected_output": "Returns the plain-text content of the requested file.",
+			"expected_output_url": null
+		},
+		{
+			"description": "Archive a room that is no longer active, an edge case that should not be treated as deletion.",
+			"user_prompt": "Archive the Q3 Launch room, the project is finished.",
+			"file_attachment_urls": null,
+			"tools_triggered": "archive_room",
+			"expected_output": "Confirms the room was archived and remains recoverable, distinguishing this from permanent deletion.",
+			"expected_output_url": null
+		}
+	],
+	"negative_test_cases": [
+		{
+			"description": "Do not trigger for a general knowledge question unrelated to DocSpace.",
+			"user_prompt": "What's the weather like in Riga today?",
+			"file_attachment_urls": null,
+			"tools_triggered": null,
+			"expected_output": "The app should not be invoked because the request has nothing to do with DocSpace rooms, files, or people.",
+			"expected_output_url": null
+		},
+		{
+			"description": "Do not trigger for in-document text editing, which this app does not support.",
+			"user_prompt": "Add a new paragraph about the budget to the middle of this Word document.",
+			"file_attachment_urls": null,
+			"tools_triggered": null,
+			"expected_output": "The app should not be invoked because it can rename, move, upload, or download files but cannot edit the text content inside a document.",
+			"expected_output_url": null
+		},
+		{
+			"description": "Do not trigger for DocSpace account or server administration requests outside the exposed toolset.",
+			"user_prompt": "Reset my DocSpace account password.",
+			"file_attachment_urls": null,
+			"tools_triggered": null,
+			"expected_output": "The app should not be invoked because it has no tool for account credential or server administration changes.",
+			"expected_output_url": null
+		}
+	]
+}

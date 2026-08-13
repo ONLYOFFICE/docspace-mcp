@@ -56,6 +56,7 @@ export const metaToolInfos = mcp.toToolInfos([
 		annotations: {
 			readOnlyHint: true,
 			destructiveHint: false,
+			openWorldHint: false,
 		},
 	},
 	{
@@ -65,6 +66,7 @@ export const metaToolInfos = mcp.toToolInfos([
 		annotations: {
 			readOnlyHint: true,
 			destructiveHint: false,
+			openWorldHint: false,
 		},
 	},
 	{
@@ -74,6 +76,7 @@ export const metaToolInfos = mcp.toToolInfos([
 		annotations: {
 			readOnlyHint: true,
 			destructiveHint: false,
+			openWorldHint: false,
 		},
 	},
 	{
@@ -83,6 +86,7 @@ export const metaToolInfos = mcp.toToolInfos([
 		annotations: {
 			readOnlyHint: true,
 			destructiveHint: false,
+			openWorldHint: false,
 		},
 	},
 	{
@@ -92,6 +96,7 @@ export const metaToolInfos = mcp.toToolInfos([
 		annotations: {
 			readOnlyHint: false,
 			destructiveHint: true,
+			openWorldHint: true,
 		},
 	},
 ])
@@ -108,6 +113,7 @@ export const toolsetInfos = mcp.toToolsetInfos([
 				annotations: {
 					readOnlyHint: false,
 					destructiveHint: true,
+					openWorldHint: false,
 				},
 			},
 			{
@@ -118,6 +124,7 @@ export const toolsetInfos = mcp.toToolsetInfos([
 				annotations: {
 					readOnlyHint: true,
 					destructiveHint: false,
+					openWorldHint: false,
 				},
 			},
 			{
@@ -128,6 +135,7 @@ export const toolsetInfos = mcp.toToolsetInfos([
 				annotations: {
 					readOnlyHint: false,
 					destructiveHint: true,
+					openWorldHint: false,
 				},
 			},
 			{
@@ -136,7 +144,8 @@ export const toolsetInfos = mcp.toToolsetInfos([
 				inputSchema: CopyBatchItemsInputSchema,
 				annotations: {
 					readOnlyHint: false,
-					destructiveHint: true,
+					destructiveHint: false,
+					openWorldHint: false,
 				},
 			},
 			{
@@ -145,7 +154,8 @@ export const toolsetInfos = mcp.toToolsetInfos([
 				inputSchema: MoveBatchItemsInputSchema,
 				annotations: {
 					readOnlyHint: false,
-					destructiveHint: true,
+					destructiveHint: false,
+					openWorldHint: false,
 				},
 			},
 			{
@@ -155,6 +165,7 @@ export const toolsetInfos = mcp.toToolsetInfos([
 				annotations: {
 					readOnlyHint: true,
 					destructiveHint: false,
+					openWorldHint: false,
 				},
 			},
 			{
@@ -163,7 +174,8 @@ export const toolsetInfos = mcp.toToolsetInfos([
 				inputSchema: UploadFileInputSchema,
 				annotations: {
 					readOnlyHint: false,
-					destructiveHint: true,
+					destructiveHint: false,
+					openWorldHint: false,
 				},
 			},
 		],
@@ -180,6 +192,7 @@ export const toolsetInfos = mcp.toToolsetInfos([
 				annotations: {
 					readOnlyHint: false,
 					destructiveHint: true,
+					openWorldHint: false,
 				},
 			},
 			{
@@ -189,6 +202,7 @@ export const toolsetInfos = mcp.toToolsetInfos([
 				annotations: {
 					readOnlyHint: false,
 					destructiveHint: true,
+					openWorldHint: false,
 				},
 			},
 			{
@@ -199,6 +213,7 @@ export const toolsetInfos = mcp.toToolsetInfos([
 				annotations: {
 					readOnlyHint: true,
 					destructiveHint: false,
+					openWorldHint: false,
 				},
 			},
 			{
@@ -209,6 +224,7 @@ export const toolsetInfos = mcp.toToolsetInfos([
 				annotations: {
 					readOnlyHint: true,
 					destructiveHint: false,
+					openWorldHint: false,
 				},
 			},
 			{
@@ -219,6 +235,7 @@ export const toolsetInfos = mcp.toToolsetInfos([
 				annotations: {
 					readOnlyHint: false,
 					destructiveHint: true,
+					openWorldHint: false,
 				},
 			},
 			{
@@ -229,6 +246,7 @@ export const toolsetInfos = mcp.toToolsetInfos([
 				annotations: {
 					readOnlyHint: true,
 					destructiveHint: false,
+					openWorldHint: false,
 				},
 			},
 		],
@@ -245,6 +263,7 @@ export const toolsetInfos = mcp.toToolsetInfos([
 				annotations: {
 					readOnlyHint: false,
 					destructiveHint: true,
+					openWorldHint: false,
 				},
 			},
 			{
@@ -255,6 +274,7 @@ export const toolsetInfos = mcp.toToolsetInfos([
 				annotations: {
 					readOnlyHint: true,
 					destructiveHint: false,
+					openWorldHint: false,
 				},
 			},
 			{
@@ -265,6 +285,7 @@ export const toolsetInfos = mcp.toToolsetInfos([
 				annotations: {
 					readOnlyHint: false,
 					destructiveHint: true,
+					openWorldHint: false,
 				},
 			},
 			{
@@ -273,7 +294,8 @@ export const toolsetInfos = mcp.toToolsetInfos([
 				inputSchema: ArchiveRoomInputSchema,
 				annotations: {
 					readOnlyHint: false,
-					destructiveHint: true,
+					destructiveHint: false,
+					openWorldHint: false,
 				},
 			},
 			{
@@ -284,6 +306,7 @@ export const toolsetInfos = mcp.toToolsetInfos([
 				annotations: {
 					readOnlyHint: false,
 					destructiveHint: true,
+					openWorldHint: true,
 				},
 			},
 			{
@@ -294,6 +317,7 @@ export const toolsetInfos = mcp.toToolsetInfos([
 				annotations: {
 					readOnlyHint: true,
 					destructiveHint: false,
+					openWorldHint: false,
 				},
 			},
 			{
@@ -304,6 +328,7 @@ export const toolsetInfos = mcp.toToolsetInfos([
 				annotations: {
 					readOnlyHint: true,
 					destructiveHint: false,
+					openWorldHint: false,
 				},
 			},
 			{
@@ -312,6 +337,7 @@ export const toolsetInfos = mcp.toToolsetInfos([
 				annotations: {
 					readOnlyHint: true,
 					destructiveHint: false,
+					openWorldHint: false,
 				},
 			},
 			{
@@ -321,6 +347,7 @@ export const toolsetInfos = mcp.toToolsetInfos([
 				annotations: {
 					readOnlyHint: true,
 					destructiveHint: false,
+					openWorldHint: false,
 				},
 			},
 		],
@@ -337,6 +364,7 @@ export const toolsetInfos = mcp.toToolsetInfos([
 				annotations: {
 					readOnlyHint: true,
 					destructiveHint: false,
+					openWorldHint: false,
 				},
 			},
 		],

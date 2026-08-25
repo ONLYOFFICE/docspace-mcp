@@ -294,7 +294,7 @@ export class Server {
 
 			guard(r, go)
 
-			r.use(this.handleServerMetadata.bind(this))
+			r.get("/", this.handleServerMetadata.bind(this))
 
 			return r
 		})())
@@ -314,7 +314,7 @@ export class Server {
 
 			guard(r, go)
 
-			r.use(this.handleResourceMetadata.bind(this))
+			r.get("/", this.handleResourceMetadata.bind(this))
 
 			return r
 		})())

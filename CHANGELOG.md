@@ -20,6 +20,8 @@ Changelog] format and adhering to [Semantic Versioning].
   ([cd38376]).
 - Use the issuer identifier instead of the authorization endpoint in the
   `authorization_servers` field of the protected resource metadata ([d0d74ce]).
+- Serve the authorization server and protected resource metadata only at their
+  exact paths, instead of at any of their nested paths.
 
 ## [3.2.0] - 2026-03-18
 

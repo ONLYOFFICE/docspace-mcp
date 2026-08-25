@@ -505,7 +505,7 @@ export class Server {
 		let ob: ResourceMetadataResponse = {
 			resource: this.issuer,
 			authorization_servers: [
-				this.authorizeUrl,
+				this.issuer,
 			],
 			bearer_methods_supported: [
 				"header",

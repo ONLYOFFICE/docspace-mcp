@@ -18,6 +18,8 @@ Changelog] format and adhering to [Semantic Versioning].
   ([cd38376]).
 - Add missing option for allowed headers in distributed metadata files
   ([cd38376]).
+- Use the issuer identifier instead of the authorization endpoint in the
+  `authorization_servers` field of the protected resource metadata.
 
 ## [3.2.0] - 2026-03-18
 

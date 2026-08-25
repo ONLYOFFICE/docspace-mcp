@@ -19,7 +19,7 @@ Changelog] format and adhering to [Semantic Versioning].
 - Add missing option for allowed headers in distributed metadata files
   ([cd38376]).
 - Use the issuer identifier instead of the authorization endpoint in the
-  `authorization_servers` field of the protected resource metadata.
+  `authorization_servers` field of the protected resource metadata ([d0d74ce]).
 
 ## [3.2.0] - 2026-03-18
 
@@ -336,6 +336,7 @@ There are no noticeable changes in version [3.0.1].
 [0.1.1]: https://github.com/onlyoffice/docspace-mcp/compare/v0.1.0...v0.1.1/
 [0.1.0]: https://github.com/onlyoffice/docspace-mcp/releases/tag/v0.1.0/
 
+[d0d74ce]: https://github.com/onlyoffice/docspace-mcp/commit/d0d74ce1bbf46be2850e6d41b049b7e53583f859/
 [cd38376]: https://github.com/onlyoffice/docspace-mcp/commit/cd3837673680c79bea998ec287cceee07729a91f/
 [f7be9cc]: https://github.com/onlyoffice/docspace-mcp/commit/f7be9ccc0cb7708948a2d281b9f780e8ebc7f224/
 [7f600ab]: https://github.com/onlyoffice/docspace-mcp/commit/7f600abf82016efaa2462bc610155509f12b001e/

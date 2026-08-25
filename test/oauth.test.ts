@@ -2520,7 +2520,7 @@ void test.suite("oauth server", async() => {
 				let eb: object = {
 					resource: `http://[${a.address}]:${a.port}`,
 					authorization_servers: [
-						`http://[${a.address}]:${a.port}/oauth/authorize`,
+						`http://[${a.address}]:${a.port}`,
 					],
 					bearer_methods_supported: [
 						"header",

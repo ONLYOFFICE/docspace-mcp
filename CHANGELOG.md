@@ -21,7 +21,7 @@ Changelog] format and adhering to [Semantic Versioning].
 - Use the issuer identifier instead of the authorization endpoint in the
   `authorization_servers` field of the protected resource metadata ([d0d74ce]).
 - Serve the authorization server and protected resource metadata only at their
-  exact paths, instead of at any of their nested paths.
+  exact paths, instead of at any of their nested paths ([7444a56]).
 
 ## [3.2.0] - 2026-03-18
 
@@ -338,6 +338,7 @@ There are no noticeable changes in version [3.0.1].
 [0.1.1]: https://github.com/onlyoffice/docspace-mcp/compare/v0.1.0...v0.1.1/
 [0.1.0]: https://github.com/onlyoffice/docspace-mcp/releases/tag/v0.1.0/
 
+[7444a56]: https://github.com/onlyoffice/docspace-mcp/commit/7444a56c8cc5b2d0693ab9f828425d731a71376a/
 [d0d74ce]: https://github.com/onlyoffice/docspace-mcp/commit/d0d74ce1bbf46be2850e6d41b049b7e53583f859/
 [cd38376]: https://github.com/onlyoffice/docspace-mcp/commit/cd3837673680c79bea998ec287cceee07729a91f/
 [f7be9cc]: https://github.com/onlyoffice/docspace-mcp/commit/f7be9ccc0cb7708948a2d281b9f780e8ebc7f224/

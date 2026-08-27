@@ -2474,6 +2474,20 @@ void test.suite("oauth server", async() => {
 				assert.deepEqual(ab.v, eb)
 			})
 		})
+
+		void test.suite("endpoint availability", () => {
+			void test("returns 404 for a nested path", async(t) => {
+				let a = await setup(t, {})
+
+				let u = r.safeNew(URL, "/.well-known/oauth-authorization-server/mcp", `http://[${a.address}]:${a.port}/`)
+				assert.ok(u.err === undefined)
+
+				let res = await r.safeAsync(fetch, u.v)
+				assert.ok(res.err === undefined)
+
+				assert.ok(res.v.status === 404)
+			})
+		})
 	})
 
 	void test.suite("/.well-known/oauth-protected-resource", () => {
@@ -2528,6 +2542,20 @@ void test.suite("oauth server", async() => {
 				}
 
 				assert.deepEqual(ab.v, eb)
+			})
+		})
+
+		void test.suite("endpoint availability", () => {
+			void test("returns 404 for a nested path", async(t) => {
+				let a = await setup(t, {})
+
+				let u = r.safeNew(URL, "/.well-known/oauth-protected-resource/mcp", `http://[${a.address}]:${a.port}/`)
+				assert.ok(u.err === undefined)
+
+				let res = await r.safeAsync(fetch, u.v)
+				assert.ok(res.err === undefined)
+
+				assert.ok(res.v.status === 404)
 			})
 		})
 	})

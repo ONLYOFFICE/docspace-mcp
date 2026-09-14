@@ -29,7 +29,7 @@ export const NumericSortOrderSchema = z.union([
 ])
 
 /**
- * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/common/ASC.Api.Core/Middleware/CommonApiResponse.cs/#L31 | DocSpace Reference}
+ * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/common/ASC.Api.Core/Middleware/CommonApiResponse.cs/#L31 | ONLYOFFICE Apps Reference}
  */
 export const CommonApiResponseSchema = z.object({
 	status: z.number().describe("The status of the API response."),
@@ -37,7 +37,7 @@ export const CommonApiResponseSchema = z.object({
 })
 
 /**
- * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/common/ASC.Api.Core/Middleware/CommonApiResponse.cs/#L128 | DocSpace Reference}
+ * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/common/ASC.Api.Core/Middleware/CommonApiResponse.cs/#L128 | ONLYOFFICE Apps Reference}
  */
 export const CommonApiErrorSchema = z.object({
 	message: z.string(),
@@ -47,14 +47,14 @@ export const CommonApiErrorSchema = z.object({
 })
 
 /**
- * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/common/ASC.Api.Core/Middleware/CommonApiResponse.cs/#L46 | DocSpace Reference}
+ * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/common/ASC.Api.Core/Middleware/CommonApiResponse.cs/#L46 | ONLYOFFICE Apps Reference}
  */
 export const ErrorApiResponseSchema = CommonApiResponseSchema.extend({
 	error: CommonApiErrorSchema,
 })
 
 /**
- * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/common/ASC.Api.Core/Middleware/CommonApiResponse.cs/#L153 | DocSpace Reference}
+ * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/common/ASC.Api.Core/Middleware/CommonApiResponse.cs/#L153 | ONLYOFFICE Apps Reference}
  */
 export const LinkSchema = z.object({
 	href: z.string(),
@@ -62,7 +62,7 @@ export const LinkSchema = z.object({
 })
 
 /**
- * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/common/ASC.Api.Core/Middleware/CommonApiResponse.cs/#L57 | DocSpace Reference}
+ * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/common/ASC.Api.Core/Middleware/CommonApiResponse.cs/#L57 | ONLYOFFICE Apps Reference}
  */
 export const SuccessApiResponseSchema = CommonApiResponseSchema.extend({
 	response: TypeObjectSchema.describe("The response data of the API request."),
@@ -72,7 +72,7 @@ export const SuccessApiResponseSchema = CommonApiResponseSchema.extend({
 })
 
 // /**
-//  * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.1.1-server/common/ASC.Api.Core/Model/Contact.cs/#L32 | DocSpace Reference}
+//  * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.1.1-server/common/ASC.Api.Core/Model/Contact.cs/#L32 | ONLYOFFICE Apps Reference}
 //  */
 // export const ContentFieldSchema = z.union([
 // 	z.literal("type").describe("The contact type."),
@@ -80,7 +80,7 @@ export const SuccessApiResponseSchema = CommonApiResponseSchema.extend({
 // ])
 
 // /**
-//  * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.1.1-server/common/ASC.Api.Core/Model/GroupSummaryDto.cs/#L34 | DocSpace Reference}
+//  * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.1.1-server/common/ASC.Api.Core/Model/GroupSummaryDto.cs/#L34 | ONLYOFFICE Apps Reference}
 //  */
 // export const GroupSummaryDtoFieldSchema = z.union([
 // 	z.literal("id").describe("The group ID."),
@@ -89,14 +89,14 @@ export const SuccessApiResponseSchema = CommonApiResponseSchema.extend({
 // ])
 
 /**
- * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/common/ASC.Api.Core/Model/EmailInvitationDto.cs/#L36 | DocSpace Reference}
+ * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/common/ASC.Api.Core/Model/EmailInvitationDto.cs/#L36 | ONLYOFFICE Apps Reference}
  */
 export const EmailInvitationDtoSchema = z.object({
 	email: z.string().optional(),
 })
 
 /**
- * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.5.0-server/common/ASC.Core.Common/Core/EmployeeStatus.cs/#L33 | DocSpace Reference}
+ * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.5.0-server/common/ASC.Core.Common/Core/EmployeeStatus.cs/#L33 | ONLYOFFICE Apps Reference}
  */
 export const EmployeeStatusSchema = z.union([
 	z.literal(1).describe("Active"),
@@ -107,7 +107,7 @@ export const EmployeeStatusSchema = z.union([
 ])
 
 /**
- * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.2.1-server/common/ASC.Api.Core/Model/EmployeeDto.cs/#L34 | DocSpace Reference}
+ * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.2.1-server/common/ASC.Api.Core/Model/EmployeeDto.cs/#L34 | ONLYOFFICE Apps Reference}
  */
 export const EmployeeDtoSchema = z.looseObject({
 	id: z.string().optional().describe("The user ID."),
@@ -116,7 +116,7 @@ export const EmployeeDtoSchema = z.looseObject({
 })
 
 /**
- * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.2.1-server/common/ASC.Api.Core/Model/EmployeeDto.cs/#L34 | DocSpace Reference}
+ * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.2.1-server/common/ASC.Api.Core/Model/EmployeeDto.cs/#L34 | ONLYOFFICE Apps Reference}
  */
 export const EmployeeDtoFieldSchema = z.union([
 	z.literal("id").describe("The user ID."),
@@ -133,7 +133,7 @@ export const EmployeeDtoFieldSchema = z.union([
 ])
 
 /**
- * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.5.0-server/common/ASC.Api.Core/Model/EmployeeFullDto.cs/#L34 | DocSpace Reference}
+ * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.5.0-server/common/ASC.Api.Core/Model/EmployeeFullDto.cs/#L34 | ONLYOFFICE Apps Reference}
  */
 export const EmployeeFullDtoSchema = EmployeeDtoSchema.extend({
 	email: z.string().optional().describe("The user email."),
@@ -142,13 +142,13 @@ export const EmployeeFullDtoSchema = EmployeeDtoSchema.extend({
 	department: z.string().optional().describe("The user department."),
 	isAdmin: z.boolean().optional().describe("Specifies if the user is an administrator or not."),
 	isRoomAdmin: z.boolean().optional().describe("Specifies if the user is a room administrator or not."),
-	isOwner: z.boolean().optional().describe("Specifies if the user is a portal owner or not."),
-	isVisitor: z.boolean().optional().describe("Specifies if the user is a portal visitor or not."),
-	isCollaborator: z.boolean().optional().describe("Specifies if the user is a portal collaborator or not."),
+	isOwner: z.boolean().optional().describe("Specifies if the user is a workspace owner or not."),
+	isVisitor: z.boolean().optional().describe("Specifies if the user is a workspace visitor or not."),
+	isCollaborator: z.boolean().optional().describe("Specifies if the user is a workspace collaborator or not."),
 })
 
 /**
- * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.1.1-server/common/ASC.Api.Core/Model/EmployeeFullDto.cs/#L34 | DocSpace Reference}
+ * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.1.1-server/common/ASC.Api.Core/Model/EmployeeFullDto.cs/#L34 | ONLYOFFICE Apps Reference}
  */
 export const EmployeeFullDtoFieldSchema = z.union([
 	...EmployeeDtoFieldSchema.options,
@@ -171,16 +171,16 @@ export const EmployeeFullDtoFieldSchema = z.union([
 	z.literal("isRoomAdmin").describe("Specifies if the user is a room administrator or not."),
 	// z.literal("isLDAP").describe("Specifies if the LDAP settings are enabled for the user or not."),
 	// z.literal("listAdminModules").describe("The list of the administrator modules."),
-	z.literal("isOwner").describe("Specifies if the user is a portal owner or not."),
-	z.literal("isVisitor").describe("Specifies if the user is a portal visitor or not."),
-	z.literal("isCollaborator").describe("Specifies if the user is a portal collaborator or not."),
+	z.literal("isOwner").describe("Specifies if the user is a workspace owner or not."),
+	z.literal("isVisitor").describe("Specifies if the user is a workspace visitor or not."),
+	z.literal("isCollaborator").describe("Specifies if the user is a workspace collaborator or not."),
 	// z.literal("cultureName").describe("The user culture code."),
 	// z.literal("mobilePhone").describe("The user mobile phone number."),
 	// z.literal("mobilePhoneActivationStatus").describe("The mobile phone activation status."),
 	// z.literal("isSSO").describe("Specifies if the SSO settings are enabled for the user or not."),
 	// z.literal("theme").describe("The user theme settings."),
 	// z.literal("quotaLimit").describe("The user quota limit."),
-	// z.literal("usedSpace").describe("The portal used space of the user."),
+	// z.literal("usedSpace").describe("The workspace used space of the user."),
 	// z.literal("shared").describe("Specifies if the user has access rights."),
 	// z.literal("isCustomQuota").describe("Specifies if the user has a custom quota or not."),
 	// z.literal("loginEventId").describe("The current login event ID."),
@@ -191,14 +191,14 @@ export const EmployeeFullDtoFieldSchema = z.union([
 ])
 
 /**
- * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/products/ASC.Files/Core/ApiModels/RequestDto/ArchiveRoomRequestDto.cs/#L32 | DocSpace Reference}
+ * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/products/ASC.Files/Core/ApiModels/RequestDto/ArchiveRoomRequestDto.cs/#L32 | ONLYOFFICE Apps Reference}
  */
 export const ArchiveRoomRequestSchema = z.object({
 	deleteAfter: z.boolean().optional(),
 })
 
 /**
- * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/products/ASC.Files/Core/ApiModels/RequestDto/BatchModelRequestDto.cs/#L43 | DocSpace Reference}
+ * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/products/ASC.Files/Core/ApiModels/RequestDto/BatchModelRequestDto.cs/#L43 | ONLYOFFICE Apps Reference}
  */
 export const BaseBatchRequestDtoSchema = z.object({
 	folderIds: z.array(JsonElementSchema).optional(),
@@ -206,7 +206,7 @@ export const BaseBatchRequestDtoSchema = z.object({
 })
 
 /**
- * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/products/ASC.Files/Core/ApiModels/RequestDto/BatchModelRequestDto.cs/#L67 | DocSpace Reference}
+ * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/products/ASC.Files/Core/ApiModels/RequestDto/BatchModelRequestDto.cs/#L67 | ONLYOFFICE Apps Reference}
  */
 export const DownloadRequestItemDtoSchema = z.object({
 	key: JsonElementSchema.optional(),
@@ -214,14 +214,14 @@ export const DownloadRequestItemDtoSchema = z.object({
 })
 
 /**
- * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/products/ASC.Files/Core/ApiModels/RequestDto/BatchModelRequestDto.cs/#L59 | DocSpace Reference}
+ * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/products/ASC.Files/Core/ApiModels/RequestDto/BatchModelRequestDto.cs/#L59 | ONLYOFFICE Apps Reference}
  */
 export const DownloadRequestDtoSchema = BaseBatchRequestDtoSchema.extend({
 	fileConvertIds: z.array(DownloadRequestItemDtoSchema).optional(),
 })
 
 /**
- * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/products/ASC.Files/Core/ApiModels/RequestDto/BatchModelRequestDto.cs/#L93 | DocSpace Reference}
+ * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/products/ASC.Files/Core/ApiModels/RequestDto/BatchModelRequestDto.cs/#L93 | ONLYOFFICE Apps Reference}
  */
 export const DeleteSchema = z.object({
 	deleteAfter: z.boolean().optional(),
@@ -229,7 +229,7 @@ export const DeleteSchema = z.object({
 })
 
 /**
- * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/products/ASC.Files/Core/Services/WCFService/FileOperations/FileConflictResolveType.cs/#L31 | DocSpace Reference}
+ * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/products/ASC.Files/Core/Services/WCFService/FileOperations/FileConflictResolveType.cs/#L31 | ONLYOFFICE Apps Reference}
  */
 export const FileConflictResolveTypeSchema = z.union([
 	z.literal(0).describe("Skip"),
@@ -238,7 +238,7 @@ export const FileConflictResolveTypeSchema = z.union([
 ])
 
 /**
- * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/products/ASC.Files/Core/ApiModels/RequestDto/BatchModelRequestDto.cs/#L127 | DocSpace Reference}
+ * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/products/ASC.Files/Core/ApiModels/RequestDto/BatchModelRequestDto.cs/#L127 | ONLYOFFICE Apps Reference}
  */
 export const BatchRequestDtoSchema = BaseBatchRequestDtoSchema.extend({
 	destFolderId: JsonElementSchema.optional(),
@@ -247,14 +247,14 @@ export const BatchRequestDtoSchema = BaseBatchRequestDtoSchema.extend({
 })
 
 /**
- * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/products/ASC.Files/Core/ApiModels/RequestDto/CreateFolderRequestDto.cs/#L32 | DocSpace Reference}
+ * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/products/ASC.Files/Core/ApiModels/RequestDto/CreateFolderRequestDto.cs/#L32 | ONLYOFFICE Apps Reference}
  */
 export const CreateFolderSchema = z.object({
 	title: z.string().optional(),
 })
 
 /**
- * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/products/ASC.Files/Core/ApiModels/RequestDto/CreateRoomRequestDto.cs/#L30 | DocSpace Reference}
+ * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/products/ASC.Files/Core/ApiModels/RequestDto/CreateRoomRequestDto.cs/#L30 | ONLYOFFICE Apps Reference}
  */
 export const RoomTypeSchema = z.union([
 	z.literal(1).describe("Form Filling Room. Upload PDF forms into the room. Invite members and guests to fill out a PDF form. Review completed forms and analyze data automatically collected in a spreadsheet."),
@@ -265,21 +265,21 @@ export const RoomTypeSchema = z.union([
 ])
 
 /**
- * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/products/ASC.Files/Core/ApiModels/RequestDto/UpdateRoomRequestDto.cs/#L32 | DocSpace Reference}
+ * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/products/ASC.Files/Core/ApiModels/RequestDto/UpdateRoomRequestDto.cs/#L32 | ONLYOFFICE Apps Reference}
  */
 export const UpdateRoomRequestSchema = z.object({
 	title: z.string().optional(),
 })
 
 /**
- * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/products/ASC.Files/Core/ApiModels/RequestDto/CreateRoomRequestDto.cs/#L72 | DocSpace Reference}
+ * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/products/ASC.Files/Core/ApiModels/RequestDto/CreateRoomRequestDto.cs/#L72 | ONLYOFFICE Apps Reference}
  */
 export const CreateRoomRequestDtoSchema = UpdateRoomRequestSchema.extend({
 	roomType: zod.unionToEnum(RoomTypeSchema, "").optional(),
 })
 
 /**
- * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/products/ASC.Files/Core/ApiModels/RequestDto/DeleteFolderDto.cs/#L32 | DocSpace Reference}
+ * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/products/ASC.Files/Core/ApiModels/RequestDto/DeleteFolderDto.cs/#L32 | ONLYOFFICE Apps Reference}
  */
 export const DeleteFolderSchema = z.object({
 	deleteAfter: z.boolean().optional(),
@@ -287,7 +287,7 @@ export const DeleteFolderSchema = z.object({
 })
 
 /**
- * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.2.1-server/products/ASC.Files/Core/Core/Entries/FileEntryTypeEnum.cs/#L33 | DocSpace Reference}
+ * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.2.1-server/products/ASC.Files/Core/Core/Entries/FileEntryTypeEnum.cs/#L33 | ONLYOFFICE Apps Reference}
  */
 export const FileEntityTypeSchema = z.union([
 	z.literal(1).describe("Folder"),
@@ -295,7 +295,7 @@ export const FileEntityTypeSchema = z.union([
 ])
 
 /**
- * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.2.1-server/products/ASC.Files/Core/Core/Entries/Folder.cs/#L32 | DocSpace Reference}
+ * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.2.1-server/products/ASC.Files/Core/Core/Entries/Folder.cs/#L32 | ONLYOFFICE Apps Reference}
  */
 export const FolderType = z.union([
 	z.literal(0).describe("Default"),
@@ -325,7 +325,7 @@ export const FolderType = z.union([
 ])
 
 /**
- * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/products/ASC.Files/Core/Core/Security/FileShare.cs/#L31 | DocSpace Reference}
+ * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/products/ASC.Files/Core/Core/Security/FileShare.cs/#L31 | ONLYOFFICE Apps Reference}
  */
 export const FileShareSchema = z.union([
 	z.literal(0).describe("None"),
@@ -343,7 +343,7 @@ export const FileShareSchema = z.union([
 ])
 
 /**
- * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/products/ASC.Files/Core/ApiModels/RequestDto/RoomInvitation.cs/#L29 | DocSpace Reference}
+ * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/products/ASC.Files/Core/ApiModels/RequestDto/RoomInvitation.cs/#L29 | ONLYOFFICE Apps Reference}
  */
 export const RoomInvitationSchema = EmailInvitationDtoSchema.extend({
 	id: z.string().optional(),
@@ -351,7 +351,7 @@ export const RoomInvitationSchema = EmailInvitationDtoSchema.extend({
 })
 
 /**
- * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/products/ASC.Files/Core/ApiModels/RequestDto/RoomInvitationRequestDto.cs/#L32 | DocSpace Reference}
+ * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/products/ASC.Files/Core/ApiModels/RequestDto/RoomInvitationRequestDto.cs/#L32 | ONLYOFFICE Apps Reference}
  */
 export const RoomInvitationRequestSchema = z.object({
 	invitations: z.array(RoomInvitationSchema).optional(),
@@ -361,7 +361,7 @@ export const RoomInvitationRequestSchema = z.object({
 })
 
 /**
- * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/products/ASC.Files/Core/ApiModels/RequestDto/SessionRequestDto.cs/#L32 | DocSpace Reference}
+ * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/products/ASC.Files/Core/ApiModels/RequestDto/SessionRequestDto.cs/#L32 | ONLYOFFICE Apps Reference}
  */
 export const SessionRequestSchema = z.object({
 	fileName: z.string().optional(),
@@ -371,14 +371,14 @@ export const SessionRequestSchema = z.object({
 })
 
 /**
- * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/products/ASC.Files/Core/ApiModels/RequestDto/UpdateFileRequestDto.cs/#L32 | DocSpace Reference}
+ * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/products/ASC.Files/Core/ApiModels/RequestDto/UpdateFileRequestDto.cs/#L32 | ONLYOFFICE Apps Reference}
  */
 export const UpdateFileSchema = z.object({
 	title: z.string().optional(),
 })
 
 /**
- * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/web/ASC.Web.Core/Files/FileType.cs/#L32 | DocSpace Reference}
+ * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/web/ASC.Web.Core/Files/FileType.cs/#L32 | ONLYOFFICE Apps Reference}
  */
 export const FileTypeSchema = z.union([
 	z.literal(0).describe("Unknown"),
@@ -393,7 +393,7 @@ export const FileTypeSchema = z.union([
 ])
 
 /**
- * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.2.1-server/products/ASC.Files/Core/ApiModels/ResponseDto/FileEntryDto.cs/#L45 | DocSpace Reference}
+ * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.2.1-server/products/ASC.Files/Core/ApiModels/ResponseDto/FileEntryDto.cs/#L45 | ONLYOFFICE Apps Reference}
  */
 export const FileEntryDtoSchema = z.looseObject({
 	id: JsonElementSchema.optional().describe("The file entry ID."),
@@ -409,7 +409,7 @@ export const FileEntryDtoSchema = z.looseObject({
 })
 
 /**
- * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.2.1-server/products/ASC.Files/Core/ApiModels/ResponseDto/FileEntryDto.cs/#L45 | DocSpace Reference}
+ * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.2.1-server/products/ASC.Files/Core/ApiModels/ResponseDto/FileEntryDto.cs/#L45 | ONLYOFFICE Apps Reference}
  */
 export const FileEntryDtoFieldSchema = z.union([
 	z.literal("id").describe("The file entry ID."),
@@ -439,7 +439,7 @@ export const FileEntryDtoFieldSchema = z.union([
 ])
 
 /**
- * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.2.1-server/products/ASC.Files/Core/ApiModels/ResponseDto/FileDto.cs/#L32 | DocSpace Reference}
+ * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.2.1-server/products/ASC.Files/Core/ApiModels/ResponseDto/FileDto.cs/#L32 | ONLYOFFICE Apps Reference}
  */
 export const FileDtoSchema = FileEntryDtoSchema.extend({
 	folderId: JsonElementSchema.optional().describe("The folder ID where the file is located."),
@@ -451,7 +451,7 @@ export const FileDtoSchema = FileEntryDtoSchema.extend({
 })
 
 // /**
-//  * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.1.1-server/products/ASC.Files/Core/ApiModels/ResponseDto/FileDto.cs/#L471 | DocSpace Reference}
+//  * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.1.1-server/products/ASC.Files/Core/ApiModels/ResponseDto/FileDto.cs/#L471 | ONLYOFFICE Apps Reference}
 //  */
 // export const DraftLocationFieldSchema = z.union([
 // 	z.literal("folderId").describe("The InProcess folder ID of the draft."),
@@ -461,7 +461,7 @@ export const FileDtoSchema = FileEntryDtoSchema.extend({
 // ])
 
 /**
- * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.2.1-server/products/ASC.Files/Core/ApiModels/ResponseDto/FileDto.cs/#L32 | DocSpace Reference}
+ * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.2.1-server/products/ASC.Files/Core/ApiModels/ResponseDto/FileDto.cs/#L32 | ONLYOFFICE Apps Reference}
  */
 export const FileDtoFieldSchema = z.union([
 	...FileEntryDtoFieldSchema.options,
@@ -499,7 +499,7 @@ export const FileDtoFieldSchema = z.union([
 ])
 
 /**
- * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/products/ASC.Files/Core/ApiModels/ResponseDto/FileOperationDto.cs/#L29 | DocSpace Reference}
+ * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/products/ASC.Files/Core/ApiModels/ResponseDto/FileOperationDto.cs/#L29 | ONLYOFFICE Apps Reference}
  */
 export const FileOperationDtoSchema = z.looseObject({
 	id: z.string().optional(),
@@ -510,7 +510,7 @@ export const FileOperationDtoSchema = z.looseObject({
 })
 
 /**
- * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.2.1-server/products/ASC.Files/Core/Core/Security/SubjectType.cs/#L61 | DocSpace Reference}
+ * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.2.1-server/products/ASC.Files/Core/Core/Security/SubjectType.cs/#L61 | ONLYOFFICE Apps Reference}
  */
 export const SubjectTypeSchema = z.union([
 	z.literal(0).describe("User"),
@@ -521,7 +521,7 @@ export const SubjectTypeSchema = z.union([
 ])
 
 /**
- * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.2.1-server/products/ASC.Files/Core/ApiModels/ResponseDto/FileShareDto.cs/#L32 | DocSpace Reference}
+ * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.2.1-server/products/ASC.Files/Core/ApiModels/ResponseDto/FileShareDto.cs/#L32 | ONLYOFFICE Apps Reference}
  */
 export const FileShareDtoSchema = z.looseObject({
 	access: zod.unionToEnum(FileShareSchema, "The access rights type.").optional(),
@@ -533,7 +533,7 @@ export const FileShareDtoSchema = z.looseObject({
 })
 
 /**
- * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.2.1-server/products/ASC.Files/Core/ApiModels/ResponseDto/FileShareDto.cs/#L32 | DocSpace Reference}
+ * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.2.1-server/products/ASC.Files/Core/ApiModels/ResponseDto/FileShareDto.cs/#L32 | ONLYOFFICE Apps Reference}
  */
 export const FileShareDtoFieldSchema = z.union([
 	z.literal("access").describe("The access rights type."),
@@ -545,14 +545,14 @@ export const FileShareDtoFieldSchema = z.union([
 ])
 
 /**
- * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.1.1-server/products/ASC.Files/Core/ApiModels/ResponseDto/FilesSettingsDto.cs/#L32 | DocSpace Reference}
+ * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.1.1-server/products/ASC.Files/Core/ApiModels/ResponseDto/FilesSettingsDto.cs/#L32 | ONLYOFFICE Apps Reference}
  */
 export const FilesSettingsDtoSchema = z.looseObject({
 	extsConvertible: z.record(z.string(), z.array(z.string()).optional()).optional(),
 })
 
 // /**
-//  * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.1.1-server/products/ASC.Files/Core/Core/VirtualRooms/Logo.cs/#L73 | DocSpace Reference}
+//  * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.1.1-server/products/ASC.Files/Core/Core/VirtualRooms/Logo.cs/#L73 | ONLYOFFICE Apps Reference}
 //  */
 // export const LogoCoverFieldSchema = z.union([
 // 	z.literal("id").describe("The logo cover ID."),
@@ -560,7 +560,7 @@ export const FilesSettingsDtoSchema = z.looseObject({
 // ])
 
 // /**
-//  * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.1.1-server/products/ASC.Files/Core/Core/VirtualRooms/Logo.cs/#L32 | DocSpace Reference}
+//  * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.1.1-server/products/ASC.Files/Core/Core/VirtualRooms/Logo.cs/#L32 | ONLYOFFICE Apps Reference}
 //  */
 // export const LogoFieldSchema = z.union([
 // 	z.literal("original").describe("The original logo."),
@@ -572,7 +572,7 @@ export const FilesSettingsDtoSchema = z.looseObject({
 // ])
 
 // /**
-//  * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.1.1-server/products/ASC.Files/Core/ApiModels/RoomDataLifetimeDto.cs/#L32 | DocSpace Reference}
+//  * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.1.1-server/products/ASC.Files/Core/ApiModels/RoomDataLifetimeDto.cs/#L32 | ONLYOFFICE Apps Reference}
 //  */
 // export const RoomDataLifetimeDtoFieldSchema = z.union([
 // 	z.literal("deletePermanently").describe("Specifies whether to permanently delete the room data or not."),
@@ -582,7 +582,7 @@ export const FilesSettingsDtoSchema = z.looseObject({
 // ])
 
 // /**
-//  * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.1.1-server/products/ASC.Files/Core/ApiModels/ResponseDto/WatermarkDto.cs/#L32 | DocSpace Reference}
+//  * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.1.1-server/products/ASC.Files/Core/ApiModels/ResponseDto/WatermarkDto.cs/#L32 | ONLYOFFICE Apps Reference}
 //  */
 // export const WatermarkDtoFieldSchema = z.union([
 // 	z.literal("additions").describe("Specifies whether to display in the watermark: username, user email, user ip-adress, current date, and room name."),
@@ -595,7 +595,7 @@ export const FilesSettingsDtoSchema = z.looseObject({
 // ])
 
 /**
- * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.2.1-server/products/ASC.Files/Core/ApiModels/ResponseDto/FolderDto.cs/#L32 | DocSpace Reference}
+ * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.2.1-server/products/ASC.Files/Core/ApiModels/ResponseDto/FolderDto.cs/#L32 | ONLYOFFICE Apps Reference}
  */
 export const FolderDtoSchema = FileEntryDtoSchema.extend({
 	parentId: JsonElementSchema.optional().describe("The parent folder ID of the folder."),
@@ -611,7 +611,7 @@ export const FolderDtoSchema = FileEntryDtoSchema.extend({
 })
 
 /**
- * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.2.1-server/products/ASC.Files/Core/ApiModels/ResponseDto/FolderDto.cs/#L32 | DocSpace Reference}
+ * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.2.1-server/products/ASC.Files/Core/ApiModels/ResponseDto/FolderDto.cs/#L32 | ONLYOFFICE Apps Reference}
  */
 export const FolderDtoFieldSchema = z.union([
 	...FileEntryDtoFieldSchema.options,
@@ -642,7 +642,7 @@ export const FolderDtoFieldSchema = z.union([
 ])
 
 /**
- * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.2.1-server/products/ASC.Files/Core/ApiModels/ResponseDto/FolderContentDto.cs/#L32 | DocSpace Reference}
+ * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.2.1-server/products/ASC.Files/Core/ApiModels/ResponseDto/FolderContentDto.cs/#L32 | ONLYOFFICE Apps Reference}
  */
 export const FolderContentDtoSchema = z.looseObject({
 	files: z.array(FileEntryDtoSchema).optional().describe("The list of files in the folder."),
@@ -654,7 +654,7 @@ export const FolderContentDtoSchema = z.looseObject({
 })
 
 /**
- * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.2.1-server/products/ASC.Files/Core/ApiModels/ResponseDto/FolderContentDto.cs/#L32 | DocSpace Reference}
+ * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.2.1-server/products/ASC.Files/Core/ApiModels/ResponseDto/FolderContentDto.cs/#L32 | ONLYOFFICE Apps Reference}
  */
 export const FolderContentDtoFieldSchema = z.union([
 	...zod.wrapUnion(FileDtoFieldSchema, "files").options,
@@ -668,7 +668,7 @@ export const FolderContentDtoFieldSchema = z.union([
 ])
 
 /**
- * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.2.1-server/products/ASC.Files/Core/ApiModels/ResponseDto/RoomAccessDto.cs/#L32 | DocSpace Reference}
+ * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.2.1-server/products/ASC.Files/Core/ApiModels/ResponseDto/RoomAccessDto.cs/#L32 | ONLYOFFICE Apps Reference}
  */
 export const RoomSecurityDtoSchema = z.looseObject({
 	members: z.array(FileShareDtoSchema).optional().describe("The list of room members."),
@@ -677,7 +677,7 @@ export const RoomSecurityDtoSchema = z.looseObject({
 })
 
 /**
- * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.2.1-server/products/ASC.Files/Core/ApiModels/ResponseDto/RoomAccessDto.cs/#L32 | DocSpace Reference}
+ * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.2.1-server/products/ASC.Files/Core/ApiModels/ResponseDto/RoomAccessDto.cs/#L32 | ONLYOFFICE Apps Reference}
  */
 export const RoomSecurityDtoFieldSchema = z.union([
 	...zod.wrapUnion(FileShareDtoFieldSchema, "members").options,
@@ -686,7 +686,7 @@ export const RoomSecurityDtoFieldSchema = z.union([
 ])
 
 /**
- * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.1.1-server/products/ASC.Files/Core/Core/ApplyFilterOption.cs/#L29 | DocSpace Reference}
+ * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.1.1-server/products/ASC.Files/Core/Core/ApplyFilterOption.cs/#L29 | ONLYOFFICE Apps Reference}
  */
 export const ApplyFilterOptionSchema = z.union([
 	z.literal("All"),
@@ -695,7 +695,7 @@ export const ApplyFilterOptionSchema = z.union([
 ])
 
 /**
- * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.1.1-server/products/ASC.Files/Core/Core/FilterTypeEnum.cs/#L32 | DocSpace Reference}
+ * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.1.1-server/products/ASC.Files/Core/Core/FilterTypeEnum.cs/#L32 | ONLYOFFICE Apps Reference}
  */
 export const FilterTypeSchema = z.union([
 	z.literal(0).describe("None"),
@@ -720,7 +720,7 @@ export const FilterTypeSchema = z.union([
 ])
 
 /**
- * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.1.1-server/products/ASC.Files/Core/Core/Security/SubjectType.cs/#L33 | DocSpace Reference}
+ * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.1.1-server/products/ASC.Files/Core/Core/Security/SubjectType.cs/#L33 | ONLYOFFICE Apps Reference}
  */
 export const ShareFilterTypeSchema = z.union([
 	z.literal(0).describe("User or group"),
@@ -733,7 +733,7 @@ export const ShareFilterTypeSchema = z.union([
 ])
 
 /**
- * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.1.1-server/products/ASC.Files/Core/Core/VirtualRooms/SearchArea.cs/#L32 | DocSpace Reference}
+ * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.1.1-server/products/ASC.Files/Core/Core/VirtualRooms/SearchArea.cs/#L32 | ONLYOFFICE Apps Reference}
  */
 export const SearchAreaSchema = z.union([
 	z.literal("Active"),
@@ -744,7 +744,7 @@ export const SearchAreaSchema = z.union([
 ])
 
 /**
- * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/products/ASC.Files/Core/HttpHandlers/ChunkedUploaderHandler.cs/#L218 | DocSpace Reference}
+ * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/products/ASC.Files/Core/HttpHandlers/ChunkedUploaderHandler.cs/#L218 | ONLYOFFICE Apps Reference}
  */
 export const UploadChunkErrorResponseSchema = z.object({
 	success: z.literal(false),
@@ -752,7 +752,7 @@ export const UploadChunkErrorResponseSchema = z.object({
 })
 
 /**
- * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/products/ASC.Files/Core/HttpHandlers/ChunkedUploaderHandler.cs/#L233 | DocSpace Reference}
+ * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/products/ASC.Files/Core/HttpHandlers/ChunkedUploaderHandler.cs/#L233 | ONLYOFFICE Apps Reference}
  */
 export const UploadChunkSuccessResponseSchema = z.object({
 	success: z.literal(true),
@@ -761,14 +761,14 @@ export const UploadChunkSuccessResponseSchema = z.object({
 })
 
 /**
- * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/products/ASC.Files/Server/Helpers/UploadControllerHelper.cs/#L97 | DocSpace Reference}
+ * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/products/ASC.Files/Server/Helpers/UploadControllerHelper.cs/#L97 | ONLYOFFICE Apps Reference}
  */
 export const UploadSessionObjectDataSchema = z.looseObject({
 	id: z.string().optional(),
 })
 
 /**
- * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/products/ASC.Files/Server/Helpers/UploadControllerHelper.cs/#L97 | DocSpace Reference}
+ * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/products/ASC.Files/Server/Helpers/UploadControllerHelper.cs/#L97 | ONLYOFFICE Apps Reference}
  */
 export const UploadSessionObjectSchema = z.object({
 	success: z.boolean(),
@@ -776,7 +776,7 @@ export const UploadSessionObjectSchema = z.object({
 })
 
 /**
- * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/web/ASC.Web.Api/ApiModels/RequestsDto/AuthRequestsDto.cs/#L32 | DocSpace Reference}
+ * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/web/ASC.Web.Api/ApiModels/RequestsDto/AuthRequestsDto.cs/#L32 | ONLYOFFICE Apps Reference}
  */
 export const AuthRequestsDtoSchema = z.object({
 	userName: z.string().optional(),
@@ -784,7 +784,7 @@ export const AuthRequestsDtoSchema = z.object({
 })
 
 /**
- * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/web/ASC.Web.Api/ApiModels/ResponseDto/AuthenticationTokenDto.cs/#L29 | DocSpace Reference}
+ * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/web/ASC.Web.Api/ApiModels/ResponseDto/AuthenticationTokenDto.cs/#L29 | ONLYOFFICE Apps Reference}
  */
 export const AuthenticationTokenDtoSchema = z.looseObject({
 	token: z.string().optional(),
@@ -800,7 +800,7 @@ export const CreateFolderFiltersSchema = z.object({
 })
 
 /**
- * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.1.1-server/products/ASC.Files/Core/ApiModels/RequestDto/GetFolderRequestDto.cs/#L32 | DocSpace Reference}
+ * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.1.1-server/products/ASC.Files/Core/ApiModels/RequestDto/GetFolderRequestDto.cs/#L32 | ONLYOFFICE Apps Reference}
  */
 export const GetFolderFiltersSchema = z.object({
 	userIdOrGroupId: z.uuid().optional().describe("The user or group ID."),
@@ -829,7 +829,7 @@ export const RenameFolderFiltersSchema = z.object({
 })
 
 /**
- * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.1.1-server/products/ASC.Files/Core/ApiModels/RequestDto/GetFolderRequestDto.cs/#L116 | DocSpace Reference}
+ * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.1.1-server/products/ASC.Files/Core/ApiModels/RequestDto/GetFolderRequestDto.cs/#L116 | ONLYOFFICE Apps Reference}
  */
 export const GetMyFolderFiltersSchema = z.object({
 	userIdOrGroupId: z.uuid().optional().describe("The user or group ID."),
@@ -860,7 +860,7 @@ export const SetRoomSecurityFiltersSchema = z.object({
 })
 
 /**
- * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.1.1-server/products/ASC.Files/Core/ApiModels/RequestDto/RoomSecurityInfoRequestDto.cs/#L32 | DocSpace Reference}
+ * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.1.1-server/products/ASC.Files/Core/ApiModels/RequestDto/RoomSecurityInfoRequestDto.cs/#L32 | ONLYOFFICE Apps Reference}
  */
 export const GetRoomSecurityFiltersSchema = z.object({
 	filterType: zod.unionToEnum(ShareFilterTypeSchema, "The filter type of the access rights.").optional(),
@@ -871,7 +871,7 @@ export const GetRoomSecurityFiltersSchema = z.object({
 })
 
 /**
- * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.1.1-server/products/ASC.Files/Core/Core/Entries/OrderBy.cs#L33 | DocSpace Reference}
+ * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.1.1-server/products/ASC.Files/Core/Core/Entries/OrderBy.cs#L33 | ONLYOFFICE Apps Reference}
  */
 export const GetRoomsFolderFiltersSortBySchema = z.union([
 	z.literal("DateAndTime").describe("Date and time"),
@@ -882,7 +882,7 @@ export const GetRoomsFolderFiltersSortBySchema = z.union([
 ])
 
 /**
- * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.1.1-server/products/ASC.Files/Core/ApiModels/RequestDto/RoomContentRequestDto.cs/#L32 | DocSpace Reference}
+ * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.1.1-server/products/ASC.Files/Core/ApiModels/RequestDto/RoomContentRequestDto.cs/#L32 | ONLYOFFICE Apps Reference}
  */
 export const GetRoomsFolderFiltersSchema = z.object({
 	type: z.array(zod.unionToEnum(RoomTypeSchema, "The filter by room type.")).optional(),

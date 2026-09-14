@@ -1,5 +1,5 @@
 name: Connection issue
-description: Report a problem connecting this integration to ONLYOFFICE DocSpace.
+description: Report a problem connecting this integration to ONLYOFFICE Apps.
 title: "[Connection]: "
 labels:
   - configuration
@@ -7,7 +7,7 @@ body:
   - type: markdown
     attributes:
       value: |
-        Use this template for connectivity problems between the integration and ONLYOFFICE DocSpace. For general configuration help, try the [Community Forum](https://community.onlyoffice.com/) or [API documentation](https://api.onlyoffice.com/docspace/) first.
+        Use this template for connectivity problems between the integration and ONLYOFFICE Apps. For general configuration help, try the [Community Forum](https://community.onlyoffice.com/) or [API documentation](https://api.onlyoffice.com/docspace/) first.
   - type: checkboxes
     id: duplicate_check
     attributes:
@@ -34,7 +34,7 @@ body:
   - type: input
     id: docspace_version
     attributes:
-      label: ONLYOFFICE DocSpace version
+      label: ONLYOFFICE Apps version
       placeholder: "e.g. 3.7.1"
     validations:
       required: true

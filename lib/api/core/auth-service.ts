@@ -15,7 +15,7 @@ export type AuthenticateMeOptions = z.input<typeof AuthRequestsDtoSchema>
 export type AuthenticateMeResponse = z.output<typeof AuthenticationTokenDtoSchema>
 
 /**
- * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/web/ASC.Web.Api/Api/AuthenticationController.cs/ | DocSpace Reference}
+ * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/web/ASC.Web.Api/Api/AuthenticationController.cs/ | ONLYOFFICE Apps Reference}
  */
 export class AuthService {
 	private c: Client
@@ -25,7 +25,7 @@ export class AuthService {
 	}
 
 	/**
-	 * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/web/ASC.Web.Api/Api/AuthenticationController.cs/#L88 | DocSpace Reference}
+	 * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/web/ASC.Web.Api/Api/AuthenticationController.cs/#L88 | ONLYOFFICE Apps Reference}
 	 */
 	async getIsAuthentificated(): Promise<Result<[boolean, Response], Error>> {
 		let u = this.c.createUrl("api/2.0/authentication")
@@ -54,7 +54,7 @@ export class AuthService {
 	}
 
 	/**
-	 * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/web/ASC.Web.Api/Api/AuthenticationController.cs/#L185 | DocSpace Reference}
+	 * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/web/ASC.Web.Api/Api/AuthenticationController.cs/#L185 | ONLYOFFICE Apps Reference}
 	 */
 	async authenticateMe(o: AuthenticateMeOptions): Promise<Result<[AuthenticateMeResponse, Response], Error>> {
 		let u = this.c.createUrl("api/2.0/authentication")

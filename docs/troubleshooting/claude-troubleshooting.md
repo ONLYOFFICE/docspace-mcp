@@ -16,17 +16,17 @@ The connector URL may have been entered incorrectly, or the MCP server is tempor
 
 - Click the connector name to open its settings and verify the URL is exactly `https://mcp.onlyoffice.com/mcp`.
 - Delete the connector and add it again.
-- Check the DocSpace MCP server status or contact your DocSpace administrator.
+- Check the ONLYOFFICE Apps MCP server status or contact your ONLYOFFICE Apps administrator.
 
-### Authentication succeeds, but Claude cannot read or modify DocSpace files
+### Authentication succeeds, but Claude cannot read or modify ONLYOFFICE Apps files
 
 The granted OAuth permissions may not include the required scopes, or the permissions were accidentally denied. Try any of these fixes:
 
 - Go to **Settings → Connectors**, disconnect the connector, and click **Connect** again.
-- During the OAuth flow, click **Allow** when prompted to grant access to your DocSpace data.
-- Check your DocSpace account permissions with your administrator.
+- During the OAuth flow, click **Allow** when prompted to grant access to your ONLYOFFICE Apps data.
+- Check your ONLYOFFICE Apps account permissions with your administrator.
 
-### The connector shows as Connected, but DocSpace tools are not available in Claude
+### The connector shows as Connected, but ONLYOFFICE Apps tools are not available in Claude
 
 The session may have expired, or the connector needs to be refreshed.
 

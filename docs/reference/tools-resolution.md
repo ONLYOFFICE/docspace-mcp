@@ -1,6 +1,6 @@
 # Tools resolution
 
-The DocSpace MCP server resolves which tools are available based on toolset configuration and enabled/disabled tool options.
+The ONLYOFFICE Apps MCP server resolves which tools are available based on toolset configuration and enabled/disabled tool options.
 
 ## Visualization
 
@@ -58,7 +58,7 @@ and tools are constrained by what was configured globally.
 ## Examples
 
 For simplicity, let us come up with a small list of available toolsets and
-tools. The real DocSpace MCP server provides more of them, but for these
+tools. The real ONLYOFFICE Apps MCP server provides more of them, but for these
 examples, just a few are enough:
 
 | Toolset   | Tools                                          |
@@ -118,10 +118,10 @@ Result:
 
 ## References
 
-- [DocSpace MCP: Global Configuration]
-- [DocSpace MCP: Request Configuration]
+- [ONLYOFFICE Apps MCP: Global Configuration]
+- [ONLYOFFICE Apps MCP: Request Configuration]
 
 <!-- Definitions -->
 
-[DocSpace MCP: Global Configuration]: ./global-configuration.md
-[DocSpace MCP: Request Configuration]: ./request-configuration.md
+[ONLYOFFICE Apps MCP: Global Configuration]: ./global-configuration.md
+[ONLYOFFICE Apps MCP: Request Configuration]: ./request-configuration.md

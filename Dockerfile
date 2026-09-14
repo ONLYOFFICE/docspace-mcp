@@ -18,8 +18,8 @@ LABEL org.opencontainers.image.documentation="https://github.com/onlyoffice/docs
 LABEL org.opencontainers.image.source="https://github.com/onlyoffice/docspace-mcp/"
 LABEL org.opencontainers.image.version="3.2.0"
 LABEL org.opencontainers.image.licenses="MIT"
-LABEL org.opencontainers.image.title="ONLYOFFICE DocSpace MCP Server"
-LABEL org.opencontainers.image.description="ONLYOFFICE DocSpace Model Context Protocol Server"
+LABEL org.opencontainers.image.title="ONLYOFFICE Apps MCP Server"
+LABEL org.opencontainers.image.description="ONLYOFFICE Apps Model Context Protocol Server"
 LABEL io.modelcontextprotocol.server.name="io.github.ONLYOFFICE/docspace"
 ENV NODE_ENV=production
 WORKDIR /srv/onlyoffice-docspace-mcp

@@ -119,7 +119,7 @@ export type GetRoomSecurityInfoResponse = z.output<typeof FileShareDtoSchema>
 export type GetRoomFolderResponse = z.output<typeof FolderContentDtoSchema>
 
 /**
- * {@link https://github.com/ONLYOFFICE/DocSpace-server/tree/v3.0.4-server/products/ASC.Files/ | DocSpace Reference}
+ * {@link https://github.com/ONLYOFFICE/DocSpace-server/tree/v3.0.4-server/products/ASC.Files/ | ONLYOFFICE Apps Reference}
  */
 export class FilesService {
 	private c: Client
@@ -133,7 +133,7 @@ export class FilesService {
 	//
 
 	/**
-	 * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/products/ASC.Files/Server/Api/FilesController.cs/#L239 | DocSpace Reference}
+	 * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/products/ASC.Files/Server/Api/FilesController.cs/#L239 | ONLYOFFICE Apps Reference}
 	 */
 	async deleteFile(id: number, o: DeleteFileOptions): Promise<Result<[DeleteFileResponseItem[], Response], Error>> {
 		let u = this.c.createUrl(`api/2.0/files/file/${id}`)
@@ -162,7 +162,7 @@ export class FilesService {
 	}
 
 	/**
-	 * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/products/ASC.Files/Server/Api/FilesController.cs/#L305 | DocSpace Reference}
+	 * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/products/ASC.Files/Server/Api/FilesController.cs/#L305 | ONLYOFFICE Apps Reference}
 	 */
 	async getFileInfo(id: number, filters?: GetFileInfoFilters): Promise<Result<[GetFileInfoResponse, Response], Error>> {
 		let u = this.c.createUrl(`api/2.0/files/file/${id}`, filters)
@@ -191,7 +191,7 @@ export class FilesService {
 	}
 
 	/**
-	 * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/products/ASC.Files/Server/Api/FilesController.cs/#L399 | DocSpace Reference}
+	 * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/products/ASC.Files/Server/Api/FilesController.cs/#L399 | ONLYOFFICE Apps Reference}
 	 */
 	async updateFile(id: number, o: UpdateFileOptions): Promise<Result<[UpdateFileResponse, Response], Error>> {
 		let u = this.c.createUrl(`api/2.0/files/file/${id}`)
@@ -224,7 +224,7 @@ export class FilesService {
 	//
 
 	/**
-	 * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/products/ASC.Files/Server/Api/FoldersController.cs/#L110 | DocSpace Reference}
+	 * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/products/ASC.Files/Server/Api/FoldersController.cs/#L110 | ONLYOFFICE Apps Reference}
 	 */
 	async createFolder(id: number, o: CreateFolderOptions, filters?: CreateFolderFilters): Promise<Result<[CreateFolderResponse, Response], Error>> {
 		let u = this.c.createUrl(`api/2.0/files/folder/${id}`, filters)
@@ -253,7 +253,7 @@ export class FilesService {
 	}
 
 	/**
-	 * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/products/ASC.Files/Server/Api/FoldersController.cs/#L126 | DocSpace Reference}
+	 * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/products/ASC.Files/Server/Api/FoldersController.cs/#L126 | ONLYOFFICE Apps Reference}
 	 */
 	async deleteFolder(id: number, o: DeleteFolderOptions): Promise<Result<[DeleteFolderResponseItem[], Response], Error>> {
 		let u = this.c.createUrl(`api/2.0/files/folder/${id}`)
@@ -282,7 +282,7 @@ export class FilesService {
 	}
 
 	/**
-	 * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/products/ASC.Files/Server/Api/FoldersController.cs/#L161 | DocSpace Reference}
+	 * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/products/ASC.Files/Server/Api/FoldersController.cs/#L161 | ONLYOFFICE Apps Reference}
 	 */
 	async getFolder(id: number, filters?: GetFolderFilters): Promise<Result<[GetFolderResponse, Response], Error>> {
 		let u = this.c.createUrl(`api/2.0/files/${id}`, filters)
@@ -311,7 +311,7 @@ export class FilesService {
 	}
 
 	/**
-	 * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/products/ASC.Files/Server/Api/FoldersController.cs/#L180 | DocSpace Reference}
+	 * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/products/ASC.Files/Server/Api/FoldersController.cs/#L180 | ONLYOFFICE Apps Reference}
 	 */
 	async getFolderInfo(id: number, filters?: GetFolderInfoFilters): Promise<Result<[GetFolderInfoResponse, Response], Error>> {
 		let u = this.c.createUrl(`api/2.0/files/folder/${id}`, filters)
@@ -340,7 +340,7 @@ export class FilesService {
 	}
 
 	/**
-	 * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/products/ASC.Files/Server/Api/FoldersController.cs/#L255 | DocSpace Reference}
+	 * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/products/ASC.Files/Server/Api/FoldersController.cs/#L255 | ONLYOFFICE Apps Reference}
 	 */
 	async renameFolder(id: number, o: RenameFolderOptions, filters?: RenameFolderFilters): Promise<Result<[RenameFolderResponse, Response], Error>> {
 		let u = this.c.createUrl(`api/2.0/files/folder/${id}`, filters)
@@ -369,7 +369,7 @@ export class FilesService {
 	}
 
 	/**
-	 * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/products/ASC.Files/Server/Api/FoldersController.cs/#L348 | DocSpace Reference}
+	 * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/products/ASC.Files/Server/Api/FoldersController.cs/#L348 | ONLYOFFICE Apps Reference}
 	 */
 	async getMyFolder(filters?: GetMyFolderFilters): Promise<Result<[GetMyFolderResponse, Response], Error>> {
 		let u = this.c.createUrl("api/2.0/files/@my", filters)
@@ -398,7 +398,7 @@ export class FilesService {
 	}
 
 	/**
-	 * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/products/ASC.Files/Server/Api/FoldersController.cs/#L474 | DocSpace Reference}
+	 * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/products/ASC.Files/Server/Api/FoldersController.cs/#L474 | ONLYOFFICE Apps Reference}
 	 */
 	async getTrashFolder(): Promise<Result<[GetFolderResponse, Response], Error>> {
 		let u = this.c.createUrl("api/2.0/files/@trash")
@@ -431,7 +431,7 @@ export class FilesService {
 	//
 
 	/**
-	 * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/products/ASC.Files/Server/Api/OperationController.cs/#L51 | DocSpace Reference}
+	 * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/products/ASC.Files/Server/Api/OperationController.cs/#L51 | ONLYOFFICE Apps Reference}
 	 */
 	async bulkDownload(o: BulkDownloadOptions): Promise<Result<[BulkDownloadResponseItem[], Response], Error>> {
 		let u = this.c.createUrl("api/2.0/files/fileops/bulkdownload")
@@ -460,7 +460,7 @@ export class FilesService {
 	}
 
 	/**
-	 * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/products/ASC.Files/Server/Api/OperationController.cs/#L74 | DocSpace Reference}
+	 * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/products/ASC.Files/Server/Api/OperationController.cs/#L74 | ONLYOFFICE Apps Reference}
 	 */
 	async copyBatchItems(o: CopyBatchItemsOptions): Promise<Result<[CopyBatchItemsResponseItem[], Response], Error>> {
 		let u = this.c.createUrl("api/2.0/files/fileops/copy")
@@ -489,7 +489,7 @@ export class FilesService {
 	}
 
 	/**
-	 * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/products/ASC.Files/Server/Api/OperationController.cs/#L136 | DocSpace Reference}
+	 * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/products/ASC.Files/Server/Api/OperationController.cs/#L136 | ONLYOFFICE Apps Reference}
 	 */
 	async getOperationStatuses(): Promise<Result<[GetOperationStatusesResponseItem[], Response], Error>> {
 		let u = this.c.createUrl("api/2.0/files/fileops")
@@ -518,7 +518,7 @@ export class FilesService {
 	}
 
 	/**
-	 * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/products/ASC.Files/Server/Api/OperationController.cs/#L173 | DocSpace Reference}
+	 * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/products/ASC.Files/Server/Api/OperationController.cs/#L173 | ONLYOFFICE Apps Reference}
 	 */
 	async moveBatchItems(o: MoveBatchItemsOptions): Promise<Result<[MoveBatchItemsResponseItem[], Response], Error>> {
 		let u = this.c.createUrl("api/2.0/files/fileops/move")
@@ -551,7 +551,7 @@ export class FilesService {
 	//
 
 	/**
-	 * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.1.1-server/products/ASC.Files/Server/Api/SettingsController.cs/#L199 | DocSpace Reference}
+	 * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.1.1-server/products/ASC.Files/Server/Api/SettingsController.cs/#L199 | ONLYOFFICE Apps Reference}
 	 */
 	async getFilesSettings(): Promise<Result<[GetFilesSettingsResponse, Response], Error>> {
 		let u = this.c.createUrl("api/2.0/files/settings")
@@ -584,7 +584,7 @@ export class FilesService {
 	//
 
 	/**
-	 * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/products/ASC.Files/Server/Api/UploadController.cs/#L76 | DocSpace Reference}
+	 * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/products/ASC.Files/Server/Api/UploadController.cs/#L76 | ONLYOFFICE Apps Reference}
 	 */
 	async createUploadSession(id: number, o: CreateUploadSessionOptions): Promise<Result<[CreateUploadSessionResponse, Response], Error>> {
 		let u = this.c.createUrl(`api/2.0/files/${id}/upload/create_session`)
@@ -617,7 +617,7 @@ export class FilesService {
 	//
 
 	/**
-	 * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/products/ASC.Files/Server/Api/VirtualRoomsController.cs/#L70 | DocSpace Reference}
+	 * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/products/ASC.Files/Server/Api/VirtualRoomsController.cs/#L70 | ONLYOFFICE Apps Reference}
 	 */
 	async createRoom(o: CreateRoomOptions, filters?: CreateRoomFilters): Promise<Result<[CreateRoomResponse, Response], Error>> {
 		let u = this.c.createUrl("api/2.0/files/rooms", filters)
@@ -646,7 +646,7 @@ export class FilesService {
 	}
 
 	/**
-	 * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/products/ASC.Files/Server/Api/VirtualRoomsController.cs/#L165 | DocSpace Reference}
+	 * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/products/ASC.Files/Server/Api/VirtualRoomsController.cs/#L165 | ONLYOFFICE Apps Reference}
 	 */
 	async getRoomInfo(id: number, filters?: GetRoomInfoFilters): Promise<Result<[GetRoomInfoResponse, Response], Error>> {
 		let u = this.c.createUrl(`api/2.0/files/rooms/${id}`, filters)
@@ -675,7 +675,7 @@ export class FilesService {
 	}
 
 	/**
-	 * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/products/ASC.Files/Server/Api/VirtualRoomsController.cs/#L180 | DocSpace Reference}
+	 * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/products/ASC.Files/Server/Api/VirtualRoomsController.cs/#L180 | ONLYOFFICE Apps Reference}
 	 */
 	async updateRoom(id: number, o: UpdateRoomOptions, filters?: UpdateRoomFilters): Promise<Result<[UpdateRoomResponse, Response], Error>> {
 		let u = this.c.createUrl(`api/2.0/files/rooms/${id}`, filters)
@@ -704,7 +704,7 @@ export class FilesService {
 	}
 
 	/**
-	 * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/products/ASC.Files/Server/Api/VirtualRoomsController.cs/#L275 | DocSpace Reference}
+	 * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/products/ASC.Files/Server/Api/VirtualRoomsController.cs/#L275 | ONLYOFFICE Apps Reference}
 	 */
 	async archiveRoom(id: number, o: ArchiveRoomOptions): Promise<Result<[ArchiveRoomResponse, Response], Error>> {
 		let u = this.c.createUrl(`api/2.0/files/rooms/${id}/archive`)
@@ -733,7 +733,7 @@ export class FilesService {
 	}
 
 	/**
-	 * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/products/ASC.Files/Server/Api/VirtualRoomsController.cs/#L311 | DocSpace Reference}
+	 * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/products/ASC.Files/Server/Api/VirtualRoomsController.cs/#L311 | ONLYOFFICE Apps Reference}
 	 */
 	async setRoomSecurity(id: number, o: SetRoomSecurityOptions, filters?: SetRoomSecurityFilters): Promise<Result<[SetRoomSecurityResponse, Response], Error>> {
 		let u = this.c.createUrl(`api/2.0/files/rooms/${id}/share`, filters)
@@ -762,7 +762,7 @@ export class FilesService {
 	}
 
 	/**
-	 * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/products/ASC.Files/Server/Api/VirtualRoomsController.cs/#L349 | DocSpace Reference}
+	 * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/products/ASC.Files/Server/Api/VirtualRoomsController.cs/#L349 | ONLYOFFICE Apps Reference}
 	 */
 	async getRoomSecurityInfo(id: number, filters?: GetRoomSecurityFilters): Promise<Result<[GetRoomSecurityInfoResponse[], Response], Error>> {
 		let u = this.c.createUrl(`api/2.0/files/rooms/${id}/share`, filters)
@@ -791,7 +791,7 @@ export class FilesService {
 	}
 
 	/**
-	 * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/products/ASC.Files/Server/Api/VirtualRoomsController.cs/#L649 | DocSpace Reference}
+	 * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/products/ASC.Files/Server/Api/VirtualRoomsController.cs/#L649 | ONLYOFFICE Apps Reference}
 	 */
 	async getRoomsFolder(filters?: GetRoomsFolderFilters): Promise<Result<[GetRoomFolderResponse, Response], Error>> {
 		let u = this.c.createUrl("api/2.0/files/rooms", filters)
@@ -824,7 +824,7 @@ export class FilesService {
 	//
 
 	/**
-	 * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/products/ASC.Files/Server/Startup.cs/#L76 | DocSpace Reference}
+	 * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/products/ASC.Files/Server/Startup.cs/#L76 | ONLYOFFICE Apps Reference}
 	 */
 	async uploadChunk(id: string, chunk: Blob): Promise<Result<[unknown, Response], Error>> {
 		let u = this.c.createUrl(`ChunkedUploader.ashx?uid=${id}`)

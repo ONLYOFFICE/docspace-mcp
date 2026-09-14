@@ -145,7 +145,7 @@ export const userAgent: Item = {
 
 export const baseUrl: Item = {
 	title: "Base URL",
-	description: "The base URL of the DocSpace instance for API requests.",
+	description: "The base URL of the ONLYOFFICE Apps instance for API requests.",
 	distributions: ["js", "mcpb", "oci"],
 	transports: ["stdio", "sse", "streamable-http"],
 	type: "string",
@@ -229,7 +229,7 @@ export const password: Item = {
 
 export const oauthBaseUrl: Item = {
 	title: "OAuth Base URL",
-	description: "The base URL of the DocSpace OAuth service for OAuth requests.",
+	description: "The base URL of the ONLYOFFICE Apps OAuth service for OAuth requests.",
 	distributions: ["js", "oci"],
 	transports: ["sse", "streamable-http"],
 	type: "string",

@@ -1,10 +1,10 @@
-# Authentication with the DocSpace MCP Server
+# Authentication with the ONLYOFFICE Apps MCP Server
 
-The DocSpace MCP server acts as an OAuth proxy between MCP clients and the DocSpace authorization server, handling compatibility gaps in dynamic client registration and scope handling automatically.
+The ONLYOFFICE Apps MCP server acts as an OAuth proxy between MCP clients and the ONLYOFFICE Apps authorization server, handling compatibility gaps in dynamic client registration and scope handling automatically.
 
 ## Dynamic client registration
 
-The DocSpace authorization server does not support OAuth dynamic client registration, which the MCP authorization specification relies on. Without this support, MCP clients cannot register themselves directly with the DocSpace authorization server.
+The ONLYOFFICE Apps authorization server does not support OAuth dynamic client registration, which the MCP authorization specification relies on. Without this support, MCP clients cannot register themselves directly with the ONLYOFFICE Apps authorization server.
 
 The MCP server addresses this limitation by operating in one of two modes:
 
@@ -21,15 +21,15 @@ is enabled.
 ## Scope handling
 
 The MCP server modifies the OAuth flow to address scope-related compatibility
-issues between MCP clients and the DocSpace authorization server:
+issues between MCP clients and the ONLYOFFICE Apps authorization server:
 
-1. Some MCP clients request scopes that the DocSpace authorization server does
+1. Some MCP clients request scopes that the ONLYOFFICE Apps authorization server does
    not recognize, causing the authorization server to reject the request. The
    MCP server ignores all scope parameters from incoming requests and omits them
-   when forwarding to the authorization server. The DocSpace authorization
+   when forwarding to the authorization server. The ONLYOFFICE Apps authorization
    server interprets requests without scope parameters as requesting all scopes
    granted to the application;
-2. Some MCP clients validate scope values in token responses. When the DocSpace
+2. Some MCP clients validate scope values in token responses. When the ONLYOFFICE Apps
    authorization server returns all scopes granted to the application, these
    clients may fail or display errors if the returned scopes differ from those
    they requested. The MCP server removes scope values from token responses
@@ -38,11 +38,11 @@ issues between MCP clients and the DocSpace authorization server:
 Users effectively operate with all permissions granted to the OAuth application,
 regardless of which scopes the MCP client originally requested.
 
-## How the MCP server addresses the DocSpace authorization limitations
+## How the MCP server addresses the ONLYOFFICE Apps authorization limitations
 
-The MCP server acts as an OAuth proxy to address these limitations by using the DocSpace API to create an OAuth application and then using the client details to authenticate the MCP server-client connection.
+The MCP server acts as an OAuth proxy to address these limitations by using the ONLYOFFICE Apps API to create an OAuth application and then using the client details to authenticate the MCP server-client connection.
 
-To create a DocSpace OAuth application, follow the steps in the [DocSpace
+To create an ONLYOFFICE Apps OAuth application, follow the steps in the [ONLYOFFICE Apps
 OAuth application creation guide](https://api.onlyoffice.com/docspace/api-backend/get-started/authentication/oauth2/creating-oauth-app/).
 When configuring the application, ensure the following settings are properly
 configured:
@@ -61,7 +61,7 @@ through the MCP client interface.](clients.md)
 
 ## Other authentication methods
 
-Aside from authenticating with OAuth, the DocSpace MCP server also allows you to authenticate with:
+Aside from authenticating with OAuth, the ONLYOFFICE Apps MCP server also allows you to authenticate with:
 
 - API Key (Header)
 - Personal Access Token (PAT)

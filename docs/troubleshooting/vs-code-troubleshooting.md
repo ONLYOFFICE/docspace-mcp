@@ -1,6 +1,6 @@
 # Resolving issues with VS Code client
 
-The following issues can occur when connecting the DocSpace MCP server to VS Code.
+The following issues can occur when connecting the ONLYOFFICE Apps MCP server to VS Code.
 
 ## The MCP server does not appear in the list
 
@@ -31,15 +31,15 @@ The OAuth token was not saved correctly, or the session expired before the hands
 
 1. Open Command Palette, select **MCP: List Servers**, then select **onlyoffice-docspace** and choose **Stop Server**.
 2. Wait a few seconds, then select **Start Server** again and re-authenticate.
-3. If the problem repeats, sign out of your DocSpace account in the browser, clear cookies for `mcp.onlyoffice.com`, and start the authentication flow again.
+3. If the problem repeats, sign out of your ONLYOFFICE Apps account in the browser, clear cookies for `mcp.onlyoffice.com`, and start the authentication flow again.
 
-## The local server cannot connect to the DocSpace instance
+## The local server cannot connect to the ONLYOFFICE Apps instance
 
 This happens when the `DOCSPACE_BASE_URL` value is incorrect or the API key is invalid/expired. To fix:
 
-- Verify that the URL is correct and accessible: open it in a browser and confirm the DocSpace login page loads.
-- Regenerate the API key in DocSpace **Settings → Developer Tools → API Keys** and update the value in the configuration file.
-- Ensure the URL does not have a trailing slash (e.g., use `https://portal.onlyoffice.com`, not `https://portal.onlyoffice.com/`).
+- Verify that the URL is correct and accessible: open it in a browser and confirm the ONLYOFFICE Apps login page loads.
+- Regenerate the API key in ONLYOFFICE Apps **Settings → Developer Tools → API Keys** and update the value in the configuration file.
+- Ensure the URL does not have a trailing slash (e.g., use `https://your-instance.onlyoffice.com`, not `https://your-instance.onlyoffice.com/`).
 
 ## Docker container exits immediately after starting
 

@@ -1,16 +1,16 @@
 # How to set up a project room
 
-Managing multiple projects, each with numerous moving parts, can be taxing and, without careful management, can lead to inefficient processes. ONLYOFFICE DocSpace provides you with rooms to work and collaborate with team members.
+Managing multiple projects, each with numerous moving parts, can be taxing and, without careful management, can lead to inefficient processes. ONLYOFFICE Apps provides you with rooms to work and collaborate with team members.
 
-Connecting your DocSpace to MCP clients via the DocSpace MCP server enables you to use these AI clients as assistants, allowing you to issue commands that improve the efficiency of how you handle projects.
+Connecting your ONLYOFFICE Apps to MCP clients via the ONLYOFFICE Apps MCP server enables you to use these AI clients as assistants, allowing you to issue commands that improve the efficiency of how you handle projects.
 
 This guide will show you how to set up a project room using the MCP server.
 
 ## Scenario
 
-Imagine you're a project manager with a newly commissioned project to manage a website redesign for a company called Meridian Corp. You need to set up a collaboration space in DocSpace for your team before the kickoff meeting.
+Imagine you're a project manager with a newly commissioned project to manage a website redesign for a company called Meridian Corp. You need to set up a collaboration space in ONLYOFFICE Apps for your team before the kickoff meeting.
 
-A task like this normally takes numerous clicks, but with the DocSpace MCP server, all it takes is a few natural language commands with your AI client.
+A task like this normally takes numerous clicks, but with the ONLYOFFICE Apps MCP server, all it takes is a few natural language commands with your AI client.
 
 ## What you'll learn
 
@@ -22,7 +22,7 @@ This tutorial uses the `get_room_types`, `create_room`, `create_folder`, `get_al
 
 ## Before you proceed
 
-- Make sure you [connect your DocSpace MCP server to your MCP client of choice](../getting-started/clients.md).
+- Make sure you [connect your ONLYOFFICE Apps MCP server to your MCP client of choice](../getting-started/clients.md).
 
 > **Note:** Every AI MCP client sends a confirmation message to deny or confirm every action after you issue a prompt. This confirmation message differs from client to client — Le Chat uses `Always allow`, `Decline` or `Continue`.
 
@@ -42,14 +42,14 @@ Unlike the first prompt, this second prompt provides all the necessary informati
 
 ### Step 1: Understand your room options
 
-Before creating a room, it's important to note what room types DocSpace supports to select the right room that supports your specific needs. Different room types are designed for different workflows — some are suited for document editing, others for read-only review or public sharing. Hence, picking the wrong room type can limit collaboration features later.
+Before creating a room, it's important to note what room types ONLYOFFICE Apps supports to select the right room that supports your specific needs. Different room types are designed for different workflows — some are suited for document editing, others for read-only review or public sharing. Hence, picking the wrong room type can limit collaboration features later.
 
 For active team projects, a Collaboration Room is typically the right choice.
 
 **Enter this prompt into your MCP client:**
 
 ```text
-What room types are available in DocSpace?
+What room types are available in ONLYOFFICE Apps?
 ```
 
 The AI will call the `get_room_types` tool and return a list of available types (e.g., Collaboration Room, Custom Room, Public Room). Read through them and decide which type fits your project.
@@ -105,12 +105,12 @@ This calls `get_folder_content` and displays your folder tree.
 
 ### Step 4: Look up your team members
 
-Before you can invite anyone, you need to know who's available in your DocSpace portal and what their user identifiers are.
+Before you can invite anyone, you need to know who's available in your ONLYOFFICE Apps workspace and what their user identifiers are.
 
 **Try this prompt:**
 
 ```text
-List everyone in the DocSpace portal.
+List everyone in the ONLYOFFICE Apps workspace.
 ```
 
 The AI calls `get_all_people` and returns a directory of all users with their names and IDs. Scan the list and identify the teammates you want to invite:
@@ -159,4 +159,4 @@ Who currently has access to the "Meridian Corp — Website Redesign" room and wh
 
 This calls `get_room_security_info` and displays the current member list with their access levels.
 
-You've successfully set up a fully structured, secure project room through natural language alone. Your team can now start collaborating in an organized space without any manual setup through the DocSpace UI.
+You've successfully set up a fully structured, secure project room through natural language alone. Your team can now start collaborating in an organized space without any manual setup through the ONLYOFFICE Apps UI.

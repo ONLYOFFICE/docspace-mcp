@@ -1,6 +1,6 @@
 # Documentation
 
-Welcome to the documentation for the DocSpace MCP Server.
+Welcome to the documentation for the ONLYOFFICE Apps MCP Server.
 
 ## Contents
 

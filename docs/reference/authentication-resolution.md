@@ -1,6 +1,6 @@
 # Authentication resolution
 
-The DocSpace MCP server resolves authentication methods based on transport configuration and available authentication options.
+The ONLYOFFICE Apps MCP server resolves authentication methods based on transport configuration and available authentication options.
 
 ## Visualization
 
@@ -10,7 +10,7 @@ authentication is resolved for different scenarios.
 
 ### Global configuration
 
-During application startup, the DocSpace MCP server validates the configured
+During application startup, the ONLYOFFICE Apps MCP server validates the configured
 authentication methods based on the selected transport protocol.
 
 #### stdio transport
@@ -60,10 +60,10 @@ flowchart TD
 
 ## References
 
-- [DocSpace MCP: Global Configuration]
-- [DocSpace MCP: Request Configuration]
+- [ONLYOFFICE Apps MCP: Global Configuration]
+- [ONLYOFFICE Apps MCP: Request Configuration]
 
 <!-- Definitions -->
 
-[DocSpace MCP: Global Configuration]: ./global-configuration.md
-[DocSpace MCP: Request Configuration]: ./request-configuration.md
+[ONLYOFFICE Apps MCP: Global Configuration]: ./global-configuration.md
+[ONLYOFFICE Apps MCP: Request Configuration]: ./request-configuration.md

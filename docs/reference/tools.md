@@ -1,12 +1,12 @@
 # Tools
 
-The DocSpace MCP server implements the Tools concept from the MCP specification.
+The ONLYOFFICE Apps MCP server implements the Tools concept from the MCP specification.
 
 ## Toolsets
 
-A toolset is a DocSpace MCP server extension to the standard MCP Tools concept.
+A toolset is an ONLYOFFICE Apps MCP server extension to the standard MCP Tools concept.
 Toolsets provide logical grouping of related tools to organize
-DocSpace functionality into manageable categories.
+ONLYOFFICE Apps functionality into manageable categories.
 
 <!--generate toolsets-start-->
 
@@ -22,7 +22,7 @@ DocSpace functionality into manageable categories.
 ## Regular tools
 
 Regular tools are standard MCP Tools. Each tool corresponds to a specific
-DocSpace operation.
+ONLYOFFICE Apps operation.
 
 <!--generate tools-start-->
 
@@ -75,7 +75,7 @@ DocSpace operation.
 
 ## Meta tools
 
-Meta tools are a DocSpace MCP server extension to the standard MCP Tools
+Meta tools are an ONLYOFFICE Apps MCP server extension to the standard MCP Tools
 concept. They provide a dynamic interface for tool discovery and execution,
 allowing AI models to interact with tools without requiring all tools to be
 loaded simultaneously.

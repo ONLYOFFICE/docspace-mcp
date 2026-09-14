@@ -1,6 +1,6 @@
 # Global configuration
 
-All available configuration options for the DocSpace MCP server provided through environment variables, organized by their functional area.
+All available configuration options for the ONLYOFFICE Apps MCP server provided through environment variables, organized by their functional area.
 
 ## MCP options
 
@@ -110,7 +110,7 @@ User agent sent in the `User-Agent` header for API requests.
 
 ### DOCSPACE_BASE_URL
 
-Base URL of the DocSpace instance for API requests. Must use HTTP or HTTPS with no search parameters or hash fragments. Required if any authentication option is set.
+Base URL of the ONLYOFFICE Apps instance for API requests. Must use HTTP or HTTPS with no search parameters or hash fragments. Required if any authentication option is set.
 
 | | |
 |---|---|
@@ -197,7 +197,7 @@ This option is mutually exclusive with [`DOCSPACE_AUTHORIZATION`],
 
 ### DOCSPACE_OAUTH_BASE_URL
 
-Base URL of the DocSpace OAuth service. Must use HTTP or HTTPS with no search parameters or hash fragments. Set to an empty string to disable OAuth authentication.
+Base URL of the ONLYOFFICE Apps OAuth service. Must use HTTP or HTTPS with no search parameters or hash fragments. Set to an empty string to disable OAuth authentication.
 
 | | |
 |---|---|

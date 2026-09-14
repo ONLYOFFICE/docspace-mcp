@@ -433,7 +433,7 @@ const ErrorResponseSchema = z.
 	})
 
 export async function checkSharedResponse(req: Request, res: globalThis.Response): Promise<Error | undefined> {
-	// DocSpace does not always respect HTTP status codes. Even when it returns
+	// ONLYOFFICE Apps does not always respect HTTP status codes. Even when it returns
 	// HTTP 2xx, it may still include an error in the response body. Therefore,
 	// try to first parse the response body for errors before checking the status
 	// codes.

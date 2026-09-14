@@ -1,6 +1,6 @@
 # Get the MCP server
 
-The DocSpace MCP server can be obtained in several ways depending on your environment and requirements.
+The ONLYOFFICE Apps MCP server can be obtained in several ways depending on your environment and requirements.
 
 ## Choosing a distribution method
 
@@ -125,7 +125,7 @@ This method is ideal for developers who want a consistent, isolated runtime envi
 
 - Ensure you have [Docker](https://www.docker.com/) installed on your system.
 
-1. Pull the latest [DocSpace MCP server image](https://hub.docker.com/r/onlyoffice/docspace-mcp) from Docker Hub:
+1. Pull the latest [ONLYOFFICE Apps MCP server image](https://hub.docker.com/r/onlyoffice/docspace-mcp) from Docker Hub:
 
    ```sh
    docker pull onlyoffice/docspace-mcp
@@ -152,13 +152,13 @@ This method works best for non-technical users or users who prefer a graphical i
 
 1. Enable the Docker MCP Toolkit by following the [Enable Docker MCP Toolkit](https://docs.docker.com/ai/mcp-catalog-and-toolkit/toolkit/#enable-docker-mcp-toolkit) guide.
 
-2. Install the DocSpace MCP server through the Docker Desktop interface using the [Install an MCP Server](https://docs.docker.com/ai/mcp-catalog-and-toolkit/toolkit/#install-an-mcp-server) guide, or by using the Docker CLI:
+2. Install the ONLYOFFICE Apps MCP server through the Docker Desktop interface using the [Install an MCP Server](https://docs.docker.com/ai/mcp-catalog-and-toolkit/toolkit/#install-an-mcp-server) guide, or by using the Docker CLI:
 
    ```sh
    docker mcp server enable onlyoffice-docspace
    ```
 
-3. Connect the DocSpace MCP server to an MCP client through the Docker Desktop interface using the [Install an MCP Client](https://docs.docker.com/ai/mcp-catalog-and-toolkit/toolkit/#install-an-mcp-client) guide, or by using the Docker CLI:
+3. Connect the ONLYOFFICE Apps MCP server to an MCP client through the Docker Desktop interface using the [Install an MCP Client](https://docs.docker.com/ai/mcp-catalog-and-toolkit/toolkit/#install-an-mcp-client) guide, or by using the Docker CLI:
 
    ```sh
    docker mcp client connect --global <client>
@@ -170,7 +170,7 @@ This method also requires minimal setup and is ideal for developers who want the
 
 - [Node.js](https://nodejs.org/) version 18 or higher
 
-1. Run the latest version of the DocSpace MCP server:
+1. Run the latest version of the ONLYOFFICE Apps MCP server:
 
    ```sh
    npx --yes @onlyoffice/docspace-mcp

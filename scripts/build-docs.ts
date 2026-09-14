@@ -195,12 +195,12 @@ function createVscodeInputs(): VscodeInput[] {
 		{
 			type: "promptString",
 			id: "docspace_base_url",
-			description: "The base URL of the DocSpace instance for API requests.",
+			description: "The base URL of the ONLYOFFICE Apps instance for API requests.",
 		},
 		{
 			type: "promptString",
 			id: "docspace_api_key",
-			description: "The API key for accessing the DocSpace API.",
+			description: "The API key for accessing the ONLYOFFICE Apps API.",
 			password: true,
 		},
 	]

@@ -6,7 +6,7 @@ After project completion, practicing archiving and offboarding ensures that the 
 - preserves company knowledge and frees up space and tools for other projects.
 - ensures compliance and aids auditing, as proper transition management ensures files are readily available
 
-This guide will teach you how the connection created by the ONLYOFFICE DocSpace MCP server with AI clients enables you to properly archive your completed projects with simple human prompts.
+This guide will teach you how the connection created by the ONLYOFFICE Apps MCP server with AI clients enables you to properly archive your completed projects with simple human prompts.
 
 ## Scenario
 
@@ -24,7 +24,7 @@ With the Meridian Corp website redesign project officially complete and signed o
 
 ## Before you proceed
 
-- Make sure you [connect your DocSpace MCP server to your MCP client of choice](../getting-started/clients.md).
+- Make sure you [connect your ONLYOFFICE Apps MCP server to your MCP client of choice](../getting-started/clients.md).
 
 ### Step 1: Conduct a full access audit
 
@@ -128,7 +128,7 @@ Delete the "03 — Drafts & Work in Progress" folder.
 ```
 
 The AI calls `delete_folder`.
-**Note:** DocSpace will prevent deletion of a folder that still contains files, so you must empty it first.
+**Note:** ONLYOFFICE Apps will prevent deletion of a folder that still contains files, so you must empty it first.
 
 ### Step 6: Final pre-archive verification
 
@@ -157,7 +157,7 @@ Now close the room from active use.
 Archive the "Meridian Corp — Website Redesign" room.
 ```
 
-The AI calls `archive_room`. The room will move to the archived section of DocSpace, meaning:
+The AI calls `archive_room`. The room will move to the archived section of ONLYOFFICE Apps, meaning:
 
 - It's no longer visible in the active rooms list
 - No new files can be added to it

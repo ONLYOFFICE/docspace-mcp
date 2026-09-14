@@ -1,6 +1,6 @@
 # Resolving errors with the ONLYOFFICE Desktop Editors
 
-The following issues can occur when connecting the ONLYOFFICE Desktop Editors to the DocSpace MCP server.
+The following issues can occur when connecting the ONLYOFFICE Desktop Editors to the ONLYOFFICE Apps MCP server.
 
 ## Docker is not found or not running
 
@@ -25,12 +25,12 @@ The server starts but immediately exits, or no tools appear in the AI agent. Try
   ```
 - Verify that the `DOCSPACE_BASE_URL` value is a valid, reachable URL (including `https://`).
 
-## DocSpace instance is not reachable
+## ONLYOFFICE Apps instance is not reachable
 
 Connection timeout or `ERR_NAME_NOT_RESOLVED` when the server tries to reach `DOCSPACE_BASE_URL`. Confirm this error and fix it by:
 
 - Confirm the URL is accessible from your machine by opening it in a browser.
-- If you are using a VPN, make sure it is active and the DocSpace domain resolves correctly.
+- If you are using a VPN, make sure it is active and the ONLYOFFICE Apps domain resolves correctly.
 - Check that your firewall does not block outgoing HTTPS connections from Docker containers.
 - On Linux, you may need to configure Docker DNS settings in `/etc/docker/daemon.json`:
   ```json

@@ -2,10 +2,10 @@
 	"$schema": "node_modules/@anthropic-ai/mcpb/schemas/mcpb-manifest-v0.3.schema.json",
 	"manifest_version": "0.3",
 	"name": "onlyoffice-docspace",
-	"display_name": "ONLYOFFICE DocSpace",
+	"display_name": "ONLYOFFICE Apps",
 	"version": "",
 	"description": "A room-based collaborative platform",
-	"long_description": "ONLYOFFICE DocSpace is a room-based collaborative platform which allows organizing a clear file structure depending on users' needs or project goals.",
+	"long_description": "ONLYOFFICE Apps is a room-based collaborative platform which allows organizing a clear file structure depending on users' needs or project goals.",
 	"author": {
 		"name": "Ascensio System SIA",
 		"email": "integration@onlyoffice.com",

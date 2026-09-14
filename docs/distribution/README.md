@@ -1,12 +1,12 @@
 # Distribution overview
 
-The DocSpace MCP server is available in several formats from different distribution sources.
+The ONLYOFFICE Apps MCP server is available in several formats from different distribution sources.
 
 ## Available formats
 
-The DocSpace MCP server is distributed in four formats.
+The ONLYOFFICE Apps MCP server is distributed in four formats.
 
-- **Docker Image**: A containerized version of the DocSpace MCP server.
+- **Docker Image**: A containerized version of the ONLYOFFICE Apps MCP server.
 - **Docker MCP Server**: An MCP server available through Docker's MCP Catalog and Toolkit.
 - **MCP Bundle**: A bundled MCP server for applications that support the MCP Bundles format.
 - **Node.js Application**: A standalone application that can be run on systems with Node.js.

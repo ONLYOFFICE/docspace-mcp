@@ -1,6 +1,6 @@
 # Troubleshooting issues with Le Chat MCP client
 
-The following issues can occur when connecting the DocSpace MCP server to the Le Chat client.
+The following issues can occur when connecting the ONLYOFFICE Apps MCP server to the Le Chat client.
 
 ## The "Custom MCP Connector" option is not available
 
@@ -21,15 +21,15 @@ A session or cookie conflict may be preventing the correct account from being se
 The permission consent step may have been skipped or declined. Follow these steps to fix:
 
 1. Repeat the [connection process](../getting-started/clients.md#connect-to-le-chat) from step 9.
-2. On the final OAuth screen, make sure to click **Allow** (or equivalent) to grant the MCP server access to your DocSpace account.
-3. If the consent screen does not appear, revoke the existing OAuth token in your DocSpace account settings and try again.
+2. On the final OAuth screen, make sure to click **Allow** (or equivalent) to grant the MCP server access to your ONLYOFFICE Apps account.
+3. If the consent screen does not appear, revoke the existing OAuth token in your ONLYOFFICE Apps account settings and try again.
 
-## The connector appears in Le Chat but DocSpace tools are not called
+## The connector appears in Le Chat but ONLYOFFICE Apps tools are not called
 
-After a successful connection, the DocSpace connector must be explicitly enabled in the **Tools** window for each conversation. If it is not selected, Le Chat will not invoke any DocSpace tools even though the connector is configured correctly. To fix:
+After a successful connection, the ONLYOFFICE Apps connector must be explicitly enabled in the **Tools** window for each conversation. If it is not selected, Le Chat will not invoke any ONLYOFFICE Apps tools even though the connector is configured correctly. To fix:
 
 1. Open the **Tools** panel in Le Chat.
-2. In the **Connectors** list, make sure **ONLYOFFICE_DocSpace_MCP** (or the name you assigned) is selected.
+2. In the **Connectors** list, make sure **ONLYOFFICE_ONLYOFFICE Apps_MCP** (or the name you assigned) is selected.
 3. Start a new conversation and try again.
 
 ## The connector appears in Le Chat but returns no data
@@ -38,4 +38,4 @@ The MCP server connection may have been established, but the OAuth token has exp
 
 - Remove the existing connector in Le Chat and retry [adding it](../getting-started/clients.md#connect-to-le-chat).
 - Check that the server URL is `https://mcp.onlyoffice.com/mcp` and that **OAuth2.1** is selected as the authentication method.
-- Contact your DocSpace administrator to verify that the MCP server is running and accessible.
+- Contact your ONLYOFFICE Apps administrator to verify that the MCP server is running and accessible.

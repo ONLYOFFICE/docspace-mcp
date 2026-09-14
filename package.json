@@ -1,7 +1,7 @@
 {
 	"name": "@onlyoffice/docspace-mcp",
 	"version": "3.2.0",
-	"description": "ONLYOFFICE DocSpace Model Context Protocol Server",
+	"description": "ONLYOFFICE Apps Model Context Protocol Server",
 	"keywords": [
 		"onlyoffice",
 		"docspace",

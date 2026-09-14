@@ -1,6 +1,6 @@
 # Reference
 
-This section contains the configuration references and examples of how to use these configurations with the DocSpace MCP server.
+This section contains the configuration references and examples of how to use these configurations with the ONLYOFFICE Apps MCP server.
 
 - [Tools](./tools.md)
 - [Global configuration](./global-configuration.md)

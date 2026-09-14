@@ -34,7 +34,7 @@ body:
   - type: input
     id: docspace_version
     attributes:
-      label: ONLYOFFICE DocSpace version
+      label: ONLYOFFICE Apps version
       placeholder: "e.g. 3.7.1"
     validations:
       required: true
@@ -78,7 +78,7 @@ body:
       placeholder: |
         Attach:
         - integration logs;
-        - ONLYOFFICE DocSpace logs;
+        - ONLYOFFICE Apps logs;
         - browser console;
         - network trace (optional).
       render: shell

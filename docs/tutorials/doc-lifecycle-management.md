@@ -1,6 +1,6 @@
 # How to effectively manage your project documentation throughout its lifecycle
 
-Creating content requires numerous reviews and iterations from editors and other team members before a final draft, and without proper management to keep track of these files and versions, it can get confusing. The DocSpace MCP server facilitates this process, improving efficiency throughout the process.
+Creating content requires numerous reviews and iterations from editors and other team members before a final draft, and without proper management to keep track of these files and versions, it can get confusing. The ONLYOFFICE Apps MCP server facilitates this process, improving efficiency throughout the process.
 
 ## Scenario
 
@@ -19,7 +19,7 @@ This tutorial walks you through managing the entire document lifecycle, from fir
 
 ## Before you proceed
 
-- Make sure you [connect your DocSpace MCP server to your MCP client of choice](../getting-started/clients.md).
+- Make sure you [connect your ONLYOFFICE Apps MCP server to your MCP client of choice](../getting-started/clients.md).
 
 > **Note:** Every AI MCP client sends a confirmation message to deny or confirm every action after you issue a prompt. This confirmation message differs from client to client — Le Chat uses `Always allow`, `Decline` or `Continue`.
 
@@ -57,7 +57,7 @@ The AI calls `get_file_info` and returns the file's metadata. This is particular
 
 ### Step 3: Review the document with your MCP client
 
-One of the most powerful capabilities of the DocSpace MCP server is allowing an AI agent to actually read the contents of a document for analysis, summarization, or review.
+One of the most powerful capabilities of the ONLYOFFICE Apps MCP server is allowing an AI agent to actually read the contents of a document for analysis, summarization, or review.
 
 **Try this prompt:**
 

@@ -14,7 +14,7 @@ export type GetFullByFilterFilters = z.input<typeof GetFullByFilterFiltersSchema
 export type GetFullByFilterResponseItem = z.output<typeof EmployeeFullDtoSchema>
 
 /**
- * {@link https://github.com/ONLYOFFICE/DocSpace-server/tree/v3.0.4-server/products/ASC.People/ | DocSpace Reference}
+ * {@link https://github.com/ONLYOFFICE/DocSpace-server/tree/v3.0.4-server/products/ASC.People/ | ONLYOFFICE Apps Reference}
  */
 export class PeopleService {
 	private c: Client
@@ -24,7 +24,7 @@ export class PeopleService {
 	}
 
 	/**
-	 * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/products/ASC.People/Server/Api/UserController.cs/#L811 | DocSpace Reference}
+	 * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/products/ASC.People/Server/Api/UserController.cs/#L811 | ONLYOFFICE Apps Reference}
 	 */
 	async getFullByFilter(filters?: GetFullByFilterFilters): Promise<Result<[GetFullByFilterResponseItem[], Response], Error>> {
 		let u = this.c.createUrl("api/2.0/people/filter", filters)

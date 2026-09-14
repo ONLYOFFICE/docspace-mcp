@@ -1,18 +1,18 @@
-# Installing the DocSpace MCP server
+# Installing the ONLYOFFICE Apps MCP server
 
-Before interacting with the DocSpace MCP server, you need to install or connect to it. DocSpace offers two ways to do this:
+Before interacting with the ONLYOFFICE Apps MCP server, you need to install or connect to it. ONLYOFFICE Apps offers two ways to do this:
 
-- [Access via a local machine](#access-via-a-local-docspace-mcp-server)
-- [Access via a remote server](#access-via-the-remote-docspace-mcp-server)
+- [Access via a local machine](#access-via-a-local-onlyoffice-apps-mcp-server)
+- [Access via a remote server](#access-via-the-remote-onlyoffice-apps-mcp-server)
 
 ## Before you start
 
-- Ensure you have a DocSpace Instance. [Sign up to DocSpace](https://www.onlyoffice.com/docspace-registration?utm_source=api&utm_medium=article&utm_campaign=mcpserver) to access your instance and get an API key.
+- Ensure you have an ONLYOFFICE Apps Instance. [Sign up to ONLYOFFICE Apps](https://www.onlyoffice.com/docspace-registration?utm_source=api&utm_medium=article&utm_campaign=mcpserver) to access your instance and get an API key.
 - Choose your desired client. You can build a custom client or [choose from the different MCP clients](clients.md) available based on your integration, features, user interface, or security needs.
 
-## Access via a local DocSpace MCP server
+## Access via a local ONLYOFFICE Apps MCP server
 
-You can configure your local machine to interact with the DocSpace MCP server using:
+You can configure your local machine to interact with the ONLYOFFICE Apps MCP server using:
 
 - [Docker image](#install-with-docker-image)
 - [Docker MCP Toolkit](#install-with-docker-mcp-toolkit)
@@ -21,15 +21,15 @@ You can configure your local machine to interact with the DocSpace MCP server us
 
 Before proceeding, ensure to set these environment variables:
 
-- `DOCSPACE_BASE_URL` - the URL of your DocSpace instance (e.g. https://portal.onlyoffice.com).
-- `DOCSPACE_API_KEY` - your personal API key generated in DocSpace settings → **Developer Tools** → **API keys**.
+- `DOCSPACE_BASE_URL` - the URL of your ONLYOFFICE Apps instance (e.g. https://your-instance.onlyoffice.com).
+- `DOCSPACE_API_KEY` - your personal API key generated in ONLYOFFICE Apps settings → **Developer Tools** → **API keys**.
 
 ### Install with Docker image
 
-1. [Follow these steps](../distribution/distribution-combined.md#pull-from-docker-hub) to pull the latest DocSpace MCP server from Docker Hub
+1. [Follow these steps](../distribution/distribution-combined.md#pull-from-docker-hub) to pull the latest ONLYOFFICE Apps MCP server from Docker Hub
 2. Locate your MCP client `.json` config file. The location of this file depends on the specific client.
 
-3. Add the DocSpace MCP Server entry
+3. Add the ONLYOFFICE Apps MCP Server entry
 
 Insert the following block into the `mcpServers` section of your `.json` configuration file:
 
@@ -81,9 +81,9 @@ system and the Docker MCP Toolkit to be enabled.
 
 3. Configure the server through the Docker Desktop interface. In general:
 
-    - Select the DocSpace MCP server in Docker Desktop
+    - Select the ONLYOFFICE Apps MCP server in Docker Desktop
     - Open the server's configuration or settings panel
-    - Enter your DocSpace base URL (e.g., `https://your-instance.onlyoffice.com`)
+    - Enter your ONLYOFFICE Apps base URL (e.g., `https://your-instance.onlyoffice.com`)
     - Enter your personal API key
     - Save the configuration
 
@@ -98,7 +98,7 @@ Running the MCP bundle requires [Node.js](https://nodejs.org/en/download) versio
 3. Configure the server through the application's interface. In general:
 
     - Open the server settings within your application
-    - Enter your DocSpace base URL (e.g., `https://your-instance.onlyoffice.com`)
+    - Enter your ONLYOFFICE Apps base URL (e.g., `https://your-instance.onlyoffice.com`)
     - Enter your personal API key 
     - Save the configuration and restart the application if required
 
@@ -133,11 +133,11 @@ configuration to your client's configuration file:
 |--------|-------------|
 | `npx` | The Node.js package runner, which downloads and executes packages on demand |
 | `--yes` | Automatically confirms the installation prompt, enabling unattended startup |
-| `@onlyoffice/docspace-mcp` | The official DocSpace MCP server package from npm |
+| `@onlyoffice/docspace-mcp` | The official ONLYOFFICE Apps MCP server package from npm |
 
-## Access via the remote DocSpace MCP server
+## Access via the remote ONLYOFFICE Apps MCP server
 
-Another way to use the DocSpace MCP server is to access it via a public DocSpace MCP Server instance hosted by ONLYOFFICE. This eliminates the need to run your own server infrastructure while providing access to DocSpace functionality through your AI assistant. To do this, provide the DocSpace MCP server public instance URL when [connecting to any of the MCP clients](clients.md). 
+Another way to use the ONLYOFFICE Apps MCP server is to access it via a public ONLYOFFICE Apps MCP Server instance hosted by ONLYOFFICE. This eliminates the need to run your own server infrastructure while providing access to ONLYOFFICE Apps functionality through your AI assistant. To do this, provide the ONLYOFFICE Apps MCP server public instance URL when [connecting to any of the MCP clients](clients.md). 
 
 ## Public instance
 
@@ -175,4 +175,4 @@ The public instance supports multiple authentication methods to meet different s
 ## After installation
 
 - [Test MCP server-client installation](quickstart.md#step-2-confirm-the-connection)
-- [Start exploring with the MCP server by creating a new room](quickstart.md#step-3-interact-with-your-docspace-using-the-newly-connected-client)
+- [Start exploring with the MCP server by creating a new room](quickstart.md#step-3-interact-with-your-onlyoffice-apps-using-the-newly-connected-client)

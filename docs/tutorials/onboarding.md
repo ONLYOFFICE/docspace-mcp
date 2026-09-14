@@ -1,7 +1,7 @@
 # How to successfully onboard a distributed team into your project
 
 With businesses increasingly adopting remote work, managing these teams efficiently without sacrificing security and access becomes a priority.
-The AI assistant created by the DocSpace MCP server-client connection allows you to successfully onboard new hires quickly while practicing best security practices.
+The AI assistant created by the ONLYOFFICE Apps MCP server-client connection allows you to successfully onboard new hires quickly while practicing best security practices.
 
 ## Scenario
 
@@ -20,13 +20,13 @@ You need to onboard all four efficiently without introducing security gaps or gr
 
 ## Before you proceed
 
-- Make sure you [connect your DocSpace MCP server to your MCP client of choice](../getting-started/clients.md).
+- Make sure you [connect your ONLYOFFICE Apps MCP server to your MCP client of choice](../getting-started/clients.md).
 
 > **Note:** Every AI MCP client sends a confirmation message to deny or confirm every action after you issue a prompt. This confirmation message differs from client to client — Le Chat uses `Always allow`, `Decline` or `Continue`.
 
 ### Step 1: Review your existing rooms
 
-Before inviting anyone, get a clear picture of what rooms currently exist in your DocSpace.
+Before inviting anyone, get a clear picture of what rooms currently exist in your ONLYOFFICE Apps.
 
 ```text
 Show me the Rooms folder — I want to see all existing rooms.
@@ -64,12 +64,12 @@ Remove user "freelancer@example.com" from the "Engineering — Core Platform" ro
 
 ### Step 3: Look up the new hires
 
-Find the new employees in your DocSpace portal.
+Find the new employees in your ONLYOFFICE Apps workspace.
 
 **Try this prompt:**
 
 ```text
-List all people in the DocSpace portal and tell me which ones were recently added.
+List all people in the ONLYOFFICE Apps workspace and tell me which ones were recently added.
 ```
 
 The AI calls `get_all_people` and returns the full directory. Identify your four new hires:

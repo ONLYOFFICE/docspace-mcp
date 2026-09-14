@@ -1,74 +1,74 @@
 {
-	"name": "@onlyoffice/docspace-mcp",
-	"version": "3.2.0",
-	"description": "ONLYOFFICE Apps Model Context Protocol Server",
-	"keywords": [
-		"onlyoffice",
-		"docspace",
-		"modelcontextprotocol",
-		"mcp"
-	],
-	"homepage": "https://github.com/onlyoffice/docspace-mcp/",
-	"bugs": {
-		"url": "https://github.com/onlyoffice/docspace-mcp/issues/",
-		"email": "support@onlyoffice.com"
-	},
-	"repository": {
-		"type": "git",
-		"url": "https://github.com/ONLYOFFICE/docspace-mcp"
-	},
-	"license": "MIT",
-	"author": {
-		"name": "Ascensio System SIA",
-		"email": "integration@onlyoffice.com",
-		"url": "https://onlyoffice.com/"
-	},
-	"type": "module",
-	"bin": {
-		"onlyoffice-docspace-mcp": "bin/onlyoffice-docspace-mcp.js"
-	},
-	"files": [
-		"bin"
-	],
-	"scripts": {
-		"build-app": "node scripts/build-app.ts",
-		"build-detail": "node scripts/build-detail.ts",
-		"build-docs": "node scripts/build-docs.ts",
-		"build-mcpb": "node scripts/build-mcpb.ts",
-		"inspect": "node scripts/inspect.ts",
-		"lint-code": "eslint --no-warn-ignored --concurrency=auto .github app docs lib scripts test *.*",
-		"lint-types": "tsc",
-		"serve": "node scripts/serve.ts",
-		"test": "node --test"
-	},
-	"devDependencies": {
-		"@anthropic-ai/mcpb": "2.1.2",
-		"@modelcontextprotocol/inspector": "0.19.0",
-		"@modelcontextprotocol/sdk": "1.25.3",
-		"@types/content-type": "1.1.9",
-		"@types/cors": "2.8.19",
-		"@types/express": "5.0.6",
-		"@types/express-serve-static-core": "5.1.1",
-		"@types/jsonwebtoken": "9.0.10",
-		"@types/logfmt": "1.2.6",
-		"@types/node": "25.2.0",
-		"@types/web": "0.0.326",
-		"@vanyauhalin/eslint-config": "0.0.11",
-		"ajv": "8.17.1",
-		"ajv-formats": "3.0.1",
-		"content-type": "1.0.5",
-		"cors": "2.8.6",
-		"esbuild": "0.27.2",
-		"eslint": "9.39.2",
-		"express": "5.2.1",
-		"express-rate-limit": "8.2.1",
-		"jsonwebtoken": "9.0.3",
-		"logfmt": "1.4.0",
-		"typescript": "5.9.3",
-		"zod": "4.3.6"
-	},
-	"engines": {
-		"node": ">=18.0.0"
-	},
-	"mcpName": "io.github.ONLYOFFICE/docspace"
+  "name": "@onlyoffice/docspace-mcp",
+  "version": "3.2.0",
+  "description": "ONLYOFFICE Apps Model Context Protocol Server",
+  "keywords": [
+    "onlyoffice",
+    "docspace",
+    "modelcontextprotocol",
+    "mcp"
+  ],
+  "homepage": "https://github.com/onlyoffice/docspace-mcp/",
+  "bugs": {
+    "url": "https://github.com/onlyoffice/docspace-mcp/issues/",
+    "email": "support@onlyoffice.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ONLYOFFICE/docspace-mcp"
+  },
+  "license": "MIT",
+  "author": {
+    "name": "Ascensio System SIA",
+    "email": "integration@onlyoffice.com",
+    "url": "https://onlyoffice.com/"
+  },
+  "type": "module",
+  "bin": {
+    "onlyoffice-docspace-mcp": "bin/onlyoffice-docspace-mcp.js"
+  },
+  "files": [
+    "bin"
+  ],
+  "scripts": {
+    "build-app": "node scripts/build-app.ts",
+    "build-detail": "node scripts/build-detail.ts",
+    "build-docs": "node scripts/build-docs.ts",
+    "build-mcpb": "node scripts/build-mcpb.ts",
+    "inspect": "node scripts/inspect.ts",
+    "lint-code": "eslint --no-warn-ignored --concurrency=auto .github app docs lib scripts test *.*",
+    "lint-types": "tsc",
+    "serve": "node scripts/serve.ts",
+    "test": "node --test"
+  },
+  "devDependencies": {
+    "@anthropic-ai/mcpb": "2.1.2",
+    "@modelcontextprotocol/inspector": "0.19.0",
+    "@modelcontextprotocol/sdk": "1.25.3",
+    "@types/content-type": "1.1.9",
+    "@types/cors": "2.8.19",
+    "@types/express": "5.0.6",
+    "@types/express-serve-static-core": "5.1.1",
+    "@types/jsonwebtoken": "9.0.10",
+    "@types/logfmt": "1.2.6",
+    "@types/node": "25.2.0",
+    "@types/web": "0.0.326",
+    "@vanyauhalin/eslint-config": "0.0.11",
+    "ajv": "8.17.1",
+    "ajv-formats": "3.0.1",
+    "content-type": "1.0.5",
+    "cors": "2.8.6",
+    "esbuild": "0.27.2",
+    "eslint": "9.39.2",
+    "express": "5.2.1",
+    "express-rate-limit": "8.2.1",
+    "jsonwebtoken": "9.0.3",
+    "logfmt": "1.4.0",
+    "typescript": "5.9.3",
+    "zod": "4.3.6"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "mcpName": "io.github.ONLYOFFICE/docspace"
 }

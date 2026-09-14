@@ -1,0 +1,58 @@
+name: Connection issue
+description: Report a problem connecting this integration to ONLYOFFICE DocSpace.
+title: "[Connection]: "
+labels:
+  - configuration
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this template for connectivity problems between the integration and ONLYOFFICE DocSpace. For general configuration help, try the [Community Forum](https://community.onlyoffice.com/) or [API documentation](https://api.onlyoffice.com/docspace/) first.
+  - type: checkboxes
+    id: duplicate_check
+    attributes:
+      label: Before submitting
+      options:
+        - label: I searched existing issues and did not find a duplicate.
+          required: true
+  - type: input
+    id: system_version
+    attributes:
+      label: System version
+      description: "Version of the system where the integration is installed (e.g. WordPress 7.0.1, Moodle 5.2.1)."
+      placeholder: "e.g. 1.0.0"
+    validations:
+      required: true
+  - type: input
+    id: integration_version
+    attributes:
+      label: Integration version
+      description: "Version of this integration."
+      placeholder: "e.g. 1.0.0"
+    validations:
+      required: true
+  - type: input
+    id: docspace_version
+    attributes:
+      label: ONLYOFFICE DocSpace version
+      placeholder: "e.g. 3.7.1"
+    validations:
+      required: true
+  - type: textarea
+    id: issue_summary
+    attributes:
+      label: Expected behavior
+      placeholder: "Describe the connection problem: where it fails and any error messages shown."
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs (optional)
+      placeholder: "Paste relevant logs (e.g., editor or system logs)."
+      render: shell
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: Screenshots (optional)
+      placeholder: "Attach or paste any relevant screenshots."

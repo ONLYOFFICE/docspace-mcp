@@ -1,0 +1,8 @@
+declare module "eslint-plugin-ascii"
+declare module "eslint-plugin-es-x"
+declare module "eslint-plugin-github"
+declare module "eslint-plugin-import-newlines"
+declare module "eslint-plugin-no-unsanitized"
+declare module "eslint-plugin-prefer-let"
+declare module "eslint-plugin-promise"
+declare module "eslint-plugin-security"

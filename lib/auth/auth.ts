@@ -10,7 +10,6 @@ import type * as r from "../util/result.ts"
 import type {Credential} from "./credential.ts"
 
 declare module "express-serve-static-core" {
-  // eslint-disable-next-line typescript/consistent-type-definitions
   interface Request {
     [authKey]?: Auth
   }

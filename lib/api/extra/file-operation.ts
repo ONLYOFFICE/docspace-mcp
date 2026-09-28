@@ -241,7 +241,7 @@ export class FileOperationCaller {
         return ir
       },
 
-      // eslint-disable-next-line typescript/require-await
+      // eslint-disable-next-line @typescript-eslint/require-await
       async return() {
         close()
 

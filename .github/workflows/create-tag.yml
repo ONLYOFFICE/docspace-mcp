@@ -3,11 +3,11 @@ name: Create Tag
 on:
   push:
     branches:
-    - main
+      - main
     paths:
-    - app/**
-    - lib/**
-    - package.json
+      - app/**
+      - lib/**
+      - package.json
   workflow_dispatch:
 
 jobs:
@@ -16,18 +16,18 @@ jobs:
     permissions:
       contents: write
     steps:
-    - name: Checkout Repository
-      uses: actions/checkout@v7
+      - name: Checkout Repository
+        uses: actions/checkout@v7
 
-    - name: Store Version
-      id: version
-      run: echo "version=$(jq --raw-output ".version" package.json)" >> "$GITHUB_OUTPUT"
+      - name: Store Version
+        id: version
+        run: echo "version=$(jq --raw-output ".version" package.json)" >> "$GITHUB_OUTPUT"
 
-    - name: Create Tag
-      run: |
-        git config user.name "$GITHUB_ACTOR"
-        git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
-        git tag -a "v${{steps.version.outputs.version}}" -m "Release/v${{steps.version.outputs.version}}"
+      - name: Create Tag
+        run: |
+          git config user.name "$GITHUB_ACTOR"
+          git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
+          git tag -a "v${{steps.version.outputs.version}}" -m "Release/v${{steps.version.outputs.version}}"
 
-    - name: Publish Tag
-      run: git push origin "v${{steps.version.outputs.version}}"
+      - name: Publish Tag
+        run: git push origin "v${{steps.version.outputs.version}}"

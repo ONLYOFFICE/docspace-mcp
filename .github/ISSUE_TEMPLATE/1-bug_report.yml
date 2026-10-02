@@ -20,29 +20,29 @@ body:
     attributes:
       label: System version
       description: "Version of the system where the integration is installed (e.g. WordPress 7.0.1, Moodle 5.2.1)."
-      placeholder: "e.g. 1.0.0"
+      placeholder: e.g. 1.0.0
     validations:
       required: true
   - type: input
     id: integration_version
     attributes:
       label: Integration version
-      description: "Version of this integration."
-      placeholder: "e.g. 1.0.0"
+      description: Version of this integration.
+      placeholder: e.g. 1.0.0
     validations:
       required: true
   - type: input
     id: docspace_version
     attributes:
       label: ONLYOFFICE Apps version
-      placeholder: "e.g. 3.7.1"
+      placeholder: e.g. 3.7.1
     validations:
       required: true
   - type: textarea
     id: issue_summary
     attributes:
       label: What happened?
-      placeholder: "Describe the problem in detail and when it occurs."
+      placeholder: Describe the problem in detail and when it occurs.
     validations:
       required: true
   - type: textarea
@@ -59,7 +59,7 @@ body:
     id: expected
     attributes:
       label: Expected behavior
-      placeholder: "Describe the expected result after completing the steps above."
+      placeholder: Describe the expected result after completing the steps above.
     validations:
       required: true
   - type: textarea
@@ -86,4 +86,4 @@ body:
     id: screenshots
     attributes:
       label: Screenshots (optional)
-      placeholder: "Attach or paste any relevant screenshots."
+      placeholder: Attach or paste any relevant screenshots.

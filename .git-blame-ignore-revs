@@ -6,3 +6,6 @@ aa81f35bb945462180d85677df53d7796e0141f3
 
 # Indent with two spaces
 0833d80fdc03817807ba8b5c1ff204f91d35bd74
+
+# Prefer const over let
+5cb4eef6293d515c82a5089e23e523432eb8a417

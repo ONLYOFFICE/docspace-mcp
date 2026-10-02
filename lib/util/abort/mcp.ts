@@ -11,37 +11,37 @@ import {Controller} from "./controller.ts"
 export type McpHandler = Parameters<mcp.Protocol["setRequestHandler"]>[1]
 
 export function wrapMcpHandler(handler: McpHandler): McpHandler {
-	return async(req, extra) => {
-		let ctx = context.get()
+  return async(req, extra) => {
+    let ctx = context.get()
 
-		let ac = new Controller()
+    let ac = new Controller()
 
-		if (ctx && ctx[signalKey]) {
-			ac.withSignal(ctx[signalKey])
-		}
+    if (ctx && ctx[signalKey]) {
+      ac.withSignal(ctx[signalKey])
+    }
 
-		ac.withSignal(extra.signal)
+    ac.withSignal(extra.signal)
 
-		ctx = {
-			[signalKey]: ac.signal,
-		}
+    ctx = {
+      [signalKey]: ac.signal,
+    }
 
-		let ex = (res: (v: Awaited<ReturnType<McpHandler>>) => void, rej: (err: unknown) => void): void => {
-			let cb = (): void => {
-				void (async() => {
-					try {
-						res(await handler(req, extra))
-					} catch (err) {
-						rej(err)
-					} finally {
-						ac.clear()
-					}
-				})()
-			}
+    let ex = (res: (v: Awaited<ReturnType<McpHandler>>) => void, rej: (err: unknown) => void): void => {
+      let cb = (): void => {
+        void (async() => {
+          try {
+            res(await handler(req, extra))
+          } catch (err) {
+            rej(err)
+          } finally {
+            ac.clear()
+          }
+        })()
+      }
 
-			context.run(ctx, cb)
-		}
+      context.run(ctx, cb)
+    }
 
-		return await new Promise(ex)
-	}
+    return await new Promise(ex)
+  }
 }

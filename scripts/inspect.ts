@@ -2,21 +2,21 @@ import child from "node:child_process"
 import * as env from "./env.ts"
 
 function main(): void {
-	env.load()
+  env.load()
 
-	let args: string[] = ["exec", "mcp-inspector"]
+  let args: string[] = ["exec", "mcp-inspector"]
 
-	for (let e of env.environ()) {
-		args.push("-e", e)
-	}
+  for (let e of env.environ()) {
+    args.push("-e", e)
+  }
 
-	args.push("--", "node", "app/main.ts")
+  args.push("--", "node", "app/main.ts")
 
-	child.spawn("pnpm", args, {
-		env: process.env,
-		stdio: "inherit",
-		shell: true,
-	})
+  child.spawn("pnpm", args, {
+    env: process.env,
+    stdio: "inherit",
+    shell: true,
+  })
 }
 
 main()

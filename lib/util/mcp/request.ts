@@ -7,11 +7,11 @@ import type * as protocol from "@modelcontextprotocol/sdk/shared/protocol.js"
 import type * as types from "@modelcontextprotocol/sdk/types.js"
 
 export type RequestHandlerMap = {
-	"elicitation/create": ElicitRequestHandler
-	"initialize": InitializeRequestHandler
-	"logging/setLevel": SetLevelRequestHandler
-	"tools/call": CallToolRequestHandler
-	"tools/list": ListToolsRequestHandler
+  "elicitation/create": ElicitRequestHandler
+  "initialize": InitializeRequestHandler
+  "logging/setLevel": SetLevelRequestHandler
+  "tools/call": CallToolRequestHandler
+  "tools/list": ListToolsRequestHandler
 }
 
 export type ElicitRequestHandler = RequestHandler<types.ElicitRequest, types.ElicitResult>

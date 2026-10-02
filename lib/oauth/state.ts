@@ -8,138 +8,138 @@ import * as z from "zod"
 import * as r from "../util/result.ts"
 
 export class InvalidStateTokenError extends Error {
-	constructor(...args: ConstructorParameters<typeof Error>) {
-		super(...args)
-		this.name = "InvalidStateTokenError"
-	}
+  constructor(...args: ConstructorParameters<typeof Error>) {
+    super(...args)
+    this.name = "InvalidStateTokenError"
+  }
 }
 
 export const StateTokenPayloadSchema = z.object({
-	exp: z.number().optional(),
-	nbf: z.number(),
-	iat: z.number(),
-	redirect_uri: z.string(),
-	state: z.string().optional(),
+  exp: z.number().optional(),
+  nbf: z.number(),
+  iat: z.number(),
+  redirect_uri: z.string(),
+  state: z.string().optional(),
 })
 
 export type State = {
-	redirect_uri: string
-	state?: string | undefined
+  redirect_uri: string
+  state?: string | undefined
 }
 
 export type StateTokenPayload = z.infer<typeof StateTokenPayloadSchema>
 
 export type StateTokensConfig = {
-	algorithm: StateTokensAlgorithm
-	ttl: number
-	secretKey: string
+  algorithm: StateTokensAlgorithm
+  ttl: number
+  secretKey: string
 }
 
 export type StateTokensAlgorithm = "HS256" | "HS384" | "HS512" | ""
 
 export class StateTokens {
-	private algorithm: StateTokensAlgorithm
-	private ttl: number
-	private secretKey: string
+  private algorithm: StateTokensAlgorithm
+  private ttl: number
+  private secretKey: string
 
-	constructor(config: StateTokensConfig) {
-		if (!config.algorithm || !config.secretKey) {
-			this.algorithm = ""
-			this.secretKey = ""
-		} else {
-			this.algorithm = config.algorithm
-			this.secretKey = config.secretKey
-		}
+  constructor(config: StateTokensConfig) {
+    if (!config.algorithm || !config.secretKey) {
+      this.algorithm = ""
+      this.secretKey = ""
+    } else {
+      this.algorithm = config.algorithm
+      this.secretKey = config.secretKey
+    }
 
-		this.ttl = config.ttl
-	}
+    this.ttl = config.ttl
+  }
 
-	verify(t: string): r.Result<State, Error> {
-		let alg: jwt.Algorithm | undefined
+  verify(t: string): r.Result<State, Error> {
+    let alg: jwt.Algorithm | undefined
 
-		if (this.algorithm) {
-			alg = this.algorithm
-		} else {
-			alg = "none"
-		}
+    if (this.algorithm) {
+      alg = this.algorithm
+    } else {
+      alg = "none"
+    }
 
-		let vo: jwt.VerifyOptions = {
-			algorithms: [alg],
-			complete: true,
-		}
+    let vo: jwt.VerifyOptions = {
+      algorithms: [alg],
+      complete: true,
+    }
 
-		let jw = r.safeSync(jwt.verify, t, this.secretKey, vo)
-		if (jw.err) {
-			return r.error(new InvalidStateTokenError("Verifying token", {cause: jw.err}))
-		}
+    let jw = r.safeSync(jwt.verify, t, this.secretKey, vo)
+    if (jw.err) {
+      return r.error(new InvalidStateTokenError("Verifying token", {cause: jw.err}))
+    }
 
-		if (typeof jw.v === "string") {
-			return r.error(new Error("Invalid options"))
-		}
+    if (typeof jw.v === "string") {
+      return r.error(new Error("Invalid options"))
+    }
 
-		if (typeof jw.v.payload === "string") {
-			return r.error(new InvalidStateTokenError("Invalid payload"))
-		}
+    if (typeof jw.v.payload === "string") {
+      return r.error(new InvalidStateTokenError("Invalid payload"))
+    }
 
-		let tp = StateTokenPayloadSchema.safeParse(jw.v.payload)
-		if (!tp.success) {
-			return r.error(new InvalidStateTokenError("Parsing payload", {cause: tp.error}))
-		}
+    let tp = StateTokenPayloadSchema.safeParse(jw.v.payload)
+    if (!tp.success) {
+      return r.error(new InvalidStateTokenError("Parsing payload", {cause: tp.error}))
+    }
 
-		let st: State = {
-			redirect_uri: tp.data.redirect_uri,
-		}
+    let st: State = {
+      redirect_uri: tp.data.redirect_uri,
+    }
 
-		if (tp.data.state) {
-			st.state = tp.data.state
-		}
+    if (tp.data.state) {
+      st.state = tp.data.state
+    }
 
-		return r.ok(st)
-	}
+    return r.ok(st)
+  }
 
-	encode(s: State): r.Result<string, Error> {
-		let iat = Math.floor(Date.now() / 1000)
+  encode(s: State): r.Result<string, Error> {
+    let iat = Math.floor(Date.now() / 1000)
 
-		let exp: number | undefined
+    let exp: number | undefined
 
-		if (this.ttl) {
-			exp = iat + this.ttl / 1000
-		} else {
-			exp = 0
-		}
+    if (this.ttl) {
+      exp = iat + this.ttl / 1000
+    } else {
+      exp = 0
+    }
 
-		let tp: StateTokenPayload = {
-			exp,
-			nbf: iat,
-			iat,
-			redirect_uri: s.redirect_uri,
-		}
+    let tp: StateTokenPayload = {
+      exp,
+      nbf: iat,
+      iat,
+      redirect_uri: s.redirect_uri,
+    }
 
-		if (s.state) {
-			tp.state = s.state
-		}
+    if (s.state) {
+      tp.state = s.state
+    }
 
-		if (!tp.exp) {
-			delete tp.exp
-		}
+    if (!tp.exp) {
+      delete tp.exp
+    }
 
-		let alg: jwt.Algorithm | undefined
+    let alg: jwt.Algorithm | undefined
 
-		if (this.algorithm) {
-			alg = this.algorithm
-		} else {
-			alg = "none"
-		}
+    if (this.algorithm) {
+      alg = this.algorithm
+    } else {
+      alg = "none"
+    }
 
-		let so: jwt.SignOptions = {
-			algorithm: alg,
-		}
+    let so: jwt.SignOptions = {
+      algorithm: alg,
+    }
 
-		let tt = r.safeSync(jwt.sign, tp, this.secretKey, so)
-		if (tt.err) {
-			return r.error(new Error("Signing token", {cause: tt.err}))
-		}
+    let tt = r.safeSync(jwt.sign, tp, this.secretKey, so)
+    if (tt.err) {
+      return r.error(new Error("Signing token", {cause: tt.err}))
+    }
 
-		return r.ok(tt.v)
-	}
+    return r.ok(tt.v)
+  }
 }

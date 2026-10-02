@@ -14,179 +14,179 @@ import type * as core from "../core.ts"
 export type Operation = z.output<typeof core.FileOperationDtoSchema>
 
 class State {
-	id: string | undefined
-	error: string | undefined
-	done = false
+  id: string | undefined
+  error: string | undefined
+  done = false
 }
 
 export type ResolverClient = {
-	files: ResolverFilesService
+  files: ResolverFilesService
 }
 
 export type ResolverFilesService = {
-	getOperationStatuses(): Promise<Result<[Operation[], core.Response], Error>>
+  getOperationStatuses(): Promise<Result<[Operation[], core.Response], Error>>
 }
 
 export class Resolver {
-	limit = 20
-	delay = 100
+  limit = 20
+  delay = 100
 
-	private client: ResolverClient
+  private client: ResolverClient
 
-	constructor(client: ResolverClient) {
-		this.client = client
-	}
+  constructor(client: ResolverClient) {
+    this.client = client
+  }
 
-	async resolve(...ops: Operation[]): Promise<Result<ResolverResponse, Error>> {
-		let ctx = context.get()
+  async resolve(...ops: Operation[]): Promise<Result<ResolverResponse, Error>> {
+    let ctx = context.get()
 
-		if (ops.length === 0) {
-			return error(new Error("No operations to sync."))
-		}
+    if (ops.length === 0) {
+      return error(new Error("No operations to sync."))
+    }
 
-		let states: State[] = []
+    let states: State[] = []
 
-		for (let o of ops) {
-			let s = new State()
-			s.id = o.id
-			s.error = o.error
-			s.done = isDone(o)
+    for (let o of ops) {
+      let s = new State()
+      s.id = o.id
+      s.error = o.error
+      s.done = isDone(o)
 
-			states.push(s)
-		}
+      states.push(s)
+    }
 
-		let limit = this.limit
-		let delay = this.delay
+    let limit = this.limit
+    let delay = this.delay
 
-		let responses: core.Response[] = []
-		let operations: Operation[] = []
+    let responses: core.Response[] = []
+    let operations: Operation[] = []
 
-		let err: Error | undefined
+    let err: Error | undefined
 
-		while (limit > 0) {
-			let r = await this.client.files.getOperationStatuses()
-			if (r.err) {
-				err = new Error("Calling operation statuses callback.", {cause: r.err})
-				break
-			}
+    while (limit > 0) {
+      let r = await this.client.files.getOperationStatuses()
+      if (r.err) {
+        err = new Error("Calling operation statuses callback.", {cause: r.err})
+        break
+      }
 
-			let [ops, res] = r.v
+      let [ops, res] = r.v
 
-			responses.push(res)
+      responses.push(res)
 
-			for (let s of states) {
-				if (s.id === undefined) {
-					continue
-				}
+      for (let s of states) {
+        if (s.id === undefined) {
+          continue
+        }
 
-				for (let o of ops) {
-					if (o.id === undefined) {
-						continue
-					}
+        for (let o of ops) {
+          if (o.id === undefined) {
+            continue
+          }
 
-					if (s.id === o.id) {
-						s.error = o.error
-						s.done = isDone(o)
+          if (s.id === o.id) {
+            s.error = o.error
+            s.done = isDone(o)
 
-						let i = -1
+            let i = -1
 
-						for (let [j, x] of operations.entries()) {
-							if (x.id === o.id) {
-								i = j
-								break
-							}
-						}
+            for (let [j, x] of operations.entries()) {
+              if (x.id === o.id) {
+                i = j
+                break
+              }
+            }
 
-						if (i !== -1) {
-							operations[i] = o
-						} else {
-							operations.push(o)
-						}
-					}
-				}
-			}
+            if (i !== -1) {
+              operations[i] = o
+            } else {
+              operations.push(o)
+            }
+          }
+        }
+      }
 
-			let done = true
+      let done = true
 
-			for (let s of states) {
-				if (!s.done) {
-					done = false
-					break
-				}
-			}
+      for (let s of states) {
+        if (!s.done) {
+          done = false
+          break
+        }
+      }
 
-			if (done) {
-				break
-			}
+      if (done) {
+        break
+      }
 
-			limit -= 1
+      limit -= 1
 
-			let t = await safeAsync(setTimeout, delay, undefined, {signal: ctx[abort.signalKey]})
-			if (t.err) {
-				err = new Error("Setting timeout.", {cause: t.err})
-				break
-			}
-		}
+      let t = await safeAsync(setTimeout, delay, undefined, {signal: ctx[abort.signalKey]})
+      if (t.err) {
+        err = new Error("Setting timeout.", {cause: t.err})
+        break
+      }
+    }
 
-		let s = new ResolverResponse()
-		s.responses = responses
-		s.operations = operations
+    let s = new ResolverResponse()
+    s.responses = responses
+    s.operations = operations
 
-		let u: string[] = []
+    let u: string[] = []
 
-		for (let s of states) {
-			if (s.id === undefined) {
-				continue
-			}
+    for (let s of states) {
+      if (s.id === undefined) {
+        continue
+      }
 
-			if (s.error !== undefined && s.error !== "" || !s.done) {
-				u.push(s.id)
-			}
-		}
+      if (s.error !== undefined && s.error !== "" || !s.done) {
+        u.push(s.id)
+      }
+    }
 
-		if (err) {
-			let e = new ResolverResponseError("Resolving operations.", {cause: err})
-			e.response = s
-			e.unresolved = u
-			return error(e)
-		}
+    if (err) {
+      let e = new ResolverResponseError("Resolving operations.", {cause: err})
+      e.response = s
+      e.unresolved = u
+      return error(e)
+    }
 
-		if (u.length !== 0) {
-			let m = `${u.length} out of ${ops.length} operations are unresolved.`
-			let e = new ResolverResponseError(m)
-			e.response = s
-			e.unresolved = u
-			return error(e)
-		}
+    if (u.length !== 0) {
+      let m = `${u.length} out of ${ops.length} operations are unresolved.`
+      let e = new ResolverResponseError(m)
+      e.response = s
+      e.unresolved = u
+      return error(e)
+    }
 
-		return ok(s)
-	}
+    return ok(s)
+  }
 }
 
 export class ResolverResponse {
-	responses: core.Response[] = []
-	operations: Operation[] = []
+  responses: core.Response[] = []
+  operations: Operation[] = []
 }
 
 export class ResolverResponseError extends Error {
-	response = new ResolverResponse()
-	unresolved: string[] = []
+  response = new ResolverResponse()
+  unresolved: string[] = []
 
-	constructor(message: string, options?: ErrorOptions) {
-		super(message, options)
-		this.name = "ResolverResponseError"
-	}
+  constructor(message: string, options?: ErrorOptions) {
+    super(message, options)
+    this.name = "ResolverResponseError"
+  }
 }
 
 function isDone(o: Operation): boolean {
-	return hasError(o) || isFinished(o)
+  return hasError(o) || isFinished(o)
 }
 
 function hasError(o: Operation): boolean {
-	return o.error !== undefined && o.error !== ""
+  return o.error !== undefined && o.error !== ""
 }
 
 function isFinished(o: Operation): boolean {
-	return o.progress !== undefined && o.progress === 100 ||
-		o.finished !== undefined && o.finished
+  return o.progress !== undefined && o.progress === 100 ||
+    o.finished !== undefined && o.finished
 }

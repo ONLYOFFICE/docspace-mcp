@@ -10,6 +10,12 @@ export default [
 		},
 	},
 	{
+		files: ["**/*.yaml", "**/*.yml"],
+		rules: {
+			"yml/indent": ["error", 2],
+		},
+	},
+	{
 		files: ["**/*.ts"],
 		rules: {
 			"es-x/no-object-getownpropertysymbols": "off",

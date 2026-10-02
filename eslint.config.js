@@ -37,8 +37,8 @@ export default defineConfig([
     },
     rules: {
       "eqeqeq": "error",
-      "prefer-const": "off",
-      "prefer-let/prefer-let": "error",
+      "prefer-const": ["error", {destructuring: "all"}],
+      "prefer-let/prefer-let": "off",
       "@typescript-eslint/no-unused-vars": ["error", {argsIgnorePattern: "^_+", caughtErrorsIgnorePattern: "^_+", destructuredArrayIgnorePattern: "^_+", ignoreRestSiblings: true, varsIgnorePattern: "^_+"}],
       // todo: enable once JWT payloads, request bodies and query values are typed
       "@typescript-eslint/no-unsafe-argument": "off",

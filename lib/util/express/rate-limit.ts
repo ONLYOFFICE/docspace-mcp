@@ -22,7 +22,7 @@ export type RateLimitOptions = {
 export type RateLimitCallback = (req: express.Request, res: express.Response) => void
 
 export function rateLimit(o: RateLimitOptions, cb: RateLimitCallback): express.Handler {
-  let ro: Partial<expressRateLimit.Options> = {
+  const ro: Partial<expressRateLimit.Options> = {
     windowMs: o.window,
     limit: o.capacity,
     standardHeaders: true,

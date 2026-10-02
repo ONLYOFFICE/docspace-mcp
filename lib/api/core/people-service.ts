@@ -27,24 +27,24 @@ export class PeopleService {
    * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/products/ASC.People/Server/Api/UserController.cs/#L811 | ONLYOFFICE Apps Reference}
    */
   async getFullByFilter(filters?: GetFullByFilterFilters): Promise<Result<[GetFullByFilterResponseItem[], Response], Error>> {
-    let u = this.c.createUrl("api/2.0/people/filter", filters)
+    const u = this.c.createUrl("api/2.0/people/filter", filters)
     if (u.err) {
       return error(new Error("Creating URL.", {cause: u.err}))
     }
 
-    let req = this.c.createRequest("GET", u.v)
+    const req = this.c.createRequest("GET", u.v)
     if (req.err) {
       return error(new Error("Creating request.", {cause: req.err}))
     }
 
-    let f = await this.c.fetch(req.v)
+    const f = await this.c.fetch(req.v)
     if (f.err) {
       return error(new Error("Fetching request.", {cause: f.err}))
     }
 
-    let [p, res] = f.v
+    const [p, res] = f.v
 
-    let e = z.array(EmployeeFullDtoSchema).safeParse(p)
+    const e = z.array(EmployeeFullDtoSchema).safeParse(p)
     if (!e.success) {
       return error(new Error("Parsing response.", {cause: e.error}))
     }

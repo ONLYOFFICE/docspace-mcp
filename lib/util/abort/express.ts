@@ -9,15 +9,15 @@ import {signalKey} from "./context.ts"
 
 export function expressHandler(): express.Handler {
   return (_, res, next) => {
-    let ac = new AbortController()
+    const ac = new AbortController()
 
-    let onClose = (): void => {
+    const onClose = (): void => {
       ac.abort(new DOMException("Request closed", "AbortError"))
     }
 
     res.once("close", onClose)
 
-    let ctx: context.Context = {
+    const ctx: context.Context = {
       [signalKey]: ac.signal,
     }
 

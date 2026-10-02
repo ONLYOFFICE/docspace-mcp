@@ -99,20 +99,20 @@ export class FileOperationPoller {
   }
 
   private handleNewListener(...p: Parameters<FileOperationBusNewListenerListener>): void {
-    let [e] = p
+    const [e] = p
 
     if (this.controller.signal.aborted && e === "data") {
-      let c = new AbortController()
+      const c = new AbortController()
 
       let t: NodeJS.Timeout | undefined
 
-      let onAbort = (): void => {
+      const onAbort = (): void => {
         clearTimeout(t)
 
         c.signal.removeEventListener("abort", onAbort)
       }
 
-      let onTick = (): void => {
+      const onTick = (): void => {
         void (async() => {
           await this.poll()
 
@@ -137,20 +137,20 @@ export class FileOperationPoller {
   }
 
   private async poll(): Promise<void> {
-    let g = await this.client.files.getOperationStatuses()
+    const g = await this.client.files.getOperationStatuses()
     if (g.err) {
       this.bus.emit("error", "", new Error("Getting operation statuses", {cause: g.err}))
       return
     }
 
-    let [d] = g.v
+    const [d] = g.v
 
-    for (let e of d) {
+    for (const e of d) {
       if (!e.id) {
         continue
       }
 
-      let errs: Error[] = []
+      const errs: Error[] = []
 
       if (e.error) {
         errs.push(new Error(e.error))
@@ -204,18 +204,18 @@ export class FileOperationCaller {
   async call(fn: FileOperationFn): Promise<FileOperationIter> {
     let fid = ""
     let closed = false
-    let buf: FileOperationDto[] = []
+    const buf: FileOperationDto[] = []
     let wake = (): void => {}
-    let re = r.ok() as unknown as r.Result<FileOperationDto, Error>
+    const re = r.ok() as unknown as r.Result<FileOperationDto, Error>
 
-    let it: FileOperationIter = {
+    const it: FileOperationIter = {
       [Symbol.asyncIterator]() {
         return it
       },
 
       async next() {
         if (!closed && buf.length === 0) {
-          let e = (res: () => void): void => {
+          const e = (res: () => void): void => {
             wake = res
           }
 
@@ -224,7 +224,7 @@ export class FileOperationCaller {
 
         let ir: IteratorResult<FileOperationDto, undefined> | undefined
 
-        let v = buf.shift()
+        const v = buf.shift()
 
         if (v) {
           ir = {
@@ -245,7 +245,7 @@ export class FileOperationCaller {
       async return() {
         close()
 
-        let ir: IteratorResult<unknown, unknown> = {
+        const ir: IteratorResult<unknown, unknown> = {
           done: true,
           value: undefined,
         }
@@ -258,23 +258,23 @@ export class FileOperationCaller {
       },
     }
 
-    let ac = new abort.Controller()
+    const ac = new abort.Controller()
 
     if (this.timeout) {
       ac.withTimeout(this.timeout)
     }
 
-    let onAbort = (): void => {
+    const onAbort = (): void => {
       close(ac.signal.reason)
     }
 
-    let onErr = (id: string, err: Error): void => {
+    const onErr = (id: string, err: Error): void => {
       if (fid && id === fid || !id) {
         close(err)
       }
     }
 
-    let onData = (id: string, data: FileOperationDto): void => {
+    const onData = (id: string, data: FileOperationDto): void => {
       if (fid && id === fid) {
         buf.push(data)
         re.v = data
@@ -282,13 +282,13 @@ export class FileOperationCaller {
       }
     }
 
-    let onEnd = (id: string): void => {
+    const onEnd = (id: string): void => {
       if (fid && id === fid) {
         close()
       }
     }
 
-    let close = (err?: Error): void => {
+    const close = (err?: Error): void => {
       if (closed) {
         return
       }
@@ -318,11 +318,11 @@ export class FileOperationCaller {
 
     let err: Error | undefined
 
-    let fr = await fn()
+    const fr = await fn()
     if (fr.err) {
       err = new Error("Calling operation", {cause: fr.err})
     } else {
-      let [fd] = fr.v
+      const [fd] = fr.v
       if (fd.id) {
         fid = fd.id
       } else {

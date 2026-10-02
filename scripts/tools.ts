@@ -5,7 +5,7 @@ export function sortToolsets(toolsets: mcp.Toolset[]): mcp.Toolset[] {
     return a.name.localeCompare(b.name)
   })
 
-  for (let s of toolsets) {
+  for (const s of toolsets) {
     s.tools = sortTools(s.tools)
   }
 

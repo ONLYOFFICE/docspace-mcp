@@ -36,10 +36,10 @@ import {
 // todo: req.method, req.url
 
 async function setup(t: test.TestContext, e: object): Promise<net.AddressInfo> {
-  let a = await randomAddress()
+  const a = await randomAddress()
   assert.ok(a.err === undefined)
 
-  let o: SetupBinOptions = {
+  const o: SetupBinOptions = {
     host: a.v.address,
     port: a.v.port,
     env: {
@@ -83,7 +83,7 @@ function withAuth(fetch: typeof globalThis.fetch): typeof globalThis.fetch {
 
     let s = ""
 
-    for (let c of "basic") {
+    for (const c of "basic") {
       if (Math.random() < 0.5) {
         s += c.toLowerCase()
       } else {
@@ -91,7 +91,7 @@ function withAuth(fetch: typeof globalThis.fetch): typeof globalThis.fetch {
       }
     }
 
-    let p = Buffer.from("xxx:yyy").toString("base64")
+    const p = Buffer.from("xxx:yyy").toString("base64")
 
     init.headers.Authorization = `${s} ${p}`
 
@@ -100,34 +100,34 @@ function withAuth(fetch: typeof globalThis.fetch): typeof globalThis.fetch {
 }
 
 async function sendAccessToken(_: Parameters<http.RequestListener>[0], res: Parameters<http.RequestListener>[1]): Promise<string> {
-  let o: jwt.SignOptions = {
+  const o: jwt.SignOptions = {
     algorithm: "none",
   }
 
-  let t = r.safeSync(jwt.sign, {}, "", o)
+  const t = r.safeSync(jwt.sign, {}, "", o)
   assert.ok(t.err === undefined)
 
-  let b: object = {
+  const b: object = {
     access_token: t.v,
     token_type: "test",
   }
 
-  let s = await sendJson(res, 200, b)
+  const s = await sendJson(res, 200, b)
   assert.ok(s.err === undefined)
 
   return t.v
 }
 
 async function requestAccessToken(a: net.AddressInfo): Promise<string> {
-  let u = r.safeNew(URL, "/oauth/token", `http://[${a.address}]:${a.port}/`)
+  const u = r.safeNew(URL, "/oauth/token", `http://[${a.address}]:${a.port}/`)
   assert.ok(u.err === undefined)
 
-  let f = new URLSearchParams()
+  const f = new URLSearchParams()
 
   f.set("grant_type", "authorization_code")
   f.set("code", "vvv")
 
-  let i: RequestInit = {
+  const i: RequestInit = {
     method: "POST",
     headers: {
       "Content-Type": "application/x-www-form-urlencoded",
@@ -135,14 +135,14 @@ async function requestAccessToken(a: net.AddressInfo): Promise<string> {
     body: f.toString(),
   }
 
-  let fetch = withAuth(globalThis.fetch)
+  const fetch = withAuth(globalThis.fetch)
 
-  let res = await r.safeAsync(fetch, u.v, i)
+  const res = await r.safeAsync(fetch, u.v, i)
   assert.ok(res.err === undefined)
 
   assert.ok(res.v.status === 200)
 
-  let b = await readFetchJson(res.v)
+  const b = await readFetchJson(res.v)
   assert.ok(b.err === undefined)
 
   assert.ok(b.v && typeof b.v === "object")
@@ -152,34 +152,34 @@ async function requestAccessToken(a: net.AddressInfo): Promise<string> {
 }
 
 async function requestState(a: net.AddressInfo, q: URLSearchParams): Promise<string> {
-  let u = r.safeNew(URL, "/oauth/authorize", `http://[${a.address}]:${a.port}/`)
+  const u = r.safeNew(URL, "/oauth/authorize", `http://[${a.address}]:${a.port}/`)
   assert.ok(u.err === undefined)
 
-  let p = new URLSearchParams()
+  const p = new URLSearchParams()
 
   p.set("response_type", "code")
   p.set("client_id", "xxx")
   p.set("redirect_uri", "http://localhost:8030")
 
-  for (let [k, v] of q.entries()) {
+  for (const [k, v] of q.entries()) {
     p.set(k, v)
   }
 
   u.v.search = p.toString()
 
-  let i: RequestInit = {
+  const i: RequestInit = {
     redirect: "manual",
   }
 
-  let res = await r.safeAsync(fetch, u.v, i)
+  const res = await r.safeAsync(fetch, u.v, i)
   assert.ok(res.err === undefined)
 
   assert.ok(res.v.status === 302)
 
-  let l = parseFetchLocation(res.v)
+  const l = parseFetchLocation(res.v)
   assert.ok(l.err === undefined)
 
-  let s = l.v.searchParams.get("state")
+  const s = l.v.searchParams.get("state")
   assert.ok(s)
 
   return s
@@ -187,16 +187,16 @@ async function requestState(a: net.AddressInfo, q: URLSearchParams): Promise<str
 
 function checkJwtAlg(t: string, alg: jwt.Algorithm, k: string): void {
   if (alg === "none") {
-    let o: jwt.DecodeOptions = {
+    const o: jwt.DecodeOptions = {
       complete: true,
     }
 
-    let decode = jwt.decode as (t: string, o: jwt.DecodeOptions) => jwt.Jwt | null
+    const decode = jwt.decode as (t: string, o: jwt.DecodeOptions) => jwt.Jwt | null
 
-    let j = decode(t, o)
+    const j = decode(t, o)
     assert.ok(j)
 
-    let h: object = {
+    const h: object = {
       alg,
       typ: "JWT",
     }
@@ -205,19 +205,19 @@ function checkJwtAlg(t: string, alg: jwt.Algorithm, k: string): void {
 
     assert.ok(j.signature.length === 0)
   } else {
-    let o: jwt.VerifyOptions = {
+    const o: jwt.VerifyOptions = {
       algorithms: [alg],
       complete: true,
       ignoreExpiration: true,
       ignoreNotBefore: true,
     }
 
-    let verify = jwt.verify as (t: string, k: string, o: jwt.VerifyOptions) => jwt.Jwt
+    const verify = jwt.verify as (t: string, k: string, o: jwt.VerifyOptions) => jwt.Jwt
 
-    let j = r.safeSync(verify, t, k, o)
+    const j = r.safeSync(verify, t, k, o)
     assert.ok(j.err === undefined)
 
-    let h: object = {
+    const h: object = {
       alg,
       typ: "JWT",
     }
@@ -229,18 +229,18 @@ function checkJwtAlg(t: string, alg: jwt.Algorithm, k: string): void {
 }
 
 function checkJwtTtl(t: string, ttl: number): void {
-  let o: jwt.DecodeOptions = {
+  const o: jwt.DecodeOptions = {
     complete: true,
   }
 
-  let decode = jwt.decode as (t: string, o: jwt.DecodeOptions) => jwt.Jwt | null
+  const decode = jwt.decode as (t: string, o: jwt.DecodeOptions) => jwt.Jwt | null
 
-  let j = decode(t, o)
+  const j = decode(t, o)
   assert.ok(j)
 
   assert.ok(typeof j.payload === "object")
 
-  let now = Date.now()
+  const now = Date.now()
 
   if (ttl) {
     assert.ok(j.payload.exp && inDelta(j.payload.exp * 1000, now + ttl, 3000))
@@ -253,13 +253,13 @@ function checkJwtTtl(t: string, ttl: number): void {
 }
 
 function checkJwtPayload(t: string, p: object): void {
-  let o: jwt.DecodeOptions = {
+  const o: jwt.DecodeOptions = {
     complete: true,
   }
 
-  let decode = jwt.decode as (t: string, o: jwt.DecodeOptions) => jwt.Jwt | null
+  const decode = jwt.decode as (t: string, o: jwt.DecodeOptions) => jwt.Jwt | null
 
-  let j = decode(t, o)
+  const j = decode(t, o)
   assert.ok(j)
 
   assert.partialDeepStrictEqual(j.payload, p)
@@ -272,8 +272,8 @@ type TestAllowedHostnamesOptions = {
 }
 
 function testAllowedHostnames(o: TestAllowedHostnamesOptions): void {
-  let request = async(a: net.AddressInfo, h: string): Promise<http.IncomingMessage> => {
-    let headers: Record<string, string> = {
+  const request = async(a: net.AddressInfo, h: string): Promise<http.IncomingMessage> => {
+    const headers: Record<string, string> = {
       Host: h,
     }
 
@@ -282,7 +282,7 @@ function testAllowedHostnames(o: TestAllowedHostnamesOptions): void {
       headers["Content-Length"] = "0"
     }
 
-    let ro: http.RequestOptions = {
+    const ro: http.RequestOptions = {
       headers,
       host: a.address,
       method: o.method,
@@ -291,8 +291,8 @@ function testAllowedHostnames(o: TestAllowedHostnamesOptions): void {
       setHost: false,
     }
 
-    let p = new Promise<r.Result<http.IncomingMessage, Error>>((resolve) => {
-      let req = http.request(ro, (res) => {
+    const p = new Promise<r.Result<http.IncomingMessage, Error>>((resolve) => {
+      const req = http.request(ro, (res) => {
         resolve(r.ok(res))
       })
 
@@ -303,13 +303,13 @@ function testAllowedHostnames(o: TestAllowedHostnamesOptions): void {
       req.end()
     })
 
-    let w = await p
+    const w = await p
     assert.ok(w.err === undefined)
 
     return w.v
   }
 
-  let ta: string[] = [
+  const ta: string[] = [
     "localhost",
     "127.0.0.1",
     "[::1]",
@@ -317,16 +317,16 @@ function testAllowedHostnames(o: TestAllowedHostnamesOptions): void {
 
   void test.suite("allowed hostnames", () => {
     void test.suite("allows request with default allowed hostnames", () => {
-      for (let tt of ta) {
+      for (const tt of ta) {
         void test(tt, async(t) => {
-          let e: object = {
+          const e: object = {
             ...o.env,
             DOCSPACE_SERVER_ALLOWED_HOSTNAMES: undefined,
           }
 
-          let a = await setup(t, e)
+          const a = await setup(t, e)
 
-          let res = await request(a, tt)
+          const res = await request(a, tt)
 
           assert.ok(res.statusCode !== 403)
         })
@@ -334,16 +334,16 @@ function testAllowedHostnames(o: TestAllowedHostnamesOptions): void {
     })
 
     void test.suite("allows request when Host matches custom allowed hostname", () => {
-      for (let tt of ta) {
+      for (const tt of ta) {
         void test(tt, async(t) => {
-          let e: object = {
+          const e: object = {
             ...o.env,
             DOCSPACE_SERVER_ALLOWED_HOSTNAMES: tt,
           }
 
-          let a = await setup(t, e)
+          const a = await setup(t, e)
 
-          let res = await request(a, tt)
+          const res = await request(a, tt)
 
           assert.ok(res.statusCode !== 403)
         })
@@ -351,16 +351,16 @@ function testAllowedHostnames(o: TestAllowedHostnamesOptions): void {
     })
 
     void test.suite("allows request when Host matches one of multiple allowed hostnames", () => {
-      for (let tt of ta) {
+      for (const tt of ta) {
         void test(tt, async(t) => {
-          let e: object = {
+          const e: object = {
             ...o.env,
             DOCSPACE_SERVER_ALLOWED_HOSTNAMES: ta.join(","),
           }
 
-          let a = await setup(t, e)
+          const a = await setup(t, e)
 
-          let res = await request(a, tt)
+          const res = await request(a, tt)
 
           assert.ok(res.statusCode !== 403)
         })
@@ -368,16 +368,16 @@ function testAllowedHostnames(o: TestAllowedHostnamesOptions): void {
     })
 
     void test.suite("allows request when Host includes port with allowed hostname", () => {
-      for (let tt of ta) {
+      for (const tt of ta) {
         void test(tt, async(t) => {
-          let e: object = {
+          const e: object = {
             ...o.env,
             DOCSPACE_SERVER_ALLOWED_HOSTNAMES: tt,
           }
 
-          let a = await setup(t, e)
+          const a = await setup(t, e)
 
-          let res = await request(a, `${tt}:8080`)
+          const res = await request(a, `${tt}:8080`)
 
           assert.ok(res.statusCode !== 403)
         })
@@ -385,34 +385,34 @@ function testAllowedHostnames(o: TestAllowedHostnamesOptions): void {
     })
 
     void test("allows any request when allowed hostnames list is empty", async(t) => {
-      let e: object = {
+      const e: object = {
         ...o.env,
         DOCSPACE_SERVER_ALLOWED_HOSTNAMES: "",
       }
 
-      let a = await setup(t, e)
+      const a = await setup(t, e)
 
-      let res = await request(a, "evil.com")
+      const res = await request(a, "evil.com")
 
       assert.ok(res.statusCode !== 403)
     })
 
     void test("blocks request when Host header is missing", async(t) => {
-      let e: object = {
+      const e: object = {
         ...o.env,
         DOCSPACE_SERVER_ALLOWED_HOSTNAMES: "localhost",
       }
 
-      let a = await setup(t, e)
+      const a = await setup(t, e)
 
-      let res = await request(a, "")
+      const res = await request(a, "")
 
       assert.ok(res.statusCode === 403)
 
-      let ab = await readHttpJson(res)
+      const ab = await readHttpJson(res)
       assert.ok(ab.err === undefined)
 
-      let eb: object = {
+      const eb: object = {
         error: "invalid_request",
         error_description: "Host header is missing",
       }
@@ -421,21 +421,21 @@ function testAllowedHostnames(o: TestAllowedHostnamesOptions): void {
     })
 
     void test("blocks request with malformed Host header", async(t) => {
-      let e: object = {
+      const e: object = {
         ...o.env,
         DOCSPACE_SERVER_ALLOWED_HOSTNAMES: "localhost",
       }
 
-      let a = await setup(t, e)
+      const a = await setup(t, e)
 
-      let res = await request(a, "invalid host")
+      const res = await request(a, "invalid host")
 
       assert.ok(res.statusCode === 403)
 
-      let ab = await readHttpJson(res)
+      const ab = await readHttpJson(res)
       assert.ok(ab.err === undefined)
 
-      let eb: object = {
+      const eb: object = {
         error: "invalid_request",
         error_description: "Parsing Host header\n" +
           "\tInvalid URL",
@@ -445,21 +445,21 @@ function testAllowedHostnames(o: TestAllowedHostnamesOptions): void {
     })
 
     void test("blocks request when Host not in allowed list", async(t) => {
-      let e: object = {
+      const e: object = {
         ...o.env,
         DOCSPACE_SERVER_ALLOWED_HOSTNAMES: "localhost",
       }
 
-      let a = await setup(t, e)
+      const a = await setup(t, e)
 
-      let res = await request(a, "evil.com")
+      const res = await request(a, "evil.com")
 
       assert.ok(res.statusCode === 403)
 
-      let ab = await readHttpJson(res)
+      const ab = await readHttpJson(res)
       assert.ok(ab.err === undefined)
 
-      let eb: object = {
+      const eb: object = {
         error: "invalid_request",
         error_description: "Hostname evil.com is not allowed",
       }
@@ -476,27 +476,27 @@ type TestCorsOptions = {
 }
 
 function testCors(o: TestCorsOptions): void {
-  let check = (res: Response, ha: [string, string[]][]): void => {
+  const check = (res: Response, ha: [string, string[]][]): void => {
     assert.ok(res.status === 204)
 
-    for (let [k, v] of ha) {
-      let h = res.headers.get(k)
+    for (const [k, v] of ha) {
+      const h = res.headers.get(k)
       assert.ok(h)
 
-      let a = h.split(",")
+      const a = h.split(",")
 
       for (let i = 0; i < a.length; i += 1) {
         a[i] = a[i].trim()
       }
 
-      for (let e of v) {
+      for (const e of v) {
         assert.ok(a.includes(e))
       }
     }
   }
 
   void test.suite("cors", () => {
-    let wh: [string, string[]][] = [
+    const wh: [string, string[]][] = [
       ["Access-Control-Allow-Origin", ["*"]],
       ["Access-Control-Max-Age", ["86400"]],
       ["Content-Length", ["0"]],
@@ -512,51 +512,51 @@ function testCors(o: TestCorsOptions): void {
     }
 
     void test("allows any origin by default", async(t) => {
-      let a = await setup(t, o.env)
+      const a = await setup(t, o.env)
 
-      let u = r.safeNew(URL, o.path, `http://[${a.address}]:${a.port}/`)
+      const u = r.safeNew(URL, o.path, `http://[${a.address}]:${a.port}/`)
       assert.ok(u.err === undefined)
 
-      let i: RequestInit = {
+      const i: RequestInit = {
         method: "OPTIONS",
       }
 
-      let res = await r.safeAsync(fetch, u.v, i)
+      const res = await r.safeAsync(fetch, u.v, i)
       assert.ok(res.err === undefined)
 
       check(res.v, wh)
     })
 
     void test("allows any origin when explicitly set to wildcard", async(t) => {
-      let e: object = {
+      const e: object = {
         ...o.env,
         DOCSPACE_SERVER_CORS_OAUTH_ORIGIN: "*",
       }
 
-      let a = await setup(t, e)
+      const a = await setup(t, e)
 
-      let u = r.safeNew(URL, o.path, `http://[${a.address}]:${a.port}/`)
+      const u = r.safeNew(URL, o.path, `http://[${a.address}]:${a.port}/`)
       assert.ok(u.err === undefined)
 
-      let i: RequestInit = {
+      const i: RequestInit = {
         method: "OPTIONS",
       }
 
-      let res = await r.safeAsync(fetch, u.v, i)
+      const res = await r.safeAsync(fetch, u.v, i)
       assert.ok(res.err === undefined)
 
       check(res.v, wh)
     })
 
     void test("allows any origin when wildcard is in origin list", async(t) => {
-      let e: object = {
+      const e: object = {
         ...o.env,
         DOCSPACE_SERVER_CORS_OAUTH_ORIGIN: "*,http://localhost",
       }
 
-      let a = await setup(t, e)
+      const a = await setup(t, e)
 
-      let u = r.safeNew(URL, o.path, `http://[${a.address}]:${a.port}/`)
+      const u = r.safeNew(URL, o.path, `http://[${a.address}]:${a.port}/`)
       assert.ok(u.err === undefined)
 
       let i: RequestInit = {
@@ -581,7 +581,7 @@ function testCors(o: TestCorsOptions): void {
       check(res.v, wh)
     })
 
-    let rh: [string, string[]][] = [
+    const rh: [string, string[]][] = [
       ["Access-Control-Max-Age", ["86400"]],
       ["Content-Length", ["0"]],
     ]
@@ -597,14 +597,14 @@ function testCors(o: TestCorsOptions): void {
     }
 
     void test("allows single configured origin", async(t) => {
-      let e: object = {
+      const e: object = {
         ...o.env,
         DOCSPACE_SERVER_CORS_OAUTH_ORIGIN: "http://localhost",
       }
 
-      let a = await setup(t, e)
+      const a = await setup(t, e)
 
-      let u = r.safeNew(URL, o.path, `http://[${a.address}]:${a.port}/`)
+      const u = r.safeNew(URL, o.path, `http://[${a.address}]:${a.port}/`)
       assert.ok(u.err === undefined)
 
       let i: RequestInit = {
@@ -632,14 +632,14 @@ function testCors(o: TestCorsOptions): void {
     })
 
     void test("allows multiple configured origins", async(t) => {
-      let e: object = {
+      const e: object = {
         ...o.env,
         DOCSPACE_SERVER_CORS_OAUTH_ORIGIN: "http://localhost:8001,http://localhost:8002",
       }
 
-      let a = await setup(t, e)
+      const a = await setup(t, e)
 
-      let u = r.safeNew(URL, o.path, `http://[${a.address}]:${a.port}/`)
+      const u = r.safeNew(URL, o.path, `http://[${a.address}]:${a.port}/`)
       assert.ok(u.err === undefined)
 
       let i: RequestInit = {
@@ -680,7 +680,7 @@ function testCors(o: TestCorsOptions): void {
       assert.ok(res.v.headers.get("Access-Control-Allow-Origin") === "http://localhost:8002")
     })
 
-    let ca: [string, string[]][] = [
+    const ca: [string, string[]][] = [
       ["Access-Control-Allow-Origin", ["*"]],
       ["Access-Control-Max-Age", ["3600"]],
       ["Content-Length", ["0"]],
@@ -696,42 +696,42 @@ function testCors(o: TestCorsOptions): void {
     }
 
     void test("respects custom max age setting", async(t) => {
-      let e: object = {
+      const e: object = {
         ...o.env,
         DOCSPACE_SERVER_CORS_OAUTH_MAX_AGE: "3600000",
       }
 
-      let a = await setup(t, e)
+      const a = await setup(t, e)
 
-      let u = r.safeNew(URL, o.path, `http://[${a.address}]:${a.port}/`)
+      const u = r.safeNew(URL, o.path, `http://[${a.address}]:${a.port}/`)
       assert.ok(u.err === undefined)
 
-      let i: RequestInit = {
+      const i: RequestInit = {
         method: "OPTIONS",
       }
 
-      let res = await r.safeAsync(fetch, u.v, i)
+      const res = await r.safeAsync(fetch, u.v, i)
       assert.ok(res.err === undefined)
 
       check(res.v, ca)
     })
 
     void test("returns error for OPTIONS preflight when cors is disabled", async(t) => {
-      let e: object = {
+      const e: object = {
         ...o.env,
         DOCSPACE_SERVER_CORS_OAUTH_ORIGIN: "",
       }
 
-      let a = await setup(t, e)
+      const a = await setup(t, e)
 
-      let u = r.safeNew(URL, o.path, `http://[${a.address}]:${a.port}/`)
+      const u = r.safeNew(URL, o.path, `http://[${a.address}]:${a.port}/`)
       assert.ok(u.err === undefined)
 
-      let i: RequestInit = {
+      const i: RequestInit = {
         method: "OPTIONS",
       }
 
-      let res = await r.safeAsync(fetch, u.v, i)
+      const res = await r.safeAsync(fetch, u.v, i)
       assert.ok(res.err === undefined)
 
       assert.ok(res.v.status !== 204)
@@ -749,7 +749,7 @@ type TestMethodNotAllowedOptions = {
 
 function testMethodNotAllowed(o: TestMethodNotAllowedOptions): void {
   void test.suite("method not allowed", () => {
-    let ta: string[] = [
+    const ta: string[] = [
       "DELETE",
       "GET",
       "PATCH",
@@ -757,27 +757,27 @@ function testMethodNotAllowed(o: TestMethodNotAllowedOptions): void {
       "PUT",
     ]
 
-    for (let tt of ta) {
+    for (const tt of ta) {
       if (tt !== o.allowed) {
         void test(`method ${tt} not allowed`, async(t) => {
-          let a = await setup(t, o.env)
+          const a = await setup(t, o.env)
 
-          let u = r.safeNew(URL, o.path, `http://[${a.address}]:${a.port}/`)
+          const u = r.safeNew(URL, o.path, `http://[${a.address}]:${a.port}/`)
           assert.ok(u.err === undefined)
 
-          let i: RequestInit = {
+          const i: RequestInit = {
             method: tt,
           }
 
-          let res = await r.safeAsync(fetch, u.v, i)
+          const res = await r.safeAsync(fetch, u.v, i)
           assert.ok(res.err === undefined)
 
           assert.ok(res.v.status === 405)
 
-          let ab = await readFetchJson(res.v)
+          const ab = await readFetchJson(res.v)
           assert.ok(ab.err === undefined)
 
-          let eb: object = {
+          const eb: object = {
             error: "invalid_request",
             error_description: "Method Not Allowed",
           }
@@ -796,13 +796,13 @@ type TestUnsupportedMediaTypeOptions = {
 }
 
 function testUnsupportedMediaType(o: TestUnsupportedMediaTypeOptions): void {
-  let check = async(res: Response): Promise<void> => {
+  const check = async(res: Response): Promise<void> => {
     assert.ok(res.status === 415)
 
-    let ab = await readFetchJson(res)
+    const ab = await readFetchJson(res)
     assert.ok(ab.err === undefined)
 
-    let eb: object = {
+    const eb: object = {
       error: "invalid_request",
       error_description: "Unsupported Media Type",
     }
@@ -812,35 +812,35 @@ function testUnsupportedMediaType(o: TestUnsupportedMediaTypeOptions): void {
 
   void test.suite("unsupported media type", () => {
     void test("rejects request with unsupported Content-Type header", async(t) => {
-      let a = await setup(t, o.env)
+      const a = await setup(t, o.env)
 
-      let u = r.safeNew(URL, o.path, `http://[${a.address}]:${a.port}/`)
+      const u = r.safeNew(URL, o.path, `http://[${a.address}]:${a.port}/`)
       assert.ok(u.err === undefined)
 
-      let i: RequestInit = {
+      const i: RequestInit = {
         method: o.method,
         headers: {
           "Content-Type": "application/text",
         },
       }
 
-      let res = await r.safeAsync(fetch, u.v, i)
+      const res = await r.safeAsync(fetch, u.v, i)
       assert.ok(res.err === undefined)
 
       await check(res.v)
     })
 
     void test("rejects request without Content-Type header", async(t) => {
-      let a = await setup(t, o.env)
+      const a = await setup(t, o.env)
 
-      let u = r.safeNew(URL, o.path, `http://[${a.address}]:${a.port}/`)
+      const u = r.safeNew(URL, o.path, `http://[${a.address}]:${a.port}/`)
       assert.ok(u.err === undefined)
 
-      let i: RequestInit = {
+      const i: RequestInit = {
         method: o.method,
       }
 
-      let res = await r.safeAsync(fetch, u.v, i)
+      const res = await r.safeAsync(fetch, u.v, i)
       assert.ok(res.err === undefined)
 
       await check(res.v)
@@ -860,11 +860,11 @@ type TestRateLimitOptions = {
 }
 
 function testRateLimit(o: TestRateLimitOptions): void {
-  let request = async(a: net.AddressInfo): Promise<Response> => {
-    let u = r.safeNew(URL, o.path, `http://[${a.address}]:${a.port}/`)
+  const request = async(a: net.AddressInfo): Promise<Response> => {
+    const u = r.safeNew(URL, o.path, `http://[${a.address}]:${a.port}/`)
     assert.ok(u.err === undefined)
 
-    let i: RequestInit = {
+    const i: RequestInit = {
       method: o.method,
     }
 
@@ -874,7 +874,7 @@ function testRateLimit(o: TestRateLimitOptions): void {
       }
     }
 
-    let res = await r.safeAsync(fetch, u.v, i)
+    const res = await r.safeAsync(fetch, u.v, i)
     assert.ok(res.err === undefined)
 
     return res.v
@@ -888,13 +888,13 @@ function testRateLimit(o: TestRateLimitOptions): void {
     after: string | null
   }
 
-  let check = (h: Headers, o: checkOptions): void => {
-    let eh = h.get("Access-Control-Expose-Headers")
+  const check = (h: Headers, o: checkOptions): void => {
+    const eh = h.get("Access-Control-Expose-Headers")
     assert.ok(eh)
 
-    let aa = eh.split(",")
+    const aa = eh.split(",")
 
-    let ea: string[] = [
+    const ea: string[] = [
       "RateLimit-Limit",
       "RateLimit-Policy",
       "RateLimit-Remaining",
@@ -902,7 +902,7 @@ function testRateLimit(o: TestRateLimitOptions): void {
       "Retry-After",
     ]
 
-    for (let h of ea) {
+    for (const h of ea) {
       assert.ok(aa.includes(h))
     }
 
@@ -915,11 +915,11 @@ function testRateLimit(o: TestRateLimitOptions): void {
 
   void test.suite("rate limit", () => {
     void test("applies default rate limit headers", async(t) => {
-      let a = await setup(t, o.env)
+      const a = await setup(t, o.env)
 
-      let res = await request(a)
+      const res = await request(a)
 
-      let co: checkOptions = {
+      const co: checkOptions = {
         limit: `${o.defaultCapacity}`,
         policy: `${o.defaultCapacity};w=${o.defaultWindow / 1000}`,
         remaining: `${o.defaultCapacity - 1}`,
@@ -931,17 +931,17 @@ function testRateLimit(o: TestRateLimitOptions): void {
     })
 
     void test("applies custom rate limit headers", async(t) => {
-      let e: object = {
+      const e: object = {
         ...o.env,
         [o.capacityEnv]: "100",
         [o.windowEnv]: "30000",
       }
 
-      let a = await setup(t, e)
+      const a = await setup(t, e)
 
-      let res = await request(a)
+      const res = await request(a)
 
-      let co: checkOptions = {
+      const co: checkOptions = {
         limit: "100",
         policy: "100;w=30",
         remaining: "99",
@@ -953,17 +953,17 @@ function testRateLimit(o: TestRateLimitOptions): void {
     })
 
     void test("omits rate limit headers when disabled", async(t) => {
-      let e: object = {
+      const e: object = {
         ...o.env,
         [o.capacityEnv]: "0",
         [o.windowEnv]: "0",
       }
 
-      let a = await setup(t, e)
+      const a = await setup(t, e)
 
-      let res = await request(a)
+      const res = await request(a)
 
-      let co: checkOptions = {
+      const co: checkOptions = {
         limit: null,
         policy: null,
         remaining: null,
@@ -975,13 +975,13 @@ function testRateLimit(o: TestRateLimitOptions): void {
     })
 
     void test("blocks request after exceeding rate limit", async(t) => {
-      let e: object = {
+      const e: object = {
         ...o.env,
         [o.capacityEnv]: "1",
         [o.windowEnv]: "60000",
       }
 
-      let a = await setup(t, e)
+      const a = await setup(t, e)
 
       let res = await request(a)
 
@@ -1009,10 +1009,10 @@ function testRateLimit(o: TestRateLimitOptions): void {
 
       check(res.headers, co)
 
-      let ab = await readFetchJson(res)
+      const ab = await readFetchJson(res)
       assert.ok(ab.err === undefined)
 
-      let eb: object = {
+      const eb: object = {
         error: "too_many_requests",
         error_description: "Too Many Requests",
       }
@@ -1029,12 +1029,12 @@ type TestClientAuthErrorHandlingOptions = {
 function testClientAuthErrorHandling(o: TestClientAuthErrorHandlingOptions): void {
   void test.suite("client authentication error handling", () => {
     void test("returns error when Authorization header is malformed", async(t) => {
-      let a = await setup(t, {})
+      const a = await setup(t, {})
 
-      let u = r.safeNew(URL, o.path, `http://[${a.address}]:${a.port}/`)
+      const u = r.safeNew(URL, o.path, `http://[${a.address}]:${a.port}/`)
       assert.ok(u.err === undefined)
 
-      let i: RequestInit = {
+      const i: RequestInit = {
         method: "POST",
         headers: {
           "Authorization": "v",
@@ -1042,17 +1042,17 @@ function testClientAuthErrorHandling(o: TestClientAuthErrorHandlingOptions): voi
         },
       }
 
-      let res = await r.safeAsync(fetch, u.v, i)
+      const res = await r.safeAsync(fetch, u.v, i)
       assert.ok(res.err === undefined)
 
       assert.ok(res.v.status === 401)
 
       assert.ok(res.v.headers.get("WWW-Authenticate") === 'Basic realm="OAuth"')
 
-      let ab = await readFetchJson(res.v)
+      const ab = await readFetchJson(res.v)
       assert.ok(ab.err === undefined)
 
-      let eb: object = {
+      const eb: object = {
         error: "invalid_client",
         error_description: "Parsing header\n" +
           "\tMalformed header",
@@ -1062,12 +1062,12 @@ function testClientAuthErrorHandling(o: TestClientAuthErrorHandlingOptions): voi
     })
 
     void test("returns error when Authorization header has invalid scheme", async(t) => {
-      let a = await setup(t, {})
+      const a = await setup(t, {})
 
-      let u = r.safeNew(URL, o.path, `http://[${a.address}]:${a.port}/`)
+      const u = r.safeNew(URL, o.path, `http://[${a.address}]:${a.port}/`)
       assert.ok(u.err === undefined)
 
-      let i: RequestInit = {
+      const i: RequestInit = {
         method: "POST",
         headers: {
           "Authorization": "v v",
@@ -1075,17 +1075,17 @@ function testClientAuthErrorHandling(o: TestClientAuthErrorHandlingOptions): voi
         },
       }
 
-      let res = await r.safeAsync(fetch, u.v, i)
+      const res = await r.safeAsync(fetch, u.v, i)
       assert.ok(res.err === undefined)
 
       assert.ok(res.v.status === 401)
 
       assert.ok(res.v.headers.get("WWW-Authenticate") === 'Basic realm="OAuth"')
 
-      let ab = await readFetchJson(res.v)
+      const ab = await readFetchJson(res.v)
       assert.ok(ab.err === undefined)
 
-      let eb: object = {
+      const eb: object = {
         error: "invalid_client",
         error_description: "Parsing header\n" +
           "\tInvalid scheme",
@@ -1095,12 +1095,12 @@ function testClientAuthErrorHandling(o: TestClientAuthErrorHandlingOptions): voi
     })
 
     void test("returns error when Authorization header has malformed password", async(t) => {
-      let a = await setup(t, {})
+      const a = await setup(t, {})
 
-      let u = r.safeNew(URL, o.path, `http://[${a.address}]:${a.port}/`)
+      const u = r.safeNew(URL, o.path, `http://[${a.address}]:${a.port}/`)
       assert.ok(u.err === undefined)
 
-      let i: RequestInit = {
+      const i: RequestInit = {
         method: "POST",
         headers: {
           "Authorization": "Basic v",
@@ -1108,17 +1108,17 @@ function testClientAuthErrorHandling(o: TestClientAuthErrorHandlingOptions): voi
         },
       }
 
-      let res = await r.safeAsync(fetch, u.v, i)
+      const res = await r.safeAsync(fetch, u.v, i)
       assert.ok(res.err === undefined)
 
       assert.ok(res.v.status === 401)
 
       assert.ok(res.v.headers.get("WWW-Authenticate") === 'Basic realm="OAuth"')
 
-      let ab = await readFetchJson(res.v)
+      const ab = await readFetchJson(res.v)
       assert.ok(ab.err === undefined)
 
-      let eb: object = {
+      const eb: object = {
         error: "invalid_client",
         error_description: "Parsing header\n" +
           "\tMalformed password",
@@ -1128,14 +1128,14 @@ function testClientAuthErrorHandling(o: TestClientAuthErrorHandlingOptions): voi
     })
 
     void test("returns error when Authorization header is missing client_id", async(t) => {
-      let a = await setup(t, {})
+      const a = await setup(t, {})
 
-      let u = r.safeNew(URL, o.path, `http://[${a.address}]:${a.port}/`)
+      const u = r.safeNew(URL, o.path, `http://[${a.address}]:${a.port}/`)
       assert.ok(u.err === undefined)
 
-      let p = Buffer.from(":").toString("base64")
+      const p = Buffer.from(":").toString("base64")
 
-      let i: RequestInit = {
+      const i: RequestInit = {
         method: "POST",
         headers: {
           "Authorization": `Basic ${p}`,
@@ -1143,17 +1143,17 @@ function testClientAuthErrorHandling(o: TestClientAuthErrorHandlingOptions): voi
         },
       }
 
-      let res = await r.safeAsync(fetch, u.v, i)
+      const res = await r.safeAsync(fetch, u.v, i)
       assert.ok(res.err === undefined)
 
       assert.ok(res.v.status === 401)
 
       assert.ok(res.v.headers.get("WWW-Authenticate") === 'Basic realm="OAuth"')
 
-      let ab = await readFetchJson(res.v)
+      const ab = await readFetchJson(res.v)
       assert.ok(ab.err === undefined)
 
-      let eb: object = {
+      const eb: object = {
         error: "invalid_client",
         error_description: "Parsing header\n" +
           "\tNo client_id",
@@ -1163,14 +1163,14 @@ function testClientAuthErrorHandling(o: TestClientAuthErrorHandlingOptions): voi
     })
 
     void test("returns error when Authorization header is missing client_secret", async(t) => {
-      let a = await setup(t, {})
+      const a = await setup(t, {})
 
-      let u = r.safeNew(URL, o.path, `http://[${a.address}]:${a.port}/`)
+      const u = r.safeNew(URL, o.path, `http://[${a.address}]:${a.port}/`)
       assert.ok(u.err === undefined)
 
-      let p = Buffer.from("xxx:").toString("base64")
+      const p = Buffer.from("xxx:").toString("base64")
 
-      let i: RequestInit = {
+      const i: RequestInit = {
         method: "POST",
         headers: {
           "Authorization": `Basic ${p}`,
@@ -1178,17 +1178,17 @@ function testClientAuthErrorHandling(o: TestClientAuthErrorHandlingOptions): voi
         },
       }
 
-      let res = await r.safeAsync(fetch, u.v, i)
+      const res = await r.safeAsync(fetch, u.v, i)
       assert.ok(res.err === undefined)
 
       assert.ok(res.v.status === 401)
 
       assert.ok(res.v.headers.get("WWW-Authenticate") === 'Basic realm="OAuth"')
 
-      let ab = await readFetchJson(res.v)
+      const ab = await readFetchJson(res.v)
       assert.ok(ab.err === undefined)
 
-      let eb: object = {
+      const eb: object = {
         error: "invalid_client",
         error_description: "Parsing header\n" +
           "\tNo client_secret",
@@ -1198,18 +1198,18 @@ function testClientAuthErrorHandling(o: TestClientAuthErrorHandlingOptions): voi
     })
 
     void test("returns error when both Authorization header and client_id in body provided", async(t) => {
-      let a = await setup(t, {})
+      const a = await setup(t, {})
 
-      let u = r.safeNew(URL, o.path, `http://[${a.address}]:${a.port}/`)
+      const u = r.safeNew(URL, o.path, `http://[${a.address}]:${a.port}/`)
       assert.ok(u.err === undefined)
 
-      let p = Buffer.from("xxx:yyy").toString("base64")
+      const p = Buffer.from("xxx:yyy").toString("base64")
 
-      let f = new URLSearchParams()
+      const f = new URLSearchParams()
 
       f.set("client_id", "xxx")
 
-      let i: RequestInit = {
+      const i: RequestInit = {
         method: "POST",
         headers: {
           "Authorization": `Basic ${p}`,
@@ -1218,15 +1218,15 @@ function testClientAuthErrorHandling(o: TestClientAuthErrorHandlingOptions): voi
         body: f.toString(),
       }
 
-      let res = await r.safeAsync(fetch, u.v, i)
+      const res = await r.safeAsync(fetch, u.v, i)
       assert.ok(res.err === undefined)
 
       assert.ok(res.v.status === 400)
 
-      let ab = await readFetchJson(res.v)
+      const ab = await readFetchJson(res.v)
       assert.ok(ab.err === undefined)
 
-      let eb: object = {
+      const eb: object = {
         error: "invalid_request",
         error_description: "Multiple authentication methods",
       }
@@ -1235,18 +1235,18 @@ function testClientAuthErrorHandling(o: TestClientAuthErrorHandlingOptions): voi
     })
 
     void test("returns error when both Authorization header and client_secret in body provided", async(t) => {
-      let a = await setup(t, {})
+      const a = await setup(t, {})
 
-      let u = r.safeNew(URL, o.path, `http://[${a.address}]:${a.port}/`)
+      const u = r.safeNew(URL, o.path, `http://[${a.address}]:${a.port}/`)
       assert.ok(u.err === undefined)
 
-      let p = Buffer.from("xxx:yyy").toString("base64")
+      const p = Buffer.from("xxx:yyy").toString("base64")
 
-      let f = new URLSearchParams()
+      const f = new URLSearchParams()
 
       f.set("client_secret", "yyy")
 
-      let i: RequestInit = {
+      const i: RequestInit = {
         method: "POST",
         headers: {
           "Authorization": `Basic ${p}`,
@@ -1255,15 +1255,15 @@ function testClientAuthErrorHandling(o: TestClientAuthErrorHandlingOptions): voi
         body: f.toString(),
       }
 
-      let res = await r.safeAsync(fetch, u.v, i)
+      const res = await r.safeAsync(fetch, u.v, i)
       assert.ok(res.err === undefined)
 
       assert.ok(res.v.status === 400)
 
-      let ab = await readFetchJson(res.v)
+      const ab = await readFetchJson(res.v)
       assert.ok(ab.err === undefined)
 
-      let eb: object = {
+      const eb: object = {
         error: "invalid_request",
         error_description: "Multiple authentication methods",
       }
@@ -1272,19 +1272,19 @@ function testClientAuthErrorHandling(o: TestClientAuthErrorHandlingOptions): voi
     })
 
     void test("returns error when both Authorization header and client credentials in body provided", async(t) => {
-      let a = await setup(t, {})
+      const a = await setup(t, {})
 
-      let u = r.safeNew(URL, o.path, `http://[${a.address}]:${a.port}/`)
+      const u = r.safeNew(URL, o.path, `http://[${a.address}]:${a.port}/`)
       assert.ok(u.err === undefined)
 
-      let p = Buffer.from("xxx:yyy").toString("base64")
+      const p = Buffer.from("xxx:yyy").toString("base64")
 
-      let f = new URLSearchParams()
+      const f = new URLSearchParams()
 
       f.set("client_id", "xxx")
       f.set("client_secret", "yyy")
 
-      let i: RequestInit = {
+      const i: RequestInit = {
         method: "POST",
         headers: {
           "Authorization": `Basic ${p}`,
@@ -1293,15 +1293,15 @@ function testClientAuthErrorHandling(o: TestClientAuthErrorHandlingOptions): voi
         body: f.toString(),
       }
 
-      let res = await r.safeAsync(fetch, u.v, i)
+      const res = await r.safeAsync(fetch, u.v, i)
       assert.ok(res.err === undefined)
 
       assert.ok(res.v.status === 400)
 
-      let ab = await readFetchJson(res.v)
+      const ab = await readFetchJson(res.v)
       assert.ok(ab.err === undefined)
 
-      let eb: object = {
+      const eb: object = {
         error: "invalid_request",
         error_description: "Multiple authentication methods",
       }
@@ -1310,32 +1310,32 @@ function testClientAuthErrorHandling(o: TestClientAuthErrorHandlingOptions): voi
     })
 
     void test("returns error when client_id is missing from body with environment credentials configured", async(t) => {
-      let e: object = {
+      const e: object = {
         DOCSPACE_OAUTH_CLIENT_ID: "xxx",
         DOCSPACE_OAUTH_CLIENT_SECRET: "yyy",
       }
 
-      let a = await setup(t, e)
+      const a = await setup(t, e)
 
-      let u = r.safeNew(URL, o.path, `http://[${a.address}]:${a.port}/`)
+      const u = r.safeNew(URL, o.path, `http://[${a.address}]:${a.port}/`)
       assert.ok(u.err === undefined)
 
-      let i: RequestInit = {
+      const i: RequestInit = {
         method: "POST",
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
         },
       }
 
-      let res = await r.safeAsync(fetch, u.v, i)
+      const res = await r.safeAsync(fetch, u.v, i)
       assert.ok(res.err === undefined)
 
       assert.ok(res.v.status === 400)
 
-      let ab = await readFetchJson(res.v)
+      const ab = await readFetchJson(res.v)
       assert.ok(ab.err === undefined)
 
-      let eb: object = {
+      const eb: object = {
         error: "invalid_request",
         error_description: "Parsing body\n" +
           "\t\tclient_id: invalid_type Invalid input: expected string, received undefined",
@@ -1345,21 +1345,21 @@ function testClientAuthErrorHandling(o: TestClientAuthErrorHandlingOptions): voi
     })
 
     void test("returns error when client_id in body mismatches environment credentials", async(t) => {
-      let e: object = {
+      const e: object = {
         DOCSPACE_OAUTH_CLIENT_ID: "xxx",
         DOCSPACE_OAUTH_CLIENT_SECRET: "yyy",
       }
 
-      let a = await setup(t, e)
+      const a = await setup(t, e)
 
-      let u = r.safeNew(URL, o.path, `http://[${a.address}]:${a.port}/`)
+      const u = r.safeNew(URL, o.path, `http://[${a.address}]:${a.port}/`)
       assert.ok(u.err === undefined)
 
-      let f = new URLSearchParams()
+      const f = new URLSearchParams()
 
       f.set("client_id", "zzz")
 
-      let i: RequestInit = {
+      const i: RequestInit = {
         method: "POST",
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
@@ -1367,17 +1367,17 @@ function testClientAuthErrorHandling(o: TestClientAuthErrorHandlingOptions): voi
         body: f.toString(),
       }
 
-      let res = await r.safeAsync(fetch, u.v, i)
+      const res = await r.safeAsync(fetch, u.v, i)
       assert.ok(res.err === undefined)
 
       assert.ok(res.v.status === 401)
 
       assert.ok(res.v.headers.get("WWW-Authenticate") === 'Basic realm="OAuth"')
 
-      let ab = await readFetchJson(res.v)
+      const ab = await readFetchJson(res.v)
       assert.ok(ab.err === undefined)
 
-      let eb: object = {
+      const eb: object = {
         error: "invalid_client",
         error_description: "Client ID mismatch",
       }
@@ -1386,27 +1386,27 @@ function testClientAuthErrorHandling(o: TestClientAuthErrorHandlingOptions): voi
     })
 
     void test("returns error when client credentials are missing from body", async(t) => {
-      let a = await setup(t, {})
+      const a = await setup(t, {})
 
-      let u = r.safeNew(URL, o.path, `http://[${a.address}]:${a.port}/`)
+      const u = r.safeNew(URL, o.path, `http://[${a.address}]:${a.port}/`)
       assert.ok(u.err === undefined)
 
-      let i: RequestInit = {
+      const i: RequestInit = {
         method: "POST",
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
         },
       }
 
-      let res = await r.safeAsync(fetch, u.v, i)
+      const res = await r.safeAsync(fetch, u.v, i)
       assert.ok(res.err === undefined)
 
       assert.ok(res.v.status === 400)
 
-      let ab = await readFetchJson(res.v)
+      const ab = await readFetchJson(res.v)
       assert.ok(ab.err === undefined)
 
-      let eb: object = {
+      const eb: object = {
         error: "invalid_request",
         error_description: "Parsing body\n" +
           "\t\tclient_id: invalid_type Invalid input: expected string, received undefined\n" +
@@ -1425,13 +1425,13 @@ type TestClientAuthOptions = {
 }
 
 function testClientAuth(o: TestClientAuthOptions): void {
-  let listener = (): AsyncRequestListener => {
+  const listener = (): AsyncRequestListener => {
     return async(req, res) => {
       if (!o.skipCredentials) {
-        let ab = await readHttpForm(req)
+        const ab = await readHttpForm(req)
         assert.ok(ab.err === undefined)
 
-        let eb: object = {
+        const eb: object = {
           client_id: "xxx",
           client_secret: "yyy",
         }
@@ -1445,31 +1445,31 @@ function testClientAuth(o: TestClientAuthOptions): void {
 
   void test.suite("client authentication", () => {
     void test("authenticates client via Authorization header", async(t) => {
-      let [hs, ha] = await setupHttp(t)
+      const [hs, ha] = await setupHttp(t)
 
-      let hl = test.mock.fn(listener())
+      const hl = test.mock.fn(listener())
 
-      let hp = onRequest(t, hs, hl)
+      const hp = onRequest(t, hs, hl)
 
-      let tf = async(): Promise<void> => {
-        let e: object = {
+      const tf = async(): Promise<void> => {
+        const e: object = {
           DOCSPACE_OAUTH_BASE_URL: `http://[${ha.address}]:${ha.port}/`,
         }
 
-        let a = await setup(t, e)
+        const a = await setup(t, e)
 
-        let u = r.safeNew(URL, o.path, `http://[${a.address}]:${a.port}/`)
+        const u = r.safeNew(URL, o.path, `http://[${a.address}]:${a.port}/`)
         assert.ok(u.err === undefined)
 
-        let p = Buffer.from("xxx:yyy").toString("base64")
+        const p = Buffer.from("xxx:yyy").toString("base64")
 
-        let f = new URLSearchParams()
+        const f = new URLSearchParams()
 
-        for (let [k, v] of Object.entries(o.body)) {
+        for (const [k, v] of Object.entries(o.body)) {
           f.set(k, v)
         }
 
-        let i: RequestInit = {
+        const i: RequestInit = {
           method: "POST",
           headers: {
             "Authorization": `BaSiC ${p}`,
@@ -1478,7 +1478,7 @@ function testClientAuth(o: TestClientAuthOptions): void {
           body: f.toString(),
         }
 
-        let res = await r.safeAsync(fetch, u.v, i)
+        const res = await r.safeAsync(fetch, u.v, i)
         assert.ok(res.err === undefined)
       }
 
@@ -1488,33 +1488,33 @@ function testClientAuth(o: TestClientAuthOptions): void {
     })
 
     void test("authenticates client via client_id in body when configured in environment", async(t) => {
-      let [hs, ha] = await setupHttp(t)
+      const [hs, ha] = await setupHttp(t)
 
-      let hl = test.mock.fn(listener())
+      const hl = test.mock.fn(listener())
 
-      let hp = onRequest(t, hs, hl)
+      const hp = onRequest(t, hs, hl)
 
-      let tf = async(): Promise<void> => {
-        let e: object = {
+      const tf = async(): Promise<void> => {
+        const e: object = {
           DOCSPACE_OAUTH_CLIENT_ID: "xxx",
           DOCSPACE_OAUTH_CLIENT_SECRET: "yyy",
           DOCSPACE_OAUTH_BASE_URL: `http://[${ha.address}]:${ha.port}/`,
         }
 
-        let a = await setup(t, e)
+        const a = await setup(t, e)
 
-        let u = r.safeNew(URL, o.path, `http://[${a.address}]:${a.port}/`)
+        const u = r.safeNew(URL, o.path, `http://[${a.address}]:${a.port}/`)
         assert.ok(u.err === undefined)
 
-        let f = new URLSearchParams()
+        const f = new URLSearchParams()
 
         f.set("client_id", "xxx")
 
-        for (let [k, v] of Object.entries(o.body)) {
+        for (const [k, v] of Object.entries(o.body)) {
           f.set(k, v)
         }
 
-        let i: RequestInit = {
+        const i: RequestInit = {
           method: "POST",
           headers: {
             "Content-Type": "application/x-www-form-urlencoded",
@@ -1522,7 +1522,7 @@ function testClientAuth(o: TestClientAuthOptions): void {
           body: f.toString(),
         }
 
-        let res = await r.safeAsync(fetch, u.v, i)
+        const res = await r.safeAsync(fetch, u.v, i)
         assert.ok(res.err === undefined)
       }
 
@@ -1532,34 +1532,34 @@ function testClientAuth(o: TestClientAuthOptions): void {
     })
 
     void test("authenticates client via client_id and client_secret in body when configured in environment", async(t) => {
-      let [hs, ha] = await setupHttp(t)
+      const [hs, ha] = await setupHttp(t)
 
-      let hl = test.mock.fn(listener())
+      const hl = test.mock.fn(listener())
 
-      let hp = onRequest(t, hs, hl)
+      const hp = onRequest(t, hs, hl)
 
-      let tf = async(): Promise<void> => {
-        let e: object = {
+      const tf = async(): Promise<void> => {
+        const e: object = {
           DOCSPACE_OAUTH_CLIENT_ID: "xxx",
           DOCSPACE_OAUTH_CLIENT_SECRET: "yyy",
           DOCSPACE_OAUTH_BASE_URL: `http://[${ha.address}]:${ha.port}/`,
         }
 
-        let a = await setup(t, e)
+        const a = await setup(t, e)
 
-        let u = r.safeNew(URL, o.path, `http://[${a.address}]:${a.port}/`)
+        const u = r.safeNew(URL, o.path, `http://[${a.address}]:${a.port}/`)
         assert.ok(u.err === undefined)
 
-        let f = new URLSearchParams()
+        const f = new URLSearchParams()
 
         f.set("client_id", "xxx")
         f.set("client_secret", "yyy")
 
-        for (let [k, v] of Object.entries(o.body)) {
+        for (const [k, v] of Object.entries(o.body)) {
           f.set(k, v)
         }
 
-        let i: RequestInit = {
+        const i: RequestInit = {
           method: "POST",
           headers: {
             "Content-Type": "application/x-www-form-urlencoded",
@@ -1567,7 +1567,7 @@ function testClientAuth(o: TestClientAuthOptions): void {
           body: f.toString(),
         }
 
-        let res = await r.safeAsync(fetch, u.v, i)
+        const res = await r.safeAsync(fetch, u.v, i)
         assert.ok(res.err === undefined)
       }
 
@@ -1577,32 +1577,32 @@ function testClientAuth(o: TestClientAuthOptions): void {
     })
 
     void test("authenticates client via client_id and client_secret in body", async(t) => {
-      let [hs, ha] = await setupHttp(t)
+      const [hs, ha] = await setupHttp(t)
 
-      let hl = test.mock.fn(listener())
+      const hl = test.mock.fn(listener())
 
-      let hp = onRequest(t, hs, hl)
+      const hp = onRequest(t, hs, hl)
 
-      let tf = async(): Promise<void> => {
-        let e: object = {
+      const tf = async(): Promise<void> => {
+        const e: object = {
           DOCSPACE_OAUTH_BASE_URL: `http://[${ha.address}]:${ha.port}/`,
         }
 
-        let a = await setup(t, e)
+        const a = await setup(t, e)
 
-        let u = r.safeNew(URL, o.path, `http://[${a.address}]:${a.port}/`)
+        const u = r.safeNew(URL, o.path, `http://[${a.address}]:${a.port}/`)
         assert.ok(u.err === undefined)
 
-        let f = new URLSearchParams()
+        const f = new URLSearchParams()
 
         f.set("client_id", "xxx")
         f.set("client_secret", "yyy")
 
-        for (let [k, v] of Object.entries(o.body)) {
+        for (const [k, v] of Object.entries(o.body)) {
           f.set(k, v)
         }
 
-        let i: RequestInit = {
+        const i: RequestInit = {
           method: "POST",
           headers: {
             "Content-Type": "application/x-www-form-urlencoded",
@@ -1610,7 +1610,7 @@ function testClientAuth(o: TestClientAuthOptions): void {
           body: f.toString(),
         }
 
-        let res = await r.safeAsync(fetch, u.v, i)
+        const res = await r.safeAsync(fetch, u.v, i)
         assert.ok(res.err === undefined)
       }
 
@@ -1629,33 +1629,33 @@ type TestUserAgentOptions = {
 function testUserAgent(o: TestUserAgentOptions): void {
   void test.suite("user agent", () => {
     void test("uses default User-Agent", async(t) => {
-      let [hs, ha] = await setupHttp(t)
+      const [hs, ha] = await setupHttp(t)
 
-      let hl = test.mock.fn<AsyncRequestListener>((req, res) => {
+      const hl = test.mock.fn<AsyncRequestListener>((req, res) => {
         assert.ok(req.headers["user-agent"] === `${meta.name} v${meta.version}`)
 
         res.end()
       })
 
-      let hp = onRequest(t, hs, hl)
+      const hp = onRequest(t, hs, hl)
 
-      let tf = async(): Promise<void> => {
-        let e: object = {
+      const tf = async(): Promise<void> => {
+        const e: object = {
           DOCSPACE_OAUTH_BASE_URL: `http://[${ha.address}]:${ha.port}/`,
         }
 
-        let a = await setup(t, e)
+        const a = await setup(t, e)
 
-        let u = r.safeNew(URL, o.path, `http://[${a.address}]:${a.port}/`)
+        const u = r.safeNew(URL, o.path, `http://[${a.address}]:${a.port}/`)
         assert.ok(u.err === undefined)
 
-        let f = new URLSearchParams()
+        const f = new URLSearchParams()
 
-        for (let [k, v] of Object.entries(o.body)) {
+        for (const [k, v] of Object.entries(o.body)) {
           f.set(k, v)
         }
 
-        let i: RequestInit = {
+        const i: RequestInit = {
           method: "POST",
           headers: {
             "Content-Type": "application/x-www-form-urlencoded",
@@ -1663,9 +1663,9 @@ function testUserAgent(o: TestUserAgentOptions): void {
           body: f.toString(),
         }
 
-        let fetch = withAuth(globalThis.fetch)
+        const fetch = withAuth(globalThis.fetch)
 
-        let res = await r.safeAsync(fetch, u.v, i)
+        const res = await r.safeAsync(fetch, u.v, i)
         assert.ok(res.err === undefined)
       }
 
@@ -1675,34 +1675,34 @@ function testUserAgent(o: TestUserAgentOptions): void {
     })
 
     void test("uses custom User-Agent", async(t) => {
-      let [hs, ha] = await setupHttp(t)
+      const [hs, ha] = await setupHttp(t)
 
-      let hl = test.mock.fn<AsyncRequestListener>((req, res) => {
+      const hl = test.mock.fn<AsyncRequestListener>((req, res) => {
         assert.ok(req.headers["user-agent"] === "test")
 
         res.end()
       })
 
-      let hp = onRequest(t, hs, hl)
+      const hp = onRequest(t, hs, hl)
 
-      let tf = async(): Promise<void> => {
-        let e: object = {
+      const tf = async(): Promise<void> => {
+        const e: object = {
           DOCSPACE_USER_AGENT: "test",
           DOCSPACE_OAUTH_BASE_URL: `http://[${ha.address}]:${ha.port}/`,
         }
 
-        let a = await setup(t, e)
+        const a = await setup(t, e)
 
-        let u = r.safeNew(URL, o.path, `http://[${a.address}]:${a.port}/`)
+        const u = r.safeNew(URL, o.path, `http://[${a.address}]:${a.port}/`)
         assert.ok(u.err === undefined)
 
-        let f = new URLSearchParams()
+        const f = new URLSearchParams()
 
-        for (let [k, v] of Object.entries(o.body)) {
+        for (const [k, v] of Object.entries(o.body)) {
           f.set(k, v)
         }
 
-        let i: RequestInit = {
+        const i: RequestInit = {
           method: "POST",
           headers: {
             "Content-Type": "application/x-www-form-urlencoded",
@@ -1710,9 +1710,9 @@ function testUserAgent(o: TestUserAgentOptions): void {
           body: f.toString(),
         }
 
-        let fetch = withAuth(globalThis.fetch)
+        const fetch = withAuth(globalThis.fetch)
 
-        let res = await r.safeAsync(fetch, u.v, i)
+        const res = await r.safeAsync(fetch, u.v, i)
         assert.ok(res.err === undefined)
       }
 
@@ -1731,12 +1731,12 @@ type TestAbortPropagationOptions = {
 function testAbortPropagation(o: TestAbortPropagationOptions): void {
   void test.suite("abort propagation", () => {
     void test("aborts upstream request when client disconnects", async(t) => {
-      let [hs, ha] = await setupHttp(t)
+      const [hs, ha] = await setupHttp(t)
 
-      let rd = new Deferred()
+      const rd = new Deferred()
       rd.withTimeout(3000, "Timeout waiting for upstream to receive request")
 
-      let cd = new Deferred()
+      const cd = new Deferred()
       cd.withTimeout(3000, "Timeout waiting for upstream to detect close")
 
       t.after(() => {
@@ -1744,33 +1744,33 @@ function testAbortPropagation(o: TestAbortPropagationOptions): void {
         cd.clear()
       })
 
-      let hl: AsyncRequestListener = async(req) => {
+      const hl: AsyncRequestListener = async(req) => {
         rd.resolve()
         req.on("close", cd.resolve.bind(cd))
         await cd.promise
       }
 
-      let hp = onRequest(t, hs, hl)
+      const hp = onRequest(t, hs, hl)
 
-      let tf = async(): Promise<void> => {
-        let e: object = {
+      const tf = async(): Promise<void> => {
+        const e: object = {
           DOCSPACE_OAUTH_BASE_URL: `http://[${ha.address}]:${ha.port}/`,
         }
 
-        let a = await setup(t, e)
+        const a = await setup(t, e)
 
-        let u = r.safeNew(URL, o.path, `http://[${a.address}]:${a.port}/`)
+        const u = r.safeNew(URL, o.path, `http://[${a.address}]:${a.port}/`)
         assert.ok(u.err === undefined)
 
-        let f = new URLSearchParams()
+        const f = new URLSearchParams()
 
-        for (let [k, v] of Object.entries(o.body)) {
+        for (const [k, v] of Object.entries(o.body)) {
           f.set(k, v)
         }
 
-        let ac = new AbortController()
+        const ac = new AbortController()
 
-        let i: RequestInit = {
+        const i: RequestInit = {
           method: "POST",
           headers: {
             "Content-Type": "application/x-www-form-urlencoded",
@@ -1779,9 +1779,9 @@ function testAbortPropagation(o: TestAbortPropagationOptions): void {
           signal: ac.signal,
         }
 
-        let fetch = withAuth(globalThis.fetch)
+        const fetch = withAuth(globalThis.fetch)
 
-        let p = r.safeAsync(fetch, u.v, i)
+        const p = r.safeAsync(fetch, u.v, i)
 
         await rd.promise
 
@@ -1789,7 +1789,7 @@ function testAbortPropagation(o: TestAbortPropagationOptions): void {
 
         await cd.promise
 
-        let res = await p
+        const res = await p
         assert.ok(res.err !== undefined)
       }
 
@@ -1806,34 +1806,34 @@ type TestProxyHeaderForwardingOptions = {
 function testProxyHeaderForwarding(o: TestProxyHeaderForwardingOptions): void {
   void test.suite("proxy header forwarding", () => {
     void test("sets X-Forwarded-For and X-Real-IP from client IP", async(t) => {
-      let [hs, ha] = await setupHttp(t)
+      const [hs, ha] = await setupHttp(t)
 
-      let hl = test.mock.fn<AsyncRequestListener>((req, res) => {
+      const hl = test.mock.fn<AsyncRequestListener>((req, res) => {
         assert.ok(req.headers["x-forwarded-for"] === "::1")
         assert.ok(req.headers["x-real-ip"] === "::1")
 
         res.end()
       })
 
-      let hp = onRequest(t, hs, hl)
+      const hp = onRequest(t, hs, hl)
 
-      let tf = async(): Promise<void> => {
-        let e: object = {
+      const tf = async(): Promise<void> => {
+        const e: object = {
           DOCSPACE_OAUTH_BASE_URL: `http://[${ha.address}]:${ha.port}/`,
         }
 
-        let a = await setup(t, e)
+        const a = await setup(t, e)
 
-        let u = r.safeNew(URL, o.path, `http://[${a.address}]:${a.port}/`)
+        const u = r.safeNew(URL, o.path, `http://[${a.address}]:${a.port}/`)
         assert.ok(u.err === undefined)
 
-        let f = new URLSearchParams()
+        const f = new URLSearchParams()
 
-        for (let [k, v] of Object.entries(o.body)) {
+        for (const [k, v] of Object.entries(o.body)) {
           f.set(k, v)
         }
 
-        let i: RequestInit = {
+        const i: RequestInit = {
           method: "POST",
           headers: {
             "Content-Type": "application/x-www-form-urlencoded",
@@ -1841,9 +1841,9 @@ function testProxyHeaderForwarding(o: TestProxyHeaderForwardingOptions): void {
           body: f.toString(),
         }
 
-        let fetch = withAuth(globalThis.fetch)
+        const fetch = withAuth(globalThis.fetch)
 
-        let res = await r.safeAsync(fetch, u.v, i)
+        const res = await r.safeAsync(fetch, u.v, i)
         assert.ok(res.err === undefined)
       }
 
@@ -1853,34 +1853,34 @@ function testProxyHeaderForwarding(o: TestProxyHeaderForwardingOptions): void {
     })
 
     void test("extends X-Forwarded-For preserving X-Real-IP", async(t) => {
-      let [hs, ha] = await setupHttp(t)
+      const [hs, ha] = await setupHttp(t)
 
-      let hl = test.mock.fn<AsyncRequestListener>((req, res) => {
+      const hl = test.mock.fn<AsyncRequestListener>((req, res) => {
         assert.ok(req.headers["x-forwarded-for"] === "203.0.113.195, 2001:db8:85a3:8d3:1319:8a2e:370:7348, ::1")
         assert.ok(req.headers["x-real-ip"] === "203.0.113.190")
 
         res.end()
       })
 
-      let hp = onRequest(t, hs, hl)
+      const hp = onRequest(t, hs, hl)
 
-      let tf = async(): Promise<void> => {
-        let e: object = {
+      const tf = async(): Promise<void> => {
+        const e: object = {
           DOCSPACE_OAUTH_BASE_URL: `http://[${ha.address}]:${ha.port}/`,
         }
 
-        let a = await setup(t, e)
+        const a = await setup(t, e)
 
-        let u = r.safeNew(URL, o.path, `http://[${a.address}]:${a.port}/`)
+        const u = r.safeNew(URL, o.path, `http://[${a.address}]:${a.port}/`)
         assert.ok(u.err === undefined)
 
-        let f = new URLSearchParams()
+        const f = new URLSearchParams()
 
-        for (let [k, v] of Object.entries(o.body)) {
+        for (const [k, v] of Object.entries(o.body)) {
           f.set(k, v)
         }
 
-        let i: RequestInit = {
+        const i: RequestInit = {
           method: "POST",
           headers: {
             "Content-Type": "application/x-www-form-urlencoded",
@@ -1890,9 +1890,9 @@ function testProxyHeaderForwarding(o: TestProxyHeaderForwardingOptions): void {
           body: f.toString(),
         }
 
-        let fetch = withAuth(globalThis.fetch)
+        const fetch = withAuth(globalThis.fetch)
 
-        let res = await r.safeAsync(fetch, u.v, i)
+        const res = await r.safeAsync(fetch, u.v, i)
         assert.ok(res.err === undefined)
       }
 
@@ -1911,36 +1911,36 @@ type TestProxyErrorHandlingOptions = {
 function testProxyErrorHandling(o: TestProxyErrorHandlingOptions): void {
   void test.suite("proxy error handling", () => {
     void test("passes through upstream error response", async(t) => {
-      let [hs, ha] = await setupHttp(t)
+      const [hs, ha] = await setupHttp(t)
 
-      let hp = onRequest(t, hs, async(_, res) => {
-        let b: object = {
+      const hp = onRequest(t, hs, async(_, res) => {
+        const b: object = {
           error: "some_error",
           error_description: "some_description",
           error_uri: "some_uri",
         }
 
-        let s = await sendJson(res, 418, b)
+        const s = await sendJson(res, 418, b)
         assert.ok(s.err === undefined)
       })
 
-      let tf = async(): Promise<void> => {
-        let e: object = {
+      const tf = async(): Promise<void> => {
+        const e: object = {
           DOCSPACE_OAUTH_BASE_URL: `http://[${ha.address}]:${ha.port}/`,
         }
 
-        let a = await setup(t, e)
+        const a = await setup(t, e)
 
-        let u = r.safeNew(URL, o.path, `http://[${a.address}]:${a.port}/`)
+        const u = r.safeNew(URL, o.path, `http://[${a.address}]:${a.port}/`)
         assert.ok(u.err === undefined)
 
-        let f = new URLSearchParams()
+        const f = new URLSearchParams()
 
-        for (let [k, v] of Object.entries(o.body)) {
+        for (const [k, v] of Object.entries(o.body)) {
           f.set(k, v)
         }
 
-        let i: RequestInit = {
+        const i: RequestInit = {
           method: "POST",
           headers: {
             "Content-Type": "application/x-www-form-urlencoded",
@@ -1948,17 +1948,17 @@ function testProxyErrorHandling(o: TestProxyErrorHandlingOptions): void {
           body: f.toString(),
         }
 
-        let fetch = withAuth(globalThis.fetch)
+        const fetch = withAuth(globalThis.fetch)
 
-        let res = await r.safeAsync(fetch, u.v, i)
+        const res = await r.safeAsync(fetch, u.v, i)
         assert.ok(res.err === undefined)
 
         assert.ok(res.v.status === 418)
 
-        let ab = await readFetchJson(res.v)
+        const ab = await readFetchJson(res.v)
         assert.ok(ab.err === undefined)
 
-        let eb: object = {
+        const eb: object = {
           error: "some_error",
           error_description: "some_description",
           error_uri: "some_uri",
@@ -1971,34 +1971,34 @@ function testProxyErrorHandling(o: TestProxyErrorHandlingOptions): void {
     })
 
     void test("transforms upstream custom error to protocol error", async(t) => {
-      let [hs, ha] = await setupHttp(t)
+      const [hs, ha] = await setupHttp(t)
 
-      let hp = onRequest(t, hs, async(_, res) => {
-        let b: object = {
+      const hp = onRequest(t, hs, async(_, res) => {
+        const b: object = {
           reason: "some_reason",
         }
 
-        let s = await sendJson(res, 418, b)
+        const s = await sendJson(res, 418, b)
         assert.ok(s.err === undefined)
       })
 
-      let tf = async(): Promise<void> => {
-        let e: object = {
+      const tf = async(): Promise<void> => {
+        const e: object = {
           DOCSPACE_OAUTH_BASE_URL: `http://[${ha.address}]:${ha.port}/`,
         }
 
-        let a = await setup(t, e)
+        const a = await setup(t, e)
 
-        let u = r.safeNew(URL, o.path, `http://[${a.address}]:${a.port}/`)
+        const u = r.safeNew(URL, o.path, `http://[${a.address}]:${a.port}/`)
         assert.ok(u.err === undefined)
 
-        let f = new URLSearchParams()
+        const f = new URLSearchParams()
 
-        for (let [k, v] of Object.entries(o.body)) {
+        for (const [k, v] of Object.entries(o.body)) {
           f.set(k, v)
         }
 
-        let i: RequestInit = {
+        const i: RequestInit = {
           method: "POST",
           headers: {
             "Content-Type": "application/x-www-form-urlencoded",
@@ -2006,17 +2006,17 @@ function testProxyErrorHandling(o: TestProxyErrorHandlingOptions): void {
           body: f.toString(),
         }
 
-        let fetch = withAuth(globalThis.fetch)
+        const fetch = withAuth(globalThis.fetch)
 
-        let res = await r.safeAsync(fetch, u.v, i)
+        const res = await r.safeAsync(fetch, u.v, i)
         assert.ok(res.err === undefined)
 
         assert.ok(res.v.status === 418)
 
-        let ab = await readFetchJson(res.v)
+        const ab = await readFetchJson(res.v)
         assert.ok(ab.err === undefined)
 
-        let eb: object = {
+        const eb: object = {
           error: "server_error",
           error_description: "some_reason",
         }
@@ -2028,30 +2028,30 @@ function testProxyErrorHandling(o: TestProxyErrorHandlingOptions): void {
     })
 
     void test("returns error when upstream responds without Content-Type header", async(t) => {
-      let [hs, ha] = await setupHttp(t)
+      const [hs, ha] = await setupHttp(t)
 
-      let hp = onRequest(t, hs, (_, res) => {
+      const hp = onRequest(t, hs, (_, res) => {
         res.statusCode = 418
         res.end()
       })
 
-      let tf = async(): Promise<void> => {
-        let e: object = {
+      const tf = async(): Promise<void> => {
+        const e: object = {
           DOCSPACE_OAUTH_BASE_URL: `http://[${ha.address}]:${ha.port}/`,
         }
 
-        let a = await setup(t, e)
+        const a = await setup(t, e)
 
-        let u = r.safeNew(URL, o.path, `http://[${a.address}]:${a.port}/`)
+        const u = r.safeNew(URL, o.path, `http://[${a.address}]:${a.port}/`)
         assert.ok(u.err === undefined)
 
-        let f = new URLSearchParams()
+        const f = new URLSearchParams()
 
-        for (let [k, v] of Object.entries(o.body)) {
+        for (const [k, v] of Object.entries(o.body)) {
           f.set(k, v)
         }
 
-        let i: RequestInit = {
+        const i: RequestInit = {
           method: "POST",
           headers: {
             "Content-Type": "application/x-www-form-urlencoded",
@@ -2059,17 +2059,17 @@ function testProxyErrorHandling(o: TestProxyErrorHandlingOptions): void {
           body: f.toString(),
         }
 
-        let fetch = withAuth(globalThis.fetch)
+        const fetch = withAuth(globalThis.fetch)
 
-        let res = await r.safeAsync(fetch, u.v, i)
+        const res = await r.safeAsync(fetch, u.v, i)
         assert.ok(res.err === undefined)
 
         assert.ok(res.v.status === 418)
 
-        let ab = await readFetchJson(res.v)
+        const ab = await readFetchJson(res.v)
         assert.ok(ab.err === undefined)
 
-        let eb: object = {
+        const eb: object = {
           error: "server_error",
           error_description: "Content-Type is missing",
         }
@@ -2081,31 +2081,31 @@ function testProxyErrorHandling(o: TestProxyErrorHandlingOptions): void {
     })
 
     void test("returns error when upstream responds with invalid Content-Type header", async(t) => {
-      let [hs, ha] = await setupHttp(t)
+      const [hs, ha] = await setupHttp(t)
 
-      let hp = onRequest(t, hs, (_, res) => {
+      const hp = onRequest(t, hs, (_, res) => {
         res.statusCode = 418
         res.setHeader("Content-Type", "text/plain")
         res.end()
       })
 
-      let tf = async(): Promise<void> => {
-        let e: object = {
+      const tf = async(): Promise<void> => {
+        const e: object = {
           DOCSPACE_OAUTH_BASE_URL: `http://[${ha.address}]:${ha.port}/`,
         }
 
-        let a = await setup(t, e)
+        const a = await setup(t, e)
 
-        let u = r.safeNew(URL, o.path, `http://[${a.address}]:${a.port}/`)
+        const u = r.safeNew(URL, o.path, `http://[${a.address}]:${a.port}/`)
         assert.ok(u.err === undefined)
 
-        let f = new URLSearchParams()
+        const f = new URLSearchParams()
 
-        for (let [k, v] of Object.entries(o.body)) {
+        for (const [k, v] of Object.entries(o.body)) {
           f.set(k, v)
         }
 
-        let i: RequestInit = {
+        const i: RequestInit = {
           method: "POST",
           headers: {
             "Content-Type": "application/x-www-form-urlencoded",
@@ -2113,17 +2113,17 @@ function testProxyErrorHandling(o: TestProxyErrorHandlingOptions): void {
           body: f.toString(),
         }
 
-        let fetch = withAuth(globalThis.fetch)
+        const fetch = withAuth(globalThis.fetch)
 
-        let res = await r.safeAsync(fetch, u.v, i)
+        const res = await r.safeAsync(fetch, u.v, i)
         assert.ok(res.err === undefined)
 
         assert.ok(res.v.status === 418)
 
-        let ab = await readFetchJson(res.v)
+        const ab = await readFetchJson(res.v)
         assert.ok(ab.err === undefined)
 
-        let eb: object = {
+        const eb: object = {
           error: "server_error",
           error_description: "Content-Type is invalid",
         }
@@ -2144,40 +2144,40 @@ type TestRequestIdReflectionOptions = {
 function testRequestIdReflection(o: TestRequestIdReflectionOptions): void {
   void test.suite("request id reflection", () => {
     void test("reflects X-Request-ID back to client when provided", async(t) => {
-      let a = await setup(t, {})
+      const a = await setup(t, {})
 
-      let u = r.safeNew(URL, o.path, `http://[${a.address}]:${a.port}/`)
+      const u = r.safeNew(URL, o.path, `http://[${a.address}]:${a.port}/`)
       assert.ok(u.err === undefined)
 
-      let id = "12345678-1234-1234-1234-123456789abc"
+      const id = "12345678-1234-1234-1234-123456789abc"
 
-      let i: RequestInit = {
+      const i: RequestInit = {
         method: o.method,
         headers: {
           "X-Request-ID": id,
         },
       }
 
-      let res = await r.safeAsync(fetch, u.v, i)
+      const res = await r.safeAsync(fetch, u.v, i)
       assert.ok(res.err === undefined)
 
       assert.ok(res.v.headers.get("X-Request-ID") === id)
     })
 
     void test("generates X-Request-ID and reflects it in response when not provided", async(t) => {
-      let a = await setup(t, {})
+      const a = await setup(t, {})
 
-      let u = r.safeNew(URL, o.path, `http://[${a.address}]:${a.port}/`)
+      const u = r.safeNew(URL, o.path, `http://[${a.address}]:${a.port}/`)
       assert.ok(u.err === undefined)
 
-      let i: RequestInit = {
+      const i: RequestInit = {
         method: o.method,
       }
 
-      let res = await r.safeAsync(fetch, u.v, i)
+      const res = await r.safeAsync(fetch, u.v, i)
       assert.ok(res.err === undefined)
 
-      let id = res.v.headers.get("X-Request-ID")
+      const id = res.v.headers.get("X-Request-ID")
       assert.ok(id && isUuid(id))
     })
   })
@@ -2191,36 +2191,36 @@ type TestRequestIdForwardingOptions = {
 function testRequestIdForwarding(o: TestRequestIdForwardingOptions): void {
   void test.suite("request id forwarding", () => {
     void test("forwards X-Request-ID from client request to upstream", async(t) => {
-      let [hs, ha] = await setupHttp(t)
+      const [hs, ha] = await setupHttp(t)
 
-      let id = "12345678-1234-1234-1234-123456789abc"
+      const id = "12345678-1234-1234-1234-123456789abc"
 
-      let hl = test.mock.fn<AsyncRequestListener>(async(req, res) => {
+      const hl = test.mock.fn<AsyncRequestListener>(async(req, res) => {
         assert.ok(req.headers["x-request-id"] === id)
 
-        let s = await sendJson(res, 200, {})
+        const s = await sendJson(res, 200, {})
         assert.ok(s.err === undefined)
       })
 
-      let hp = onRequest(t, hs, hl)
+      const hp = onRequest(t, hs, hl)
 
-      let tf = async(): Promise<void> => {
-        let e: object = {
+      const tf = async(): Promise<void> => {
+        const e: object = {
           DOCSPACE_OAUTH_BASE_URL: `http://[${ha.address}]:${ha.port}/`,
         }
 
-        let a = await setup(t, e)
+        const a = await setup(t, e)
 
-        let u = r.safeNew(URL, o.path, `http://[${a.address}]:${a.port}/`)
+        const u = r.safeNew(URL, o.path, `http://[${a.address}]:${a.port}/`)
         assert.ok(u.err === undefined)
 
-        let f = new URLSearchParams()
+        const f = new URLSearchParams()
 
-        for (let [k, v] of Object.entries(o.body)) {
+        for (const [k, v] of Object.entries(o.body)) {
           f.set(k, v)
         }
 
-        let i: RequestInit = {
+        const i: RequestInit = {
           method: "POST",
           headers: {
             "Content-Type": "application/x-www-form-urlencoded",
@@ -2229,9 +2229,9 @@ function testRequestIdForwarding(o: TestRequestIdForwardingOptions): void {
           body: f.toString(),
         }
 
-        let fetch = withAuth(globalThis.fetch)
+        const fetch = withAuth(globalThis.fetch)
 
-        let res = await r.safeAsync(fetch, u.v, i)
+        const res = await r.safeAsync(fetch, u.v, i)
         assert.ok(res.err === undefined)
       }
 
@@ -2241,35 +2241,35 @@ function testRequestIdForwarding(o: TestRequestIdForwardingOptions): void {
     })
 
     void test("generates X-Request-ID and forwards it to upstream when not provided", async(t) => {
-      let [hs, ha] = await setupHttp(t)
+      const [hs, ha] = await setupHttp(t)
 
-      let hl = test.mock.fn<AsyncRequestListener>(async(req, res) => {
-        let id = req.headers["x-request-id"]
+      const hl = test.mock.fn<AsyncRequestListener>(async(req, res) => {
+        const id = req.headers["x-request-id"]
         assert.ok(typeof id === "string" && isUuid(id))
 
-        let s = await sendJson(res, 200, {})
+        const s = await sendJson(res, 200, {})
         assert.ok(s.err === undefined)
       })
 
-      let hp = onRequest(t, hs, hl)
+      const hp = onRequest(t, hs, hl)
 
-      let tf = async(): Promise<void> => {
-        let e: object = {
+      const tf = async(): Promise<void> => {
+        const e: object = {
           DOCSPACE_OAUTH_BASE_URL: `http://[${ha.address}]:${ha.port}/`,
         }
 
-        let a = await setup(t, e)
+        const a = await setup(t, e)
 
-        let u = r.safeNew(URL, o.path, `http://[${a.address}]:${a.port}/`)
+        const u = r.safeNew(URL, o.path, `http://[${a.address}]:${a.port}/`)
         assert.ok(u.err === undefined)
 
-        let f = new URLSearchParams()
+        const f = new URLSearchParams()
 
-        for (let [k, v] of Object.entries(o.body)) {
+        for (const [k, v] of Object.entries(o.body)) {
           f.set(k, v)
         }
 
-        let i: RequestInit = {
+        const i: RequestInit = {
           method: "POST",
           headers: {
             "Content-Type": "application/x-www-form-urlencoded",
@@ -2277,9 +2277,9 @@ function testRequestIdForwarding(o: TestRequestIdForwardingOptions): void {
           body: f.toString(),
         }
 
-        let fetch = withAuth(globalThis.fetch)
+        const fetch = withAuth(globalThis.fetch)
 
-        let res = await r.safeAsync(fetch, u.v, i)
+        const res = await r.safeAsync(fetch, u.v, i)
         assert.ok(res.err === undefined)
       }
 
@@ -2295,19 +2295,19 @@ void test.suite("oauth server", async() => {
   let wt = ""
 
   await (async() => {
-    let f = async(t: test.TestContext): Promise<void> => {
-      let [hs, ha] = await setupHttp(t)
+    const f = async(t: test.TestContext): Promise<void> => {
+      const [hs, ha] = await setupHttp(t)
 
-      let hp = onRequest(t, hs, async(_, res) => {
+      const hp = onRequest(t, hs, async(_, res) => {
         ot = await sendAccessToken(_, res)
       })
 
-      let tf = async(): Promise<void> => {
-        let e: object = {
+      const tf = async(): Promise<void> => {
+        const e: object = {
           DOCSPACE_OAUTH_BASE_URL: `http://[${ha.address}]:${ha.port}/`,
         }
 
-        let a = await setup(t, e)
+        const a = await setup(t, e)
 
         wt = await requestAccessToken(a)
       }
@@ -2315,11 +2315,11 @@ void test.suite("oauth server", async() => {
       await Promise.race([hp, tf()])
     }
 
-    let errs: Error[] = []
+    const errs: Error[] = []
 
-    let a: test.TestContextHookFn[] = []
+    const a: test.TestContextHookFn[] = []
 
-    let t = {
+    const t = {
       after(cb) {
         if (cb) {
           a.push(cb)
@@ -2327,13 +2327,13 @@ void test.suite("oauth server", async() => {
       },
     } as test.TestContext
 
-    let w = await r.safeAsync(f, t)
+    const w = await r.safeAsync(f, t)
     if (w.err) {
       errs.push(new Error("Calling test", {cause: w.err}))
     }
 
-    for (let cb of a) {
-      let w = await r.safeAsync(cb, t, () => {})
+    for (const cb of a) {
+      const w = await r.safeAsync(cb, t, () => {})
       if (w.err) {
         errs.push(new Error("Calling hook", {cause: w.err}))
       }
@@ -2352,7 +2352,7 @@ void test.suite("oauth server", async() => {
       TestRateLimitOptions &
       TestRequestIdReflectionOptions
 
-    let o: Options = {
+    const o: Options = {
       env: {},
       method: "GET",
       path: "/.well-known/oauth-authorization-server",
@@ -2372,20 +2372,20 @@ void test.suite("oauth server", async() => {
 
     void test.suite("server metadata", () => {
       void test("returns server metadata without dynamic client registration", async(t) => {
-        let a = await setup(t, {})
+        const a = await setup(t, {})
 
-        let u = r.safeNew(URL, "/.well-known/oauth-authorization-server", `http://[${a.address}]:${a.port}/`)
+        const u = r.safeNew(URL, "/.well-known/oauth-authorization-server", `http://[${a.address}]:${a.port}/`)
         assert.ok(u.err === undefined)
 
-        let res = await r.safeAsync(fetch, u.v)
+        const res = await r.safeAsync(fetch, u.v)
         assert.ok(res.err === undefined)
 
         assert.ok(res.v.status === 200)
 
-        let ab = await readFetchJson(res.v)
+        const ab = await readFetchJson(res.v)
         assert.ok(ab.err === undefined)
 
-        let eb: object = {
+        const eb: object = {
           issuer: `http://[${a.address}]:${a.port}`,
           authorization_endpoint: `http://[${a.address}]:${a.port}/oauth/authorize`,
           token_endpoint: `http://[${a.address}]:${a.port}/oauth/token`,
@@ -2419,25 +2419,25 @@ void test.suite("oauth server", async() => {
       })
 
       void test("returns server metadata with dynamic client registration", async(t) => {
-        let e: object = {
+        const e: object = {
           DOCSPACE_OAUTH_CLIENT_ID: "xxx",
           DOCSPACE_OAUTH_CLIENT_SECRET: "yyy",
         }
 
-        let a = await setup(t, e)
+        const a = await setup(t, e)
 
-        let u = r.safeNew(URL, "/.well-known/oauth-authorization-server", `http://[${a.address}]:${a.port}/`)
+        const u = r.safeNew(URL, "/.well-known/oauth-authorization-server", `http://[${a.address}]:${a.port}/`)
         assert.ok(u.err === undefined)
 
-        let res = await r.safeAsync(fetch, u.v)
+        const res = await r.safeAsync(fetch, u.v)
         assert.ok(res.err === undefined)
 
         assert.ok(res.v.status === 200)
 
-        let ab = await readFetchJson(res.v)
+        const ab = await readFetchJson(res.v)
         assert.ok(ab.err === undefined)
 
-        let eb: object = {
+        const eb: object = {
           issuer: `http://[${a.address}]:${a.port}`,
           authorization_endpoint: `http://[${a.address}]:${a.port}/oauth/authorize`,
           token_endpoint: `http://[${a.address}]:${a.port}/oauth/token`,
@@ -2477,12 +2477,12 @@ void test.suite("oauth server", async() => {
 
     void test.suite("endpoint availability", () => {
       void test("returns 404 for a nested path", async(t) => {
-        let a = await setup(t, {})
+        const a = await setup(t, {})
 
-        let u = r.safeNew(URL, "/.well-known/oauth-authorization-server/mcp", `http://[${a.address}]:${a.port}/`)
+        const u = r.safeNew(URL, "/.well-known/oauth-authorization-server/mcp", `http://[${a.address}]:${a.port}/`)
         assert.ok(u.err === undefined)
 
-        let res = await r.safeAsync(fetch, u.v)
+        const res = await r.safeAsync(fetch, u.v)
         assert.ok(res.err === undefined)
 
         assert.ok(res.v.status === 404)
@@ -2498,7 +2498,7 @@ void test.suite("oauth server", async() => {
       TestRateLimitOptions &
       TestRequestIdReflectionOptions
 
-    let o: Options = {
+    const o: Options = {
       env: {},
       method: "GET",
       path: "/.well-known/oauth-protected-resource",
@@ -2518,20 +2518,20 @@ void test.suite("oauth server", async() => {
 
     void test.suite("resource metadata", () => {
       void test("returns resource metadata", async(t) => {
-        let a = await setup(t, {})
+        const a = await setup(t, {})
 
-        let u = r.safeNew(URL, "/.well-known/oauth-protected-resource", `http://[${a.address}]:${a.port}/`)
+        const u = r.safeNew(URL, "/.well-known/oauth-protected-resource", `http://[${a.address}]:${a.port}/`)
         assert.ok(u.err === undefined)
 
-        let res = await r.safeAsync(fetch, u.v)
+        const res = await r.safeAsync(fetch, u.v)
         assert.ok(res.err === undefined)
 
         assert.ok(res.v.status === 200)
 
-        let ab = await readFetchJson(res.v)
+        const ab = await readFetchJson(res.v)
         assert.ok(ab.err === undefined)
 
-        let eb: object = {
+        const eb: object = {
           resource: `http://[${a.address}]:${a.port}`,
           authorization_servers: [
             `http://[${a.address}]:${a.port}`,
@@ -2547,12 +2547,12 @@ void test.suite("oauth server", async() => {
 
     void test.suite("endpoint availability", () => {
       void test("returns 404 for a nested path", async(t) => {
-        let a = await setup(t, {})
+        const a = await setup(t, {})
 
-        let u = r.safeNew(URL, "/.well-known/oauth-protected-resource/mcp", `http://[${a.address}]:${a.port}/`)
+        const u = r.safeNew(URL, "/.well-known/oauth-protected-resource/mcp", `http://[${a.address}]:${a.port}/`)
         assert.ok(u.err === undefined)
 
-        let res = await r.safeAsync(fetch, u.v)
+        const res = await r.safeAsync(fetch, u.v)
         assert.ok(res.err === undefined)
 
         assert.ok(res.v.status === 404)
@@ -2568,7 +2568,7 @@ void test.suite("oauth server", async() => {
       TestRateLimitOptions &
       TestRequestIdReflectionOptions
 
-    let o: Options = {
+    const o: Options = {
       env: {},
       method: "GET",
       path: "/oauth/authorize",
@@ -2588,20 +2588,20 @@ void test.suite("oauth server", async() => {
 
     void test.suite("error handling", () => {
       void test("returns error when query parameters are missing", async(t) => {
-        let a = await setup(t, {})
+        const a = await setup(t, {})
 
-        let u = r.safeNew(URL, "/oauth/authorize", `http://[${a.address}]:${a.port}/`)
+        const u = r.safeNew(URL, "/oauth/authorize", `http://[${a.address}]:${a.port}/`)
         assert.ok(u.err === undefined)
 
-        let res = await r.safeAsync(fetch, u.v)
+        const res = await r.safeAsync(fetch, u.v)
         assert.ok(res.err === undefined)
 
         assert.ok(res.v.status === 400)
 
-        let ab = await readFetchJson(res.v)
+        const ab = await readFetchJson(res.v)
         assert.ok(ab.err === undefined)
 
-        let eb: object = {
+        const eb: object = {
           error: "invalid_request",
           error_description: "Parsing query\n" +
             '\t\tresponse_type: invalid_value Invalid input: expected "code"\n' +
@@ -2612,27 +2612,27 @@ void test.suite("oauth server", async() => {
       })
 
       void test("returns error when response_type is invalid", async(t) => {
-        let a = await setup(t, {})
+        const a = await setup(t, {})
 
-        let u = r.safeNew(URL, "/oauth/authorize", `http://[${a.address}]:${a.port}/`)
+        const u = r.safeNew(URL, "/oauth/authorize", `http://[${a.address}]:${a.port}/`)
         assert.ok(u.err === undefined)
 
-        let q = new URLSearchParams()
+        const q = new URLSearchParams()
 
         q.set("response_type", "invalid")
         q.set("client_id", "xxx")
 
         u.v.search = q.toString()
 
-        let res = await r.safeAsync(fetch, u.v)
+        const res = await r.safeAsync(fetch, u.v)
         assert.ok(res.err === undefined)
 
         assert.ok(res.v.status === 400)
 
-        let ab = await readFetchJson(res.v)
+        const ab = await readFetchJson(res.v)
         assert.ok(ab.err === undefined)
 
-        let eb: object = {
+        const eb: object = {
           error: "invalid_request",
           error_description: "Parsing query\n" +
             '\t\tresponse_type: invalid_value Invalid input: expected "code"',
@@ -2642,27 +2642,27 @@ void test.suite("oauth server", async() => {
       })
 
       void test("returns error when redirect_uri is missing", async(t) => {
-        let a = await setup(t, {})
+        const a = await setup(t, {})
 
-        let u = r.safeNew(URL, "/oauth/authorize", `http://[${a.address}]:${a.port}/`)
+        const u = r.safeNew(URL, "/oauth/authorize", `http://[${a.address}]:${a.port}/`)
         assert.ok(u.err === undefined)
 
-        let q = new URLSearchParams()
+        const q = new URLSearchParams()
 
         q.set("response_type", "code")
         q.set("client_id", "xxx")
 
         u.v.search = q.toString()
 
-        let res = await r.safeAsync(fetch, u.v)
+        const res = await r.safeAsync(fetch, u.v)
         assert.ok(res.err === undefined)
 
         assert.ok(res.v.status === 400)
 
-        let ab = await readFetchJson(res.v)
+        const ab = await readFetchJson(res.v)
         assert.ok(ab.err === undefined)
 
-        let eb: object = {
+        const eb: object = {
           error: "invalid_request",
           error_description: "No redirect URI",
         }
@@ -2673,16 +2673,16 @@ void test.suite("oauth server", async() => {
 
     void test.suite("redirect", () => {
       void test("redirects to upstream", async(t) => {
-        let e: object = {
+        const e: object = {
           DOCSPACE_OAUTH_BASE_URL: "http://localhost:8020/",
         }
 
-        let a = await setup(t, e)
+        const a = await setup(t, e)
 
-        let u = r.safeNew(URL, "/oauth/authorize", `http://[${a.address}]:${a.port}/`)
+        const u = r.safeNew(URL, "/oauth/authorize", `http://[${a.address}]:${a.port}/`)
         assert.ok(u.err === undefined)
 
-        let q = new URLSearchParams()
+        const q = new URLSearchParams()
 
         q.set("response_type", "code")
         q.set("client_id", "xxx")
@@ -2690,23 +2690,23 @@ void test.suite("oauth server", async() => {
 
         u.v.search = q.toString()
 
-        let i: RequestInit = {
+        const i: RequestInit = {
           redirect: "manual",
         }
 
-        let res = await r.safeAsync(fetch, u.v, i)
+        const res = await r.safeAsync(fetch, u.v, i)
         assert.ok(res.err === undefined)
 
         assert.ok(res.v.status === 302)
 
-        let l = parseFetchLocation(res.v)
+        const l = parseFetchLocation(res.v)
         assert.ok(l.err === undefined)
 
         assert.ok(`${l.v.origin}${l.v.pathname}` === "http://localhost:8020/oauth2/authorize")
 
-        let aq = Object.fromEntries(l.v.searchParams.entries())
+        const aq = Object.fromEntries(l.v.searchParams.entries())
 
-        let eq: object = {
+        const eq: object = {
           client_id: "xxx",
           redirect_uri: `http://[${a.address}]:${a.port}/oauth/callback`,
           response_type: "code",
@@ -2715,7 +2715,7 @@ void test.suite("oauth server", async() => {
 
         assert.deepEqual(aq, eq)
 
-        let ab = await readFetchText(res.v)
+        const ab = await readFetchText(res.v)
         assert.ok(ab.err === undefined)
 
         assert.ok(ab.v === `Found. Redirecting to ${l.v}`)
@@ -2724,53 +2724,53 @@ void test.suite("oauth server", async() => {
 
     void test.suite("state token signature algorithm", () => {
       void test("signs state token with HS256 algorithm by default", async(t) => {
-        let e: object = {
+        const e: object = {
           DOCSPACE_OAUTH_STATE_TOKEN_SECRET_KEY: "yyy",
         }
 
-        let a = await setup(t, e)
+        const a = await setup(t, e)
 
-        let q = new URLSearchParams()
+        const q = new URLSearchParams()
 
-        let s = await requestState(a, q)
+        const s = await requestState(a, q)
 
         checkJwtAlg(s, "HS256", "yyy")
       })
 
-      let ta: jwt.Algorithm[] = [
+      const ta: jwt.Algorithm[] = [
         "HS256",
         "HS384",
         "HS512",
       ]
 
-      for (let tt of ta) {
+      for (const tt of ta) {
         void test(`signs state token with ${tt} algorithm`, async(t) => {
-          let e: object = {
+          const e: object = {
             DOCSPACE_OAUTH_STATE_TOKEN_ALGORITHM: tt,
             DOCSPACE_OAUTH_STATE_TOKEN_SECRET_KEY: "yyy",
           }
 
-          let a = await setup(t, e)
+          const a = await setup(t, e)
 
-          let q = new URLSearchParams()
+          const q = new URLSearchParams()
 
-          let s = await requestState(a, q)
+          const s = await requestState(a, q)
 
           checkJwtAlg(s, tt, "yyy")
         })
       }
 
       void test("signs state token without signature when algorithm is disabled", async(t) => {
-        let e: object = {
+        const e: object = {
           DOCSPACE_OAUTH_STATE_TOKEN_ALGORITHM: "",
           DOCSPACE_OAUTH_STATE_TOKEN_SECRET_KEY: "",
         }
 
-        let a = await setup(t, e)
+        const a = await setup(t, e)
 
-        let q = new URLSearchParams()
+        const q = new URLSearchParams()
 
-        let s = await requestState(a, q)
+        const s = await requestState(a, q)
 
         checkJwtAlg(s, "none", "")
       })
@@ -2778,39 +2778,39 @@ void test.suite("oauth server", async() => {
 
     void test.suite("state token expiration time", () => {
       void test("sets default state token expiration", async(t) => {
-        let a = await setup(t, {})
+        const a = await setup(t, {})
 
-        let q = new URLSearchParams()
+        const q = new URLSearchParams()
 
-        let s = await requestState(a, q)
+        const s = await requestState(a, q)
 
         checkJwtTtl(s, 3600000)
       })
 
       void test("sets custom state token expiration", async(t) => {
-        let e: object = {
+        const e: object = {
           DOCSPACE_OAUTH_STATE_TOKEN_TTL: 1800000,
         }
 
-        let a = await setup(t, e)
+        const a = await setup(t, e)
 
-        let q = new URLSearchParams()
+        const q = new URLSearchParams()
 
-        let s = await requestState(a, q)
+        const s = await requestState(a, q)
 
         checkJwtTtl(s, 1800000)
       })
 
       void test("creates state token without expiration when ttl is disabled", async(t) => {
-        let e: object = {
+        const e: object = {
           DOCSPACE_OAUTH_STATE_TOKEN_TTL: 0,
         }
 
-        let a = await setup(t, e)
+        const a = await setup(t, e)
 
-        let q = new URLSearchParams()
+        const q = new URLSearchParams()
 
-        let s = await requestState(a, q)
+        const s = await requestState(a, q)
 
         checkJwtTtl(s, 0)
       })
@@ -2818,15 +2818,15 @@ void test.suite("oauth server", async() => {
 
     void test.suite("state token payload", () => {
       void test("embeds redirect_uri in state token payload", async(t) => {
-        let a = await setup(t, {})
+        const a = await setup(t, {})
 
-        let q = new URLSearchParams()
+        const q = new URLSearchParams()
 
         q.set("redirect_uri", "http://localhost:8040")
 
-        let s = await requestState(a, q)
+        const s = await requestState(a, q)
 
-        let p: object = {
+        const p: object = {
           redirect_uri: "http://localhost:8040",
         }
 
@@ -2834,15 +2834,15 @@ void test.suite("oauth server", async() => {
       })
 
       void test("embeds client state in state token payload", async(t) => {
-        let a = await setup(t, {})
+        const a = await setup(t, {})
 
-        let q = new URLSearchParams()
+        const q = new URLSearchParams()
 
         q.set("state", "data")
 
-        let s = await requestState(a, q)
+        const s = await requestState(a, q)
 
-        let p: object = {
+        const p: object = {
           state: "data",
         }
 
@@ -2859,7 +2859,7 @@ void test.suite("oauth server", async() => {
       TestRateLimitOptions &
       TestRequestIdReflectionOptions
 
-    let o: Options = {
+    const o: Options = {
       env: {},
       method: "GET",
       path: "/oauth/callback",
@@ -2879,20 +2879,20 @@ void test.suite("oauth server", async() => {
 
     void test.suite("error handling", () => {
       void test("returns error when query parameters are missing", async(t) => {
-        let a = await setup(t, {})
+        const a = await setup(t, {})
 
-        let u = r.safeNew(URL, "/oauth/callback", `http://[${a.address}]:${a.port}/`)
+        const u = r.safeNew(URL, "/oauth/callback", `http://[${a.address}]:${a.port}/`)
         assert.ok(u.err === undefined)
 
-        let res = await r.safeAsync(fetch, u.v)
+        const res = await r.safeAsync(fetch, u.v)
         assert.ok(res.err === undefined)
 
         assert.ok(res.v.status === 400)
 
-        let ab = await readFetchJson(res.v)
+        const ab = await readFetchJson(res.v)
         assert.ok(ab.err === undefined)
 
-        let eb: object = {
+        const eb: object = {
           error: "invalid_request",
           error_description: "Parsing query\n" +
             "\t\tcode: invalid_type Invalid input: expected string, received undefined",
@@ -2902,26 +2902,26 @@ void test.suite("oauth server", async() => {
       })
 
       void test("returns error when state parameter is missing", async(t) => {
-        let a = await setup(t, {})
+        const a = await setup(t, {})
 
-        let u = r.safeNew(URL, "/oauth/callback", `http://[${a.address}]:${a.port}/`)
+        const u = r.safeNew(URL, "/oauth/callback", `http://[${a.address}]:${a.port}/`)
         assert.ok(u.err === undefined)
 
-        let q = new URLSearchParams()
+        const q = new URLSearchParams()
 
         q.set("code", "vvv")
 
         u.v.search = q.toString()
 
-        let res = await r.safeAsync(fetch, u.v)
+        const res = await r.safeAsync(fetch, u.v)
         assert.ok(res.err === undefined)
 
         assert.ok(res.v.status === 400)
 
-        let ab = await readFetchJson(res.v)
+        const ab = await readFetchJson(res.v)
         assert.ok(ab.err === undefined)
 
-        let eb: object = {
+        const eb: object = {
           error: "invalid_request",
           error_description: "No state",
         }
@@ -2930,27 +2930,27 @@ void test.suite("oauth server", async() => {
       })
 
       void test("returns error when state token is invalid", async(t) => {
-        let a = await setup(t, {})
+        const a = await setup(t, {})
 
-        let u = r.safeNew(URL, "/oauth/callback", `http://[${a.address}]:${a.port}/`)
+        const u = r.safeNew(URL, "/oauth/callback", `http://[${a.address}]:${a.port}/`)
         assert.ok(u.err === undefined)
 
-        let q = new URLSearchParams()
+        const q = new URLSearchParams()
 
         q.set("code", "vvv")
         q.set("state", "www")
 
         u.v.search = q.toString()
 
-        let res = await r.safeAsync(fetch, u.v)
+        const res = await r.safeAsync(fetch, u.v)
         assert.ok(res.err === undefined)
 
         assert.ok(res.v.status === 400)
 
-        let ab = await readFetchJson(res.v)
+        const ab = await readFetchJson(res.v)
         assert.ok(ab.err === undefined)
 
-        let eb: object = {
+        const eb: object = {
           error: "invalid_request",
           error_description: "Verifying token\n" +
             "\tVerifying token\n" +
@@ -2963,20 +2963,20 @@ void test.suite("oauth server", async() => {
 
     void test.suite("redirect", () => {
       void test("redirects to upstream preserving client state", async(t) => {
-        let e: object = {
+        const e: object = {
           DOCSPACE_OAUTH_BASE_URL: "http://localhost:8020/",
         }
 
-        let a = await setup(t, e)
+        const a = await setup(t, e)
 
         let q = new URLSearchParams()
 
         q.set("redirect_uri", "http://localhost:8030/app")
         q.set("state", "data")
 
-        let s = await requestState(a, q)
+        const s = await requestState(a, q)
 
-        let u = r.safeNew(URL, "/oauth/callback", `http://[${a.address}]:${a.port}/`)
+        const u = r.safeNew(URL, "/oauth/callback", `http://[${a.address}]:${a.port}/`)
         assert.ok(u.err === undefined)
 
         q = new URLSearchParams()
@@ -2986,49 +2986,49 @@ void test.suite("oauth server", async() => {
 
         u.v.search = q.toString()
 
-        let i: RequestInit = {
+        const i: RequestInit = {
           redirect: "manual",
         }
 
-        let res = await r.safeAsync(fetch, u.v, i)
+        const res = await r.safeAsync(fetch, u.v, i)
         assert.ok(res.err === undefined)
 
         assert.ok(res.v.status === 302)
 
-        let l = parseFetchLocation(res.v)
+        const l = parseFetchLocation(res.v)
         assert.ok(l.err === undefined)
 
         assert.ok(`${l.v.origin}${l.v.pathname}` === "http://localhost:8030/app")
 
-        let aq = Object.fromEntries(l.v.searchParams.entries())
+        const aq = Object.fromEntries(l.v.searchParams.entries())
 
-        let eq: Record<string, string> = {
+        const eq: Record<string, string> = {
           code: "vvv",
           state: "data",
         }
 
         assert.deepEqual(aq, eq)
 
-        let ab = await readFetchText(res.v)
+        const ab = await readFetchText(res.v)
         assert.ok(ab.err === undefined)
 
         assert.ok(ab.v === `Found. Redirecting to ${l.v}`)
       })
 
       void test("redirects to upstream without preserving client state", async(t) => {
-        let e: object = {
+        const e: object = {
           DOCSPACE_OAUTH_BASE_URL: "http://localhost:8020/",
         }
 
-        let a = await setup(t, e)
+        const a = await setup(t, e)
 
         let q = new URLSearchParams()
 
         q.set("redirect_uri", "http://localhost:8030/app")
 
-        let s = await requestState(a, q)
+        const s = await requestState(a, q)
 
-        let u = r.safeNew(URL, "/oauth/callback", `http://[${a.address}]:${a.port}/`)
+        const u = r.safeNew(URL, "/oauth/callback", `http://[${a.address}]:${a.port}/`)
         assert.ok(u.err === undefined)
 
         q = new URLSearchParams()
@@ -3038,29 +3038,29 @@ void test.suite("oauth server", async() => {
 
         u.v.search = q.toString()
 
-        let i: RequestInit = {
+        const i: RequestInit = {
           redirect: "manual",
         }
 
-        let res = await r.safeAsync(fetch, u.v, i)
+        const res = await r.safeAsync(fetch, u.v, i)
         assert.ok(res.err === undefined)
 
         assert.ok(res.v.status === 302)
 
-        let l = parseFetchLocation(res.v)
+        const l = parseFetchLocation(res.v)
         assert.ok(l.err === undefined)
 
         assert.ok(`${l.v.origin}${l.v.pathname}` === "http://localhost:8030/app")
 
-        let aq = Object.fromEntries(l.v.searchParams.entries())
+        const aq = Object.fromEntries(l.v.searchParams.entries())
 
-        let eq: Record<string, string> = {
+        const eq: Record<string, string> = {
           code: "vvv",
         }
 
         assert.deepEqual(aq, eq)
 
-        let ab = await readFetchText(res.v)
+        const ab = await readFetchText(res.v)
         assert.ok(ab.err === undefined)
 
         assert.ok(ab.v === `Found. Redirecting to ${l.v}`)
@@ -3084,7 +3084,7 @@ void test.suite("oauth server", async() => {
       TestRequestIdReflectionOptions &
       TestRequestIdForwardingOptions
 
-    let o: Options = {
+    const o: Options = {
       env: {},
       method: "POST",
       path: "/oauth/introspect",
@@ -3118,29 +3118,29 @@ void test.suite("oauth server", async() => {
 
     void test.suite("error handling", () => {
       void test("returns error when token parameter is missing", async(t) => {
-        let a = await setup(t, {})
+        const a = await setup(t, {})
 
-        let u = r.safeNew(URL, "/oauth/introspect", `http://[${a.address}]:${a.port}/`)
+        const u = r.safeNew(URL, "/oauth/introspect", `http://[${a.address}]:${a.port}/`)
         assert.ok(u.err === undefined)
 
-        let i: RequestInit = {
+        const i: RequestInit = {
           method: "POST",
           headers: {
             "Content-Type": "application/x-www-form-urlencoded",
           },
         }
 
-        let fetch = withAuth(globalThis.fetch)
+        const fetch = withAuth(globalThis.fetch)
 
-        let res = await r.safeAsync(fetch, u.v, i)
+        const res = await r.safeAsync(fetch, u.v, i)
         assert.ok(res.err === undefined)
 
         assert.ok(res.v.status === 400)
 
-        let ab = await readFetchJson(res.v)
+        const ab = await readFetchJson(res.v)
         assert.ok(ab.err === undefined)
 
-        let eb: object = {
+        const eb: object = {
           error: "invalid_request",
           error_description: "Parsing body\n" +
             "\t\ttoken: invalid_type Invalid input: expected string, received undefined",
@@ -3150,16 +3150,16 @@ void test.suite("oauth server", async() => {
       })
 
       void test("returns error when token is invalid", async(t) => {
-        let a = await setup(t, {})
+        const a = await setup(t, {})
 
-        let u = r.safeNew(URL, "/oauth/introspect", `http://[${a.address}]:${a.port}/`)
+        const u = r.safeNew(URL, "/oauth/introspect", `http://[${a.address}]:${a.port}/`)
         assert.ok(u.err === undefined)
 
-        let f = new URLSearchParams()
+        const f = new URLSearchParams()
 
         f.set("token", "zzz")
 
-        let i: RequestInit = {
+        const i: RequestInit = {
           method: "POST",
           headers: {
             "Content-Type": "application/x-www-form-urlencoded",
@@ -3167,17 +3167,17 @@ void test.suite("oauth server", async() => {
           body: f.toString(),
         }
 
-        let fetch = withAuth(globalThis.fetch)
+        const fetch = withAuth(globalThis.fetch)
 
-        let res = await r.safeAsync(fetch, u.v, i)
+        const res = await r.safeAsync(fetch, u.v, i)
         assert.ok(res.err === undefined)
 
         assert.ok(res.v.status === 400)
 
-        let ab = await readFetchJson(res.v)
+        const ab = await readFetchJson(res.v)
         assert.ok(ab.err === undefined)
 
-        let eb: object = {
+        const eb: object = {
           error: "invalid_token",
           error_description: "Verifying token\n" +
             "\tVerifying token\n" +
@@ -3188,20 +3188,20 @@ void test.suite("oauth server", async() => {
       })
 
       void test("returns error when upstream is unreachable", async(t) => {
-        let e: object = {
+        const e: object = {
           DOCSPACE_OAUTH_BASE_URL: "http://localhost:8020/",
         }
 
-        let a = await setup(t, e)
+        const a = await setup(t, e)
 
-        let u = r.safeNew(URL, "/oauth/introspect", `http://[${a.address}]:${a.port}/`)
+        const u = r.safeNew(URL, "/oauth/introspect", `http://[${a.address}]:${a.port}/`)
         assert.ok(u.err === undefined)
 
-        let f = new URLSearchParams()
+        const f = new URLSearchParams()
 
         f.set("token", wt)
 
-        let i: RequestInit = {
+        const i: RequestInit = {
           method: "POST",
           headers: {
             "Content-Type": "application/x-www-form-urlencoded",
@@ -3209,17 +3209,17 @@ void test.suite("oauth server", async() => {
           body: f.toString(),
         }
 
-        let fetch = withAuth(globalThis.fetch)
+        const fetch = withAuth(globalThis.fetch)
 
-        let res = await r.safeAsync(fetch, u.v, i)
+        const res = await r.safeAsync(fetch, u.v, i)
         assert.ok(res.err === undefined)
 
         assert.ok(res.v.status === 500)
 
-        let ab = await readFetchJson(res.v)
+        const ab = await readFetchJson(res.v)
         assert.ok(ab.err === undefined)
 
-        let d = "Introspecting token\n" +
+        const d = "Introspecting token\n" +
           "\tMaking request\n" +
           "\t\tMaking bare request\n" +
           "\t\t\tMaking native request\n" +
@@ -3237,13 +3237,13 @@ void test.suite("oauth server", async() => {
 
     void test.suite("token forwarding", () => {
       void test("unwraps and forwards original token to upstream", async(t) => {
-        let [hs, ha] = await setupHttp(t)
+        const [hs, ha] = await setupHttp(t)
 
-        let hl = test.mock.fn<AsyncRequestListener>(async(req, res) => {
-          let ab = await readHttpForm(req)
+        const hl = test.mock.fn<AsyncRequestListener>(async(req, res) => {
+          const ab = await readHttpForm(req)
           assert.ok(ab.err === undefined)
 
-          let eb: object = {
+          const eb: object = {
             token: ot,
           }
 
@@ -3252,23 +3252,23 @@ void test.suite("oauth server", async() => {
           res.end()
         })
 
-        let hp = onRequest(t, hs, hl)
+        const hp = onRequest(t, hs, hl)
 
-        let tf = async(): Promise<void> => {
-          let e: object = {
+        const tf = async(): Promise<void> => {
+          const e: object = {
             DOCSPACE_OAUTH_BASE_URL: `http://[${ha.address}]:${ha.port}/`,
           }
 
-          let a = await setup(t, e)
+          const a = await setup(t, e)
 
-          let u = r.safeNew(URL, "/oauth/introspect", `http://[${a.address}]:${a.port}/`)
+          const u = r.safeNew(URL, "/oauth/introspect", `http://[${a.address}]:${a.port}/`)
           assert.ok(u.err === undefined)
 
-          let f = new URLSearchParams()
+          const f = new URLSearchParams()
 
           f.set("token", wt)
 
-          let i: RequestInit = {
+          const i: RequestInit = {
             method: "POST",
             headers: {
               "Content-Type": "application/x-www-form-urlencoded",
@@ -3276,9 +3276,9 @@ void test.suite("oauth server", async() => {
             body: f.toString(),
           }
 
-          let fetch = withAuth(globalThis.fetch)
+          const fetch = withAuth(globalThis.fetch)
 
-          let res = await r.safeAsync(fetch, u.v, i)
+          const res = await r.safeAsync(fetch, u.v, i)
           assert.ok(res.err === undefined)
         }
 
@@ -3289,15 +3289,15 @@ void test.suite("oauth server", async() => {
     })
 
     void test.suite("introspection response", () => {
-      let requestIntrospection = async(a: net.AddressInfo, t: string): Promise<object> => {
-        let u = r.safeNew(URL, "/oauth/introspect", `http://[${a.address}]:${a.port}/`)
+      const requestIntrospection = async(a: net.AddressInfo, t: string): Promise<object> => {
+        const u = r.safeNew(URL, "/oauth/introspect", `http://[${a.address}]:${a.port}/`)
         assert.ok(u.err === undefined)
 
-        let f = new URLSearchParams()
+        const f = new URLSearchParams()
 
         f.set("token", t)
 
-        let i: RequestInit = {
+        const i: RequestInit = {
           method: "POST",
           headers: {
             "Content-Type": "application/x-www-form-urlencoded",
@@ -3305,14 +3305,14 @@ void test.suite("oauth server", async() => {
           body: f.toString(),
         }
 
-        let fetch = withAuth(globalThis.fetch)
+        const fetch = withAuth(globalThis.fetch)
 
-        let res = await r.safeAsync(fetch, u.v, i)
+        const res = await r.safeAsync(fetch, u.v, i)
         assert.ok(res.err === undefined)
 
         assert.ok(res.v.status === 200)
 
-        let b = await readFetchJson(res.v)
+        const b = await readFetchJson(res.v)
         assert.ok(b.err === undefined)
 
         assert.ok(b.v && typeof b.v === "object")
@@ -3320,52 +3320,52 @@ void test.suite("oauth server", async() => {
         return b.v
       }
 
-      let checkExpiration = (b: object, ttl: number): void => {
+      const checkExpiration = (b: object, ttl: number): void => {
         assert.ok("exp" in b && typeof b.exp === "number")
 
-        let now = Date.now()
+        const now = Date.now()
 
         assert.ok(inDelta(b.exp * 1000, now + ttl, 3000))
       }
 
       void test("returns inactive status for expired token", async(t) => {
-        let [hs, ha] = await setupHttp(t)
+        const [hs, ha] = await setupHttp(t)
 
-        let hp = onRequest(t, hs, async(_, res) => {
-          let now = Date.now()
+        const hp = onRequest(t, hs, async(_, res) => {
+          const now = Date.now()
 
-          let p: jwt.JwtPayload = {
+          const p: jwt.JwtPayload = {
             exp: Math.floor((now - 3600000) / 1000),
           }
 
-          let o: jwt.SignOptions = {
+          const o: jwt.SignOptions = {
             algorithm: "none",
           }
 
-          let t = r.safeSync(jwt.sign, p, "", o)
+          const t = r.safeSync(jwt.sign, p, "", o)
           assert.ok(t.err === undefined)
 
-          let b: object = {
+          const b: object = {
             access_token: t.v,
             token_type: "test",
           }
 
-          let s = await sendJson(res, 200, b)
+          const s = await sendJson(res, 200, b)
           assert.ok(s.err === undefined)
         })
 
-        let tf = async(): Promise<void> => {
-          let e: object = {
+        const tf = async(): Promise<void> => {
+          const e: object = {
             DOCSPACE_OAUTH_BASE_URL: `http://[${ha.address}]:${ha.port}/`,
           }
 
-          let a = await setup(t, e)
+          const a = await setup(t, e)
 
-          let s = await requestAccessToken(a)
+          const s = await requestAccessToken(a)
 
-          let ab = await requestIntrospection(a, s)
+          const ab = await requestIntrospection(a, s)
 
-          let eb: object = {
+          const eb: object = {
             active: false,
           }
 
@@ -3376,43 +3376,43 @@ void test.suite("oauth server", async() => {
       })
 
       void test("returns inactive status for not-yet-valid token", async(t) => {
-        let [hs, ha] = await setupHttp(t)
+        const [hs, ha] = await setupHttp(t)
 
-        let hp = onRequest(t, hs, async(_, res) => {
-          let now = Date.now()
+        const hp = onRequest(t, hs, async(_, res) => {
+          const now = Date.now()
 
-          let p: jwt.JwtPayload = {
+          const p: jwt.JwtPayload = {
             nbf: Math.floor((now + 3600000) / 1000),
           }
 
-          let o: jwt.SignOptions = {
+          const o: jwt.SignOptions = {
             algorithm: "none",
           }
 
-          let t = r.safeSync(jwt.sign, p, "", o)
+          const t = r.safeSync(jwt.sign, p, "", o)
           assert.ok(t.err === undefined)
 
-          let b: object = {
+          const b: object = {
             access_token: t.v,
             token_type: "test",
           }
 
-          let s = await sendJson(res, 200, b)
+          const s = await sendJson(res, 200, b)
           assert.ok(s.err === undefined)
         })
 
-        let tf = async(): Promise<void> => {
-          let e: object = {
+        const tf = async(): Promise<void> => {
+          const e: object = {
             DOCSPACE_OAUTH_BASE_URL: `http://[${ha.address}]:${ha.port}/`,
           }
 
-          let a = await setup(t, e)
+          const a = await setup(t, e)
 
-          let s = await requestAccessToken(a)
+          const s = await requestAccessToken(a)
 
-          let ab = await requestIntrospection(a, s)
+          const ab = await requestIntrospection(a, s)
 
-          let eb: object = {
+          const eb: object = {
             active: false,
           }
 
@@ -3423,20 +3423,20 @@ void test.suite("oauth server", async() => {
       })
 
       void test("returns active from upstream", async(t) => {
-        let [hs, ha] = await setupHttp(t)
+        const [hs, ha] = await setupHttp(t)
 
-        let hl = test.mock.fn<AsyncRequestListener>(async(_, res) => {
+        const hl = test.mock.fn<AsyncRequestListener>(async(_, res) => {
           switch (hl.mock.callCount()) {
           case 0:
             await sendAccessToken(_, res)
             break
 
           case 1:
-            let b: object = {
+            const b: object = {
               active: false,
             }
 
-            let s = await sendJson(res, 200, b)
+            const s = await sendJson(res, 200, b)
             assert.ok(s.err === undefined)
 
             break
@@ -3446,20 +3446,20 @@ void test.suite("oauth server", async() => {
           }
         })
 
-        let hp = onRequest(t, hs, hl)
+        const hp = onRequest(t, hs, hl)
 
-        let tf = async(): Promise<void> => {
-          let e: object = {
+        const tf = async(): Promise<void> => {
+          const e: object = {
             DOCSPACE_OAUTH_BASE_URL: `http://[${ha.address}]:${ha.port}/`,
           }
 
-          let a = await setup(t, e)
+          const a = await setup(t, e)
 
-          let s = await requestAccessToken(a)
+          const s = await requestAccessToken(a)
 
-          let ab = await requestIntrospection(a, s)
+          const ab = await requestIntrospection(a, s)
 
-          let eb: object = {
+          const eb: object = {
             active: false,
           }
 
@@ -3470,44 +3470,44 @@ void test.suite("oauth server", async() => {
       })
 
       void test("uses minimum expiration when both token and upstream have expiration", async(t) => {
-        let [hs, ha] = await setupHttp(t)
+        const [hs, ha] = await setupHttp(t)
 
-        let hl = test.mock.fn<AsyncRequestListener>(async(_, res) => {
+        const hl = test.mock.fn<AsyncRequestListener>(async(_, res) => {
           switch (hl.mock.callCount()) {
           case 0: {
-            let now = Date.now()
+            const now = Date.now()
 
-            let p: jwt.JwtPayload = {
+            const p: jwt.JwtPayload = {
               exp: Math.floor((now + 3600000) / 1000),
             }
 
-            let o: jwt.SignOptions = {
+            const o: jwt.SignOptions = {
               algorithm: "none",
             }
 
-            let t = r.safeSync(jwt.sign, p, "", o)
+            const t = r.safeSync(jwt.sign, p, "", o)
             assert.ok(t.err === undefined)
 
-            let b: object = {
+            const b: object = {
               access_token: t.v,
               token_type: "test",
             }
 
-            let s = await sendJson(res, 200, b)
+            const s = await sendJson(res, 200, b)
             assert.ok(s.err === undefined)
 
             break
           }
 
           case 1: {
-            let now = Date.now()
+            const now = Date.now()
 
-            let b: object = {
+            const b: object = {
               active: true,
               exp: Math.floor((now + 7200000) / 1000),
             }
 
-            let s = await sendJson(res, 200, b)
+            const s = await sendJson(res, 200, b)
             assert.ok(s.err === undefined)
 
             break
@@ -3518,19 +3518,19 @@ void test.suite("oauth server", async() => {
           }
         })
 
-        let hp = onRequest(t, hs, hl)
+        const hp = onRequest(t, hs, hl)
 
-        let tf = async(): Promise<void> => {
-          let e: object = {
+        const tf = async(): Promise<void> => {
+          const e: object = {
             DOCSPACE_OAUTH_BASE_URL: `http://[${ha.address}]:${ha.port}/`,
             DOCSPACE_OAUTH_AUTH_TOKEN_TTL: 0,
           }
 
-          let a = await setup(t, e)
+          const a = await setup(t, e)
 
-          let s = await requestAccessToken(a)
+          const s = await requestAccessToken(a)
 
-          let b = await requestIntrospection(a, s)
+          const b = await requestIntrospection(a, s)
 
           checkExpiration(b, 3600000)
         }
@@ -3539,23 +3539,23 @@ void test.suite("oauth server", async() => {
       })
 
       void test("uses upstream expiration when token has no expiration", async(t) => {
-        let [hs, ha] = await setupHttp(t)
+        const [hs, ha] = await setupHttp(t)
 
-        let hl = test.mock.fn<AsyncRequestListener>(async(_, res) => {
+        const hl = test.mock.fn<AsyncRequestListener>(async(_, res) => {
           switch (hl.mock.callCount()) {
           case 0:
             await sendAccessToken(_, res)
             break
 
           case 1:
-            let now = Date.now()
+            const now = Date.now()
 
-            let b: object = {
+            const b: object = {
               active: true,
               exp: Math.floor((now + 7200000) / 1000),
             }
 
-            let s = await sendJson(res, 200, b)
+            const s = await sendJson(res, 200, b)
             assert.ok(s.err === undefined)
 
             break
@@ -3565,19 +3565,19 @@ void test.suite("oauth server", async() => {
           }
         })
 
-        let hp = onRequest(t, hs, hl)
+        const hp = onRequest(t, hs, hl)
 
-        let tf = async(): Promise<void> => {
-          let e: object = {
+        const tf = async(): Promise<void> => {
+          const e: object = {
             DOCSPACE_OAUTH_BASE_URL: `http://[${ha.address}]:${ha.port}/`,
             DOCSPACE_OAUTH_AUTH_TOKEN_TTL: 0,
           }
 
-          let a = await setup(t, e)
+          const a = await setup(t, e)
 
-          let s = await requestAccessToken(a)
+          const s = await requestAccessToken(a)
 
-          let b = await requestIntrospection(a, s)
+          const b = await requestIntrospection(a, s)
 
           checkExpiration(b, 7200000)
         }
@@ -3586,41 +3586,41 @@ void test.suite("oauth server", async() => {
       })
 
       void test("uses token expiration when upstream has no expiration", async(t) => {
-        let [hs, ha] = await setupHttp(t)
+        const [hs, ha] = await setupHttp(t)
 
-        let hl = test.mock.fn<AsyncRequestListener>(async(_, res) => {
+        const hl = test.mock.fn<AsyncRequestListener>(async(_, res) => {
           switch (hl.mock.callCount()) {
           case 0: {
-            let now = Date.now()
+            const now = Date.now()
 
-            let p: jwt.JwtPayload = {
+            const p: jwt.JwtPayload = {
               exp: Math.floor((now + 3600000) / 1000),
             }
 
-            let o: jwt.SignOptions = {
+            const o: jwt.SignOptions = {
               algorithm: "none",
             }
 
-            let t = r.safeSync(jwt.sign, p, "", o)
+            const t = r.safeSync(jwt.sign, p, "", o)
             assert.ok(t.err === undefined)
 
-            let b: object = {
+            const b: object = {
               access_token: t.v,
               token_type: "test",
             }
 
-            let s = await sendJson(res, 200, b)
+            const s = await sendJson(res, 200, b)
             assert.ok(s.err === undefined)
 
             break
           }
 
           case 1: {
-            let b: object = {
+            const b: object = {
               active: true,
             }
 
-            let s = await sendJson(res, 200, b)
+            const s = await sendJson(res, 200, b)
             assert.ok(s.err === undefined)
 
             break
@@ -3631,19 +3631,19 @@ void test.suite("oauth server", async() => {
           }
         })
 
-        let hp = onRequest(t, hs, hl)
+        const hp = onRequest(t, hs, hl)
 
-        let tf = async(): Promise<void> => {
-          let e: object = {
+        const tf = async(): Promise<void> => {
+          const e: object = {
             DOCSPACE_OAUTH_BASE_URL: `http://[${ha.address}]:${ha.port}/`,
             DOCSPACE_OAUTH_AUTH_TOKEN_TTL: 0,
           }
 
-          let a = await setup(t, e)
+          const a = await setup(t, e)
 
-          let s = await requestAccessToken(a)
+          const s = await requestAccessToken(a)
 
-          let b = await requestIntrospection(a, s)
+          const b = await requestIntrospection(a, s)
 
           checkExpiration(b, 3600000)
         }
@@ -3652,20 +3652,20 @@ void test.suite("oauth server", async() => {
       })
 
       void test("omits expiration when neither token nor upstream have expiration", async(t) => {
-        let [hs, ha] = await setupHttp(t)
+        const [hs, ha] = await setupHttp(t)
 
-        let hl = test.mock.fn<AsyncRequestListener>(async(_, res) => {
+        const hl = test.mock.fn<AsyncRequestListener>(async(_, res) => {
           switch (hl.mock.callCount()) {
           case 0:
             await sendAccessToken(_, res)
             break
 
           case 1:
-            let b: object = {
+            const b: object = {
               active: true,
             }
 
-            let s = await sendJson(res, 200, b)
+            const s = await sendJson(res, 200, b)
             assert.ok(s.err === undefined)
 
             break
@@ -3675,21 +3675,21 @@ void test.suite("oauth server", async() => {
           }
         })
 
-        let hp = onRequest(t, hs, hl)
+        const hp = onRequest(t, hs, hl)
 
-        let tf = async(): Promise<void> => {
-          let e: object = {
+        const tf = async(): Promise<void> => {
+          const e: object = {
             DOCSPACE_OAUTH_BASE_URL: `http://[${ha.address}]:${ha.port}/`,
             DOCSPACE_OAUTH_AUTH_TOKEN_TTL: 0,
           }
 
-          let a = await setup(t, e)
+          const a = await setup(t, e)
 
-          let s = await requestAccessToken(a)
+          const s = await requestAccessToken(a)
 
-          let ab = await requestIntrospection(a, s)
+          const ab = await requestIntrospection(a, s)
 
-          let eb: object = {
+          const eb: object = {
             active: true,
           }
 
@@ -3710,7 +3710,7 @@ void test.suite("oauth server", async() => {
       TestRateLimitOptions &
       TestRequestIdReflectionOptions
 
-    let o: Options = {
+    const o: Options = {
       env: {
         DOCSPACE_OAUTH_CLIENT_ID: "xxx",
         DOCSPACE_OAUTH_CLIENT_SECRET: "yyy",
@@ -3734,19 +3734,19 @@ void test.suite("oauth server", async() => {
 
     void test.suite("endpoint availability", () => {
       void test("returns 404 when dynamic client registration is not enabled", async(t) => {
-        let a = await setup(t, {})
+        const a = await setup(t, {})
 
-        let u = r.safeNew(URL, "/oauth/register", `http://[${a.address}]:${a.port}/`)
+        const u = r.safeNew(URL, "/oauth/register", `http://[${a.address}]:${a.port}/`)
         assert.ok(u.err === undefined)
 
-        let i: RequestInit = {
+        const i: RequestInit = {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
         }
 
-        let res = await r.safeAsync(fetch, u.v, i)
+        const res = await r.safeAsync(fetch, u.v, i)
         assert.ok(res.err === undefined)
 
         assert.ok(res.v.status === 404)
@@ -3755,32 +3755,32 @@ void test.suite("oauth server", async() => {
 
     void test.suite("registration response", () => {
       void test("returns client_id", async(t) => {
-        let e: object = {
+        const e: object = {
           DOCSPACE_OAUTH_CLIENT_ID: "xxx",
           DOCSPACE_OAUTH_CLIENT_SECRET: "yyy",
         }
 
-        let a = await setup(t, e)
+        const a = await setup(t, e)
 
-        let u = r.safeNew(URL, "/oauth/register", `http://[${a.address}]:${a.port}/`)
+        const u = r.safeNew(URL, "/oauth/register", `http://[${a.address}]:${a.port}/`)
         assert.ok(u.err === undefined)
 
-        let i: RequestInit = {
+        const i: RequestInit = {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
         }
 
-        let res = await r.safeAsync(fetch, u.v, i)
+        const res = await r.safeAsync(fetch, u.v, i)
         assert.ok(res.err === undefined)
 
         assert.ok(res.v.status === 201)
 
-        let ab = await readFetchJson(res.v)
+        const ab = await readFetchJson(res.v)
         assert.ok(ab.err === undefined)
 
-        let eb: object = {
+        const eb: object = {
           client_id: "xxx",
         }
 
@@ -3788,24 +3788,24 @@ void test.suite("oauth server", async() => {
       })
 
       void test("echoes request body", async(t) => {
-        let e: object = {
+        const e: object = {
           DOCSPACE_OAUTH_CLIENT_ID: "xxx",
           DOCSPACE_OAUTH_CLIENT_SECRET: "yyy",
         }
 
-        let a = await setup(t, e)
+        const a = await setup(t, e)
 
-        let u = r.safeNew(URL, "/oauth/register", `http://[${a.address}]:${a.port}/`)
+        const u = r.safeNew(URL, "/oauth/register", `http://[${a.address}]:${a.port}/`)
         assert.ok(u.err === undefined)
 
-        let ob: object = {
+        const ob: object = {
           test: "test",
         }
 
-        let sb = r.safeSync(JSON.stringify, ob, null, 2)
+        const sb = r.safeSync(JSON.stringify, ob, null, 2)
         assert.ok(sb.err === undefined)
 
-        let i: RequestInit = {
+        const i: RequestInit = {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -3813,15 +3813,15 @@ void test.suite("oauth server", async() => {
           body: sb.v,
         }
 
-        let res = await r.safeAsync(fetch, u.v, i)
+        const res = await r.safeAsync(fetch, u.v, i)
         assert.ok(res.err === undefined)
 
         assert.ok(res.v.status === 201)
 
-        let ab = await readFetchJson(res.v)
+        const ab = await readFetchJson(res.v)
         assert.ok(ab.err === undefined)
 
-        let eb: object = {
+        const eb: object = {
           test: "test",
         }
 
@@ -3846,7 +3846,7 @@ void test.suite("oauth server", async() => {
       TestRequestIdReflectionOptions &
       TestRequestIdForwardingOptions
 
-    let o: Options = {
+    const o: Options = {
       env: {},
       method: "POST",
       path: "/oauth/revoke",
@@ -3878,31 +3878,31 @@ void test.suite("oauth server", async() => {
 
     void test.suite("error handling", () => {
       void test("returns error when token parameter is missing", async(t) => {
-        let e: object = {
+        const e: object = {
           DOCSPACE_OAUTH_BASE_URL: "http://localhost:8020/",
         }
 
-        let a = await setup(t, e)
+        const a = await setup(t, e)
 
-        let u = r.safeNew(URL, "/oauth/revoke", `http://[${a.address}]:${a.port}/`)
+        const u = r.safeNew(URL, "/oauth/revoke", `http://[${a.address}]:${a.port}/`)
         assert.ok(u.err === undefined)
 
-        let i: RequestInit = {
+        const i: RequestInit = {
           method: "POST",
           headers: {
             "Content-Type": "application/x-www-form-urlencoded",
           },
         }
 
-        let fetch = withAuth(globalThis.fetch)
+        const fetch = withAuth(globalThis.fetch)
 
-        let res = await r.safeAsync(fetch, u.v, i)
+        const res = await r.safeAsync(fetch, u.v, i)
         assert.ok(res.err === undefined)
 
-        let ab = await readFetchJson(res.v)
+        const ab = await readFetchJson(res.v)
         assert.ok(ab.err === undefined)
 
-        let eb: object = {
+        const eb: object = {
           error: "invalid_request",
           error_description: "Parsing body\n" +
             "\t\ttoken: invalid_type Invalid input: expected string, received undefined",
@@ -3912,20 +3912,20 @@ void test.suite("oauth server", async() => {
       })
 
       void test("returns error when upstream is unreachable", async(t) => {
-        let e: object = {
+        const e: object = {
           DOCSPACE_OAUTH_BASE_URL: "http://localhost:8020/",
         }
 
-        let a = await setup(t, e)
+        const a = await setup(t, e)
 
-        let u = r.safeNew(URL, "/oauth/revoke", `http://[${a.address}]:${a.port}/`)
+        const u = r.safeNew(URL, "/oauth/revoke", `http://[${a.address}]:${a.port}/`)
         assert.ok(u.err === undefined)
 
-        let f = new URLSearchParams()
+        const f = new URLSearchParams()
 
         f.set("token", "vvv")
 
-        let i: RequestInit = {
+        const i: RequestInit = {
           method: "POST",
           headers: {
             "Content-Type": "application/x-www-form-urlencoded",
@@ -3933,17 +3933,17 @@ void test.suite("oauth server", async() => {
           body: f.toString(),
         }
 
-        let fetch = withAuth(globalThis.fetch)
+        const fetch = withAuth(globalThis.fetch)
 
-        let res = await r.safeAsync(fetch, u.v, i)
+        const res = await r.safeAsync(fetch, u.v, i)
         assert.ok(res.err === undefined)
 
         assert.ok(res.v.status === 500)
 
-        let ab = await readFetchJson(res.v)
+        const ab = await readFetchJson(res.v)
         assert.ok(ab.err === undefined)
 
-        let d = "Revoking token\n" +
+        const d = "Revoking token\n" +
           "\tMaking bare request\n" +
           "\t\tMaking native request\n" +
           "\t\t\tfetch failed\n" +
@@ -3959,11 +3959,11 @@ void test.suite("oauth server", async() => {
     })
 
     void test.suite("token handling", () => {
-      let requestRevocation = async(a: net.AddressInfo, f: URLSearchParams): Promise<void> => {
-        let u = r.safeNew(URL, "/oauth/revoke", `http://[${a.address}]:${a.port}/`)
+      const requestRevocation = async(a: net.AddressInfo, f: URLSearchParams): Promise<void> => {
+        const u = r.safeNew(URL, "/oauth/revoke", `http://[${a.address}]:${a.port}/`)
         assert.ok(u.err === undefined)
 
-        let i: RequestInit = {
+        const i: RequestInit = {
           method: "POST",
           headers: {
             "Content-Type": "application/x-www-form-urlencoded",
@@ -3971,22 +3971,22 @@ void test.suite("oauth server", async() => {
           body: f.toString(),
         }
 
-        let fetch = withAuth(globalThis.fetch)
+        const fetch = withAuth(globalThis.fetch)
 
-        let res = await r.safeAsync(fetch, u.v, i)
+        const res = await r.safeAsync(fetch, u.v, i)
         assert.ok(res.err === undefined)
 
         assert.ok(res.v.status === 200)
       }
 
       void test("unwraps and forwards original token to upstream", async(t) => {
-        let [hs, ha] = await setupHttp(t)
+        const [hs, ha] = await setupHttp(t)
 
-        let hl = test.mock.fn<AsyncRequestListener>(async(req, res) => {
-          let ab = await readHttpForm(req)
+        const hl = test.mock.fn<AsyncRequestListener>(async(req, res) => {
+          const ab = await readHttpForm(req)
           assert.ok(ab.err === undefined)
 
-          let eb: object = {
+          const eb: object = {
             token: ot,
           }
 
@@ -3995,16 +3995,16 @@ void test.suite("oauth server", async() => {
           res.end()
         })
 
-        let hp = onRequest(t, hs, hl)
+        const hp = onRequest(t, hs, hl)
 
-        let hf = async(): Promise<void> => {
-          let e: object = {
+        const hf = async(): Promise<void> => {
+          const e: object = {
             DOCSPACE_OAUTH_BASE_URL: `http://[${ha.address}]:${ha.port}/`,
           }
 
-          let a = await setup(t, e)
+          const a = await setup(t, e)
 
-          let f = new URLSearchParams()
+          const f = new URLSearchParams()
 
           f.set("token", wt)
 
@@ -4017,13 +4017,13 @@ void test.suite("oauth server", async() => {
       })
 
       void test("forwards non-wrapped token as-is to upstream", async(t) => {
-        let [hs, ha] = await setupHttp(t)
+        const [hs, ha] = await setupHttp(t)
 
-        let hl = test.mock.fn<AsyncRequestListener>(async(req, res) => {
-          let ab = await readHttpForm(req)
+        const hl = test.mock.fn<AsyncRequestListener>(async(req, res) => {
+          const ab = await readHttpForm(req)
           assert.ok(ab.err === undefined)
 
-          let eb: object = {
+          const eb: object = {
             token: "vvv",
           }
 
@@ -4032,16 +4032,16 @@ void test.suite("oauth server", async() => {
           res.end()
         })
 
-        let hp = onRequest(t, hs, hl)
+        const hp = onRequest(t, hs, hl)
 
-        let hf = async(): Promise<void> => {
-          let e: object = {
+        const hf = async(): Promise<void> => {
+          const e: object = {
             DOCSPACE_OAUTH_BASE_URL: `http://[${ha.address}]:${ha.port}/`,
           }
 
-          let a = await setup(t, e)
+          const a = await setup(t, e)
 
-          let f = new URLSearchParams()
+          const f = new URLSearchParams()
 
           f.set("token", "vvv")
 
@@ -4053,21 +4053,21 @@ void test.suite("oauth server", async() => {
         assert.ok(hl.mock.callCount() === 1)
       })
 
-      let ta: string[] = [
+      const ta: string[] = [
         "access_token",
         "refresh_token",
       ]
 
-      for (let tt of ta) {
+      for (const tt of ta) {
         // eslint-disable-next-line typescript/no-loop-func
         void test(`forwards token_type_hint ${tt} when provided`, async(t) => {
-          let [hs, ha] = await setupHttp(t)
+          const [hs, ha] = await setupHttp(t)
 
-          let hl = test.mock.fn<AsyncRequestListener>(async(req, res) => {
-            let ab = await readHttpForm(req)
+          const hl = test.mock.fn<AsyncRequestListener>(async(req, res) => {
+            const ab = await readHttpForm(req)
             assert.ok(ab.err === undefined)
 
-            let eb: object = {
+            const eb: object = {
               token_type_hint: tt,
             }
 
@@ -4076,16 +4076,16 @@ void test.suite("oauth server", async() => {
             res.end()
           })
 
-          let hp = onRequest(t, hs, hl)
+          const hp = onRequest(t, hs, hl)
 
-          let hf = async(): Promise<void> => {
-            let e: object = {
+          const hf = async(): Promise<void> => {
+            const e: object = {
               DOCSPACE_OAUTH_BASE_URL: `http://[${ha.address}]:${ha.port}/`,
             }
 
-            let a = await setup(t, e)
+            const a = await setup(t, e)
 
-            let f = new URLSearchParams()
+            const f = new URLSearchParams()
 
             f.set("token", wt)
             f.set("token_type_hint", tt)
@@ -4117,7 +4117,7 @@ void test.suite("oauth server", async() => {
       TestRequestIdReflectionOptions &
       TestRequestIdForwardingOptions
 
-    let o: Options = {
+    const o: Options = {
       env: {},
       method: "POST",
       path: "/oauth/token",
@@ -4150,29 +4150,29 @@ void test.suite("oauth server", async() => {
 
     void test.suite("error handling", () => {
       void test("returns error when grant_type is missing", async(t) => {
-        let a = await setup(t, {})
+        const a = await setup(t, {})
 
-        let u = r.safeNew(URL, "/oauth/token", `http://[${a.address}]:${a.port}/`)
+        const u = r.safeNew(URL, "/oauth/token", `http://[${a.address}]:${a.port}/`)
         assert.ok(u.err === undefined)
 
-        let i: RequestInit = {
+        const i: RequestInit = {
           method: "POST",
           headers: {
             "Content-Type": "application/x-www-form-urlencoded",
           },
         }
 
-        let fetch = withAuth(globalThis.fetch)
+        const fetch = withAuth(globalThis.fetch)
 
-        let res = await r.safeAsync(fetch, u.v, i)
+        const res = await r.safeAsync(fetch, u.v, i)
         assert.ok(res.err === undefined)
 
         assert.ok(res.v.status === 400)
 
-        let ab = await readFetchJson(res.v)
+        const ab = await readFetchJson(res.v)
         assert.ok(ab.err === undefined)
 
-        let eb: object = {
+        const eb: object = {
           error: "invalid_request",
           error_description: "Parsing body\n" +
             "\t\tinvalid_union: Invalid input",
@@ -4182,16 +4182,16 @@ void test.suite("oauth server", async() => {
       })
 
       void test("returns error when code is missing", async(t) => {
-        let a = await setup(t, {})
+        const a = await setup(t, {})
 
-        let u = r.safeNew(URL, "/oauth/token", `http://[${a.address}]:${a.port}/`)
+        const u = r.safeNew(URL, "/oauth/token", `http://[${a.address}]:${a.port}/`)
         assert.ok(u.err === undefined)
 
-        let f = new URLSearchParams()
+        const f = new URLSearchParams()
 
         f.set("grant_type", "authorization_code")
 
-        let i: RequestInit = {
+        const i: RequestInit = {
           method: "POST",
           headers: {
             "Content-Type": "application/x-www-form-urlencoded",
@@ -4199,17 +4199,17 @@ void test.suite("oauth server", async() => {
           body: f.toString(),
         }
 
-        let fetch = withAuth(globalThis.fetch)
+        const fetch = withAuth(globalThis.fetch)
 
-        let res = await r.safeAsync(fetch, u.v, i)
+        const res = await r.safeAsync(fetch, u.v, i)
         assert.ok(res.err === undefined)
 
         assert.ok(res.v.status === 400)
 
-        let ab = await readFetchJson(res.v)
+        const ab = await readFetchJson(res.v)
         assert.ok(ab.err === undefined)
 
-        let eb: object = {
+        const eb: object = {
           error: "invalid_request",
           error_description: "Parsing body\n" +
             "\t\tinvalid_union: Invalid input",
@@ -4219,16 +4219,16 @@ void test.suite("oauth server", async() => {
       })
 
       void test("returns error when refresh_token is missing", async(t) => {
-        let a = await setup(t, {})
+        const a = await setup(t, {})
 
-        let u = r.safeNew(URL, "/oauth/token", `http://[${a.address}]:${a.port}/`)
+        const u = r.safeNew(URL, "/oauth/token", `http://[${a.address}]:${a.port}/`)
         assert.ok(u.err === undefined)
 
-        let f = new URLSearchParams()
+        const f = new URLSearchParams()
 
         f.set("grant_type", "refresh_token")
 
-        let i: RequestInit = {
+        const i: RequestInit = {
           method: "POST",
           headers: {
             "Content-Type": "application/x-www-form-urlencoded",
@@ -4236,17 +4236,17 @@ void test.suite("oauth server", async() => {
           body: f.toString(),
         }
 
-        let fetch = withAuth(globalThis.fetch)
+        const fetch = withAuth(globalThis.fetch)
 
-        let res = await r.safeAsync(fetch, u.v, i)
+        const res = await r.safeAsync(fetch, u.v, i)
         assert.ok(res.err === undefined)
 
         assert.ok(res.v.status === 400)
 
-        let ab = await readFetchJson(res.v)
+        const ab = await readFetchJson(res.v)
         assert.ok(ab.err === undefined)
 
-        let eb: object = {
+        const eb: object = {
           error: "invalid_request",
           error_description: "Parsing body\n" +
             "\t\tinvalid_union: Invalid input",
@@ -4256,21 +4256,21 @@ void test.suite("oauth server", async() => {
       })
 
       void test("returns error when upstream is unreachable", async(t) => {
-        let e: object = {
+        const e: object = {
           DOCSPACE_OAUTH_BASE_URL: "http://localhost:8020/",
         }
 
-        let a = await setup(t, e)
+        const a = await setup(t, e)
 
-        let u = r.safeNew(URL, "/oauth/token", `http://[${a.address}]:${a.port}/`)
+        const u = r.safeNew(URL, "/oauth/token", `http://[${a.address}]:${a.port}/`)
         assert.ok(u.err === undefined)
 
-        let f = new URLSearchParams()
+        const f = new URLSearchParams()
 
         f.set("grant_type", "authorization_code")
         f.set("code", "vvv")
 
-        let i: RequestInit = {
+        const i: RequestInit = {
           method: "POST",
           headers: {
             "Content-Type": "application/x-www-form-urlencoded",
@@ -4278,17 +4278,17 @@ void test.suite("oauth server", async() => {
           body: f.toString(),
         }
 
-        let fetch = withAuth(globalThis.fetch)
+        const fetch = withAuth(globalThis.fetch)
 
-        let res = await r.safeAsync(fetch, u.v, i)
+        const res = await r.safeAsync(fetch, u.v, i)
         assert.ok(res.err === undefined)
 
         assert.ok(res.v.status === 500)
 
-        let ab = await readFetchJson(res.v)
+        const ab = await readFetchJson(res.v)
         assert.ok(ab.err === undefined)
 
-        let d = "Requesting token\n" +
+        const d = "Requesting token\n" +
           "\tMaking request\n" +
           "\t\tMaking bare request\n" +
           "\t\t\tMaking native request\n" +
@@ -4304,34 +4304,34 @@ void test.suite("oauth server", async() => {
       })
 
       void test("returns error when upstream returns invalid token type", async(t) => {
-        let [hs, ha] = await setupHttp(t)
+        const [hs, ha] = await setupHttp(t)
 
-        let hp = onRequest(t, hs, async(_, res) => {
-          let b: object = {
+        const hp = onRequest(t, hs, async(_, res) => {
+          const b: object = {
             access_token: "invalid",
             token_type: "test",
           }
 
-          let s = await sendJson(res, 200, b)
+          const s = await sendJson(res, 200, b)
           assert.ok(s.err === undefined)
         })
 
-        let tf = async(): Promise<void> => {
-          let e: object = {
+        const tf = async(): Promise<void> => {
+          const e: object = {
             DOCSPACE_OAUTH_BASE_URL: `http://[${ha.address}]:${ha.port}/`,
           }
 
-          let a = await setup(t, e)
+          const a = await setup(t, e)
 
-          let u = r.safeNew(URL, "/oauth/token", `http://[${a.address}]:${a.port}/`)
+          const u = r.safeNew(URL, "/oauth/token", `http://[${a.address}]:${a.port}/`)
           assert.ok(u.err === undefined)
 
-          let f = new URLSearchParams()
+          const f = new URLSearchParams()
 
           f.set("grant_type", "authorization_code")
           f.set("code", "vvv")
 
-          let i: RequestInit = {
+          const i: RequestInit = {
             method: "POST",
             headers: {
               "Content-Type": "application/x-www-form-urlencoded",
@@ -4339,17 +4339,17 @@ void test.suite("oauth server", async() => {
             body: f.toString(),
           }
 
-          let fetch = withAuth(globalThis.fetch)
+          const fetch = withAuth(globalThis.fetch)
 
-          let res = await r.safeAsync(fetch, u.v, i)
+          const res = await r.safeAsync(fetch, u.v, i)
           assert.ok(res.err === undefined)
 
           assert.ok(res.v.status === 500)
 
-          let ab = await readFetchJson(res.v)
+          const ab = await readFetchJson(res.v)
           assert.ok(ab.err === undefined)
 
-          let eb: object = {
+          const eb: object = {
             error: "server_error",
             error_description: "Encoding token\n" +
               "\tInvalid token",
@@ -4366,15 +4366,15 @@ void test.suite("oauth server", async() => {
       void test("forwards authorization code grant to upstream", async(t) => {
         let sa: net.AddressInfo | undefined
 
-        let [hs, ha] = await setupHttp(t)
+        const [hs, ha] = await setupHttp(t)
 
-        let hl = test.mock.fn<AsyncRequestListener>(async(req, res) => {
+        const hl = test.mock.fn<AsyncRequestListener>(async(req, res) => {
           assert.ok(sa)
 
-          let ab = await readHttpForm(req)
+          const ab = await readHttpForm(req)
           assert.ok(ab.err === undefined)
 
-          let eb: object = {
+          const eb: object = {
             grant_type: "authorization_code",
             code: "vvv",
             redirect_uri: `http://[${sa.address}]:${sa.port}/oauth/callback`,
@@ -4385,24 +4385,24 @@ void test.suite("oauth server", async() => {
           res.end()
         })
 
-        let hp = onRequest(t, hs, hl)
+        const hp = onRequest(t, hs, hl)
 
-        let tf = async(): Promise<void> => {
-          let e: object = {
+        const tf = async(): Promise<void> => {
+          const e: object = {
             DOCSPACE_OAUTH_BASE_URL: `http://[${ha.address}]:${ha.port}/`,
           }
 
           sa = await setup(t, e)
 
-          let u = r.safeNew(URL, "/oauth/token", `http://[${sa.address}]:${sa.port}/`)
+          const u = r.safeNew(URL, "/oauth/token", `http://[${sa.address}]:${sa.port}/`)
           assert.ok(u.err === undefined)
 
-          let f = new URLSearchParams()
+          const f = new URLSearchParams()
 
           f.set("grant_type", "authorization_code")
           f.set("code", "vvv")
 
-          let i: RequestInit = {
+          const i: RequestInit = {
             method: "POST",
             headers: {
               "Content-Type": "application/x-www-form-urlencoded",
@@ -4410,9 +4410,9 @@ void test.suite("oauth server", async() => {
             body: f.toString(),
           }
 
-          let fetch = withAuth(globalThis.fetch)
+          const fetch = withAuth(globalThis.fetch)
 
-          let res = await r.safeAsync(fetch, u.v, i)
+          const res = await r.safeAsync(fetch, u.v, i)
           assert.ok(res.err === undefined)
         }
 
@@ -4422,13 +4422,13 @@ void test.suite("oauth server", async() => {
       })
 
       void test("forwards refresh token grant to upstream ", async(t) => {
-        let [hs, ha] = await setupHttp(t)
+        const [hs, ha] = await setupHttp(t)
 
-        let hl = test.mock.fn<AsyncRequestListener>(async(req, res) => {
-          let ab = await readHttpForm(req)
+        const hl = test.mock.fn<AsyncRequestListener>(async(req, res) => {
+          const ab = await readHttpForm(req)
           assert.ok(ab.err === undefined)
 
-          let eb: object = {
+          const eb: object = {
             grant_type: "refresh_token",
             refresh_token: "zzz",
           }
@@ -4438,25 +4438,25 @@ void test.suite("oauth server", async() => {
           res.end()
         })
 
-        let hp = onRequest(t, hs, hl)
+        const hp = onRequest(t, hs, hl)
 
-        let tf = async(): Promise<void> => {
-          let e: object = {
+        const tf = async(): Promise<void> => {
+          const e: object = {
             DOCSPACE_OAUTH_BASE_URL: `http://[${ha.address}]:${ha.port}/`,
           }
 
-          let a = await setup(t, e)
+          const a = await setup(t, e)
 
-          let u = r.safeNew(URL, "/oauth/token", `http://[${a.address}]:${a.port}/`)
+          const u = r.safeNew(URL, "/oauth/token", `http://[${a.address}]:${a.port}/`)
           assert.ok(u.err === undefined)
 
-          let f = new URLSearchParams()
+          const f = new URLSearchParams()
 
           f.set("grant_type", "refresh_token")
           f.set("refresh_token", "zzz")
           f.set("scope", "test")
 
-          let i: RequestInit = {
+          const i: RequestInit = {
             method: "POST",
             headers: {
               "Content-Type": "application/x-www-form-urlencoded",
@@ -4464,9 +4464,9 @@ void test.suite("oauth server", async() => {
             body: f.toString(),
           }
 
-          let fetch = withAuth(globalThis.fetch)
+          const fetch = withAuth(globalThis.fetch)
 
-          let res = await r.safeAsync(fetch, u.v, i)
+          const res = await r.safeAsync(fetch, u.v, i)
           assert.ok(res.err === undefined)
         }
 
@@ -4478,21 +4478,21 @@ void test.suite("oauth server", async() => {
 
     void test.suite("auth token signature algorithm", () => {
       void test("signs auth token with HS256 algorithm by default", async(t) => {
-        let [hs, ha] = await setupHttp(t)
+        const [hs, ha] = await setupHttp(t)
 
-        let hp = onRequest(t, hs, async(_, res) => {
+        const hp = onRequest(t, hs, async(_, res) => {
           await sendAccessToken(_, res)
         })
 
-        let tf = async(): Promise<void> => {
-          let e: object = {
+        const tf = async(): Promise<void> => {
+          const e: object = {
             DOCSPACE_OAUTH_BASE_URL: `http://[${ha.address}]:${ha.port}/`,
             DOCSPACE_OAUTH_AUTH_TOKEN_SECRET_KEY: "zzz",
           }
 
-          let a = await setup(t, e)
+          const a = await setup(t, e)
 
-          let s = await requestAccessToken(a)
+          const s = await requestAccessToken(a)
 
           checkJwtAlg(s, "HS256", "zzz")
         }
@@ -4500,30 +4500,30 @@ void test.suite("oauth server", async() => {
         await Promise.race([hp, tf()])
       })
 
-      let ta: jwt.Algorithm[] = [
+      const ta: jwt.Algorithm[] = [
         "HS256",
         "HS384",
         "HS512",
       ]
 
-      for (let tt of ta) {
+      for (const tt of ta) {
         void test(`signs auth token with ${tt} algorithm`, async(t) => {
-          let [hs, ha] = await setupHttp(t)
+          const [hs, ha] = await setupHttp(t)
 
-          let hp = onRequest(t, hs, async(_, res) => {
+          const hp = onRequest(t, hs, async(_, res) => {
             await sendAccessToken(_, res)
           })
 
-          let tf = async(): Promise<void> => {
-            let e: object = {
+          const tf = async(): Promise<void> => {
+            const e: object = {
               DOCSPACE_OAUTH_BASE_URL: `http://[${ha.address}]:${ha.port}/`,
               DOCSPACE_OAUTH_AUTH_TOKEN_ALGORITHM: tt,
               DOCSPACE_OAUTH_AUTH_TOKEN_SECRET_KEY: "zzz",
             }
 
-            let a = await setup(t, e)
+            const a = await setup(t, e)
 
-            let s = await requestAccessToken(a)
+            const s = await requestAccessToken(a)
 
             checkJwtAlg(s, tt, "zzz")
           }
@@ -4533,22 +4533,22 @@ void test.suite("oauth server", async() => {
       }
 
       void test("signs auth token without signature when algorithm is disabled", async(t) => {
-        let [hs, ha] = await setupHttp(t)
+        const [hs, ha] = await setupHttp(t)
 
-        let hp = onRequest(t, hs, async(_, res) => {
+        const hp = onRequest(t, hs, async(_, res) => {
           await sendAccessToken(_, res)
         })
 
-        let tf = async(): Promise<void> => {
-          let e: object = {
+        const tf = async(): Promise<void> => {
+          const e: object = {
             DOCSPACE_OAUTH_BASE_URL: `http://[${ha.address}]:${ha.port}/`,
             DOCSPACE_OAUTH_AUTH_TOKEN_ALGORITHM: "",
             DOCSPACE_OAUTH_AUTH_TOKEN_SECRET_KEY: "",
           }
 
-          let a = await setup(t, e)
+          const a = await setup(t, e)
 
-          let s = await requestAccessToken(a)
+          const s = await requestAccessToken(a)
 
           checkJwtAlg(s, "none", "")
         }
@@ -4559,20 +4559,20 @@ void test.suite("oauth server", async() => {
 
     void test.suite("auth token expiration time", () => {
       void test("sets default auth token expiration", async(t) => {
-        let [hs, ha] = await setupHttp(t)
+        const [hs, ha] = await setupHttp(t)
 
-        let hp = onRequest(t, hs, async(_, res) => {
+        const hp = onRequest(t, hs, async(_, res) => {
           await sendAccessToken(_, res)
         })
 
-        let tf = async(): Promise<void> => {
-          let e: object = {
+        const tf = async(): Promise<void> => {
+          const e: object = {
             DOCSPACE_OAUTH_BASE_URL: `http://[${ha.address}]:${ha.port}/`,
           }
 
-          let a = await setup(t, e)
+          const a = await setup(t, e)
 
-          let s = await requestAccessToken(a)
+          const s = await requestAccessToken(a)
 
           checkJwtTtl(s, 3600000)
         }
@@ -4581,21 +4581,21 @@ void test.suite("oauth server", async() => {
       })
 
       void test("sets custom auth token expiration", async(t) => {
-        let [hs, ha] = await setupHttp(t)
+        const [hs, ha] = await setupHttp(t)
 
-        let hp = onRequest(t, hs, async(_, res) => {
+        const hp = onRequest(t, hs, async(_, res) => {
           await sendAccessToken(_, res)
         })
 
-        let tf = async(): Promise<void> => {
-          let e: object = {
+        const tf = async(): Promise<void> => {
+          const e: object = {
             DOCSPACE_OAUTH_BASE_URL: `http://[${ha.address}]:${ha.port}/`,
             DOCSPACE_OAUTH_AUTH_TOKEN_TTL: 1800000,
           }
 
-          let a = await setup(t, e)
+          const a = await setup(t, e)
 
-          let s = await requestAccessToken(a)
+          const s = await requestAccessToken(a)
 
           checkJwtTtl(s, 1800000)
         }
@@ -4604,21 +4604,21 @@ void test.suite("oauth server", async() => {
       })
 
       void test("creates auth token without expiration when ttl is disabled", async(t) => {
-        let [hs, ha] = await setupHttp(t)
+        const [hs, ha] = await setupHttp(t)
 
-        let hp = onRequest(t, hs, async(_, res) => {
+        const hp = onRequest(t, hs, async(_, res) => {
           await sendAccessToken(_, res)
         })
 
-        let tf = async(): Promise<void> => {
-          let e: object = {
+        const tf = async(): Promise<void> => {
+          const e: object = {
             DOCSPACE_OAUTH_BASE_URL: `http://[${ha.address}]:${ha.port}/`,
             DOCSPACE_OAUTH_AUTH_TOKEN_TTL: 0,
           }
 
-          let a = await setup(t, e)
+          const a = await setup(t, e)
 
-          let s = await requestAccessToken(a)
+          const s = await requestAccessToken(a)
 
           checkJwtTtl(s, 0)
         }
@@ -4626,13 +4626,13 @@ void test.suite("oauth server", async() => {
         await Promise.race([hp, tf()])
       })
 
-      let va: number[] = [3600000, 0]
+      const va: number[] = [3600000, 0]
 
-      for (let expiresIn of va) {
-        for (let ttl of va) {
+      for (const expiresIn of va) {
+        for (const ttl of va) {
           let m = 0
 
-          let a: number[] = []
+          const a: number[] = []
 
           if (expiresIn) {
             a.push(expiresIn)
@@ -4647,10 +4647,10 @@ void test.suite("oauth server", async() => {
           }
 
           void test(`expiresIn=${expiresIn} ttl=${ttl}`, async(t) => {
-            let [hs, ha] = await setupHttp(t)
+            const [hs, ha] = await setupHttp(t)
 
-            let hp = onRequest(t, hs, async(_, res) => {
-              let so: jwt.SignOptions = {
+            const hp = onRequest(t, hs, async(_, res) => {
+              const so: jwt.SignOptions = {
                 algorithm: "none",
               }
 
@@ -4658,27 +4658,27 @@ void test.suite("oauth server", async() => {
                 so.expiresIn = expiresIn / 1000
               }
 
-              let t = r.safeSync(jwt.sign, {}, "", so)
+              const t = r.safeSync(jwt.sign, {}, "", so)
               assert.ok(t.err === undefined)
 
-              let b: Record<string, unknown> = {
+              const b: Record<string, unknown> = {
                 access_token: t.v,
                 token_type: "test",
               }
 
-              let s = await sendJson(res, 200, b)
+              const s = await sendJson(res, 200, b)
               assert.ok(s.err === undefined)
             })
 
-            let tf = async(): Promise<void> => {
-              let e: object = {
+            const tf = async(): Promise<void> => {
+              const e: object = {
                 DOCSPACE_OAUTH_BASE_URL: `http://[${ha.address}]:${ha.port}/`,
                 DOCSPACE_OAUTH_AUTH_TOKEN_TTL: ttl,
               }
 
-              let a = await setup(t, e)
+              const a = await setup(t, e)
 
-              let s = await requestAccessToken(a)
+              const s = await requestAccessToken(a)
 
               checkJwtTtl(s, m)
             }
@@ -4689,52 +4689,52 @@ void test.suite("oauth server", async() => {
       }
 
       void test("sets auth token expiration to current time when upstream is expired", async(t) => {
-        let [hs, ha] = await setupHttp(t)
+        const [hs, ha] = await setupHttp(t)
 
-        let hp = onRequest(t, hs, async(_, res) => {
-          let now = Date.now()
+        const hp = onRequest(t, hs, async(_, res) => {
+          const now = Date.now()
 
-          let p: jwt.JwtPayload = {
+          const p: jwt.JwtPayload = {
             exp: Math.floor((now - 3600000) / 1000),
           }
 
-          let so: jwt.SignOptions = {
+          const so: jwt.SignOptions = {
             algorithm: "none",
           }
 
-          let t = r.safeSync(jwt.sign, p, "", so)
+          const t = r.safeSync(jwt.sign, p, "", so)
           assert.ok(t.err === undefined)
 
-          let b: object = {
+          const b: object = {
             access_token: t.v,
             token_type: "test",
           }
 
-          let s = await sendJson(res, 200, b)
+          const s = await sendJson(res, 200, b)
           assert.ok(s.err === undefined)
         })
 
-        let tf = async(): Promise<void> => {
-          let e: object = {
+        const tf = async(): Promise<void> => {
+          const e: object = {
             DOCSPACE_OAUTH_BASE_URL: `http://[${ha.address}]:${ha.port}/`,
           }
 
-          let a = await setup(t, e)
+          const a = await setup(t, e)
 
-          let s = await requestAccessToken(a)
+          const s = await requestAccessToken(a)
 
-          let o: jwt.DecodeOptions = {
+          const o: jwt.DecodeOptions = {
             complete: true,
           }
 
-          let decode = jwt.decode as (t: string, o: jwt.DecodeOptions) => jwt.Jwt | null
+          const decode = jwt.decode as (t: string, o: jwt.DecodeOptions) => jwt.Jwt | null
 
-          let j = decode(s, o)
+          const j = decode(s, o)
           assert.ok(j)
 
           assert.ok(typeof j.payload === "object")
 
-          let now = Date.now()
+          const now = Date.now()
 
           assert.ok(j.payload.exp && inDelta(j.payload.exp * 1000, now, 3000))
           assert.ok(j.payload.nbf && inDelta(j.payload.nbf * 1000, now, 3000))
@@ -4747,33 +4747,33 @@ void test.suite("oauth server", async() => {
 
     void test.suite("auth token not-before time", () => {
       void test("sets auth token not-before to current time by default", async(t) => {
-        let [hs, ha] = await setupHttp(t)
+        const [hs, ha] = await setupHttp(t)
 
-        let hp = onRequest(t, hs, async(_, res) => {
+        const hp = onRequest(t, hs, async(_, res) => {
           await sendAccessToken(_, res)
         })
 
-        let tf = async(): Promise<void> => {
-          let e: object = {
+        const tf = async(): Promise<void> => {
+          const e: object = {
             DOCSPACE_OAUTH_BASE_URL: `http://[${ha.address}]:${ha.port}/`,
           }
 
-          let a = await setup(t, e)
+          const a = await setup(t, e)
 
-          let s = await requestAccessToken(a)
+          const s = await requestAccessToken(a)
 
-          let o: jwt.DecodeOptions = {
+          const o: jwt.DecodeOptions = {
             complete: true,
           }
 
-          let decode = jwt.decode as (t: string, o: jwt.DecodeOptions) => jwt.Jwt | null
+          const decode = jwt.decode as (t: string, o: jwt.DecodeOptions) => jwt.Jwt | null
 
-          let j = decode(s, o)
+          const j = decode(s, o)
           assert.ok(j)
 
           assert.ok(typeof j.payload === "object")
 
-          let now = Date.now()
+          const now = Date.now()
 
           assert.ok(j.payload.nbf && inDelta(j.payload.nbf * 1000, now, 3000))
           assert.ok(j.payload.iat && inDelta(j.payload.iat * 1000, now, 3000))
@@ -4783,52 +4783,52 @@ void test.suite("oauth server", async() => {
       })
 
       void test("respects future not-before from upstream", async(t) => {
-        let [hs, ha] = await setupHttp(t)
+        const [hs, ha] = await setupHttp(t)
 
-        let hp = onRequest(t, hs, async(_, res) => {
-          let now = Date.now()
+        const hp = onRequest(t, hs, async(_, res) => {
+          const now = Date.now()
 
-          let p: jwt.JwtPayload = {
+          const p: jwt.JwtPayload = {
             nbf: Math.floor((now + 3600000) / 1000),
           }
 
-          let o: jwt.SignOptions = {
+          const o: jwt.SignOptions = {
             algorithm: "none",
           }
 
-          let t = r.safeSync(jwt.sign, p, "", o)
+          const t = r.safeSync(jwt.sign, p, "", o)
           assert.ok(t.err === undefined)
 
-          let b: object = {
+          const b: object = {
             access_token: t.v,
             token_type: "test",
           }
 
-          let s = await sendJson(res, 200, b)
+          const s = await sendJson(res, 200, b)
           assert.ok(s.err === undefined)
         })
 
-        let tf = async(): Promise<void> => {
-          let e: object = {
+        const tf = async(): Promise<void> => {
+          const e: object = {
             DOCSPACE_OAUTH_BASE_URL: `http://[${ha.address}]:${ha.port}/`,
           }
 
-          let a = await setup(t, e)
+          const a = await setup(t, e)
 
-          let s = await requestAccessToken(a)
+          const s = await requestAccessToken(a)
 
-          let o: jwt.DecodeOptions = {
+          const o: jwt.DecodeOptions = {
             complete: true,
           }
 
-          let decode = jwt.decode as (t: string, o: jwt.DecodeOptions) => jwt.Jwt | null
+          const decode = jwt.decode as (t: string, o: jwt.DecodeOptions) => jwt.Jwt | null
 
-          let j = decode(s, o)
+          const j = decode(s, o)
           assert.ok(j)
 
           assert.ok(typeof j.payload === "object")
 
-          let now = Date.now()
+          const now = Date.now()
 
           assert.ok(j.payload.nbf && inDelta(j.payload.nbf * 1000, now + 3600000, 3000))
           assert.ok(j.payload.iat && inDelta(j.payload.iat * 1000, now, 3000))
@@ -4838,53 +4838,53 @@ void test.suite("oauth server", async() => {
       })
 
       void test("resets auth token not-before when it exceeds expiration", async(t) => {
-        let [hs, ha] = await setupHttp(t)
+        const [hs, ha] = await setupHttp(t)
 
-        let hp = onRequest(t, hs, async(_, res) => {
-          let now = Date.now()
+        const hp = onRequest(t, hs, async(_, res) => {
+          const now = Date.now()
 
-          let p: jwt.JwtPayload = {
+          const p: jwt.JwtPayload = {
             nbf: Math.floor((now + 7200000) / 1000),
           }
 
-          let o: jwt.SignOptions = {
+          const o: jwt.SignOptions = {
             algorithm: "none",
           }
 
-          let t = r.safeSync(jwt.sign, p, "", o)
+          const t = r.safeSync(jwt.sign, p, "", o)
           assert.ok(t.err === undefined)
 
-          let b: object = {
+          const b: object = {
             access_token: t.v,
             token_type: "test",
           }
 
-          let s = await sendJson(res, 200, b)
+          const s = await sendJson(res, 200, b)
           assert.ok(s.err === undefined)
         })
 
-        let tf = async(): Promise<void> => {
-          let e: object = {
+        const tf = async(): Promise<void> => {
+          const e: object = {
             DOCSPACE_OAUTH_BASE_URL: `http://[${ha.address}]:${ha.port}/`,
             DOCSPACE_OAUTH_AUTH_TOKEN_TTL: 3600000,
           }
 
-          let a = await setup(t, e)
+          const a = await setup(t, e)
 
-          let s = await requestAccessToken(a)
+          const s = await requestAccessToken(a)
 
-          let o: jwt.DecodeOptions = {
+          const o: jwt.DecodeOptions = {
             complete: true,
           }
 
-          let decode = jwt.decode as (t: string, o: jwt.DecodeOptions) => jwt.Jwt | null
+          const decode = jwt.decode as (t: string, o: jwt.DecodeOptions) => jwt.Jwt | null
 
-          let j = decode(s, o)
+          const j = decode(s, o)
           assert.ok(j)
 
           assert.ok(typeof j.payload === "object")
 
-          let now = Date.now()
+          const now = Date.now()
 
           assert.ok(j.payload.nbf && inDelta(j.payload.nbf * 1000, now, 3000))
           assert.ok(j.payload.iat && inDelta(j.payload.iat * 1000, now, 3000))
@@ -4895,52 +4895,52 @@ void test.suite("oauth server", async() => {
       })
 
       void test("does not modify auth token not-before when upstream not-before is in the past", async(t) => {
-        let [hs, ha] = await setupHttp(t)
+        const [hs, ha] = await setupHttp(t)
 
-        let hp = onRequest(t, hs, async(_, res) => {
-          let now = Date.now()
+        const hp = onRequest(t, hs, async(_, res) => {
+          const now = Date.now()
 
-          let p: jwt.JwtPayload = {
+          const p: jwt.JwtPayload = {
             nbf: Math.floor((now - 3600000) / 1000),
           }
 
-          let o: jwt.SignOptions = {
+          const o: jwt.SignOptions = {
             algorithm: "none",
           }
 
-          let t = r.safeSync(jwt.sign, p, "", o)
+          const t = r.safeSync(jwt.sign, p, "", o)
           assert.ok(t.err === undefined)
 
-          let b: object = {
+          const b: object = {
             access_token: t.v,
             token_type: "test",
           }
 
-          let s = await sendJson(res, 200, b)
+          const s = await sendJson(res, 200, b)
           assert.ok(s.err === undefined)
         })
 
-        let tf = async(): Promise<void> => {
-          let e: object = {
+        const tf = async(): Promise<void> => {
+          const e: object = {
             DOCSPACE_OAUTH_BASE_URL: `http://[${ha.address}]:${ha.port}/`,
           }
 
-          let a = await setup(t, e)
+          const a = await setup(t, e)
 
-          let s = await requestAccessToken(a)
+          const s = await requestAccessToken(a)
 
-          let o: jwt.DecodeOptions = {
+          const o: jwt.DecodeOptions = {
             complete: true,
           }
 
-          let decode = jwt.decode as (t: string, o: jwt.DecodeOptions) => jwt.Jwt | null
+          const decode = jwt.decode as (t: string, o: jwt.DecodeOptions) => jwt.Jwt | null
 
-          let j = decode(s, o)
+          const j = decode(s, o)
           assert.ok(j)
 
           assert.ok(typeof j.payload === "object")
 
-          let now = Date.now()
+          const now = Date.now()
 
           assert.ok(j.payload.nbf && inDelta(j.payload.nbf * 1000, now, 3000))
           assert.ok(j.payload.iat && inDelta(j.payload.iat * 1000, now, 3000))
@@ -4952,55 +4952,55 @@ void test.suite("oauth server", async() => {
 
     void test.suite("auth token payload", () => {
       void test("embeds upstream token in auth token payload", async(t) => {
-        let [hs, ha] = await setupHttp(t)
+        const [hs, ha] = await setupHttp(t)
 
         let hj: jwt.Jwt | null | undefined
 
-        let hp = onRequest(t, hs, async(_, res) => {
-          let so: jwt.SignOptions = {
+        const hp = onRequest(t, hs, async(_, res) => {
+          const so: jwt.SignOptions = {
             algorithm: "HS256",
             expiresIn: 3600000 / 1000,
           }
 
-          let t = r.safeSync(jwt.sign, {}, "qqq", so)
+          const t = r.safeSync(jwt.sign, {}, "qqq", so)
           assert.ok(t.err === undefined)
 
-          let co: jwt.DecodeOptions = {
+          const co: jwt.DecodeOptions = {
             complete: true,
           }
 
-          let decode = jwt.decode as (t: string, o: jwt.DecodeOptions) => jwt.Jwt | null
+          const decode = jwt.decode as (t: string, o: jwt.DecodeOptions) => jwt.Jwt | null
 
           hj = decode(t.v, co)
           assert.ok(hj)
 
-          let b: object = {
+          const b: object = {
             access_token: t.v,
             token_type: "test",
           }
 
-          let s = await sendJson(res, 200, b)
+          const s = await sendJson(res, 200, b)
           assert.ok(s.err === undefined)
         })
 
-        let tf = async(): Promise<void> => {
-          let e: object = {
+        const tf = async(): Promise<void> => {
+          const e: object = {
             DOCSPACE_OAUTH_BASE_URL: `http://[${ha.address}]:${ha.port}/`,
           }
 
-          let a = await setup(t, e)
+          const a = await setup(t, e)
 
-          let s = await requestAccessToken(a)
+          const s = await requestAccessToken(a)
 
           assert.ok(hj)
 
-          let o: jwt.DecodeOptions = {
+          const o: jwt.DecodeOptions = {
             complete: true,
           }
 
-          let decode = jwt.decode as (t: string, o: jwt.DecodeOptions) => jwt.Jwt | null
+          const decode = jwt.decode as (t: string, o: jwt.DecodeOptions) => jwt.Jwt | null
 
-          let j = decode(s, o)
+          const j = decode(s, o)
           assert.ok(j)
 
           assert.ok(typeof j.payload === "object")
@@ -5016,41 +5016,41 @@ void test.suite("oauth server", async() => {
 
     void test.suite("token response", () => {
       void test("returns token_type from upstream", async(t) => {
-        let [hs, ha] = await setupHttp(t)
+        const [hs, ha] = await setupHttp(t)
 
-        let hp = onRequest(t, hs, async(_, res) => {
-          let o: jwt.SignOptions = {
+        const hp = onRequest(t, hs, async(_, res) => {
+          const o: jwt.SignOptions = {
             algorithm: "none",
           }
 
-          let t = r.safeSync(jwt.sign, {}, "", o)
+          const t = r.safeSync(jwt.sign, {}, "", o)
           assert.ok(t.err === undefined)
 
-          let b: object = {
+          const b: object = {
             access_token: t.v,
             token_type: "test",
           }
 
-          let s = await sendJson(res, 200, b)
+          const s = await sendJson(res, 200, b)
           assert.ok(s.err === undefined)
         })
 
-        let tf = async(): Promise<void> => {
-          let e: object = {
+        const tf = async(): Promise<void> => {
+          const e: object = {
             DOCSPACE_OAUTH_BASE_URL: `http://[${ha.address}]:${ha.port}/`,
           }
 
-          let a = await setup(t, e)
+          const a = await setup(t, e)
 
-          let u = r.safeNew(URL, "/oauth/token", `http://[${a.address}]:${a.port}/`)
+          const u = r.safeNew(URL, "/oauth/token", `http://[${a.address}]:${a.port}/`)
           assert.ok(u.err === undefined)
 
-          let f = new URLSearchParams()
+          const f = new URLSearchParams()
 
           f.set("grant_type", "authorization_code")
           f.set("code", "vvv")
 
-          let i: RequestInit = {
+          const i: RequestInit = {
             method: "POST",
             headers: {
               "Content-Type": "application/x-www-form-urlencoded",
@@ -5058,17 +5058,17 @@ void test.suite("oauth server", async() => {
             body: f.toString(),
           }
 
-          let fetch = withAuth(globalThis.fetch)
+          const fetch = withAuth(globalThis.fetch)
 
-          let res = await r.safeAsync(fetch, u.v, i)
+          const res = await r.safeAsync(fetch, u.v, i)
           assert.ok(res.err === undefined)
 
           assert.ok(res.v.status === 200)
 
-          let ab = await readFetchJson(res.v)
+          const ab = await readFetchJson(res.v)
           assert.ok(ab.err === undefined)
 
-          let eb: object = {
+          const eb: object = {
             token_type: "test",
           }
 
@@ -5079,42 +5079,42 @@ void test.suite("oauth server", async() => {
       })
 
       void test("returns refresh_token from upstream", async(t) => {
-        let [hs, ha] = await setupHttp(t)
+        const [hs, ha] = await setupHttp(t)
 
-        let hp = onRequest(t, hs, async(_, res) => {
-          let o: jwt.SignOptions = {
+        const hp = onRequest(t, hs, async(_, res) => {
+          const o: jwt.SignOptions = {
             algorithm: "none",
           }
 
-          let t = r.safeSync(jwt.sign, {}, "", o)
+          const t = r.safeSync(jwt.sign, {}, "", o)
           assert.ok(t.err === undefined)
 
-          let b: object = {
+          const b: object = {
             access_token: t.v,
             token_type: "test",
             refresh_token: "www",
           }
 
-          let s = await sendJson(res, 200, b)
+          const s = await sendJson(res, 200, b)
           assert.ok(s.err === undefined)
         })
 
-        let tf = async(): Promise<void> => {
-          let e: object = {
+        const tf = async(): Promise<void> => {
+          const e: object = {
             DOCSPACE_OAUTH_BASE_URL: `http://[${ha.address}]:${ha.port}/`,
           }
 
-          let a = await setup(t, e)
+          const a = await setup(t, e)
 
-          let u = r.safeNew(URL, "/oauth/token", `http://[${a.address}]:${a.port}/`)
+          const u = r.safeNew(URL, "/oauth/token", `http://[${a.address}]:${a.port}/`)
           assert.ok(u.err === undefined)
 
-          let f = new URLSearchParams()
+          const f = new URLSearchParams()
 
           f.set("grant_type", "refresh_token")
           f.set("refresh_token", "zzz")
 
-          let i: RequestInit = {
+          const i: RequestInit = {
             method: "POST",
             headers: {
               "Content-Type": "application/x-www-form-urlencoded",
@@ -5122,17 +5122,17 @@ void test.suite("oauth server", async() => {
             body: f.toString(),
           }
 
-          let fetch = withAuth(globalThis.fetch)
+          const fetch = withAuth(globalThis.fetch)
 
-          let res = await r.safeAsync(fetch, u.v, i)
+          const res = await r.safeAsync(fetch, u.v, i)
           assert.ok(res.err === undefined)
 
           assert.ok(res.v.status === 200)
 
-          let ab = await readFetchJson(res.v)
+          const ab = await readFetchJson(res.v)
           assert.ok(ab.err === undefined)
 
-          let eb: object = {
+          const eb: object = {
             refresh_token: "www",
           }
 
@@ -5142,14 +5142,14 @@ void test.suite("oauth server", async() => {
         await Promise.race([hp, tf()])
       })
 
-      let va = [3600000, 1800000, 0]
+      const va = [3600000, 1800000, 0]
 
-      for (let expiresIn of va) {
-        for (let expires_in of va) {
-          for (let ttl of va) {
+      for (const expiresIn of va) {
+        for (const expires_in of va) {
+          for (const ttl of va) {
             let m = 0
 
-            let a: number[] = []
+            const a: number[] = []
 
             if (expiresIn) {
               a.push(expiresIn)
@@ -5168,10 +5168,10 @@ void test.suite("oauth server", async() => {
             }
 
             void test(`expiresIn=${expiresIn} expires_in=${expires_in} ttl=${ttl}`, async(t) => {
-              let [hs, ha] = await setupHttp(t)
+              const [hs, ha] = await setupHttp(t)
 
-              let hp = onRequest(t, hs, async(_, res) => {
-                let so: jwt.SignOptions = {
+              const hp = onRequest(t, hs, async(_, res) => {
+                const so: jwt.SignOptions = {
                   algorithm: "none",
                 }
 
@@ -5179,10 +5179,10 @@ void test.suite("oauth server", async() => {
                   so.expiresIn = expiresIn / 1000
                 }
 
-                let t = r.safeSync(jwt.sign, {}, "", so)
+                const t = r.safeSync(jwt.sign, {}, "", so)
                 assert.ok(t.err === undefined)
 
-                let b: Record<string, unknown> = {
+                const b: Record<string, unknown> = {
                   access_token: t.v,
                   token_type: "test",
                 }
@@ -5191,27 +5191,27 @@ void test.suite("oauth server", async() => {
                   b.expires_in = expires_in / 1000
                 }
 
-                let s = await sendJson(res, 200, b)
+                const s = await sendJson(res, 200, b)
                 assert.ok(s.err === undefined)
               })
 
-              let tf = async(): Promise<void> => {
-                let e: object = {
+              const tf = async(): Promise<void> => {
+                const e: object = {
                   DOCSPACE_OAUTH_BASE_URL: `http://[${ha.address}]:${ha.port}/`,
                   DOCSPACE_OAUTH_AUTH_TOKEN_TTL: ttl,
                 }
 
-                let a = await setup(t, e)
+                const a = await setup(t, e)
 
-                let u = r.safeNew(URL, "/oauth/token", `http://[${a.address}]:${a.port}/`)
+                const u = r.safeNew(URL, "/oauth/token", `http://[${a.address}]:${a.port}/`)
                 assert.ok(u.err === undefined)
 
-                let f = new URLSearchParams()
+                const f = new URLSearchParams()
 
                 f.set("grant_type", "authorization_code")
                 f.set("code", "vvv")
 
-                let i: RequestInit = {
+                const i: RequestInit = {
                   method: "POST",
                   headers: {
                     "Content-Type": "application/x-www-form-urlencoded",
@@ -5219,14 +5219,14 @@ void test.suite("oauth server", async() => {
                   body: f.toString(),
                 }
 
-                let fetch = withAuth(globalThis.fetch)
+                const fetch = withAuth(globalThis.fetch)
 
-                let res = await r.safeAsync(fetch, u.v, i)
+                const res = await r.safeAsync(fetch, u.v, i)
                 assert.ok(res.err === undefined)
 
                 assert.ok(res.v.status === 200)
 
-                let b = await readFetchJson(res.v)
+                const b = await readFetchJson(res.v)
                 assert.ok(b.err === undefined)
 
                 assert.ok(b.v)

@@ -54,12 +54,12 @@ export type HandlerAuthTokens = {
  * {@link https://www.rfc-editor.org/rfc/rfc6750.html#section-3 | RFC 6750 Reference}
  */
 export function handler(config: HandlerConfig): r.Result<express.Handler, Error> {
-  let u = r.safeNew(URL, "/.well-known/oauth-protected-resource", config.baseUrl)
+  const u = r.safeNew(URL, "/.well-known/oauth-protected-resource", config.baseUrl)
   if (u.err) {
     return r.error(new Error("Creating resource metadata URL", {cause: u.err}))
   }
 
-  let www = (e: ErrorResponse): string => {
+  const www = (e: ErrorResponse): string => {
     let s = `Bearer error="${e.error}", `
 
     if (e.error_description) {
@@ -75,7 +75,7 @@ export function handler(config: HandlerConfig): r.Result<express.Handler, Error>
     return s
   }
 
-  let end = (res: express.Response, code: number, er: ErrorResponse): void => {
+  const end = (res: express.Response, code: number, er: ErrorResponse): void => {
     if (code === 401 || code === 403) {
       res.set("WWW-Authenticate", www(er))
     }
@@ -83,11 +83,11 @@ export function handler(config: HandlerConfig): r.Result<express.Handler, Error>
     res.json(er)
   }
 
-  let h: express.Handler = async(req, res, next) => {
-    let ih = parseBearer(req)
+  const h: express.Handler = async(req, res, next) => {
+    const ih = parseBearer(req)
     if (ih.err) {
-      let err = new Error("Parsing header", {cause: ih.err})
-      let er: ErrorResponse = {
+      const err = new Error("Parsing header", {cause: ih.err})
+      const er: ErrorResponse = {
         error: "invalid_request",
         error_description: errors.format(err),
       }
@@ -95,9 +95,9 @@ export function handler(config: HandlerConfig): r.Result<express.Handler, Error>
       return
     }
 
-    let tu = config.authTokens.verify(ih.v)
+    const tu = config.authTokens.verify(ih.v)
     if (tu.err) {
-      let err = new Error("Verifying token", {cause: tu.err})
+      const err = new Error("Verifying token", {cause: tu.err})
 
       let code: number | undefined
       let error: string | undefined
@@ -110,7 +110,7 @@ export function handler(config: HandlerConfig): r.Result<express.Handler, Error>
         error = "server_error"
       }
 
-      let er: ErrorResponse = {
+      const er: ErrorResponse = {
         error,
         error_description: errors.format(err),
       }
@@ -119,25 +119,25 @@ export function handler(config: HandlerConfig): r.Result<express.Handler, Error>
       return
     }
 
-    let [tt] = tu.v
+    const [tt] = tu.v
 
-    let io: IntrospectRequest = {
+    const io: IntrospectRequest = {
       token: tt,
     }
 
-    let ci = await config.client.introspect(io)
+    const ci = await config.client.introspect(io)
     if (ci.err) {
-      let err = new Error("Introspecting token", {cause: ci.err})
-      let [code, er] = proxyError(ci.err, err)
+      const err = new Error("Introspecting token", {cause: ci.err})
+      const [code, er] = proxyError(ci.err, err)
       end(res, code, er)
       return
     }
 
-    let [id] = ci.v
+    const [id] = ci.v
 
     if (!id.active) {
-      let err = new Error("Inactive token")
-      let er: ErrorResponse = {
+      const err = new Error("Inactive token")
+      const er: ErrorResponse = {
         error: "invalid_token",
         error_description: errors.format(err),
       }
@@ -146,8 +146,8 @@ export function handler(config: HandlerConfig): r.Result<express.Handler, Error>
     }
 
     if (!id.aud) {
-      let err = new Error("No audience")
-      let er: ErrorResponse = {
+      const err = new Error("No audience")
+      const er: ErrorResponse = {
         error: "invalid_token",
         error_description: errors.format(err),
       }
@@ -159,8 +159,8 @@ export function handler(config: HandlerConfig): r.Result<express.Handler, Error>
 
     if (Array.isArray(id.aud)) {
       if (id.aud.length === 0) {
-        let err = new Error("No audience")
-        let er: ErrorResponse = {
+        const err = new Error("No audience")
+        const er: ErrorResponse = {
           error: "invalid_token",
           error_description: errors.format(err),
         }
@@ -169,8 +169,8 @@ export function handler(config: HandlerConfig): r.Result<express.Handler, Error>
       }
 
       if (id.aud.length > 1) {
-        let err = new Error("Multiple audience")
-        let er: ErrorResponse = {
+        const err = new Error("Multiple audience")
+        const er: ErrorResponse = {
           error: "invalid_token",
           error_description: errors.format(err),
         }
@@ -183,10 +183,10 @@ export function handler(config: HandlerConfig): r.Result<express.Handler, Error>
       aud = id.aud
     }
 
-    let au = r.safeNew(URL, aud)
+    const au = r.safeNew(URL, aud)
     if (au.err) {
-      let err = new Error("Parsing audience")
-      let er: ErrorResponse = {
+      const err = new Error("Parsing audience")
+      const er: ErrorResponse = {
         error: "invalid_token",
         error_description: errors.format(err),
       }
@@ -199,8 +199,8 @@ export function handler(config: HandlerConfig): r.Result<express.Handler, Error>
     }
 
     if (!id.exp) {
-      let err = new Error("No expiration")
-      let er: ErrorResponse = {
+      const err = new Error("No expiration")
+      const er: ErrorResponse = {
         error: "invalid_token",
         error_description: errors.format(err),
       }
@@ -209,8 +209,8 @@ export function handler(config: HandlerConfig): r.Result<express.Handler, Error>
     }
 
     if (id.exp < Math.floor(Date.now() / 1000)) {
-      let err = new Error("Expired token")
-      let er: ErrorResponse = {
+      const err = new Error("Expired token")
+      const er: ErrorResponse = {
         error: "invalid_token",
         error_description: errors.format(err),
       }
@@ -230,19 +230,19 @@ export function handler(config: HandlerConfig): r.Result<express.Handler, Error>
 }
 
 function parseBearer(req: express.Request): r.Result<string, Error> {
-  let h = req.headers.authorization
+  const h = req.headers.authorization
 
   if (!h) {
     return r.error(new Error("No header"))
   }
 
-  let i = h.indexOf(" ")
+  const i = h.indexOf(" ")
 
   if (i === -1) {
     return r.error(new Error("Malformed header"))
   }
 
-  let s = h.slice(0, i)
+  const s = h.slice(0, i)
 
   if (!s) {
     return r.error(new Error("No scheme"))
@@ -252,7 +252,7 @@ function parseBearer(req: express.Request): r.Result<string, Error> {
     return r.error(new Error("Invalid scheme"))
   }
 
-  let t = h.slice(i + 1)
+  const t = h.slice(i + 1)
 
   if (!t) {
     return r.error(new Error("No token"))

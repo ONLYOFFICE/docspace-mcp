@@ -145,37 +145,37 @@ export class Server {
     this.authTokens = config.authTokens
     this.stateTokens = config.stateTokens
 
-    let pb = r.safeNew(URL, "/", config.baseUrl)
+    const pb = r.safeNew(URL, "/", config.baseUrl)
     if (pb.err) {
       throw new Error("Creating base URL", {cause: pb.v})
     }
 
-    let pa = r.safeNew(URL, "/oauth/authorize", config.baseUrl)
+    const pa = r.safeNew(URL, "/oauth/authorize", config.baseUrl)
     if (pa.err) {
       throw new Error("Creating authorize URL", {cause: pa.err})
     }
 
-    let pc = r.safeNew(URL, "/oauth/callback", config.baseUrl)
+    const pc = r.safeNew(URL, "/oauth/callback", config.baseUrl)
     if (pc.err) {
       throw new Error("Creating callback URL", {cause: pc.err})
     }
 
-    let pi = r.safeNew(URL, "/oauth/introspect", config.baseUrl)
+    const pi = r.safeNew(URL, "/oauth/introspect", config.baseUrl)
     if (pi.err) {
       throw new Error("Creating introspect URL", {cause: pi.err})
     }
 
-    let pg = r.safeNew(URL, "/oauth/register", config.baseUrl)
+    const pg = r.safeNew(URL, "/oauth/register", config.baseUrl)
     if (pg.err) {
       throw new Error("Creating register URL", {cause: pg.err})
     }
 
-    let pv = r.safeNew(URL, "/oauth/revoke", config.baseUrl)
+    const pv = r.safeNew(URL, "/oauth/revoke", config.baseUrl)
     if (pv.err) {
       throw new Error("Creating register URL", {cause: pv.err})
     }
 
-    let pt = r.safeNew(URL, "/oauth/token", config.baseUrl)
+    const pt = r.safeNew(URL, "/oauth/token", config.baseUrl)
     if (pt.err) {
       throw new Error("Creating token URL", {cause: pt.err})
     }
@@ -197,10 +197,10 @@ export class Server {
   router(): express.Router {
     // todo: add recovery middleware
 
-    let allowedHostnames = (r: express.Router): void => {
+    const allowedHostnames = (r: express.Router): void => {
       if (this.allowedHostnames.length !== 0) {
         r.use(utilExpress.allowedHostnames(this.allowedHostnames, (_, res, err) => {
-          let er: ErrorResponse = {
+          const er: ErrorResponse = {
             error: "invalid_request",
             error_description: errors.format(err),
           }
@@ -210,9 +210,9 @@ export class Server {
       }
     }
 
-    let corsMetadata = (r: express.Router): void => {
+    const corsMetadata = (r: express.Router): void => {
       if (this.corsOrigin.length !== 0) {
-        let co: utilExpress.CorsOptions = {
+        const co: utilExpress.CorsOptions = {
           origin: this.corsOrigin,
           maxAge: this.corsMaxAge,
           methods: ["GET"],
@@ -233,9 +233,9 @@ export class Server {
       }
     }
 
-    let corsOauth = (r: express.Router): void => {
+    const corsOauth = (r: express.Router): void => {
       if (this.corsOrigin.length !== 0) {
-        let co: utilExpress.CorsOptions = {
+        const co: utilExpress.CorsOptions = {
           origin: this.corsOrigin,
           maxAge: this.corsMaxAge,
           methods: ["GET", "POST"],
@@ -270,22 +270,22 @@ export class Server {
       }
     }
 
-    let ao: AuthOptions = {
+    const ao: AuthOptions = {
       clientId: this.clientId,
       clientSecret: this.clientSecret,
     }
 
-    let a = auth(ao)
+    const a = auth(ao)
 
-    let r = express.Router()
+    const r = express.Router()
 
     r.use("/.well-known/oauth-authorization-server", (() => {
-      let r = express.Router()
+      const r = express.Router()
 
       allowedHostnames(r)
       corsMetadata(r)
 
-      let go: GuardOptions = {
+      const go: GuardOptions = {
         methods: ["GET"],
         types: [],
         capacity: this.serverMetadataRateLimitCapacity,
@@ -300,12 +300,12 @@ export class Server {
     })())
 
     r.use("/.well-known/oauth-protected-resource", (() => {
-      let r = express.Router()
+      const r = express.Router()
 
       allowedHostnames(r)
       corsMetadata(r)
 
-      let go: GuardOptions = {
+      const go: GuardOptions = {
         methods: ["GET"],
         types: [],
         capacity: this.resourceMetadataRateLimitCapacity,
@@ -320,7 +320,7 @@ export class Server {
     })())
 
     r.use("/oauth", (() => {
-      let r = express.Router()
+      const r = express.Router()
 
       r.use(express.json())
       r.use(express.urlencoded({extended: true}))
@@ -329,9 +329,9 @@ export class Server {
       corsOauth(r)
 
       r.use("/authorize", (() => {
-        let r = express.Router()
+        const r = express.Router()
 
-        let go: GuardOptions = {
+        const go: GuardOptions = {
           methods: ["GET"],
           types: [],
           capacity: this.authorizeRateLimitCapacity,
@@ -346,9 +346,9 @@ export class Server {
       })())
 
       r.use("/callback", (() => {
-        let r = express.Router()
+        const r = express.Router()
 
-        let go: GuardOptions = {
+        const go: GuardOptions = {
           methods: ["GET"],
           types: [],
           capacity: this.callbackRateLimitCapacity,
@@ -363,9 +363,9 @@ export class Server {
       })())
 
       r.use("/introspect", (() => {
-        let r = express.Router()
+        const r = express.Router()
 
-        let go: GuardOptions = {
+        const go: GuardOptions = {
           methods: ["POST"],
           types: ["application/x-www-form-urlencoded"],
           capacity: this.introspectRateLimitCapacity,
@@ -382,9 +382,9 @@ export class Server {
 
       if (this.clientId) {
         r.use("/register", (() => {
-          let r = express.Router()
+          const r = express.Router()
 
-          let go: GuardOptions = {
+          const go: GuardOptions = {
             methods: ["POST"],
             types: ["application/json"],
             capacity: this.registerRateLimitCapacity,
@@ -400,9 +400,9 @@ export class Server {
       }
 
       r.use("/revoke", (() => {
-        let r = express.Router()
+        const r = express.Router()
 
-        let go: GuardOptions = {
+        const go: GuardOptions = {
           methods: ["POST"],
           types: ["application/x-www-form-urlencoded"],
           capacity: this.revokeRateLimitCapacity,
@@ -418,9 +418,9 @@ export class Server {
       })())
 
       r.use("/token", (() => {
-        let r = express.Router()
+        const r = express.Router()
 
-        let go: GuardOptions = {
+        const go: GuardOptions = {
           methods: ["POST"],
           types: ["application/x-www-form-urlencoded"],
           capacity: this.tokenRateLimitCapacity,
@@ -456,7 +456,7 @@ export class Server {
       am = []
     }
 
-    let ob: ServerMetadataResponse = {
+    const ob: ServerMetadataResponse = {
       issuer: this.issuer,
       authorization_endpoint: this.authorizeUrl,
       token_endpoint: this.tokenUrl,
@@ -502,7 +502,7 @@ export class Server {
    * {@link https://www.rfc-editor.org/rfc/rfc9728#name-obtaining-protected-resourc | RFC 9728 Reference}
    */
   private handleResourceMetadata(_: express.Request, res: express.Response): void {
-    let ob: ResourceMetadataResponse = {
+    const ob: ResourceMetadataResponse = {
       resource: this.issuer,
       authorization_servers: [
         this.issuer,
@@ -519,10 +519,10 @@ export class Server {
    * {@link https://www.rfc-editor.org/rfc/rfc6749#section-3.1 | RFC 6749 Reference}
    */
   private handleAuthorize(req: express.Request, res: express.Response): void {
-    let iq = AuthorizeRequestSchema.safeParse(req.query)
+    const iq = AuthorizeRequestSchema.safeParse(req.query)
     if (!iq.success) {
-      let err = new Error("Parsing query", {cause: iq.error})
-      let er: ErrorResponse = {
+      const err = new Error("Parsing query", {cause: iq.error})
+      const er: ErrorResponse = {
         error: "invalid_request",
         error_description: errors.format(err),
       }
@@ -532,8 +532,8 @@ export class Server {
     }
 
     if (!iq.data.redirect_uri) {
-      let err = new Error("No redirect URI")
-      let er: ErrorResponse = {
+      const err = new Error("No redirect URI")
+      const er: ErrorResponse = {
         error: "invalid_request",
         error_description: errors.format(err),
       }
@@ -542,7 +542,7 @@ export class Server {
       return
     }
 
-    let st: State = {
+    const st: State = {
       redirect_uri: iq.data.redirect_uri,
     }
 
@@ -550,10 +550,10 @@ export class Server {
       st.state = iq.data.state
     }
 
-    let se = this.stateTokens.encode(st)
+    const se = this.stateTokens.encode(st)
     if (se.err) {
-      let err = new Error("Encoding token", {cause: se.err})
-      let er: ErrorResponse = {
+      const err = new Error("Encoding token", {cause: se.err})
+      const er: ErrorResponse = {
         error: "server_error",
         error_description: errors.format(err),
       }
@@ -562,17 +562,17 @@ export class Server {
       return
     }
 
-    let ao: AuthorizeRequest = {
+    const ao: AuthorizeRequest = {
       response_type: "code",
       client_id: iq.data.client_id,
       redirect_uri: this.callbackUrl,
       state: se.v,
     }
 
-    let ca = this.client.authorize(ao)
+    const ca = this.client.authorize(ao)
     if (ca.err) {
-      let err = new Error("Creating authorization URL", {cause: ca.err})
-      let [code, er] = proxyError(ca.err, err)
+      const err = new Error("Creating authorization URL", {cause: ca.err})
+      const [code, er] = proxyError(ca.err, err)
       res.status(code)
       res.json(er)
       return
@@ -585,10 +585,10 @@ export class Server {
    * {@link https://www.rfc-editor.org/rfc/rfc6749#section-3.1.2 | RFC 6749 Reference}
    */
   private handleCallback(req: express.Request, res: express.Response): void {
-    let iq = AuthorizeResponseSchema.safeParse(req.query)
+    const iq = AuthorizeResponseSchema.safeParse(req.query)
     if (!iq.success) {
-      let err = new Error("Parsing query", {cause: iq.error})
-      let er: ErrorResponse = {
+      const err = new Error("Parsing query", {cause: iq.error})
+      const er: ErrorResponse = {
         error: "invalid_request",
         error_description: errors.format(err),
       }
@@ -598,8 +598,8 @@ export class Server {
     }
 
     if (!iq.data.state) {
-      let err = new Error("No state", {cause: iq.error})
-      let er: ErrorResponse = {
+      const err = new Error("No state", {cause: iq.error})
+      const er: ErrorResponse = {
         error: "invalid_request",
         error_description: errors.format(err),
       }
@@ -608,9 +608,9 @@ export class Server {
       return
     }
 
-    let sd = this.stateTokens.verify(iq.data.state)
+    const sd = this.stateTokens.verify(iq.data.state)
     if (sd.err) {
-      let err = new Error("Verifying token", {cause: sd.err})
+      const err = new Error("Verifying token", {cause: sd.err})
 
       let code: number | undefined
       let error: string | undefined
@@ -623,7 +623,7 @@ export class Server {
         error = "server_error"
       }
 
-      let er: ErrorResponse = {
+      const er: ErrorResponse = {
         error,
         error_description: errors.format(err),
       }
@@ -633,7 +633,7 @@ export class Server {
       return
     }
 
-    let oq: AuthorizeResponse = {
+    const oq: AuthorizeResponse = {
       code: iq.data.code,
     }
 
@@ -641,9 +641,9 @@ export class Server {
       oq.state = sd.v.state
     }
 
-    let op = new URLSearchParams(oq)
+    const op = new URLSearchParams(oq)
 
-    let ou = new URL(sd.v.redirect_uri)
+    const ou = new URL(sd.v.redirect_uri)
 
     ou.search = op.toString()
 
@@ -655,8 +655,8 @@ export class Server {
    */
   private async handleIntrospect(req: express.Request, res: express.Response): Promise<void> {
     if (!req[authKey]) {
-      let err = new Error("No auth")
-      let er: ErrorResponse = {
+      const err = new Error("No auth")
+      const er: ErrorResponse = {
         error: "server_error",
         error_description: errors.format(err),
       }
@@ -665,10 +665,10 @@ export class Server {
       return
     }
 
-    let ib = IntrospectRequestSchema.safeParse(req.body)
+    const ib = IntrospectRequestSchema.safeParse(req.body)
     if (!ib.success) {
-      let err = new Error("Parsing body", {cause: ib.error})
-      let er: ErrorResponse = {
+      const err = new Error("Parsing body", {cause: ib.error})
+      const er: ErrorResponse = {
         error: "invalid_request",
         error_description: errors.format(err),
       }
@@ -677,13 +677,13 @@ export class Server {
       return
     }
 
-    let tu = this.authTokens.verify(ib.data.token)
+    const tu = this.authTokens.verify(ib.data.token)
     if (tu.err) {
       if (
         errors.as(tu.err, jwt.NotBeforeError) ||
         errors.as(tu.err, jwt.TokenExpiredError)
       ) {
-        let ob: IntrospectResponse = {
+        const ob: IntrospectResponse = {
           active: false,
         }
         res.status(200)
@@ -691,7 +691,7 @@ export class Server {
         return
       }
 
-      let err = new Error("Verifying token", {cause: tu.err})
+      const err = new Error("Verifying token", {cause: tu.err})
 
       let code: number | undefined
       let error: string | undefined
@@ -704,7 +704,7 @@ export class Server {
         error = "server_error"
       }
 
-      let er: ErrorResponse = {
+      const er: ErrorResponse = {
         error,
         error_description: errors.format(err),
       }
@@ -714,24 +714,24 @@ export class Server {
       return
     }
 
-    let [tt, tp] = tu.v
+    const [tt, tp] = tu.v
 
-    let io: IntrospectRequest = {
+    const io: IntrospectRequest = {
       token: tt,
     }
 
-    let ci = await this.client.introspect(io)
+    const ci = await this.client.introspect(io)
     if (ci.err) {
-      let err = new Error("Introspecting token", {cause: ci.err})
-      let [code, er] = proxyError(ci.err, err)
+      const err = new Error("Introspecting token", {cause: ci.err})
+      const [code, er] = proxyError(ci.err, err)
       res.status(code)
       res.json(er)
       return
     }
 
-    let [id] = ci.v
+    const [id] = ci.v
 
-    let ob: IntrospectResponse = {
+    const ob: IntrospectResponse = {
       active: id.active,
     }
 
@@ -758,7 +758,7 @@ export class Server {
     // registration request data. To ensure compatibility, we return the entire
     // request body along with the assigned client_id.
 
-    let ob: RegisterResponse = {
+    const ob: RegisterResponse = {
       ...req.body,
       client_id: this.clientId,
     }
@@ -772,8 +772,8 @@ export class Server {
    */
   private async handleRevoke(req: express.Request, res: express.Response): Promise<void> {
     if (!req[authKey]) {
-      let err = new Error("No auth")
-      let er: ErrorResponse = {
+      const err = new Error("No auth")
+      const er: ErrorResponse = {
         error: "server_error",
         error_description: errors.format(err),
       }
@@ -782,10 +782,10 @@ export class Server {
       return
     }
 
-    let ib = RevokeRequestSchema.safeParse(req.body)
+    const ib = RevokeRequestSchema.safeParse(req.body)
     if (!ib.success) {
-      let err = new Error("Parsing body", {cause: ib.error})
-      let er: ErrorResponse = {
+      const err = new Error("Parsing body", {cause: ib.error})
+      const er: ErrorResponse = {
         error: "invalid_request",
         error_description: errors.format(err),
       }
@@ -796,14 +796,14 @@ export class Server {
 
     let tt: string | undefined
 
-    let tu = this.authTokens.decode(ib.data.token)
+    const tu = this.authTokens.decode(ib.data.token)
     if (tu.err) {
       tt = ib.data.token
     } else {
       tt = tu.v[0]
     }
 
-    let ro: ClientRevokeRequest = {
+    const ro: ClientRevokeRequest = {
       client_id: req[authKey].clientId,
       client_secret: req[authKey].clientSecret,
       token: tt,
@@ -813,10 +813,10 @@ export class Server {
       ro.token_type_hint = ib.data.token_type_hint
     }
 
-    let cr = await this.client.revoke(ro)
+    const cr = await this.client.revoke(ro)
     if (cr.err) {
-      let err = new Error("Revoking token", {cause: cr.err})
-      let [code, er] = proxyError(cr.err, err)
+      const err = new Error("Revoking token", {cause: cr.err})
+      const [code, er] = proxyError(cr.err, err)
       res.status(code)
       res.json(er)
       return
@@ -831,8 +831,8 @@ export class Server {
    */
   private async handleToken(req: express.Request, res: express.Response): Promise<void> {
     if (!req[authKey]) {
-      let err = new Error("No auth")
-      let er: ErrorResponse = {
+      const err = new Error("No auth")
+      const er: ErrorResponse = {
         error: "server_error",
         error_description: errors.format(err),
       }
@@ -841,10 +841,10 @@ export class Server {
       return
     }
 
-    let ib = TokenRequestSchema.safeParse(req.body)
+    const ib = TokenRequestSchema.safeParse(req.body)
     if (!ib.success) {
-      let err = new Error("Parsing body", {cause: ib.error})
-      let er: ErrorResponse = {
+      const err = new Error("Parsing body", {cause: ib.error})
+      const er: ErrorResponse = {
         error: "invalid_request",
         error_description: errors.format(err),
       }
@@ -876,21 +876,21 @@ export class Server {
       break
     }
 
-    let ct = await this.client.token(to)
+    const ct = await this.client.token(to)
     if (ct.err) {
-      let err = new Error("Requesting token", {cause: ct.err})
-      let [code, er] = proxyError(ct.err, err)
+      const err = new Error("Requesting token", {cause: ct.err})
+      const [code, er] = proxyError(ct.err, err)
       res.status(code)
       res.json(er)
       return
     }
 
-    let [td] = ct.v
+    const [td] = ct.v
 
-    let tw = this.authTokens.encode(td.access_token)
+    const tw = this.authTokens.encode(td.access_token)
     if (tw.err) {
-      let err = new Error("Encoding token", {cause: tw.err})
-      let er: ErrorResponse = {
+      const err = new Error("Encoding token", {cause: tw.err})
+      const er: ErrorResponse = {
         error: "server_error",
         error_description: errors.format(err),
       }
@@ -899,9 +899,9 @@ export class Server {
       return
     }
 
-    let [tt, tp] = tw.v
+    const [tt, tp] = tw.v
 
-    let ob: TokenResponse = {
+    const ob: TokenResponse = {
       access_token: tt,
       token_type: td.token_type,
     }
@@ -932,7 +932,7 @@ type GuardOptions = {
 
 function guard(r: express.Router, o: GuardOptions): void {
   if (o.methods.length !== 0) {
-    let er: ErrorResponse = {
+    const er: ErrorResponse = {
       error: "invalid_request",
       error_description: "Method Not Allowed",
     }
@@ -943,7 +943,7 @@ function guard(r: express.Router, o: GuardOptions): void {
   }
 
   if (o.types.length !== 0) {
-    let er: ErrorResponse = {
+    const er: ErrorResponse = {
       error: "invalid_request",
       error_description: "Unsupported Media Type",
     }
@@ -954,12 +954,12 @@ function guard(r: express.Router, o: GuardOptions): void {
   }
 
   if (o.capacity && o.window) {
-    let er: ErrorResponse = {
+    const er: ErrorResponse = {
       error: "too_many_requests",
       error_description: "Too Many Requests",
     }
 
-    let ro: utilExpress.RateLimitOptions = {
+    const ro: utilExpress.RateLimitOptions = {
       capacity: o.capacity,
       window: o.window,
     }
@@ -992,10 +992,10 @@ type AuthOptions = {
 function auth(o: AuthOptions): express.Handler {
   return (req, res, next) => {
     if (req.headers.authorization) {
-      let h = parseBasic(req.headers.authorization)
+      const h = parseBasic(req.headers.authorization)
       if (h.err) {
-        let err = new Error("Parsing header", {cause: h.err})
-        let er: ErrorResponse = {
+        const err = new Error("Parsing header", {cause: h.err})
+        const er: ErrorResponse = {
           error: "invalid_client",
           error_description: errors.format(err),
         }
@@ -1005,10 +1005,10 @@ function auth(o: AuthOptions): express.Handler {
         return
       }
 
-      let b = PartialClientCredentialsSchema.safeParse(req.body)
+      const b = PartialClientCredentialsSchema.safeParse(req.body)
       if (!b.success) {
-        let err = new Error("Parsing body", {cause: b.error})
-        let er: ErrorResponse = {
+        const err = new Error("Parsing body", {cause: b.error})
+        const er: ErrorResponse = {
           error: "invalid_request",
           error_description: errors.format(err),
         }
@@ -1018,8 +1018,8 @@ function auth(o: AuthOptions): express.Handler {
       }
 
       if (b.data.client_id || b.data.client_secret) {
-        let err = new Error("Multiple authentication methods")
-        let er: ErrorResponse = {
+        const err = new Error("Multiple authentication methods")
+        const er: ErrorResponse = {
           error: "invalid_request",
           error_description: errors.format(err),
         }
@@ -1037,10 +1037,10 @@ function auth(o: AuthOptions): express.Handler {
     }
 
     if (o.clientId) {
-      let b = ClientCredentialsSchema.safeParse(req.body)
+      const b = ClientCredentialsSchema.safeParse(req.body)
       if (!b.success) {
-        let err = new Error("Parsing body", {cause: b.error})
-        let er: ErrorResponse = {
+        const err = new Error("Parsing body", {cause: b.error})
+        const er: ErrorResponse = {
           error: "invalid_request",
           error_description: errors.format(err),
         }
@@ -1051,8 +1051,8 @@ function auth(o: AuthOptions): express.Handler {
 
       if (!b.data.client_secret) {
         if (b.data.client_id !== o.clientId) {
-          let err = new Error("Client ID mismatch")
-          let er: ErrorResponse = {
+          const err = new Error("Client ID mismatch")
+          const er: ErrorResponse = {
             error: "invalid_client",
             error_description: errors.format(err),
           }
@@ -1078,10 +1078,10 @@ function auth(o: AuthOptions): express.Handler {
       return
     }
 
-    let b = ClientPasswordSchema.safeParse(req.body)
+    const b = ClientPasswordSchema.safeParse(req.body)
     if (!b.success) {
-      let err = new Error("Parsing body", {cause: b.error})
-      let er: ErrorResponse = {
+      const err = new Error("Parsing body", {cause: b.error})
+      const er: ErrorResponse = {
         error: "invalid_request",
         error_description: errors.format(err),
       }
@@ -1129,19 +1129,19 @@ function parseBasic(h: string): r.Result<ClientPassword, Error> {
     return r.error(new Error("Malformed password"))
   }
 
-  let x = v.slice(0, i)
+  const x = v.slice(0, i)
 
   if (!x) {
     return r.error(new Error("No client_id"))
   }
 
-  let y = v.slice(i + 1)
+  const y = v.slice(i + 1)
 
   if (!y) {
     return r.error(new Error("No client_secret"))
   }
 
-  let c: ClientPassword = {
+  const c: ClientPassword = {
     client_id: x,
     client_secret: y,
   }

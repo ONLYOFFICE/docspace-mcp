@@ -22,7 +22,7 @@ export class Progress {
   }
 
   async notify(p: number, m: string): Promise<void> {
-    let ctx = context.get()
+    const ctx = context.get()
 
     if (ctx[abort.signalKey] && ctx[abort.signalKey].aborted) {
       return
@@ -32,7 +32,7 @@ export class Progress {
       return
     }
 
-    let n: types.Notification = {
+    const n: types.Notification = {
       method: "notifications/progress",
       params: {
         progressToken: ctx[progressTokenKey],
@@ -42,7 +42,7 @@ export class Progress {
       },
     }
 
-    let o: protocol.NotificationOptions = {}
+    const o: protocol.NotificationOptions = {}
 
     if (ctx[requestIdKey] !== undefined) {
       o.relatedRequestId = ctx[requestIdKey]
@@ -52,7 +52,7 @@ export class Progress {
       o.relatedTask = {taskId: ctx[taskIdKey]}
     }
 
-    let _ = await r.safeAsync(
+    const _ = await r.safeAsync(
       this.protocol.notification.bind(this.protocol),
       n,
       o,

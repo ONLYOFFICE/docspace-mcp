@@ -66,24 +66,24 @@ export class Logger {
   }
 
   private async log(l: types.LoggingLevel, m: string, o?: object): Promise<void> {
-    let sc = this.protocol.getServerCapabilities()
+    const sc = this.protocol.getServerCapabilities()
 
     if (!sc.logging) {
       return
     }
 
-    let a = types.LoggingLevelSchema.options.indexOf(this.level)
-    let b = types.LoggingLevelSchema.options.indexOf(l)
+    const a = types.LoggingLevelSchema.options.indexOf(this.level)
+    const b = types.LoggingLevelSchema.options.indexOf(l)
 
     if (a > b) {
       return
     }
 
-    let ctx = context.get()
+    const ctx = context.get()
 
-    let now = new Date()
+    const now = new Date()
 
-    let p: Payload = {
+    const p: Payload = {
       time: now.toISOString(),
       msg: m,
       requestId: ctx[trace.requestIdKey],
@@ -94,7 +94,7 @@ export class Logger {
       ...o,
     }
 
-    let n: types.Notification = {
+    const n: types.Notification = {
       method: "notifications/message",
       params: {
         level: l,
@@ -102,7 +102,7 @@ export class Logger {
       },
     }
 
-    let no: protocol.NotificationOptions = {}
+    const no: protocol.NotificationOptions = {}
 
     if (ctx[requestIdKey] !== undefined) {
       no.relatedRequestId = ctx[requestIdKey]
@@ -112,7 +112,7 @@ export class Logger {
       no.relatedTask = {taskId: ctx[taskIdKey]}
     }
 
-    let _ = await r.safeAsync(
+    const _ = await r.safeAsync(
       this.protocol.notification.bind(this.protocol),
       n,
       no,
@@ -129,10 +129,10 @@ function format(v: object): Record<string, unknown> {
     }
 
     if (Array.isArray(v)) {
-      let s: unknown[] = []
+      const s: unknown[] = []
 
-      for (let e of v) {
-        let x = handle(e)
+      for (const e of v) {
+        const x = handle(e)
         if (x !== undefined) {
           s.push(x)
         }
@@ -150,10 +150,10 @@ function format(v: object): Record<string, unknown> {
     }
 
     if (typeof v === "object") {
-      let o: Record<string, unknown> = {}
+      const o: Record<string, unknown> = {}
 
-      for (let [p, e] of Object.entries(v)) {
-        let x = handle(e)
+      for (const [p, e] of Object.entries(v)) {
+        const x = handle(e)
         if (x !== undefined) {
           o[strings.camelCaseToSnakeCase(p)] = x
         }

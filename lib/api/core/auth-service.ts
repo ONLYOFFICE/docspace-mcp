@@ -28,24 +28,24 @@ export class AuthService {
    * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/web/ASC.Web.Api/Api/AuthenticationController.cs/#L88 | ONLYOFFICE Apps Reference}
    */
   async getIsAuthentificated(): Promise<Result<[boolean, Response], Error>> {
-    let u = this.c.createUrl("api/2.0/authentication")
+    const u = this.c.createUrl("api/2.0/authentication")
     if (u.err) {
       return error(new Error("Creating URL.", {cause: u.err}))
     }
 
-    let req = this.c.createRequest("GET", u.v)
+    const req = this.c.createRequest("GET", u.v)
     if (req.err) {
       return error(new Error("Creating request.", {cause: req.err}))
     }
 
-    let f = await this.c.fetch(req.v)
+    const f = await this.c.fetch(req.v)
     if (f.err) {
       return error(new Error("Fetching request.", {cause: f.err}))
     }
 
-    let [p, res] = f.v
+    const [p, res] = f.v
 
-    let e = z.boolean().safeParse(p)
+    const e = z.boolean().safeParse(p)
     if (!e.success) {
       return error(new Error("Parsing response.", {cause: e.error}))
     }
@@ -57,24 +57,24 @@ export class AuthService {
    * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/web/ASC.Web.Api/Api/AuthenticationController.cs/#L185 | ONLYOFFICE Apps Reference}
    */
   async authenticateMe(o: AuthenticateMeOptions): Promise<Result<[AuthenticateMeResponse, Response], Error>> {
-    let u = this.c.createUrl("api/2.0/authentication")
+    const u = this.c.createUrl("api/2.0/authentication")
     if (u.err) {
       return error(new Error("Creating URL.", {cause: u.err}))
     }
 
-    let req = this.c.createRequest("POST", u.v, o)
+    const req = this.c.createRequest("POST", u.v, o)
     if (req.err) {
       return error(new Error("Creating request.", {cause: req.err}))
     }
 
-    let f = await this.c.fetch(req.v)
+    const f = await this.c.fetch(req.v)
     if (f.err) {
       return error(new Error("Fetching request.", {cause: f.err}))
     }
 
-    let [p, res] = f.v
+    const [p, res] = f.v
 
-    let e = AuthenticationTokenDtoSchema.safeParse(p)
+    const e = AuthenticationTokenDtoSchema.safeParse(p)
     if (!e.success) {
       return error(new Error("Parsing response.", {cause: e.error}))
     }

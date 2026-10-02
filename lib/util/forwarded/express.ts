@@ -25,7 +25,7 @@ export function expressHandler(): express.Handler {
       ri = req.ip
     }
 
-    let ctx: context.Context = {}
+    const ctx: context.Context = {}
 
     if (ff) {
       ctx[forwardedForKey] = ff

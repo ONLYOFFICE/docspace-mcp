@@ -28,10 +28,10 @@ type Start = {
 }
 
 async function main(): Promise<void> {
-  let l = new utilLogger.Logger(process.stdout, process.stderr)
+  const l = new utilLogger.Logger(process.stdout, process.stderr)
 
   try {
-    let c = config.EnvSchema.safeParse(process.env)
+    const c = config.EnvSchema.safeParse(process.env)
 
     if (c.error || c.data.mcp.transport === "stdio") {
       l.mute()
@@ -56,12 +56,12 @@ async function main(): Promise<void> {
       return
     }
 
-    for (let e of ["SIGTERM", "SIGINT"]) {
+    for (const e of ["SIGTERM", "SIGINT"]) {
       process.on(e, () => {
         void (async() => {
           l.info(`Received ${e}, shutting down`)
 
-          let c = await s.v.cleanup()
+          const c = await s.v.cleanup()
           if (c.err) {
             l.error("Cleaning up", {err: c.err})
           }
@@ -77,11 +77,11 @@ async function main(): Promise<void> {
       })
     }
 
-    let p = await s.v.promise
+    const p = await s.v.promise
     if (p.err) {
       l.error("Server failed to start", {err: p.err})
 
-      let c = await s.v.cleanup()
+      const c = await s.v.cleanup()
       if (c.err) {
         l.error("Cleaning up", {err: c.err})
       }
@@ -96,17 +96,17 @@ async function main(): Promise<void> {
 }
 
 function startStdio(env: z.ZodSafeParseResult<config.Env>): r.Result<Start, Error> {
-  let create = (): r.Result<utilMcp.Protocol, Error> => {
-    let ca: (() => void)[] = []
+  const create = (): r.Result<utilMcp.Protocol, Error> => {
+    const ca: (() => void)[] = []
 
-    let mp = new utilMcp.Protocol()
+    const mp = new utilMcp.Protocol()
 
-    let mi: types.Implementation = {
+    const mi: types.Implementation = {
       name: meta.name,
       version: meta.version,
     }
 
-    let ms = new utilMcp.Server(mp, mi)
+    const ms = new utilMcp.Server(mp, mi)
 
     let mu = mp.registerRouter(ms.router())
     if (mu.err) {
@@ -114,30 +114,30 @@ function startStdio(env: z.ZodSafeParseResult<config.Env>): r.Result<Start, Erro
     }
 
     if (env.error) {
-      let ms = new mcp.ErroredServer(env.error)
+      const ms = new mcp.ErroredServer(env.error)
 
       mu = mp.registerRouter(ms.router())
       if (mu.err) {
         return r.error(new Error("Registering errored server router", {cause: mu.err}))
       }
     } else {
-      let ml = new utilMcp.Logger(mp)
+      const ml = new utilMcp.Logger(mp)
 
       mu = mp.registerRouter(ml.router())
       if (mu.err) {
         return r.error(new Error("Registering logger router", {cause: mu.err}))
       }
 
-      let me = new utilMcp.Elicitation(mp)
+      const me = new utilMcp.Elicitation(mp)
 
-      let mr = new utilMcp.Progress(mp)
+      const mr = new utilMcp.Progress(mp)
 
       let fetch = globalThis.fetch
 
       fetch = utilFetch.withLogger(ml, globalThis.fetch)
       fetch = utilAbort.wrapFetch(fetch)
 
-      let cc: apiCore.ClientConfig = {
+      const cc: apiCore.ClientConfig = {
         userAgent: env.data.api.userAgent,
         baseUrl: env.data.api.shared.baseUrl,
         fetch,
@@ -161,11 +161,11 @@ function startStdio(env: z.ZodSafeParseResult<config.Env>): r.Result<Start, Erro
         c = c.withBasicAuth(env.data.api.shared.username, env.data.api.shared.password)
       }
 
-      let fb = new events.EventEmitter<apiExtra.FileOperationBusEventMap>()
+      const fb = new events.EventEmitter<apiExtra.FileOperationBusEventMap>()
 
-      let onError = (): void => {}
+      const onError = (): void => {}
 
-      let onClose = (): void => {
+      const onClose = (): void => {
         fb.removeListener("error", onError)
       }
 
@@ -173,26 +173,26 @@ function startStdio(env: z.ZodSafeParseResult<config.Env>): r.Result<Start, Erro
 
       ca.push(onClose)
 
-      let fpc: apiExtra.FileOperationPollerConfig = {
+      const fpc: apiExtra.FileOperationPollerConfig = {
         interval: env.data.fileOperation.interval,
         client: c,
         bus: fb,
       }
 
-      let fp = new apiExtra.FileOperationPoller(fpc)
+      const fp = new apiExtra.FileOperationPoller(fpc)
 
       ca.push(fp.close.bind(fp))
 
       fp.listen()
 
-      let fcc: apiExtra.FileOperationCallerConfig = {
+      const fcc: apiExtra.FileOperationCallerConfig = {
         timeout: env.data.fileOperation.timeout,
         bus: fb,
       }
 
-      let fc = new apiExtra.FileOperationCaller(fcc)
+      const fc = new apiExtra.FileOperationCaller(fcc)
 
-      let csc: mcp.ServerConfig = {
+      const csc: mcp.ServerConfig = {
         dynamic: env.data.mcp.dynamic,
         tools: env.data.mcp.tools,
         elicitation: me,
@@ -203,7 +203,7 @@ function startStdio(env: z.ZodSafeParseResult<config.Env>): r.Result<Start, Erro
         fileOperationCaller: fc,
       }
 
-      let cs = new mcp.Server(csc)
+      const cs = new mcp.Server(csc)
 
       mu = mp.registerRouter(cs.router())
       if (mu.err) {
@@ -212,7 +212,7 @@ function startStdio(env: z.ZodSafeParseResult<config.Env>): r.Result<Start, Erro
     }
 
     mp.onclose = () => {
-      for (let cf of ca) {
+      for (const cf of ca) {
         cf()
       }
     }
@@ -220,7 +220,7 @@ function startStdio(env: z.ZodSafeParseResult<config.Env>): r.Result<Start, Erro
     return r.ok(mp)
   }
 
-  let mp = create()
+  const mp = create()
 
   let promise: Promise<r.Result<void, Error>> | undefined
   let cleanup: (() => Promise<r.Result<void, Error>>) | undefined
@@ -233,7 +233,7 @@ function startStdio(env: z.ZodSafeParseResult<config.Env>): r.Result<Start, Erro
       return r.ok()
     }
   } else {
-    let mt = new stdio.StdioServerTransport()
+    const mt = new stdio.StdioServerTransport()
 
     promise = new Promise<r.Result<void, Error>>((res) => {
       mp.v.connect(mt).
@@ -249,7 +249,7 @@ function startStdio(env: z.ZodSafeParseResult<config.Env>): r.Result<Start, Erro
     })
 
     cleanup = async(): Promise<r.Result<void, Error>> => {
-      let c = await r.safeAsync(mt.close.bind(mt))
+      const c = await r.safeAsync(mt.close.bind(mt))
       if (c.err) {
         return r.error(new Error("Closing transport", {cause: c.err}))
       }
@@ -257,7 +257,7 @@ function startStdio(env: z.ZodSafeParseResult<config.Env>): r.Result<Start, Erro
     }
   }
 
-  let s: Start = {
+  const s: Start = {
     promise,
     cleanup,
   }
@@ -278,34 +278,34 @@ function startHttp(env: config.Env, logger: utilLogger.Logger): r.Result<Start, 
     fetch = utilTrace.wrapFetch(fetch)
     fetch = utilForwarded.wrapFetch(fetch)
 
-    let cc: oauth.ClientConfig = {
+    const cc: oauth.ClientConfig = {
       userAgent: env.api.userAgent,
       baseUrl: env.api.oauth.baseUrl,
       fetch,
     }
 
-    let c = r.safeNew(oauth.Client, cc)
+    const c = r.safeNew(oauth.Client, cc)
     if (c.err) {
       return r.error(new Error("Creating OAuth client", {cause: c.err}))
     }
 
-    let atc: oauth.AuthTokensConfig = {
+    const atc: oauth.AuthTokensConfig = {
       algorithm: env.oauth.authToken.algorithm,
       ttl: env.oauth.authToken.ttl,
       secretKey: env.oauth.authToken.secretKey,
     }
 
-    let at = new oauth.AuthTokens(atc)
+    const at = new oauth.AuthTokens(atc)
 
-    let stc: oauth.StateTokensConfig = {
+    const stc: oauth.StateTokensConfig = {
       algorithm: env.oauth.stateToken.algorithm,
       ttl: env.oauth.stateToken.ttl,
       secretKey: env.oauth.stateToken.secretKey,
     }
 
-    let st = new oauth.StateTokens(stc)
+    const st = new oauth.StateTokens(stc)
 
-    let sc: oauth.ServerConfig = {
+    const sc: oauth.ServerConfig = {
       baseUrl: env.server.baseUrl,
       clientId: env.api.oauth.clientId,
       clientSecret: env.api.oauth.clientSecret,
@@ -333,18 +333,18 @@ function startHttp(env: config.Env, logger: utilLogger.Logger): r.Result<Start, 
       stateTokens: st,
     }
 
-    let s = r.safeNew(oauth.Server, sc)
+    const s = r.safeNew(oauth.Server, sc)
     if (s.err) {
       return r.error(new Error("Creating OAuth server", {cause: s.err}))
     }
 
-    let hc: oauth.HandlerConfig = {
+    const hc: oauth.HandlerConfig = {
       baseUrl: env.server.baseUrl,
       client: c.v,
       authTokens: at,
     }
 
-    let h = oauth.handler(hc)
+    const h = oauth.handler(hc)
     if (h.err) {
       return r.error(new Error("Creating OAuth handler", {cause: h.err}))
     }
@@ -358,23 +358,23 @@ function startHttp(env: config.Env, logger: utilLogger.Logger): r.Result<Start, 
   let credentialParser: auth.AuthManagerCredentialParser | undefined
 
   if (env.internal) {
-    let icp = new auth.InternalCredentialParser()
+    const icp = new auth.InternalCredentialParser()
 
     credentialParserRequestHeaders = icp.requestHeaders
     credentialParser = icp
   } else {
-    let cpc: auth.CredentialParserConfig = {
+    const cpc: auth.CredentialParserConfig = {
       queryEnabled: env.request.queryEnabled,
       headerPrefix: env.request.headerPrefix,
     }
 
-    let cp = new auth.CredentialParser(cpc)
+    const cp = new auth.CredentialParser(cpc)
 
     credentialParserRequestHeaders = cp.requestHeaders
     credentialParser = cp
   }
 
-  let amc: auth.AuthManagerConfig = {
+  const amc: auth.AuthManagerConfig = {
     defaultBaseUrl: env.api.shared.baseUrl,
     defaultAuth: env.api.shared.authorization,
     defaultApiKey: env.api.shared.apiKey,
@@ -411,11 +411,11 @@ function startHttp(env: config.Env, logger: utilLogger.Logger): r.Result<Start, 
     amc.oauthHandler = oauthHandler
   }
 
-  let am = new auth.AuthManager(amc)
+  const am = new auth.AuthManager(amc)
 
-  let authHandler = am.handler()
+  const authHandler = am.handler()
 
-  let spc: config.SettingsParserConfig = {
+  const spc: config.SettingsParserConfig = {
     defaultDynamic: env.mcp.dynamic,
     defaultToolsets: env.mcp.toolsets,
     defaultTools: env.mcp.tools,
@@ -423,40 +423,40 @@ function startHttp(env: config.Env, logger: utilLogger.Logger): r.Result<Start, 
     headerPrefix: env.request.headerPrefix,
   }
 
-  let sp = new config.SettingsParser(spc)
+  const sp = new config.SettingsParser(spc)
 
-  let create = (req: express.Request): r.Result<utilMcp.Protocol, Error> => {
-    let s = sp.parse(req)
+  const create = (req: express.Request): r.Result<utilMcp.Protocol, Error> => {
+    const s = sp.parse(req)
     if (s.err) {
       return r.error(new Error("Parsing settings", {cause: s.err}))
     }
 
-    let ca: (() => void)[] = []
+    const ca: (() => void)[] = []
 
-    let mp = new utilMcp.Protocol()
+    const mp = new utilMcp.Protocol()
 
-    let mi: types.Implementation = {
+    const mi: types.Implementation = {
       name: meta.name,
       version: meta.version,
     }
 
-    let ms = new utilMcp.Server(mp, mi)
+    const ms = new utilMcp.Server(mp, mi)
 
     let mu = mp.registerRouter(ms.router())
     if (mu.err) {
       return r.error(new Error("Registering server router", {cause: mu.err}))
     }
 
-    let ml = new utilMcp.Logger(mp)
+    const ml = new utilMcp.Logger(mp)
 
     mu = mp.registerRouter(ml.router())
     if (mu.err) {
       return r.error(new Error("Registering logger router", {cause: mu.err}))
     }
 
-    let me = new utilMcp.Elicitation(mp)
+    const me = new utilMcp.Elicitation(mp)
 
-    let mr = new utilMcp.Progress(mp)
+    const mr = new utilMcp.Progress(mp)
 
     let fetch = globalThis.fetch
 
@@ -466,7 +466,7 @@ function startHttp(env: config.Env, logger: utilLogger.Logger): r.Result<Start, 
     fetch = utilTrace.wrapFetch(fetch)
     fetch = utilForwarded.wrapFetch(fetch)
 
-    let cc: apiCore.ClientConfig = {
+    const cc: apiCore.ClientConfig = {
       userAgent: env.api.userAgent,
       baseUrl: "",
       fetch,
@@ -502,11 +502,11 @@ function startHttp(env: config.Env, logger: utilLogger.Logger): r.Result<Start, 
       c = c.withBasicAuth(req[auth.authKey].username, req[auth.authKey].password)
     }
 
-    let fb = new events.EventEmitter<apiExtra.FileOperationBusEventMap>()
+    const fb = new events.EventEmitter<apiExtra.FileOperationBusEventMap>()
 
-    let onError = (): void => {}
+    const onError = (): void => {}
 
-    let onClose = (): void => {
+    const onClose = (): void => {
       fb.removeListener("error", onError)
     }
 
@@ -514,26 +514,26 @@ function startHttp(env: config.Env, logger: utilLogger.Logger): r.Result<Start, 
 
     ca.push(onClose)
 
-    let fpc: apiExtra.FileOperationPollerConfig = {
+    const fpc: apiExtra.FileOperationPollerConfig = {
       interval: env.fileOperation.interval,
       client: c,
       bus: fb,
     }
 
-    let fp = new apiExtra.FileOperationPoller(fpc)
+    const fp = new apiExtra.FileOperationPoller(fpc)
 
     ca.push(fp.close.bind(fp))
 
     fp.listen()
 
-    let fcc: apiExtra.FileOperationCallerConfig = {
+    const fcc: apiExtra.FileOperationCallerConfig = {
       timeout: env.fileOperation.timeout,
       bus: fb,
     }
 
-    let fc = new apiExtra.FileOperationCaller(fcc)
+    const fc = new apiExtra.FileOperationCaller(fcc)
 
-    let csc: mcp.ServerConfig = {
+    const csc: mcp.ServerConfig = {
       dynamic: s.v.dynamic,
       tools: s.v.tools,
       elicitation: me,
@@ -544,7 +544,7 @@ function startHttp(env: config.Env, logger: utilLogger.Logger): r.Result<Start, 
       fileOperationCaller: fc,
     }
 
-    let cs = new mcp.Server(csc)
+    const cs = new mcp.Server(csc)
 
     mu = mp.registerRouter(cs.router())
     if (mu.err) {
@@ -552,7 +552,7 @@ function startHttp(env: config.Env, logger: utilLogger.Logger): r.Result<Start, 
     }
 
     mp.onclose = () => {
-      for (let cf of ca) {
+      for (const cf of ca) {
         cf()
       }
     }
@@ -564,20 +564,20 @@ function startHttp(env: config.Env, logger: utilLogger.Logger): r.Result<Start, 
   let sseRouter: express.Router | undefined
 
   if (env.mcp.transport === "sse" || env.mcp.transport === "http") {
-    let sc: mcp.SessionsConfig = {
+    const sc: mcp.SessionsConfig = {
       ttl: env.mcp.session.ttl,
     }
 
-    let s = new mcp.Sessions(sc)
+    const s = new mcp.Sessions(sc)
 
-    let stc: mcp.SseTransportsConfig = {
+    const stc: mcp.SseTransportsConfig = {
       logger,
       sessions: s,
     }
 
-    let st = new mcp.SseTransports(stc)
+    const st = new mcp.SseTransports(stc)
 
-    let ssc: mcp.SseServerConfig = {
+    const ssc: mcp.SseServerConfig = {
       allowedHostnames: env.server.allowedHostnames,
       corsOrigin: env.server.cors.mcp.origin,
       corsMaxAge: env.server.cors.mcp.maxAge,
@@ -599,7 +599,7 @@ function startHttp(env: config.Env, logger: utilLogger.Logger): r.Result<Start, 
       transports: st,
     }
 
-    let ss = new mcp.SseServer(ssc)
+    const ss = new mcp.SseServer(ssc)
 
     sseSessions = s
     sseRouter = ss.router()
@@ -609,20 +609,20 @@ function startHttp(env: config.Env, logger: utilLogger.Logger): r.Result<Start, 
   let streamableRouter: express.Router | undefined
 
   if (env.mcp.transport === "streamable-http" || env.mcp.transport === "http") {
-    let sc: mcp.SessionsConfig = {
+    const sc: mcp.SessionsConfig = {
       ttl: env.mcp.session.ttl,
     }
 
-    let s = new mcp.Sessions(sc)
+    const s = new mcp.Sessions(sc)
 
-    let stc: mcp.StreamableTransportsConfig = {
+    const stc: mcp.StreamableTransportsConfig = {
       logger,
       sessions: s,
     }
 
-    let st = new mcp.StreamableTransports(stc)
+    const st = new mcp.StreamableTransports(stc)
 
-    let ssc: mcp.StreamableServerConfig = {
+    const ssc: mcp.StreamableServerConfig = {
       allowedHostnames: env.server.allowedHostnames,
       corsOrigin: env.server.cors.mcp.origin,
       corsMaxAge: env.server.cors.mcp.maxAge,
@@ -644,13 +644,13 @@ function startHttp(env: config.Env, logger: utilLogger.Logger): r.Result<Start, 
       transports: st,
     }
 
-    let ss = new mcp.StreamableServer(ssc)
+    const ss = new mcp.StreamableServer(ssc)
 
     streamableSessions = s
     streamableRouter = ss.router()
   }
 
-  let e = express()
+  const e = express()
 
   e.disable("etag")
   e.disable("x-powered-by")
@@ -684,7 +684,7 @@ function startHttp(env: config.Env, logger: utilLogger.Logger): r.Result<Start, 
   })
 
   e.use((_, res) => {
-    let err = new errors.JsonError("Not Found")
+    const err = new errors.JsonError("Not Found")
     res.status(404)
     res.json(err.toObject())
   })
@@ -692,12 +692,12 @@ function startHttp(env: config.Env, logger: utilLogger.Logger): r.Result<Start, 
   let cleanupSse: (() => Promise<r.Result<void, Error>>) | undefined
 
   if (sseSessions) {
-    let ac = new AbortController()
-    let wp = sseSessions.watch(ac.signal, env.mcp.session.interval)
+    const ac = new AbortController()
+    const wp = sseSessions.watch(ac.signal, env.mcp.session.interval)
 
     cleanupSse = async() => {
       if (!ac.signal.aborted) {
-        let errs: Error[] = []
+        const errs: Error[] = []
 
         ac.abort("Cleaning up")
 
@@ -721,12 +721,12 @@ function startHttp(env: config.Env, logger: utilLogger.Logger): r.Result<Start, 
   let cleanupStreamable: (() => Promise<r.Result<void, Error>>) | undefined
 
   if (streamableSessions) {
-    let ac = new AbortController()
-    let wp = streamableSessions.watch(ac.signal, env.mcp.session.interval)
+    const ac = new AbortController()
+    const wp = streamableSessions.watch(ac.signal, env.mcp.session.interval)
 
     cleanupStreamable = async() => {
       if (!ac.signal.aborted) {
-        let errs: Error[] = []
+        const errs: Error[] = []
 
         ac.abort("Cleaning up")
 
@@ -747,15 +747,15 @@ function startHttp(env: config.Env, logger: utilLogger.Logger): r.Result<Start, 
     }
   }
 
-  let h = e.listen(env.server.port, env.server.host)
+  const h = e.listen(env.server.port, env.server.host)
 
-  let promise = new Promise<r.Result<void, Error>>((res) => {
-    let onError = (err: Error): void => {
+  const promise = new Promise<r.Result<void, Error>>((res) => {
+    const onError = (err: Error): void => {
       close(new Error("Starting HTTP server", {cause: err}))
     }
 
-    let onListening = (): void => {
-      let o: Record<string, unknown> = {
+    const onListening = (): void => {
+      const o: Record<string, unknown> = {
         host: env.server.host,
         port: env.server.port,
       }
@@ -763,7 +763,7 @@ function startHttp(env: config.Env, logger: utilLogger.Logger): r.Result<Start, 
       close()
     }
 
-    let close = (err?: Error): void => {
+    const close = (err?: Error): void => {
       h.removeListener("error", onError)
       h.removeListener("listening", onListening)
 
@@ -778,25 +778,25 @@ function startHttp(env: config.Env, logger: utilLogger.Logger): r.Result<Start, 
     h.once("listening", onListening)
   })
 
-  let cleanup = async(): Promise<r.Result<void, Error>> => {
-    let errs: Error[] = []
+  const cleanup = async(): Promise<r.Result<void, Error>> => {
+    const errs: Error[] = []
 
     if (cleanupSse) {
-      let c = await cleanupSse()
+      const c = await cleanupSse()
       if (c.err) {
         errs.push(new Error("Cleaning up SSE", {cause: c.err}))
       }
     }
 
     if (cleanupStreamable) {
-      let c = await cleanupStreamable()
+      const c = await cleanupStreamable()
       if (c.err) {
         errs.push(new Error("Cleaning up Streamable HTTP", {cause: c.err}))
       }
     }
 
     if (h.listening) {
-      let p = await new Promise<r.Result<void, Error>>((res) => {
+      const p = await new Promise<r.Result<void, Error>>((res) => {
         h.close((err) => {
           if (err) {
             res(r.error(new Error("Closing HTTP server", {cause: err})))
@@ -817,7 +817,7 @@ function startHttp(env: config.Env, logger: utilLogger.Logger): r.Result<Start, 
     return r.ok()
   }
 
-  let s: Start = {
+  const s: Start = {
     promise,
     cleanup,
   }

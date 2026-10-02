@@ -495,19 +495,19 @@ export const EnvSchema = z.
       }
     }
 
-    let to: ResolveToolsOptions = {
+    const to: ResolveToolsOptions = {
       toolsets: o.mcp.toolsets,
       enabledTools: o.mcp.enabledTools,
       disabledTools: o.mcp.disabledTools,
     }
 
-    let t = resolveTools(to)
+    const t = resolveTools(to)
 
     o.mcp.toolsets = t.toolsets
     o.mcp.tools = t.tools
 
     if (o.mcp.tools.length === 0) {
-      let i: z.core.$ZodSuperRefineIssue = {
+      const i: z.core.$ZodSuperRefineIssue = {
         code: "custom",
         message: "No tools left",
       }
@@ -518,7 +518,7 @@ export const EnvSchema = z.
       o.api.shared.username &&
       !o.api.shared.password
     ) {
-      let i: z.core.$ZodSuperRefineIssue = {
+      const i: z.core.$ZodSuperRefineIssue = {
         code: "custom",
         message: "No password",
       }
@@ -529,7 +529,7 @@ export const EnvSchema = z.
       !o.api.shared.username &&
       o.api.shared.password
     ) {
-      let i: z.core.$ZodSuperRefineIssue = {
+      const i: z.core.$ZodSuperRefineIssue = {
         code: "custom",
         message: "No username",
       }
@@ -546,7 +546,7 @@ export const EnvSchema = z.
       ) &&
       !o.api.shared.baseUrl
     ) {
-      let i: z.core.$ZodSuperRefineIssue = {
+      const i: z.core.$ZodSuperRefineIssue = {
         code: "custom",
         message: "No API base URL",
       }
@@ -563,7 +563,7 @@ export const EnvSchema = z.
       o.api.oauth.clientId &&
       !o.api.oauth.clientSecret
     ) {
-      let i: z.core.$ZodSuperRefineIssue = {
+      const i: z.core.$ZodSuperRefineIssue = {
         code: "custom",
         message: "No OAuth client secret",
       }
@@ -580,7 +580,7 @@ export const EnvSchema = z.
       !o.api.oauth.clientId &&
       o.api.oauth.clientSecret
     ) {
-      let i: z.core.$ZodSuperRefineIssue = {
+      const i: z.core.$ZodSuperRefineIssue = {
         code: "custom",
         message: "No OAuth client ID",
       }
@@ -614,7 +614,7 @@ export const EnvSchema = z.
         )
       )
     ) {
-      let i: z.core.$ZodSuperRefineIssue = {
+      const i: z.core.$ZodSuperRefineIssue = {
         code: "custom",
         message: "No authentication method",
       }
@@ -659,7 +659,7 @@ export const EnvSchema = z.
       ) +
       Number(Boolean(o.api.oauth.baseUrl)) !== 1
     ) {
-      let i: z.core.$ZodSuperRefineIssue = {
+      const i: z.core.$ZodSuperRefineIssue = {
         code: "custom",
         message: "Multiple authentication methods",
       }
@@ -675,7 +675,7 @@ export const EnvSchema = z.
       o.api.oauth.baseUrl &&
       !o.server.baseUrl
     ) {
-      let i: z.core.$ZodSuperRefineIssue = {
+      const i: z.core.$ZodSuperRefineIssue = {
         code: "custom",
         message: "No server base URL",
       }
@@ -690,7 +690,7 @@ export const EnvSchema = z.
       ) &&
       !o.server.host
     ) {
-      let i: z.core.$ZodSuperRefineIssue = {
+      const i: z.core.$ZodSuperRefineIssue = {
         code: "custom",
         message: "No server host",
       }
@@ -701,10 +701,10 @@ export const EnvSchema = z.
   })
 
 export function redactEnv(c: Env): object {
-  let m = "***"
+  const m = "***"
 
   // todo: sensitivity must be determined by spec
-  let s: string[] = [
+  const s: string[] = [
     "root.api.shared.authorization",
     "root.api.shared.apiKey",
     "root.api.shared.pat",
@@ -715,7 +715,7 @@ export function redactEnv(c: Env): object {
     "root.oauth.stateToken.secretKey",
   ]
 
-  let h = (v: unknown, p: string): unknown => {
+  const h = (v: unknown, p: string): unknown => {
     if (!v) {
       return
     }
@@ -733,10 +733,10 @@ export function redactEnv(c: Env): object {
         return
       }
 
-      let o: Record<string, unknown> = {}
+      const o: Record<string, unknown> = {}
 
-      for (let [x, y] of Object.entries(v)) {
-        let n = h(y, `${p}.${x}`)
+      for (const [x, y] of Object.entries(v)) {
+        const n = h(y, `${p}.${x}`)
 
         if (n) {
           o[x] = n
@@ -757,7 +757,7 @@ export function redactEnv(c: Env): object {
     return v
   }
 
-  let o = h(c, "root")
+  const o = h(c, "root")
 
   return o as object
 }

@@ -80,7 +80,7 @@ export class Client {
   private baseFetch: typeof fetch
 
   constructor(config: ClientConfig) {
-    let b = r.safeNew(URL, config.baseUrl)
+    const b = r.safeNew(URL, config.baseUrl)
     if (b.err) {
       throw new Error("Parsing base URL", {cause: b.err})
     }
@@ -103,7 +103,7 @@ export class Client {
   }
 
   authorize(o: AuthorizeRequest): r.Result<URL, Error> {
-    let u = this.createUrl("oauth2/authorize", o)
+    const u = this.createUrl("oauth2/authorize", o)
     if (u.err) {
       return r.error(new Error("Creating URL", {cause: u.err}))
     }
@@ -111,24 +111,24 @@ export class Client {
   }
 
   async introspect(o: IntrospectRequest): Promise<r.Result<[IntrospectResponse, ClientResponse], Error>> {
-    let u = this.createUrl("oauth2/introspect")
+    const u = this.createUrl("oauth2/introspect")
     if (u.err) {
       return r.error(new Error("Creating URL", {cause: u.err}))
     }
 
-    let req = this.createRequest(u.v, o)
+    const req = this.createRequest(u.v, o)
     if (req.err) {
       return r.error(new Error("Creating request", {cause: req.err}))
     }
 
-    let f = await this.fetch(req.v)
+    const f = await this.fetch(req.v)
     if (f.err) {
       return r.error(new Error("Making request", {cause: f.err}))
     }
 
-    let [v, res] = f.v
+    const [v, res] = f.v
 
-    let p = IntrospectResponseSchema.safeParse(v)
+    const p = IntrospectResponseSchema.safeParse(v)
     if (!p.success) {
       return r.error(new Error("Parsing response", {cause: p.error}))
     }
@@ -137,50 +137,50 @@ export class Client {
   }
 
   async revoke(o: ClientRevokeRequest): Promise<r.Result<ClientResponse, Error>> {
-    let u = this.createUrl("oauth2/revoke")
+    const u = this.createUrl("oauth2/revoke")
     if (u.err) {
       return r.error(new Error("Creating URL", {cause: u.err}))
     }
 
-    let req = this.createRequest(u.v, o)
+    const req = this.createRequest(u.v, o)
     if (req.err) {
       return r.error(new Error("Creating request", {cause: req.err}))
     }
 
-    let f = await this.bareFetch(req.v)
+    const f = await this.bareFetch(req.v)
     if (f.err) {
       return r.error(new Error("Making bare request", {cause: f.err}))
     }
 
-    let c: ClientResponseOptions = {
+    const c: ClientResponseOptions = {
       request: req.v,
       response: f.v,
     }
 
-    let w = new ClientResponse(c)
+    const w = new ClientResponse(c)
 
     return r.ok(w)
   }
 
   async token(o: ClientTokenRequest): Promise<r.Result<[TokenResponse, ClientResponse], Error>> {
-    let u = this.createUrl("oauth2/token")
+    const u = this.createUrl("oauth2/token")
     if (u.err) {
       return r.error(new Error("Creating URL", {cause: u.err}))
     }
 
-    let req = this.createRequest(u.v, o)
+    const req = this.createRequest(u.v, o)
     if (req.err) {
       return r.error(new Error("Creating request", {cause: req.err}))
     }
 
-    let f = await this.fetch(req.v)
+    const f = await this.fetch(req.v)
     if (f.err) {
       return r.error(new Error("Making request", {cause: f.err}))
     }
 
-    let [v, res] = f.v
+    const [v, res] = f.v
 
-    let p = TokenResponseSchema.safeParse(v)
+    const p = TokenResponseSchema.safeParse(v)
     if (!p.success) {
       return r.error(new Error("Parsing response", {cause: p.error}))
     }
@@ -189,15 +189,15 @@ export class Client {
   }
 
   createUrl(p: string, q?: object): r.Result<URL, Error> {
-    let u = r.safeNew(URL, p, this.baseUrl)
+    const u = r.safeNew(URL, p, this.baseUrl)
     if (u.err) {
       return r.error(new Error("Paring path", {cause: u.err}))
     }
 
     if (q) {
-      let p = new URLSearchParams()
+      const p = new URLSearchParams()
 
-      for (let [k, v] of Object.entries(q)) {
+      for (const [k, v] of Object.entries(q)) {
         if (v !== undefined) {
           p.append(k, v.toString())
         }
@@ -212,9 +212,9 @@ export class Client {
   }
 
   createRequest(u: URL, b: object): r.Result<Request, Error> {
-    let p = new URLSearchParams()
+    const p = new URLSearchParams()
 
-    for (let [k, v] of Object.entries(b)) {
+    for (const [k, v] of Object.entries(b)) {
       if (Array.isArray(v)) {
         p.append(k, v.join(" "))
       } else if (v !== undefined) {
@@ -222,7 +222,7 @@ export class Client {
       }
     }
 
-    let c: RequestInit = {
+    const c: RequestInit = {
       method: "POST",
     }
 
@@ -230,7 +230,7 @@ export class Client {
       c.body = p
     }
 
-    let req = r.safeNew(Request, u, c)
+    const req = r.safeNew(Request, u, c)
     if (req.err) {
       return r.error(new Error("Creating request", {cause: req.err}))
     }
@@ -246,12 +246,12 @@ export class Client {
   }
 
   async fetch(req: Request): Promise<r.Result<[unknown, ClientResponse], Error>> {
-    let f = await this.bareFetch(req)
+    const f = await this.bareFetch(req)
     if (f.err) {
       return r.error(new Error("Making bare request", {cause: f.err}))
     }
 
-    let p = await parseResponse(req, f.v)
+    const p = await parseResponse(req, f.v)
     if (p.err) {
       return r.error(new Error("Parsing response.", {cause: p.err}))
     }
@@ -260,12 +260,12 @@ export class Client {
   }
 
   async bareFetch(req: Request): Promise<r.Result<Response, Error>> {
-    let f = await r.safeAsync(this.baseFetch, req.clone())
+    const f = await r.safeAsync(this.baseFetch, req.clone())
     if (f.err) {
       return r.error(new Error("Making native request", {cause: f.err}))
     }
 
-    let c = await checkResponse(req, f.v)
+    const c = await checkResponse(req, f.v)
     if (c.err) {
       return r.error(new Error("Checking response", {cause: c.err}))
     }
@@ -279,7 +279,7 @@ export async function checkResponse(req: Request, res: Response): Promise<r.Resu
     return r.ok()
   }
 
-  let o: ClientResponseErrorOptions = {
+  const o: ClientResponseErrorOptions = {
     request: req,
     response: res,
     error: "",
@@ -289,46 +289,46 @@ export async function checkResponse(req: Request, res: Response): Promise<r.Resu
   }
 
   await (async() => {
-    let h = res.headers.get("Content-Type")
+    const h = res.headers.get("Content-Type")
     if (!h) {
-      let err = new Error("Content-Type is missing")
+      const err = new Error("Content-Type is missing")
       o.error = "server_error"
       o.error_description = errors.format(err)
       return
     }
 
-    let p = r.safeSync(contentType.parse, h)
+    const p = r.safeSync(contentType.parse, h)
     if (p.err) {
-      let err = new Error("Parsing Content-Type", {cause: p.err})
+      const err = new Error("Parsing Content-Type", {cause: p.err})
       o.error = "server_error"
       o.error_description = errors.format(err)
       return
     }
 
     if (p.v.type !== "application/json") {
-      let err = new Error("Content-Type is invalid")
+      const err = new Error("Content-Type is invalid")
       o.error = "server_error"
       o.error_description = errors.format(err)
       return
     }
 
-    let c = r.safeSync(res.clone.bind(res))
+    const c = r.safeSync(res.clone.bind(res))
     if (c.err) {
-      let err = new Error("Cloning response", {cause: c.err})
+      const err = new Error("Cloning response", {cause: c.err})
       o.error = "server_error"
       o.error_description = errors.format(err)
       return
     }
 
-    let b = await r.safeAsync(c.v.json.bind(c.v))
+    const b = await r.safeAsync(c.v.json.bind(c.v))
     if (b.err) {
-      let err = new Error("Parsing response", {cause: b.err})
+      const err = new Error("Parsing response", {cause: b.err})
       o.error = "server_error"
       o.error_description = errors.format(err)
       return
     }
 
-    let x = ErrorResponseSchema.safeParse(b.v)
+    const x = ErrorResponseSchema.safeParse(b.v)
     if (x.success) {
       o.error = x.data.error
 
@@ -343,7 +343,7 @@ export async function checkResponse(req: Request, res: Response): Promise<r.Resu
       return
     }
 
-    let y = ClientCustomErrorResponseSchema.safeParse(b.v)
+    const y = ClientCustomErrorResponseSchema.safeParse(b.v)
     if (y.success) {
       o.error = "server_error"
       o.error_description = y.data.reason
@@ -363,28 +363,28 @@ export async function checkResponse(req: Request, res: Response): Promise<r.Resu
 
   o.message = o.message.slice(0, -1)
 
-  let e = new ClientResponseError(o)
+  const e = new ClientResponseError(o)
 
   return r.error(e)
 }
 
 export async function parseResponse(req: Request, res: Response): Promise<r.Result<[unknown, ClientResponse], Error>> {
-  let c = r.safeSync(res.clone.bind(res))
+  const c = r.safeSync(res.clone.bind(res))
   if (c.err) {
     return r.error(new Error("Cloning response", {cause: c.err}))
   }
 
-  let b = await r.safeAsync(c.v.json.bind(c.v))
+  const b = await r.safeAsync(c.v.json.bind(c.v))
   if (b.err) {
     return r.error(new Error("Parsing body", {cause: b.err}))
   }
 
-  let o: ClientResponseOptions = {
+  const o: ClientResponseOptions = {
     request: req,
     response: res,
   }
 
-  let w = new ClientResponse(o)
+  const w = new ClientResponse(o)
 
   return r.ok([b.v, w])
 }

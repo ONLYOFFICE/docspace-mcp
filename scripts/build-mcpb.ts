@@ -22,14 +22,14 @@ const files: string[] = [
 async function main(): Promise<void> {
   let mc = await fs.readFile("manifest.template.json", "utf8")
 
-  let mo = JSON.parse(mc) as dist.Manifest
+  const mo = JSON.parse(mc) as dist.Manifest
 
   mo.version = meta.version
   mo.documentation = mo.documentation.replace("{{version}}", meta.version)
 
-  for (let o of Object.values(spec)) {
+  for (const o of Object.values(spec)) {
     if (o.distributions.includes("mcpb")) {
-      let k = `${config.envPrefix}${o.env}`.toLowerCase()
+      const k = `${config.envPrefix}${o.env}`.toLowerCase()
       mo.server.mcp_config.env[`${config.envPrefix}${o.env}`] = `\${user_config.${k}}`
       mo.user_config[k] = {
         type: o.type,
@@ -41,9 +41,9 @@ async function main(): Promise<void> {
     }
   }
 
-  for (let s of tools.sortToolsets(mcp.regularToolsets)) {
-    for (let t of s.tools) {
-      let o: dist.ManifestTool = {
+  for (const s of tools.sortToolsets(mcp.regularToolsets)) {
+    for (const t of s.tools) {
+      const o: dist.ManifestTool = {
         name: t.name,
         description: t.description,
       }
@@ -53,9 +53,9 @@ async function main(): Promise<void> {
 
   mc = JSON.stringify(mo, null, 2)
 
-  for (let f of files) {
-    let t = path.join("./mcpb/", f)
-    let d = path.dirname(t)
+  for (const f of files) {
+    const t = path.join("./mcpb/", f)
+    const d = path.dirname(t)
     await fs.mkdir(d, {recursive: true})
     await fs.copyFile(f, t)
   }

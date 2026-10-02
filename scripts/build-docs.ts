@@ -53,16 +53,16 @@ async function main(): Promise<void> {
 async function updateTools(f: string): Promise<void> {
   let s = await fs.readFile(f, "utf8")
 
-  let toolsets = tools.sortToolsets(mcp.regularToolsets)
-  let metaTools = tools.sortTools(mcp.metaTools)
+  const toolsets = tools.sortToolsets(mcp.regularToolsets)
+  const metaTools = tools.sortTools(mcp.metaTools)
 
-  let o = createToolsetsTable(toolsets)
+  const o = createToolsetsTable(toolsets)
   s = insert("toolsets", s, o)
 
-  let m = createMetaToolsTable(metaTools)
+  const m = createMetaToolsTable(metaTools)
   s = insert("meta-tools", s, m)
 
-  let t = createToolsTable(toolsets)
+  const t = createToolsTable(toolsets)
   s = insert("tools", s, t)
 
   await fs.writeFile(f, s, "utf8")
@@ -71,7 +71,7 @@ async function updateTools(f: string): Promise<void> {
 async function updateQuickInstall(f: string): Promise<void> {
   let s = await fs.readFile(f, "utf8")
 
-  let t = createQuickInstallTable()
+  const t = createQuickInstallTable()
   s = insert("quick-install", s, t)
 
   await fs.writeFile(f, s, "utf8")
@@ -107,15 +107,15 @@ function createQuickInstallTable(): string {
 
   b = b.slice(0, -1)
 
-  let h = "| Docker Image | Node.js Application |\n|:-:|:-:|"
+  const h = "| Docker Image | Node.js Application |\n|:-:|:-:|"
   c = `${h}\n${b}`
 
   return c
 }
 
 function createBadgenLink(n: string, c: string): string {
-  let s = `https://badgen.net/static/Add to/${n}/${c}`
-  let u = new URL(s)
+  const s = `https://badgen.net/static/Add to/${n}/${c}`
+  const u = new URL(s)
   return u.toString()
 }
 
@@ -124,18 +124,18 @@ function createMarkdownBadge(l: string, i: string, a: string): string {
 }
 
 function createCursorDockerImageLink(): string {
-  let e = createSharedConfigEnv()
-  let c = createDockerImageConfig(e)
-  let q = createCursorQuery(c)
-  let u = createCursorLink(q)
+  const e = createSharedConfigEnv()
+  const c = createDockerImageConfig(e)
+  const q = createCursorQuery(c)
+  const u = createCursorLink(q)
   return u
 }
 
 function createCursorNpxLink(): string {
-  let e = createSharedConfigEnv()
-  let c = createNpxConfig(e)
-  let q = createCursorQuery(c)
-  let u = createCursorLink(q)
+  const e = createSharedConfigEnv()
+  const c = createNpxConfig(e)
+  const q = createCursorQuery(c)
+  const u = createCursorLink(q)
   return u
 }
 
@@ -147,46 +147,46 @@ function createCursorQuery(c: Config): CursorQuery {
 }
 
 function createCursorLink(q: CursorQuery): string {
-  let s = "https://cursor.com/en/install-mcp"
-  let u = new URL(s)
-  let p = new URLSearchParams(q)
+  const s = "https://cursor.com/en/install-mcp"
+  const u = new URL(s)
+  const p = new URLSearchParams(q)
   u.search = p.toString()
   return u.toString()
 }
 
 function createVscodeDockerImageLink(): string {
-  let i = createVscodeInputs()
-  let e = createVscodeConfigEnv()
-  let c = createDockerImageConfig(e)
-  let q = createVscodeQuery(i, c)
-  let u = createVscodeLink(q)
+  const i = createVscodeInputs()
+  const e = createVscodeConfigEnv()
+  const c = createDockerImageConfig(e)
+  const q = createVscodeQuery(i, c)
+  const u = createVscodeLink(q)
   return u
 }
 
 function createVscodeNpxLink(): string {
-  let i = createVscodeInputs()
-  let e = createSharedConfigEnv()
-  let c = createNpxConfig(e)
-  let q = createVscodeQuery(i, c)
-  let u = createVscodeLink(q)
+  const i = createVscodeInputs()
+  const e = createSharedConfigEnv()
+  const c = createNpxConfig(e)
+  const q = createVscodeQuery(i, c)
+  const u = createVscodeLink(q)
   return u
 }
 
 function createVscodeInsidersDockerImageLink(): string {
-  let i = createVscodeInputs()
-  let e = createVscodeConfigEnv()
-  let c = createDockerImageConfig(e)
-  let q = createVscodeInsidersQuery(i, c)
-  let u = createVscodeLink(q)
+  const i = createVscodeInputs()
+  const e = createVscodeConfigEnv()
+  const c = createDockerImageConfig(e)
+  const q = createVscodeInsidersQuery(i, c)
+  const u = createVscodeLink(q)
   return u
 }
 
 function createVscodeInsidersNpxLink(): string {
-  let i = createVscodeInputs()
-  let e = createSharedConfigEnv()
-  let c = createNpxConfig(e)
-  let q = createVscodeInsidersQuery(i, c)
-  let u = createVscodeLink(q)
+  const i = createVscodeInputs()
+  const e = createSharedConfigEnv()
+  const c = createNpxConfig(e)
+  const q = createVscodeInsidersQuery(i, c)
+  const u = createVscodeLink(q)
   return u
 }
 
@@ -214,7 +214,7 @@ function createVscodeConfigEnv(): ConfigEnv {
 }
 
 function createVscodeInsidersQuery(i: VscodeInput[], c: Config): VscodeQuery {
-  let q = createVscodeQuery(i, c)
+  const q = createVscodeQuery(i, c)
   q.quality = "insiders"
   return q
 }
@@ -228,9 +228,9 @@ function createVscodeQuery(i: VscodeInput[], c: Config): VscodeQuery {
 }
 
 function createVscodeLink(q: VscodeQuery): string {
-  let s = "https://insiders.vscode.dev/redirect/mcp/install"
-  let u = new URL(s)
-  let p = new URLSearchParams(q)
+  const s = "https://insiders.vscode.dev/redirect/mcp/install"
+  const u = new URL(s)
+  const p = new URLSearchParams(q)
   u.search = p.toString()
   return u.toString()
 }
@@ -270,13 +270,13 @@ function createNpxConfig(e: ConfigEnv): Config {
 function createToolsetsTable(toolsets: utilMcp.Toolset[]): string {
   let c = ""
 
-  for (let [i, t] of toolsets.entries()) {
+  for (const [i, t] of toolsets.entries()) {
     c += `| ${i + 1} | \`${t.name}\` | ${t.description} |\n`
   }
 
   if (c.length !== 0) {
     c = c.slice(0, -1)
-    let h = "| # | Toolset Name | Toolset Description |\n|-|-|-|"
+    const h = "| # | Toolset Name | Toolset Description |\n|-|-|-|"
     c = `${h}\n${c}`
   }
 
@@ -292,17 +292,17 @@ function createToolsTable(toolsets: utilMcp.Toolset[]): string {
 
   let i = 0
 
-  for (let s of toolsets) {
+  for (const s of toolsets) {
     let b = ""
 
-    for (let [j, t] of s.tools.entries()) {
+    for (const [j, t] of s.tools.entries()) {
       b += `<tr><td>${j + 1 + i}</td><td><code>${t.name}</code></td><td>${t.description}</td></tr>\n`
     }
 
     if (b.length !== 0) {
       b = b.slice(0, -1)
-      let n = s.name[0].toUpperCase() + s.name.slice(1)
-      let h = `<tr><td></td><th scope="rowgroup">${n} Toolset</th><td></td></tr>`
+      const n = s.name[0].toUpperCase() + s.name.slice(1)
+      const h = `<tr><td></td><th scope="rowgroup">${n} Toolset</th><td></td></tr>`
       b = `<tbody>\n${h}\n${b}\n</tbody>`
       c += `${b}\n`
     }
@@ -312,7 +312,7 @@ function createToolsTable(toolsets: utilMcp.Toolset[]): string {
 
   if (c.length !== 0) {
     c = c.slice(0, -1)
-    let h = "<thead>\n<tr><th>#</th><th>Tool Name</th><th>Tool Description</th></tr>\n</thead>"
+    const h = "<thead>\n<tr><th>#</th><th>Tool Name</th><th>Tool Description</th></tr>\n</thead>"
     c = `<table>\n${h}\n${c}\n</table>`
   }
 
@@ -326,13 +326,13 @@ function createToolsTable(toolsets: utilMcp.Toolset[]): string {
 function createMetaToolsTable(tools: utilMcp.ToolSummary[]): string {
   let c = ""
 
-  for (let [i, t] of tools.entries()) {
+  for (const [i, t] of tools.entries()) {
     c += `| ${i + 1} | \`${t.name}\` | ${t.description} |\n`
   }
 
   if (c.length !== 0) {
     c = c.slice(0, -1)
-    let h = "| # | Meta Tool Name | Meta Tool Description |\n|-|-|-|"
+    const h = "| # | Meta Tool Name | Meta Tool Description |\n|-|-|-|"
     c = `${h}\n${c}`
   }
 
@@ -344,12 +344,12 @@ function createMetaToolsTable(tools: utilMcp.ToolSummary[]): string {
 }
 
 function insert(s: string, c: string, p: string): string {
-  let b: string[] = []
+  const b: string[] = []
 
   let inside = false
   let found = false
 
-  for (let l of c.split("\n")) {
+  for (const l of c.split("\n")) {
     if (l === `<!--generate ${s}-start-->`) {
       inside = true
       found = true

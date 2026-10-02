@@ -51,11 +51,11 @@ export class Logger {
   }
 
   private log(w: LoggerWritable, l: string, m: string, o?: object): void {
-    let ctx = context.get()
+    const ctx = context.get()
 
-    let now = new Date()
+    const now = new Date()
 
-    let p: Payload = {
+    const p: Payload = {
       time: now.toISOString(),
       level: l,
       msg: m,
@@ -67,15 +67,15 @@ export class Logger {
       ...o,
     }
 
-    let d = format(p)
+    const d = format(p)
 
     logfmt.log(d, w)
   }
 }
 
 function format(v: object): Record<string, unknown> {
-  let s: Record<string, unknown> = {}
-  for (let [p, e] of Object.entries(v)) {
+  const s: Record<string, unknown> = {}
+  for (const [p, e] of Object.entries(v)) {
     next(s, p, e)
   }
   return s
@@ -101,13 +101,13 @@ function format(v: object): Record<string, unknown> {
     }
 
     if (v instanceof Error) {
-      let m = errors.format(v)
+      const m = errors.format(v)
       o[strings.camelCaseToSnakeCase(k)] = strings.escapeWhitespace(m)
       return
     }
 
     if (typeof v === "object") {
-      for (let [p, e] of Object.entries(v)) {
+      for (const [p, e] of Object.entries(v)) {
         next(o, `${k}.${p}`, e)
       }
       return

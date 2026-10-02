@@ -34,20 +34,20 @@ export class SseTransports {
   }
 
   create(endpoint: string, res: express.Response): sse.SSEServerTransport {
-    let t = new sse.SSEServerTransport(endpoint, res)
+    const t = new sse.SSEServerTransport(endpoint, res)
 
     // https://github.com/modelcontextprotocol/typescript-sdk/blob/1.17.0/src/server/sse.ts#L101
-    let w = res.writeHead.bind(res)
+    const w = res.writeHead.bind(res)
 
     // @ts-ignore
     res.writeHead = (statusCode, statusMessage, headers) => {
       if (statusCode === 200) {
-        let o: SessionsCreateOptions = {
+        const o: SessionsCreateOptions = {
           id: t.sessionId,
           transport: t,
         }
 
-        let s = this.sessions.create(o)
+        const s = this.sessions.create(o)
         if (s.err) {
           this.logger.error("Creating session", {sessionId: t.sessionId, err: s.err})
         } else {
@@ -55,7 +55,7 @@ export class SseTransports {
         }
       }
 
-      let r = w(statusCode, statusMessage, headers)
+      const r = w(statusCode, statusMessage, headers)
 
       res.writeHead = w
 
@@ -63,7 +63,7 @@ export class SseTransports {
     }
 
     t.onclose = () => {
-      let err = this.sessions.delete(t.sessionId)
+      const err = this.sessions.delete(t.sessionId)
       if (err) {
         this.logger.error("Deleting session", {sessionId: t.sessionId, err})
       } else {
@@ -75,7 +75,7 @@ export class SseTransports {
   }
 
   retrieve(id: string): result.Result<sse.SSEServerTransport, Error> {
-    let s = this.sessions.get(id)
+    const s = this.sessions.get(id)
     if (s.err) {
       return result.error(new Error("Getting session", {cause: s.err}))
     }

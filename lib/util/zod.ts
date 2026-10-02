@@ -8,11 +8,11 @@ import * as result from "./result.ts"
 export function wrapUnion<
   A extends readonly [z.ZodLiteral<string>, z.ZodLiteral<string>, ...z.ZodLiteral<string>[]],
 >(v: z.ZodUnion<A>, f: string): z.ZodUnion<A> {
-  let a: z.core.SomeType[] = []
+  const a: z.core.SomeType[] = []
 
-  for (let o of v.options) {
+  for (const o of v.options) {
     if (o.values.size !== 0) {
-      let [v] = o.values
+      const [v] = o.values
 
       let c = z.literal(`${f}.${v}`)
 
@@ -32,19 +32,19 @@ export function unionToEnum<T extends string | number>(
   d: string,
 ): T extends string ? z.ZodString : T extends number ? z.ZodNumber : never {
   let t: z.ZodString | z.ZodNumber | undefined
-  let r: Record<string, T> = {}
+  const r: Record<string, T> = {}
   let c = ""
 
-  let errs: Error[] = []
+  const errs: Error[] = []
 
   if (u.options.length === 0) {
     errs.push(new Error("Union has no options"))
   } else {
-    for (let o of u.options) {
+    for (const o of u.options) {
       if (o.values.size !== 1) {
         errs.push(new Error("Union option must have exactly one literal value"))
       } else {
-        let [v] = o.values
+        const [v] = o.values
 
         if (t) {
           if (typeof v !== t.type) {
@@ -64,7 +64,7 @@ export function unionToEnum<T extends string | number>(
           }
         }
 
-        let k = `_${v}`
+        const k = `_${v}`
 
         if (k in r) {
           errs.push(new Error("Duplicate value in union options"))
@@ -104,9 +104,9 @@ export function unionToEnum<T extends string | number>(
   }
 
   t = t.superRefine((v, ctx) => {
-    let p = e.safeParse(v)
+    const p = e.safeParse(v)
     if (!p.success) {
-      for (let i of p.error.issues) {
+      for (const i of p.error.issues) {
         ctx.addIssue(i as z.core.$ZodSuperRefineIssue)
       }
     }
@@ -132,7 +132,7 @@ export function envOptionalBoolean(): (v: string | undefined, c: z.RefinementCtx
 
 export function envBoolean(): (v: string, c: z.RefinementCtx) => boolean | never {
   return (v, c) => {
-    let t = v.trim().toLowerCase()
+    const t = v.trim().toLowerCase()
     if (!t) {
       return false
     }
@@ -157,12 +157,12 @@ export function envBoolean(): (v: string, c: z.RefinementCtx) => boolean | never
 
 export function envNumber(): (v: string, c: z.RefinementCtx) => number | never {
   return (v, c) => {
-    let t = v.trim()
+    const t = v.trim()
     if (!t) {
       return 0
     }
 
-    let n = Number.parseInt(t, 10)
+    const n = Number.parseInt(t, 10)
     if (Number.isNaN(n)) {
       c.addIssue({
         code: "custom",
@@ -178,12 +178,12 @@ export function envNumber(): (v: string, c: z.RefinementCtx) => number | never {
 
 export function envUrl(): (v: string, c: z.RefinementCtx) => string | never {
   return (v, c) => {
-    let t = v.trim()
+    const t = v.trim()
     if (!t) {
       return ""
     }
 
-    let r = result.safeNew(URL, t)
+    const r = result.safeNew(URL, t)
     if (r.err) {
       c.addIssue({
         code: "custom",
@@ -208,12 +208,12 @@ export function envOptionalBaseUrl(): (v: string | undefined, c: z.RefinementCtx
 
 export function envBaseUrl(): (v: string, c: z.RefinementCtx) => string | never {
   return (v, c) => {
-    let t = v.trim()
+    const t = v.trim()
     if (!t) {
       return ""
     }
 
-    let r = result.safeNew(URL, t)
+    const r = result.safeNew(URL, t)
     if (r.err) {
       c.addIssue({
         code: "custom",
@@ -247,10 +247,10 @@ export function envBaseUrl(): (v: string, c: z.RefinementCtx) => string | never 
 
 export function envHostnameList(): (v: string, c: z.RefinementCtx) => string[] | never {
   return (v, c) => {
-    let a: string[] = []
+    const a: string[] = []
 
-    for (let e of v.split(",")) {
-      let t = e.trim()
+    for (const e of v.split(",")) {
+      const t = e.trim()
       if (!t) {
         continue
       }
@@ -316,15 +316,15 @@ export function envHostnameList(): (v: string, c: z.RefinementCtx) => string[] |
 
 export function envUrlList(): (v: string, c: z.RefinementCtx) => string[] | never {
   return (v, c) => {
-    let a: string[] = []
+    const a: string[] = []
 
-    for (let u of v.split(",")) {
-      let t = u.trim()
+    for (const u of v.split(",")) {
+      const t = u.trim()
       if (!t) {
         continue
       }
 
-      let r = result.safeNew(URL, t)
+      const r = result.safeNew(URL, t)
       if (r.err) {
         c.addIssue({
           code: "custom",
@@ -333,7 +333,7 @@ export function envUrlList(): (v: string, c: z.RefinementCtx) => string[] | neve
         continue
       }
 
-      let s = r.v.toString()
+      const s = r.v.toString()
       if (!a.includes(s)) {
         a.push(s)
       }
@@ -345,7 +345,7 @@ export function envUrlList(): (v: string, c: z.RefinementCtx) => string[] | neve
 
 export function envUnion<T extends string>(a: T[]): (v: string, c: z.RefinementCtx) => T | never {
   return (v, c) => {
-    for (let e of a) {
+    for (const e of a) {
       if (e === v) {
         return e
       }
@@ -372,18 +372,18 @@ export function envOptionalOptions(a: string[]): (v: string | undefined, c: z.Re
 
 export function envOptions(a: string[]): (v: string, c: z.RefinementCtx) => string[] | never {
   return (v, c) => {
-    let e: string[] = []
-    let f: string[] = []
-    let g: string[] = []
+    const e: string[] = []
+    const f: string[] = []
+    const g: string[] = []
 
-    for (let u of v.split(",")) {
-      let t = u.trim().toLowerCase()
+    for (const u of v.split(",")) {
+      const t = u.trim().toLowerCase()
       if (!t) {
         continue
       }
 
       let h = false
-      for (let n of a) {
+      for (const n of a) {
         if (n === t) {
           h = true
           break
@@ -400,7 +400,7 @@ export function envOptions(a: string[]): (v: string, c: z.RefinementCtx) => stri
     }
 
     if (g.length !== 0) {
-      for (let u of g) {
+      for (const u of g) {
         c.addIssue({
           code: "custom",
           message: `Unknown value: ${u}`,
@@ -415,10 +415,10 @@ export function envOptions(a: string[]): (v: string, c: z.RefinementCtx) => stri
 
 export function envList(): (v: string, c: z.RefinementCtx) => string[] {
   return (v) => {
-    let a: string[] = []
+    const a: string[] = []
 
-    for (let u of v.split(",")) {
-      let t = u.trim()
+    for (const u of v.split(",")) {
+      const t = u.trim()
       if (!t) {
         continue
       }

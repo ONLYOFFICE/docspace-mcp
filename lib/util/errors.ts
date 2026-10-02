@@ -67,7 +67,7 @@ export function isAborted(err: unknown): boolean {
   }
 
   if (err.cause && Array.isArray(err.cause)) {
-    for (let e of err.cause) {
+    for (const e of err.cause) {
       if (isAborted(e)) {
         return true
       }
@@ -94,7 +94,7 @@ export function as<
     }
 
     if (err.cause) {
-      let a = as(err.cause, t)
+      const a = as(err.cause, t)
       if (a) {
         return a
       }
@@ -105,8 +105,8 @@ export function as<
   }
 
   if (Array.isArray(err)) {
-    for (let e of err) {
-      let a = as(e, t)
+    for (const e of err) {
+      const a = as(e, t)
       if (a) {
         return a
       }
@@ -131,10 +131,10 @@ export function format(err: Error): string {
     if (err instanceof z.ZodError) {
       l += 1
 
-      for (let i of err.issues) {
+      for (const i of err.issues) {
         let p = ""
 
-        for (let e of i.path) {
+        for (const e of i.path) {
           if (typeof e === "number") {
             p += `[${e}]`
           } else {
@@ -173,7 +173,7 @@ export function format(err: Error): string {
     }
 
     if (Array.isArray(err)) {
-      for (let e of err) {
+      for (const e of err) {
         loop(e)
       }
       return

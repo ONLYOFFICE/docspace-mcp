@@ -412,6 +412,7 @@ export const metaTools = [
     annotations: {
       readOnlyHint: true,
       destructiveHint: false,
+      openWorldHint: false,
     },
   },
   {
@@ -421,6 +422,7 @@ export const metaTools = [
     annotations: {
       readOnlyHint: true,
       destructiveHint: false,
+      openWorldHint: false,
     },
   },
   {
@@ -430,6 +432,7 @@ export const metaTools = [
     annotations: {
       readOnlyHint: true,
       destructiveHint: false,
+      openWorldHint: false,
     },
   },
   {
@@ -439,6 +442,7 @@ export const metaTools = [
     annotations: {
       readOnlyHint: true,
       destructiveHint: false,
+      openWorldHint: false,
     },
   },
   {
@@ -448,6 +452,7 @@ export const metaTools = [
     annotations: {
       readOnlyHint: false,
       destructiveHint: true,
+      openWorldHint: true,
     },
   },
 ] as mcp.Tool[]
@@ -465,6 +470,7 @@ export const regularToolsets = [
         annotations: {
           readOnlyHint: false,
           destructiveHint: true,
+          openWorldHint: false,
         },
       },
       {
@@ -475,6 +481,7 @@ export const regularToolsets = [
         annotations: {
           readOnlyHint: true,
           destructiveHint: false,
+          openWorldHint: false,
         },
       },
       {
@@ -485,6 +492,7 @@ export const regularToolsets = [
         annotations: {
           readOnlyHint: false,
           destructiveHint: true,
+          openWorldHint: false,
         },
       },
       {
@@ -493,7 +501,8 @@ export const regularToolsets = [
         inputSchema: CopyBatchItemsInputJsonSchema,
         annotations: {
           readOnlyHint: false,
-          destructiveHint: true,
+          destructiveHint: false,
+          openWorldHint: false,
         },
       },
       {
@@ -502,7 +511,8 @@ export const regularToolsets = [
         inputSchema: MoveBatchItemsInputJsonSchema,
         annotations: {
           readOnlyHint: false,
-          destructiveHint: true,
+          destructiveHint: false,
+          openWorldHint: false,
         },
       },
       {
@@ -512,6 +522,7 @@ export const regularToolsets = [
         annotations: {
           readOnlyHint: true,
           destructiveHint: false,
+          openWorldHint: false,
         },
       },
       {
@@ -520,7 +531,8 @@ export const regularToolsets = [
         inputSchema: UploadFileInputJsonSchema,
         annotations: {
           readOnlyHint: false,
-          destructiveHint: true,
+          destructiveHint: false,
+          openWorldHint: false,
         },
       },
     ],
@@ -537,6 +549,7 @@ export const regularToolsets = [
         annotations: {
           readOnlyHint: false,
           destructiveHint: true,
+          openWorldHint: false,
         },
       },
       {
@@ -546,6 +559,7 @@ export const regularToolsets = [
         annotations: {
           readOnlyHint: false,
           destructiveHint: true,
+          openWorldHint: false,
         },
       },
       {
@@ -556,6 +570,7 @@ export const regularToolsets = [
         annotations: {
           readOnlyHint: true,
           destructiveHint: false,
+          openWorldHint: false,
         },
       },
       {
@@ -566,6 +581,7 @@ export const regularToolsets = [
         annotations: {
           readOnlyHint: true,
           destructiveHint: false,
+          openWorldHint: false,
         },
       },
       {
@@ -576,6 +592,7 @@ export const regularToolsets = [
         annotations: {
           readOnlyHint: false,
           destructiveHint: true,
+          openWorldHint: false,
         },
       },
       {
@@ -586,6 +603,7 @@ export const regularToolsets = [
         annotations: {
           readOnlyHint: true,
           destructiveHint: false,
+          openWorldHint: false,
         },
       },
     ],
@@ -602,6 +620,7 @@ export const regularToolsets = [
         annotations: {
           readOnlyHint: false,
           destructiveHint: true,
+          openWorldHint: false,
         },
       },
       {
@@ -612,6 +631,7 @@ export const regularToolsets = [
         annotations: {
           readOnlyHint: true,
           destructiveHint: false,
+          openWorldHint: false,
         },
       },
       {
@@ -622,6 +642,7 @@ export const regularToolsets = [
         annotations: {
           readOnlyHint: false,
           destructiveHint: true,
+          openWorldHint: false,
         },
       },
       {
@@ -630,7 +651,8 @@ export const regularToolsets = [
         inputSchema: ArchiveRoomInputJsonSchema,
         annotations: {
           readOnlyHint: false,
-          destructiveHint: true,
+          destructiveHint: false,
+          openWorldHint: false,
         },
       },
       {
@@ -641,6 +663,7 @@ export const regularToolsets = [
         annotations: {
           readOnlyHint: false,
           destructiveHint: true,
+          openWorldHint: true,
         },
       },
       {
@@ -651,6 +674,7 @@ export const regularToolsets = [
         annotations: {
           readOnlyHint: true,
           destructiveHint: false,
+          openWorldHint: false,
         },
       },
       {
@@ -661,6 +685,7 @@ export const regularToolsets = [
         annotations: {
           readOnlyHint: true,
           destructiveHint: false,
+          openWorldHint: false,
         },
       },
       {
@@ -670,6 +695,7 @@ export const regularToolsets = [
         annotations: {
           readOnlyHint: true,
           destructiveHint: false,
+          openWorldHint: false,
         },
       },
       {
@@ -679,6 +705,7 @@ export const regularToolsets = [
         annotations: {
           readOnlyHint: true,
           destructiveHint: false,
+          openWorldHint: false,
         },
       },
     ],
@@ -695,6 +722,7 @@ export const regularToolsets = [
         annotations: {
           readOnlyHint: true,
           destructiveHint: false,
+          openWorldHint: false,
         },
       },
     ],

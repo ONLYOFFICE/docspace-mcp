@@ -7,6 +7,12 @@ Changelog] format and adhering to [Semantic Versioning].
 
 <!-- There are no notable changes in this release. -->
 
+### Changed
+
+- Add the `openWorldHint` annotation to all tools and mark the `archive_room`,
+  `copy_batch_items`, `move_batch_items` and `upload_file` tools as
+  non-destructive.
+
 ### Removed
 
 - Remove choices from toolsets, enabled tools and disabled tools in distributed

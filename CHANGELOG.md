@@ -12,6 +12,10 @@ Changelog] format and adhering to [Semantic Versioning].
 - Add the `openWorldHint` annotation to all tools and mark the `archive_room`,
   `copy_batch_items`, `move_batch_items` and `upload_file` tools as
   non-destructive ([bac7e04]).
+- Update `@modelcontextprotocol/sdk` to v1.31.0 ([35af45a]).
+- Update `ajv` to v8.20.0 ([35af45a]).
+- Update `express-rate-limit` to v8.7.0 ([35af45a]).
+- Update `zod` to v4.6.5 ([35af45a]).
 
 ### Removed
 
@@ -345,6 +349,7 @@ There are no noticeable changes in version [3.0.1].
 [0.1.0]: https://github.com/onlyoffice/docspace-mcp/releases/tag/v0.1.0/
 
 [bac7e04]: https://github.com/onlyoffice/docspace-mcp/commit/bac7e04dd1fda09c8db7e23c3c36973511df5ea9/
+[35af45a]: https://github.com/onlyoffice/docspace-mcp/commit/35af45aaaf92a6e09e804bfea2831f9149eed164/
 [7444a56]: https://github.com/onlyoffice/docspace-mcp/commit/7444a56c8cc5b2d0693ab9f828425d731a71376a/
 [d0d74ce]: https://github.com/onlyoffice/docspace-mcp/commit/d0d74ce1bbf46be2850e6d41b049b7e53583f859/
 [cd38376]: https://github.com/onlyoffice/docspace-mcp/commit/cd3837673680c79bea998ec287cceee07729a91f/

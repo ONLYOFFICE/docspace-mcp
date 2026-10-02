@@ -5,7 +5,15 @@ Changelog] format and adhering to [Semantic Versioning].
 
 ## [Unreleased]
 
-<!-- There are no notable changes in this release. -->
+### Changed
+
+- Rename the product from ONLYOFFICE DocSpace to ONLYOFFICE Apps in the
+  documentation, option descriptions, and distributed metadata files. The
+  package name, OCI image name, MCP registry name, extension name, and
+  `DOCSPACE_*` options remain unchanged, so existing configurations continue to
+  work ([084ab40]).
+- Add the `onlyoffice-apps` keyword to the package and extension metadata
+  ([a1cdc95]).
 
 ### Removed
 
@@ -338,6 +346,8 @@ There are no noticeable changes in version [3.0.1].
 [0.1.1]: https://github.com/onlyoffice/docspace-mcp/compare/v0.1.0...v0.1.1/
 [0.1.0]: https://github.com/onlyoffice/docspace-mcp/releases/tag/v0.1.0/
 
+[a1cdc95]: https://github.com/onlyoffice/docspace-mcp/commit/a1cdc957e4b82dcf2f38df38c7ff8e02e6bd1ca5/
+[084ab40]: https://github.com/onlyoffice/docspace-mcp/commit/084ab400bdd570002abb4dc6f03d1e33c6601ad9/
 [7444a56]: https://github.com/onlyoffice/docspace-mcp/commit/7444a56c8cc5b2d0693ab9f828425d731a71376a/
 [d0d74ce]: https://github.com/onlyoffice/docspace-mcp/commit/d0d74ce1bbf46be2850e6d41b049b7e53583f859/
 [cd38376]: https://github.com/onlyoffice/docspace-mcp/commit/cd3837673680c79bea998ec287cceee07729a91f/

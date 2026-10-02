@@ -20,22 +20,22 @@ body:
     attributes:
       label: System version
       description: "Version of the system where the integration is installed (e.g. WordPress 7.0.1, Moodle 5.2.1)."
-      placeholder: "e.g. 1.0.0"
+      placeholder: e.g. 1.0.0
     validations:
       required: true
   - type: input
     id: integration_version
     attributes:
       label: Integration version
-      description: "Version of this integration."
-      placeholder: "e.g. 1.0.0"
+      description: Version of this integration.
+      placeholder: e.g. 1.0.0
     validations:
       required: true
   - type: input
     id: docspace_version
     attributes:
       label: ONLYOFFICE Apps version
-      placeholder: "e.g. 3.7.1"
+      placeholder: e.g. 3.7.1
     validations:
       required: true
   - type: textarea
@@ -55,4 +55,4 @@ body:
     id: screenshots
     attributes:
       label: Screenshots (optional)
-      placeholder: "Attach or paste any relevant screenshots."
+      placeholder: Attach or paste any relevant screenshots.

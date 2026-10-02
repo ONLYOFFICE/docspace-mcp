@@ -6,13 +6,27 @@ export default [
 		files: ["**/*.json"],
 		rules: {
 			"jsonc/array-bracket-newline": ["error", {minItems: 1}],
+			"jsonc/indent": ["error", 2],
 			"jsonc/object-curly-newline": ["error", {minProperties: 1}],
+		},
+	},
+	{
+		files: ["**/*.toml"],
+		rules: {
+			"toml/indent": ["error", 2],
 		},
 	},
 	{
 		files: ["**/*.yaml", "**/*.yml"],
 		rules: {
 			"yml/indent": ["error", 2],
+		},
+	},
+	{
+		files: ["**/*.cjs", "**/*.js", "**/*.mjs", "**/*.cts", "**/*.mts", "**/*.ts"],
+		rules: {
+			"stylistic/indent": ["error", 2, {assignmentOperator: 1, SwitchCase: 0}],
+			"stylistic/indent-binary-ops": ["error", 2],
 		},
 	},
 	{

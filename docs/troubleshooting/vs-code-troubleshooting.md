@@ -7,7 +7,7 @@ The following issues can occur when connecting the ONLYOFFICE Apps MCP server to
 The configuration file may contain a syntax error, or the `servers` section is missing. Follow these steps to fix:
 
 1. Open Command Palette and select **MCP: Open User Configuration**.
-2. Validate the JSON structure. Make sure the `onlyoffice-docspace` entry is nested inside the `servers` object and all brackets are properly closed.
+2. Validate the JSON structure. Make sure the `onlyoffice-apps` entry is nested inside the `servers` object and all brackets are properly closed.
 3. Save the file and try **MCP: List Servers** again.
 
 ## Server status shows "Error" or fails to start
@@ -29,7 +29,7 @@ To fix this:
 
 The OAuth token was not saved correctly, or the session expired before the handshake completed. Try this fix:
 
-1. Open Command Palette, select **MCP: List Servers**, then select **onlyoffice-docspace** and choose **Stop Server**.
+1. Open Command Palette, select **MCP: List Servers**, then select **onlyoffice-apps** and choose **Stop Server**.
 2. Wait a few seconds, then select **Start Server** again and re-authenticate.
 3. If the problem repeats, sign out of your ONLYOFFICE Apps account in the browser, clear cookies for `mcp.onlyoffice.com`, and start the authentication flow again.
 

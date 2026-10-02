@@ -14,6 +14,9 @@ Changelog] format and adhering to [Semantic Versioning].
   work ([084ab40]).
 - Add the `onlyoffice-apps` keyword to the package and extension metadata
   ([a1cdc95]).
+- Rename the server key in client configuration examples from
+  `onlyoffice-docspace` to `onlyoffice-apps`. Existing configurations with the
+  previous key continue to work ([8204500]).
 
 ### Removed
 
@@ -346,6 +349,7 @@ There are no noticeable changes in version [3.0.1].
 [0.1.1]: https://github.com/onlyoffice/docspace-mcp/compare/v0.1.0...v0.1.1/
 [0.1.0]: https://github.com/onlyoffice/docspace-mcp/releases/tag/v0.1.0/
 
+[8204500]: https://github.com/onlyoffice/docspace-mcp/commit/8204500712da4785b5764a36e7b670df8832b8bd/
 [a1cdc95]: https://github.com/onlyoffice/docspace-mcp/commit/a1cdc957e4b82dcf2f38df38c7ff8e02e6bd1ca5/
 [084ab40]: https://github.com/onlyoffice/docspace-mcp/commit/084ab400bdd570002abb4dc6f03d1e33c6601ad9/
 [7444a56]: https://github.com/onlyoffice/docspace-mcp/commit/7444a56c8cc5b2d0693ab9f828425d731a71376a/

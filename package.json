@@ -74,5 +74,15 @@
   "engines": {
     "node": ">=18.0.0"
   },
-  "mcpName": "io.github.ONLYOFFICE/docspace"
+  "mcpName": "io.github.ONLYOFFICE/docspace",
+  "pnpm": {
+    "auditConfig": {
+      "ignoreGhsas": [
+        "GHSA-86w9-cpqp-85rv"
+      ]
+    },
+    "overrides": {
+      "external-editor>tmp": "^0.2.6"
+    }
+  }
 }

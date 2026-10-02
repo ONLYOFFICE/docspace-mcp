@@ -46,5 +46,5 @@ pnpm inspect        # run under @modelcontextprotocol/inspector with DOCSPACE_* 
 ## Conventions
 
 - Error handling uses the `Result` type from `lib/util/result.ts` (`r.ok(v)`, `r.error(err)`, check `.err` before reading `.v`; `r.safeNew`, `r.safeAsync` wrap throwing code) rather than exceptions. Errors are wrapped with `new Error("Doing X", {cause})`.
-- Style is enforced by `@vanyauhalin/eslint-config`: tabs, no semicolons, double quotes, `let` over `const` for locals, short local variable names, `async()` without space.
+- Style is enforced by `@vanyauhalin/eslint-config`: tabs, no semicolons, double quotes, `const` unless reassigned (`prefer-const`), short local variable names, `async()` without space.
 - Record notable changes in `CHANGELOG.md` under `[Unreleased]` (Keep a Changelog format, with commit-hash link references at the bottom).

@@ -25,6 +25,8 @@ export default [
   {
     files: ["**/*.cjs", "**/*.js", "**/*.mjs", "**/*.cts", "**/*.mts", "**/*.ts"],
     rules: {
+      "prefer-const": ["error", {destructuring: "all"}],
+      "prefer-let/prefer-let": "off",
       "stylistic/indent": ["error", 2, {assignmentOperator: 1, SwitchCase: 0}],
       "stylistic/indent-binary-ops": ["error", 2],
     },

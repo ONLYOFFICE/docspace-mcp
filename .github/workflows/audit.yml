@@ -17,8 +17,8 @@ jobs:
     permissions:
       contents: read
     steps:
-    - name: Checkout Repository
-      uses: actions/checkout@v7
+      - name: Checkout Repository
+        uses: actions/checkout@v7
 
       - name: Setup mise
         uses: jdx/mise-action@v2

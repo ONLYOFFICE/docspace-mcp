@@ -45,11 +45,11 @@ export class CredentialParser {
     }
 
     if (config.headerPrefix) {
-      let baseUrl = `${config.headerPrefix}base-url`
-      let apiKey = `${config.headerPrefix}api-key`
-      let pat = `${config.headerPrefix}auth-token`
-      let username = `${config.headerPrefix}username`
-      let password = `${config.headerPrefix}password`
+      const baseUrl = `${config.headerPrefix}base-url`
+      const apiKey = `${config.headerPrefix}api-key`
+      const pat = `${config.headerPrefix}auth-token`
+      const username = `${config.headerPrefix}username`
+      const password = `${config.headerPrefix}password`
 
       this.requestHeaders.push(
         baseUrl,
@@ -81,7 +81,7 @@ export class CredentialParser {
     let q: CredentialQuery | undefined
 
     if (this.querySchema) {
-      let p = this.querySchema.safeParse(req.query)
+      const p = this.querySchema.safeParse(req.query)
       if (!p.success) {
         return r.error(new Error("Parsing query", {cause: p.error}))
       }
@@ -91,14 +91,14 @@ export class CredentialParser {
     let h: CredentialHeader | undefined
 
     if (this.headerSchema) {
-      let p = this.headerSchema.safeParse(req.headers)
+      const p = this.headerSchema.safeParse(req.headers)
       if (!p.success) {
         return r.error(new Error("Parsing header", {cause: p.error}))
       }
       h = p.data
     }
 
-    let errs: Error[] = []
+    const errs: Error[] = []
 
     // todo: do not register an error if q.baseUrl === h.baseUrl
 
@@ -110,7 +110,7 @@ export class CredentialParser {
       return r.error(new AggregateError(errs, "Parsing credentials"))
     }
 
-    let c: Credential = {
+    const c: Credential = {
       baseUrl: "",
       apiKey: "",
       pat: "",
@@ -142,10 +142,10 @@ export class CredentialParser {
 
     // todo: validate that username has password and vice versa
 
-    let w = Boolean(c.apiKey)
-    let x = Boolean(c.pat)
-    let y = Boolean(c.username) && Boolean(c.password)
-    let z = Number(w) + Number(x) + Number(y)
+    const w = Boolean(c.apiKey)
+    const x = Boolean(c.pat)
+    const y = Boolean(c.username) && Boolean(c.password)
+    const z = Number(w) + Number(x) + Number(y)
 
     if (z !== 0 && z !== 1) {
       errs.push(new Error("Expected only one of API key, PAT, or (username and password) to be set"))
@@ -174,17 +174,17 @@ export class InternalCredentialParser {
   }
 
   parse(req: express.Request): r.Result<Credential, Error> {
-    let a = req.headers.authorization
+    const a = req.headers.authorization
     if (!a) {
       return r.error(new Error("Authorization header is required"))
     }
 
-    let f = req.headers.referer
+    const f = req.headers.referer
     if (!f) {
       return r.error(new Error("Referer header is required"))
     }
 
-    let b = r.safeNew(URL, f)
+    const b = r.safeNew(URL, f)
     if (b.err) {
       return r.error(new Error("Creating base URL", {cause: b.err}))
     }
@@ -193,7 +193,7 @@ export class InternalCredentialParser {
       b.v.pathname += "/"
     }
 
-    let c: Credential = {
+    const c: Credential = {
       baseUrl: b.v.href,
       apiKey: "",
       pat: a,

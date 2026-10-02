@@ -8,11 +8,11 @@ import * as meta from "../lib/meta.ts"
 async function main(): Promise<void> {
   let mc = await fs.readFile("./server.template.json", "utf8")
 
-  let mo = JSON.parse(mc) as dist.Detail
+  const mo = JSON.parse(mc) as dist.Detail
 
   mo.version = meta.version
 
-  let envs: Record<spec.ItemDistribution, Record<spec.ItemTransport, dist.DetailValue[]>> = {
+  const envs: Record<spec.ItemDistribution, Record<spec.ItemTransport, dist.DetailValue[]>> = {
     js: {
       "stdio": [],
       "sse": [],
@@ -30,9 +30,9 @@ async function main(): Promise<void> {
     },
   }
 
-  let headers: dist.DetailValue[] = []
+  const headers: dist.DetailValue[] = []
 
-  for (let o of Object.values(spec)) {
+  for (const o of Object.values(spec)) {
     let v: dist.DetailValue = {
       description: o.description,
       isRequired: false,
@@ -43,8 +43,8 @@ async function main(): Promise<void> {
       name: `${config.envPrefix}${o.env}`,
     }
 
-    for (let d of o.distributions) {
-      for (let t of o.transports) {
+    for (const d of o.distributions) {
+      for (const t of o.transports) {
         envs[d][t].push(v)
       }
     }
@@ -58,7 +58,7 @@ async function main(): Promise<void> {
     }
   }
 
-  let packages: dist.DetailPackage[] = []
+  const packages: dist.DetailPackage[] = []
 
   for (let p of mo.packages) {
     if (!p.registryType) {
@@ -71,7 +71,7 @@ async function main(): Promise<void> {
 
     switch (p.registryType) {
     case "mcpb": {
-      let a = await fs.readFile(`./onlyoffice-docspace-mcp-${meta.version}.mcpb`)
+      const a = await fs.readFile(`./onlyoffice-docspace-mcp-${meta.version}.mcpb`)
 
       p.identifier = p.identifier.replaceAll("{{version}}", meta.version)
       p.version = meta.version

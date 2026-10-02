@@ -38,16 +38,16 @@ export class Resolver {
   }
 
   async resolve(...ops: Operation[]): Promise<Result<ResolverResponse, Error>> {
-    let ctx = context.get()
+    const ctx = context.get()
 
     if (ops.length === 0) {
       return error(new Error("No operations to sync."))
     }
 
-    let states: State[] = []
+    const states: State[] = []
 
-    for (let o of ops) {
-      let s = new State()
+    for (const o of ops) {
+      const s = new State()
       s.id = o.id
       s.error = o.error
       s.done = isDone(o)
@@ -56,30 +56,30 @@ export class Resolver {
     }
 
     let limit = this.limit
-    let delay = this.delay
+    const delay = this.delay
 
-    let responses: core.Response[] = []
-    let operations: Operation[] = []
+    const responses: core.Response[] = []
+    const operations: Operation[] = []
 
     let err: Error | undefined
 
     while (limit > 0) {
-      let r = await this.client.files.getOperationStatuses()
+      const r = await this.client.files.getOperationStatuses()
       if (r.err) {
         err = new Error("Calling operation statuses callback.", {cause: r.err})
         break
       }
 
-      let [ops, res] = r.v
+      const [ops, res] = r.v
 
       responses.push(res)
 
-      for (let s of states) {
+      for (const s of states) {
         if (s.id === undefined) {
           continue
         }
 
-        for (let o of ops) {
+        for (const o of ops) {
           if (o.id === undefined) {
             continue
           }
@@ -90,7 +90,7 @@ export class Resolver {
 
             let i = -1
 
-            for (let [j, x] of operations.entries()) {
+            for (const [j, x] of operations.entries()) {
               if (x.id === o.id) {
                 i = j
                 break
@@ -108,7 +108,7 @@ export class Resolver {
 
       let done = true
 
-      for (let s of states) {
+      for (const s of states) {
         if (!s.done) {
           done = false
           break
@@ -121,20 +121,20 @@ export class Resolver {
 
       limit -= 1
 
-      let t = await safeAsync(setTimeout, delay, undefined, {signal: ctx[abort.signalKey]})
+      const t = await safeAsync(setTimeout, delay, undefined, {signal: ctx[abort.signalKey]})
       if (t.err) {
         err = new Error("Setting timeout.", {cause: t.err})
         break
       }
     }
 
-    let s = new ResolverResponse()
+    const s = new ResolverResponse()
     s.responses = responses
     s.operations = operations
 
-    let u: string[] = []
+    const u: string[] = []
 
-    for (let s of states) {
+    for (const s of states) {
       if (s.id === undefined) {
         continue
       }
@@ -145,15 +145,15 @@ export class Resolver {
     }
 
     if (err) {
-      let e = new ResolverResponseError("Resolving operations.", {cause: err})
+      const e = new ResolverResponseError("Resolving operations.", {cause: err})
       e.response = s
       e.unresolved = u
       return error(e)
     }
 
     if (u.length !== 0) {
-      let m = `${u.length} out of ${ops.length} operations are unresolved.`
-      let e = new ResolverResponseError(m)
+      const m = `${u.length} out of ${ops.length} operations are unresolved.`
+      const e = new ResolverResponseError(m)
       e.response = s
       e.unresolved = u
       return error(e)

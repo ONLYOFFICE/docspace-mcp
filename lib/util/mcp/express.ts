@@ -10,10 +10,10 @@ import {sessionIdKey} from "./context.ts"
 
 export function expressHandler(): express.Handler {
   return (req, _, next) => {
-    let id = http.header(req, "Mcp-Session-Id")
+    const id = http.header(req, "Mcp-Session-Id")
 
     if (id) {
-      let ctx: context.Context = {
+      const ctx: context.Context = {
         [sessionIdKey]: id,
       }
 

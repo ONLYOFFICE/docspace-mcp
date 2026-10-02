@@ -720,9 +720,9 @@ export const regularToolsets = [
 ] as mcp.Toolset[]
 
 const regularTools = (() => {
-  let a: mcp.Tool[] = []
+  const a: mcp.Tool[] = []
 
-  for (let t of regularToolsets) {
+  for (const t of regularToolsets) {
     a.push(...t.tools)
   }
 
@@ -800,15 +800,15 @@ export class Server {
   constructor(config: ServerConfig) {
     this.dynamic = config.dynamic
 
-    for (let x of regularToolsets) {
-      let y: mcp.Toolset = {
+    for (const x of regularToolsets) {
+      const y: mcp.Toolset = {
         name: x.name,
         description: x.description,
         tools: [],
       }
 
-      for (let a of x.tools) {
-        for (let b of config.tools) {
+      for (const a of x.tools) {
+        for (const b of config.tools) {
           if (a.name === b) {
             y.tools.push(a)
             break
@@ -822,10 +822,10 @@ export class Server {
       }
     }
 
-    for (let x of Object.keys(this.callRegularToolHandlers)) {
+    for (const x of Object.keys(this.callRegularToolHandlers)) {
       let f = false
 
-      for (let y of this.regularTools) {
+      for (const y of this.regularTools) {
         if (x === y.name) {
           f = true
           break
@@ -845,7 +845,7 @@ export class Server {
   }
 
   router(): mcp.Router {
-    let r: mcp.Router = {
+    const r: mcp.Router = {
       capabilities: {
         tools: {},
       },
@@ -877,7 +877,7 @@ export class Server {
   }
 
   private async handleMetaCallTool(req: types.CallToolRequest): Promise<types.CallToolResult> {
-    let h = this.callMetaToolHandlers[req.params.name]
+    const h = this.callMetaToolHandlers[req.params.name]
     if (!h) {
       return fromError(new Error(`Tool ${req.params.name} not found`))
     }
@@ -885,7 +885,7 @@ export class Server {
   }
 
   private async handleRegularCallTool(req: types.CallToolRequest): Promise<types.CallToolResult> {
-    let h = this.callRegularToolHandlers[req.params.name]
+    const h = this.callRegularToolHandlers[req.params.name]
     if (!h) {
       return fromError(new Error(`Tool ${req.params.name} not found`))
     }
@@ -905,7 +905,7 @@ export class Server {
   }
 
   private async handleCallTool(req: types.CallToolRequest): Promise<types.CallToolResult> {
-    let pr = CallToolInputSchema.safeParse(req.params.arguments)
+    const pr = CallToolInputSchema.safeParse(req.params.arguments)
     if (!pr.success) {
       return fromError(new Error("Parsing input.", {cause: pr.error}))
     }
@@ -924,15 +924,15 @@ export class Server {
   }
 
   private handleGetToolInputSchema(req: types.CallToolRequest): types.CallToolResult {
-    let pr = GetToolInputSchemaInputSchema.safeParse(req.params.arguments)
+    const pr = GetToolInputSchemaInputSchema.safeParse(req.params.arguments)
     if (!pr.success) {
       return fromError(new Error("Parsing input.", {cause: pr.error}))
     }
 
     let i: mcp.ToolInputSchema | undefined
 
-    for (let x of this.regularToolsets) {
-      for (let y of x.tools) {
+    for (const x of this.regularToolsets) {
+      for (const y of x.tools) {
         if (y.name === pr.data.tool) {
           i = y.inputSchema
           break
@@ -952,15 +952,15 @@ export class Server {
   }
 
   private handleGetToolOutputSchema(req: types.CallToolRequest): types.CallToolResult {
-    let pr = GetToolInputSchemaInputSchema.safeParse(req.params.arguments)
+    const pr = GetToolInputSchemaInputSchema.safeParse(req.params.arguments)
     if (!pr.success) {
       return fromError(new Error("Parsing input.", {cause: pr.error}))
     }
 
     let o: mcp.ToolOutputSchema | undefined
 
-    for (let x of this.regularToolsets) {
-      for (let y of x.tools) {
+    for (const x of this.regularToolsets) {
+      for (const y of x.tools) {
         if (y.name === pr.data.tool) {
           o = y.outputSchema
           break
@@ -980,14 +980,14 @@ export class Server {
   }
 
   private handleListTools(req: types.CallToolRequest): types.CallToolResult {
-    let pr = ListToolsInputSchema.safeParse(req.params.arguments)
+    const pr = ListToolsInputSchema.safeParse(req.params.arguments)
     if (!pr.success) {
       return fromError(new Error("Parsing input.", {cause: pr.error}))
     }
 
     let s: mcp.Toolset | undefined
 
-    for (let t of this.regularToolsets) {
+    for (const t of this.regularToolsets) {
       if (t.name === pr.data.toolset) {
         s = t
         break
@@ -998,10 +998,10 @@ export class Server {
       return fromError(new Error(`Toolset '${pr.data.toolset}' not found.`))
     }
 
-    let summaries: mcp.ToolSummary[] = []
+    const summaries: mcp.ToolSummary[] = []
 
-    for (let t of s.tools) {
-      let s: mcp.ToolSummary = {
+    for (const t of s.tools) {
+      const s: mcp.ToolSummary = {
         name: t.name,
         description: t.description,
       }
@@ -1016,10 +1016,10 @@ export class Server {
   }
 
   private handleListToolsets(): types.CallToolResult {
-    let summaries: mcp.ToolSummary[] = []
+    const summaries: mcp.ToolSummary[] = []
 
-    for (let t of this.regularToolsets) {
-      let s: mcp.ToolSummary = {
+    for (const t of this.regularToolsets) {
+      const s: mcp.ToolSummary = {
         name: t.name,
         description: t.description,
       }
@@ -1034,19 +1034,19 @@ export class Server {
   }
 
   private async handleArchiveRoom(req: types.CallToolRequest): Promise<types.CallToolResult> {
-    let pr = ArchiveRoomInputSchema.safeParse(req.params.arguments)
+    const pr = ArchiveRoomInputSchema.safeParse(req.params.arguments)
     if (!pr.success) {
       return fromError(new Error("Parsing input.", {cause: pr.error}))
     }
 
-    let ar = await this.client.files.archiveRoom(pr.data.roomId, {})
+    const ar = await this.client.files.archiveRoom(pr.data.roomId, {})
     if (ar.err) {
       return fromError(new Error("Archiving room.", {cause: ar.err}))
     }
 
-    let [ad] = ar.v
+    const [ad] = ar.v
 
-    let rr = await this.resolver.resolve(ad)
+    const rr = await this.resolver.resolve(ad)
     if (rr.err) {
       return fromError(new Error("Resolving archive room operations.", {cause: rr.err}))
     }
@@ -1055,12 +1055,12 @@ export class Server {
   }
 
   private async handleCopyBatchItems(req: types.CallToolRequest): Promise<types.CallToolResult> {
-    let pr = CopyBatchItemsInputSchema.safeParse(req.params.arguments)
+    const pr = CopyBatchItemsInputSchema.safeParse(req.params.arguments)
     if (!pr.success) {
       return fromError(new Error("Parsing input.", {cause: pr.error}))
     }
 
-    let co: core.CopyBatchItemsOptions = {
+    const co: core.CopyBatchItemsOptions = {
       // @ts-expect-error See the type above for the reason.
       folderIds: pr.data.folderIds,
       // @ts-expect-error See the type above for the reason.
@@ -1071,14 +1071,14 @@ export class Server {
       deleteAfter: false,
     }
 
-    let cr = await this.client.files.copyBatchItems(co)
+    const cr = await this.client.files.copyBatchItems(co)
     if (cr.err) {
       return fromError(new Error("Copying batch items.", {cause: cr.err}))
     }
 
-    let [cd] = cr.v
+    const [cd] = cr.v
 
-    let rr = await this.resolver.resolve(...cd)
+    const rr = await this.resolver.resolve(...cd)
     if (rr.err) {
       return fromError(new Error("Resolving copy batch items operations.", {cause: rr.err}))
     }
@@ -1087,58 +1087,58 @@ export class Server {
   }
 
   private async handleCreateFolder(req: types.CallToolRequest): Promise<types.CallToolResult> {
-    let pr = CreateFolderInputSchema.safeParse(req.params.arguments)
+    const pr = CreateFolderInputSchema.safeParse(req.params.arguments)
     if (!pr.success) {
       return fromError(new Error("Parsing input.", {cause: pr.error}))
     }
 
-    let co: core.CreateFolderOptions = {
+    const co: core.CreateFolderOptions = {
       title: pr.data.title,
     }
 
-    let cr = await this.client.files.createFolder(pr.data.parentId, co, pr.data.filters)
+    const cr = await this.client.files.createFolder(pr.data.parentId, co, pr.data.filters)
     if (cr.err) {
       return fromError(new Error("Creating folder.", {cause: cr.err}))
     }
 
-    let [, res] = cr.v
+    const [, res] = cr.v
 
     return await fromResponse(res, CreateFolderOutputJsonSchema)
   }
 
   private async handleCreateRoom(req: types.CallToolRequest): Promise<types.CallToolResult> {
-    let pr = CreateRoomInputSchema.safeParse(req.params.arguments)
+    const pr = CreateRoomInputSchema.safeParse(req.params.arguments)
     if (!pr.success) {
       return fromError(new Error("Parsing input.", {cause: pr.error}))
     }
 
-    let co: core.CreateRoomOptions = {
+    const co: core.CreateRoomOptions = {
       title: pr.data.title,
       roomType: pr.data.roomType,
     }
 
-    let cr = await this.client.files.createRoom(co, pr.data.filters)
+    const cr = await this.client.files.createRoom(co, pr.data.filters)
     if (cr.err) {
       return fromError(new Error("Creating room.", {cause: cr.err}))
     }
 
-    let [, res] = cr.v
+    const [, res] = cr.v
 
     return await fromResponse(res, CreateRoomOutputJsonSchema)
   }
 
   private async handleDeleteFile(req: types.CallToolRequest): Promise<types.CallToolResult> {
-    let pr = DeleteFileInputSchema.safeParse(req.params.arguments)
+    const pr = DeleteFileInputSchema.safeParse(req.params.arguments)
     if (!pr.success) {
       return fromError(new Error("Parsing input.", {cause: pr.error}))
     }
 
-    let tr = await this.client.files.getTrashFolder()
+    const tr = await this.client.files.getTrashFolder()
     if (tr.err) {
       return fromError(new Error("Getting trash folder.", {cause: tr.err}))
     }
 
-    let [td] = tr.v
+    const [td] = tr.v
 
     if (!td.current) {
       return fromError(new Error("Trash folder is not defined."))
@@ -1148,12 +1148,12 @@ export class Server {
       return fromError(new Error("Trash folder ID is not defined."))
     }
 
-    let fr = await this.client.files.getFileInfo(pr.data.fileId)
+    const fr = await this.client.files.getFileInfo(pr.data.fileId)
     if (fr.err) {
       return fromError(new Error("Getting file info.", {cause: fr.err}))
     }
 
-    let [gd] = fr.v
+    const [gd] = fr.v
 
     if (!gd.folderId) {
       return fromError(new Error("File folder ID is not defined."))
@@ -1163,19 +1163,19 @@ export class Server {
       return fromString("File is already in the trash folder.")
     }
 
-    let dp: core.DeleteFileOptions = {
+    const dp: core.DeleteFileOptions = {
       deleteAfter: false,
       immediately: false,
     }
 
-    let dr = await this.client.files.deleteFile(pr.data.fileId, dp)
+    const dr = await this.client.files.deleteFile(pr.data.fileId, dp)
     if (dr.err) {
       return fromError(new Error("Deleting file.", {cause: dr.err}))
     }
 
-    let [dd] = dr.v
+    const [dd] = dr.v
 
-    let rr = await this.resolver.resolve(...dd)
+    const rr = await this.resolver.resolve(...dd)
     if (rr.err) {
       return fromError(new Error("Resolving delete file operations.", {cause: rr.err}))
     }
@@ -1184,24 +1184,24 @@ export class Server {
   }
 
   private async handleDeleteFolder(req: types.CallToolRequest): Promise<types.CallToolResult> {
-    let pr = DeleteFolderInputSchema.safeParse(req.params.arguments)
+    const pr = DeleteFolderInputSchema.safeParse(req.params.arguments)
     if (!pr.success) {
       return fromError(new Error("Parsing input.", {cause: pr.error}))
     }
 
-    let dp: core.DeleteFolderOptions = {
+    const dp: core.DeleteFolderOptions = {
       deleteAfter: false,
       immediately: false,
     }
 
-    let dr = await this.client.files.deleteFolder(pr.data.folderId, dp)
+    const dr = await this.client.files.deleteFolder(pr.data.folderId, dp)
     if (dr.err) {
       return fromError(new Error("Deleting folder.", {cause: dr.err}))
     }
 
-    let [dd] = dr.v
+    const [dd] = dr.v
 
-    let rr = await this.resolver.resolve(...dd)
+    const rr = await this.resolver.resolve(...dd)
     if (rr.err) {
       return fromError(new Error("Resolving delete folder operations.", {cause: rr.err}))
     }
@@ -1210,17 +1210,17 @@ export class Server {
   }
 
   private async handleDownloadFileAsText(req: types.CallToolRequest): Promise<types.CallToolResult> {
-    let pr = DownloadFileAsTextInputSchema.safeParse(req.params.arguments)
+    const pr = DownloadFileAsTextInputSchema.safeParse(req.params.arguments)
     if (!pr.success) {
       return fromError(new Error("Parsing input.", {cause: pr.error}))
     }
 
-    let ir = await this.client.files.getFileInfo(pr.data.fileId)
+    const ir = await this.client.files.getFileInfo(pr.data.fileId)
     if (ir.err) {
       return fromError(new Error("Getting file info.", {cause: ir.err}))
     }
 
-    let [id] = ir.v
+    const [id] = ir.v
 
     if (!id.fileExst) {
       return fromError(new Error("File extension is not defined."))
@@ -1231,24 +1231,24 @@ export class Server {
     if (id.fileExst === ".csv" || id.fileExst === ".txt") {
       ex = id.fileExst
     } else {
-      let sr = await this.client.files.getFilesSettings()
+      const sr = await this.client.files.getFilesSettings()
       if (sr.err) {
         return fromError(new Error("Getting files settings.", {cause: sr.err}))
       }
 
-      let [sd] = sr.v
+      const [sd] = sr.v
 
       if (!sd.extsConvertible) {
         return fromError(new Error("Convertible file extensions are not defined."))
       }
 
-      let fr = sd.extsConvertible[id.fileExst]
+      const fr = sd.extsConvertible[id.fileExst]
 
       if (!fr) {
         return fromError(new Error(`File extension ${id.fileExst} is not convertible.`))
       }
 
-      for (let e of fr) {
+      for (const e of fr) {
         if (e === ".csv" || e === ".txt") {
           ex = e
           break
@@ -1260,18 +1260,18 @@ export class Server {
       return fromError(new Error(`No convertible extension found for ${id.fileExst}.`))
     }
 
-    let bo: core.BulkDownloadOptions = {
+    const bo: core.BulkDownloadOptions = {
       fileConvertIds: [{key: pr.data.fileId, value: ex}],
     }
 
-    let br = await this.client.files.bulkDownload(bo)
+    const br = await this.client.files.bulkDownload(bo)
     if (br.err) {
       return fromError(new Error("Making bulk download.", {cause: br.err}))
     }
 
-    let [bd] = br.v
+    const [bd] = br.v
 
-    let rr = await this.resolver.resolve(...bd)
+    const rr = await this.resolver.resolve(...bd)
     if (rr.err) {
       return fromError(new Error("Resolving bulk download operations.", {cause: rr.err}))
     }
@@ -1284,28 +1284,28 @@ export class Server {
       return fromError(new Error(`Expected 1 resolved operation, got ${rr.v.operations.length}.`))
     }
 
-    let [rd] = rr.v.operations
+    const [rd] = rr.v.operations
 
     if (rd.url === undefined) {
       return fromError(new Error("Resolved operation has no URL."))
     }
 
-    let dr = this.client.createRequest("GET", rd.url)
+    const dr = this.client.createRequest("GET", rd.url)
     if (dr.err) {
       return fromError(new Error("Creating download request.", {cause: dr.err}))
     }
 
-    let hr = r.safeSync(dr.v.headers.set.bind(dr.v.headers), "Accept", "text/plain")
+    const hr = r.safeSync(dr.v.headers.set.bind(dr.v.headers), "Accept", "text/plain")
     if (hr.err) {
       return fromError(new Error("Setting header.", {cause: hr.err}))
     }
 
-    let tr = await this.client.bareFetch(dr.v)
+    const tr = await this.client.bareFetch(dr.v)
     if (tr.err) {
       return fromError(new Error("Downloading file.", {cause: tr.err}))
     }
 
-    let tt = await r.safeAsync(tr.v.text.bind(tr.v))
+    const tt = await r.safeAsync(tr.v.text.bind(tr.v))
     if (tt.err) {
       return fromError(new Error("Converting response to text.", {cause: tt.err}))
     }
@@ -1314,97 +1314,97 @@ export class Server {
   }
 
   private async handleGetAllPeople(req: types.CallToolRequest): Promise<types.CallToolResult> {
-    let pr = GetAllPeopleInputSchema.safeParse(req.params.arguments)
+    const pr = GetAllPeopleInputSchema.safeParse(req.params.arguments)
     if (!pr.success) {
       return fromError(new Error("Parsing input.", {cause: pr.error}))
     }
 
-    let gr = await this.client.people.getFullByFilter(pr.data.filters)
+    const gr = await this.client.people.getFullByFilter(pr.data.filters)
     if (gr.err) {
       return fromError(new Error("Getting people.", {cause: gr.err}))
     }
 
-    let [, res] = gr.v
+    const [, res] = gr.v
 
     return await fromResponse(res, GetAllPeopleOutputJsonSchema)
   }
 
   private async handleGetFileInfo(req: types.CallToolRequest): Promise<types.CallToolResult> {
-    let pr = GetFileInfoInputSchema.safeParse(req.params.arguments)
+    const pr = GetFileInfoInputSchema.safeParse(req.params.arguments)
     if (!pr.success) {
       return fromError(new Error("Parsing input.", {cause: pr.error}))
     }
 
-    let gr = await this.client.files.getFileInfo(pr.data.fileId, pr.data.filters)
+    const gr = await this.client.files.getFileInfo(pr.data.fileId, pr.data.filters)
     if (gr.err) {
       return fromError(new Error("Getting file info.", {cause: gr.err}))
     }
 
-    let [, res] = gr.v
+    const [, res] = gr.v
 
     return await fromResponse(res, GetFileInfoOutputJsonSchema)
   }
 
   private async handleGetFolderContent(req: types.CallToolRequest): Promise<types.CallToolResult> {
-    let pr = GetFolderContentInputSchema.safeParse(req.params.arguments)
+    const pr = GetFolderContentInputSchema.safeParse(req.params.arguments)
     if (!pr.success) {
       return fromError(new Error("Parsing input.", {cause: pr.error}))
     }
 
-    let gr = await this.client.files.getFolder(pr.data.folderId, pr.data.filters)
+    const gr = await this.client.files.getFolder(pr.data.folderId, pr.data.filters)
     if (gr.err) {
       return fromError(new Error("Getting folder.", {cause: gr.err}))
     }
 
-    let [, res] = gr.v
+    const [, res] = gr.v
 
     return await fromResponse(res, GetFolderContentOutputJsonSchema)
   }
 
   private async handleGetFolderInfo(req: types.CallToolRequest): Promise<types.CallToolResult> {
-    let pr = GetFolderInfoInputSchema.safeParse(req.params.arguments)
+    const pr = GetFolderInfoInputSchema.safeParse(req.params.arguments)
     if (!pr.success) {
       return fromError(new Error("Parsing input.", {cause: pr.error}))
     }
 
-    let gr = await this.client.files.getFolderInfo(pr.data.folderId, pr.data.filters)
+    const gr = await this.client.files.getFolderInfo(pr.data.folderId, pr.data.filters)
     if (gr.err) {
       return fromError(new Error("Getting folder info.", {cause: gr.err}))
     }
 
-    let [, res] = gr.v
+    const [, res] = gr.v
 
     return await fromResponse(res, GetFolderInfoOutputJsonSchema)
   }
 
   private async handleGetMyFolder(req: types.CallToolRequest): Promise<types.CallToolResult> {
-    let pr = GetMyFolderInputSchema.safeParse(req.params.arguments)
+    const pr = GetMyFolderInputSchema.safeParse(req.params.arguments)
     if (!pr.success) {
       return fromError(new Error("Parsing input.", {cause: pr.error}))
     }
 
-    let gr = await this.client.files.getMyFolder(pr.data.filters)
+    const gr = await this.client.files.getMyFolder(pr.data.filters)
     if (gr.err) {
       return fromError(new Error("Getting my folder.", {cause: gr.err}))
     }
 
-    let [, res] = gr.v
+    const [, res] = gr.v
 
     return await fromResponse(res, GetMyFolderOutputJsonSchema)
   }
 
   private async handleGetRoomAccessLevels(req: types.CallToolRequest): Promise<types.CallToolResult> {
-    let pr = GetRoomAccessLevelsInputSchema.safeParse(req.params.arguments)
+    const pr = GetRoomAccessLevelsInputSchema.safeParse(req.params.arguments)
     if (!pr.success) {
       return fromError(new Error("Parsing input.", {cause: pr.error}))
     }
 
-    let gr = await this.client.files.getRoomInfo(pr.data.roomId)
+    const gr = await this.client.files.getRoomInfo(pr.data.roomId)
     if (gr.err) {
       return fromError(new Error("Getting room info.", {cause: gr.err}))
     }
 
-    let [gd] = gr.v
+    const [gd] = gr.v
 
     if (!gd.roomType) {
       return fromError(new Error("Room type is not defined."))
@@ -1437,33 +1437,33 @@ export class Server {
   }
 
   private async handleGetRoomInfo(req: types.CallToolRequest): Promise<types.CallToolResult> {
-    let pr = GetRoomInfoInputSchema.safeParse(req.params.arguments)
+    const pr = GetRoomInfoInputSchema.safeParse(req.params.arguments)
     if (!pr.success) {
       return fromError(new Error("Parsing input.", {cause: pr.error}))
     }
 
-    let gr = await this.client.files.getRoomInfo(pr.data.roomId, pr.data.filters)
+    const gr = await this.client.files.getRoomInfo(pr.data.roomId, pr.data.filters)
     if (gr.err) {
       return fromError(new Error("Getting room info.", {cause: gr.err}))
     }
 
-    let [, res] = gr.v
+    const [, res] = gr.v
 
     return await fromResponse(res, GetRoomInfoOutputJsonSchema)
   }
 
   private async handleGetRoomSecurityInfo(req: types.CallToolRequest): Promise<types.CallToolResult> {
-    let pr = GetRoomSecurityInfoInputSchema.safeParse(req.params.arguments)
+    const pr = GetRoomSecurityInfoInputSchema.safeParse(req.params.arguments)
     if (!pr.success) {
       return fromError(new Error("Parsing input.", {cause: pr.error}))
     }
 
-    let gr = await this.client.files.getRoomSecurityInfo(pr.data.roomId, pr.data.filters)
+    const gr = await this.client.files.getRoomSecurityInfo(pr.data.roomId, pr.data.filters)
     if (gr.err) {
       return fromError(new Error("Getting room security info.", {cause: gr.err}))
     }
 
-    let [, res] = gr.v
+    const [, res] = gr.v
 
     return await fromResponse(res, GetRoomSecurityInfoOutputJsonSchema)
   }
@@ -1473,28 +1473,28 @@ export class Server {
   }
 
   private async handleGetRoomsFolder(req: types.CallToolRequest): Promise<types.CallToolResult> {
-    let pr = GetRoomsFolderInputSchema.safeParse(req.params.arguments)
+    const pr = GetRoomsFolderInputSchema.safeParse(req.params.arguments)
     if (!pr.success) {
       return fromError(new Error("Parsing input.", {cause: pr.error}))
     }
 
-    let gr = await this.client.files.getRoomsFolder(pr.data.filters)
+    const gr = await this.client.files.getRoomsFolder(pr.data.filters)
     if (gr.err) {
       return fromError(new Error("Getting rooms folder.", {cause: gr.err}))
     }
 
-    let [, res] = gr.v
+    const [, res] = gr.v
 
     return await fromResponse(res, GetRoomsFolderOutputJsonSchema)
   }
 
   private async handleMoveBatchItems(req: types.CallToolRequest): Promise<types.CallToolResult> {
-    let pr = MoveBatchItemsInputSchema.safeParse(req.params.arguments)
+    const pr = MoveBatchItemsInputSchema.safeParse(req.params.arguments)
     if (!pr.success) {
       return fromError(new Error("Parsing input.", {cause: pr.error}))
     }
 
-    let mo: core.MoveBatchItemsOptions = {
+    const mo: core.MoveBatchItemsOptions = {
       // @ts-expect-error See the type above for the reason.
       folderIds: pr.data.folderIds,
       // @ts-expect-error See the type above for the reason.
@@ -1505,14 +1505,14 @@ export class Server {
       deleteAfter: false,
     }
 
-    let mr = await this.client.files.moveBatchItems(mo)
+    const mr = await this.client.files.moveBatchItems(mo)
     if (mr.err) {
       return fromError(new Error("Moving batch items.", {cause: mr.err}))
     }
 
-    let [md] = mr.v
+    const [md] = mr.v
 
-    let rr = await this.resolver.resolve(...md)
+    const rr = await this.resolver.resolve(...md)
     if (rr.err) {
       return fromError(new Error("Resolving move batch items operations.", {cause: rr.err}))
     }
@@ -1521,127 +1521,127 @@ export class Server {
   }
 
   private async handleRenameFolder(req: types.CallToolRequest): Promise<types.CallToolResult> {
-    let pr = RenameFolderInputSchema.safeParse(req.params.arguments)
+    const pr = RenameFolderInputSchema.safeParse(req.params.arguments)
     if (!pr.success) {
       return fromError(new Error("Parsing input.", {cause: pr.error}))
     }
 
-    let ro: core.RenameFolderOptions = {
+    const ro: core.RenameFolderOptions = {
       title: pr.data.title,
     }
 
-    let rr = await this.client.files.renameFolder(pr.data.folderId, ro, pr.data.filters)
+    const rr = await this.client.files.renameFolder(pr.data.folderId, ro, pr.data.filters)
     if (rr.err) {
       return fromError(new Error("Renaming folder.", {cause: rr.err}))
     }
 
-    let [, res] = rr.v
+    const [, res] = rr.v
 
     return await fromResponse(res, RenameFolderOutputJsonSchema)
   }
 
   private async handleSetRoomSecurity(req: types.CallToolRequest): Promise<types.CallToolResult> {
-    let pr = SetRoomSecurityInputSchema.safeParse(req.params.arguments)
+    const pr = SetRoomSecurityInputSchema.safeParse(req.params.arguments)
     if (!pr.success) {
       return fromError(new Error("Parsing input.", {cause: pr.error}))
     }
 
-    let so: core.SetRoomSecurityOptions = {
+    const so: core.SetRoomSecurityOptions = {
       invitations: pr.data.invitations,
       notify: pr.data.notify,
       message: pr.data.message,
     }
 
-    let sr = await this.client.files.setRoomSecurity(pr.data.roomId, so, pr.data.filters)
+    const sr = await this.client.files.setRoomSecurity(pr.data.roomId, so, pr.data.filters)
     if (sr.err) {
       return fromError(new Error("Setting room security.", {cause: sr.err}))
     }
 
-    let [, res] = sr.v
+    const [, res] = sr.v
 
     return await fromResponse(res, SetRoomSecurityOutputJsonSchema)
   }
 
   private async handleUpdateFile(req: types.CallToolRequest): Promise<types.CallToolResult> {
-    let pr = UpdateFileInputSchema.safeParse(req.params.arguments)
+    const pr = UpdateFileInputSchema.safeParse(req.params.arguments)
     if (!pr.success) {
       return fromError(new Error("Parsing input.", {cause: pr.error}))
     }
 
-    let uo: core.UpdateFileOptions = {
+    const uo: core.UpdateFileOptions = {
       title: pr.data.title,
     }
 
-    let ur = await this.client.files.updateFile(pr.data.fileId, uo)
+    const ur = await this.client.files.updateFile(pr.data.fileId, uo)
     if (ur.err) {
       return fromError(new Error("Updating file.", {cause: ur.err}))
     }
 
-    let [, res] = ur.v
+    const [, res] = ur.v
 
     return await fromResponse(res, UpdateFileOutputJsonSchema)
   }
 
   private async handleUpdateRoom(req: types.CallToolRequest): Promise<types.CallToolResult> {
-    let pr = UpdateRoomInputSchema.safeParse(req.params.arguments)
+    const pr = UpdateRoomInputSchema.safeParse(req.params.arguments)
     if (!pr.success) {
       return fromError(new Error("Parsing input.", {cause: pr.error}))
     }
 
-    let uo: core.UpdateRoomOptions = {
+    const uo: core.UpdateRoomOptions = {
       title: pr.data.title,
     }
 
-    let ur = await this.client.files.updateRoom(pr.data.roomId, uo, pr.data.filters)
+    const ur = await this.client.files.updateRoom(pr.data.roomId, uo, pr.data.filters)
     if (ur.err) {
       return fromError(new Error("Updating room.", {cause: ur.err}))
     }
 
-    let [, res] = ur.v
+    const [, res] = ur.v
 
     return await fromResponse(res, UpdateRoomOutputJsonSchema)
   }
 
   private async handleUploadFile(req: types.CallToolRequest): Promise<types.CallToolResult> {
-    let pr = UploadFileInputSchema.safeParse(req.params.arguments)
+    const pr = UploadFileInputSchema.safeParse(req.params.arguments)
     if (!pr.success) {
       return fromError(new Error("Parsing input.", {cause: pr.error}))
     }
 
-    let fp = path.parse(pr.data.filename)
+    const fp = path.parse(pr.data.filename)
 
     if (!fp.ext) {
       return fromError(new Error("File extension is missing in the filename."))
     }
 
-    let te = new TextEncoder()
+    const te = new TextEncoder()
 
-    let buf = te.encode(pr.data.content)
+    const buf = te.encode(pr.data.content)
 
-    let so: core.CreateUploadSessionOptions = {
+    const so: core.CreateUploadSessionOptions = {
       fileName: pr.data.filename,
       fileSize: buf.length,
       createOn: new Date().toISOString(),
       createNewIfExist: true,
     }
 
-    let sr = await this.client.files.createUploadSession(pr.data.parentId, so)
+    const sr = await this.client.files.createUploadSession(pr.data.parentId, so)
     if (sr.err) {
       return fromError(new Error("Creating upload session.", {cause: sr.err}))
     }
 
-    let [sd] = sr.v
+    const [sd] = sr.v
 
     if (sd.id === undefined) {
       return fromError(new Error("Upload session ID is not defined."))
     }
 
-    let ur = await this.uploader.upload(sd.id, buf)
+    const ur = await this.uploader.upload(sd.id, buf)
     if (ur.err) {
       return fromError(new Error("Uploading file.", {cause: ur.err}))
     }
 
-    let [, res] = ur.v
+    const [, res] = ur.v
 
     return await fromResponse(res)
   }
@@ -1698,23 +1698,23 @@ function fromError(err: Error): types.CallToolResult {
 }
 
 async function fromResponse(res: apiCore.Response, s?: z.core.JSONSchema.JSONSchema): Promise<types.CallToolResult> {
-  let h = res.response.headers.get("Content-Type")
+  const h = res.response.headers.get("Content-Type")
   if (h === null) {
     return fromError(new Error("Content-Type header is missing"))
   }
 
   if (h.startsWith("application/json")) {
-    let j = await r.safeAsync(res.response.json.bind(res.response))
+    const j = await r.safeAsync(res.response.json.bind(res.response))
     if (j.err) {
       return fromError(new Error("Parsing json response", {cause: j.err}))
     }
 
-    let t = r.safeSync(JSON.stringify, j.v, undefined, 2)
+    const t = r.safeSync(JSON.stringify, j.v, undefined, 2)
     if (t.err) {
       return fromError(new Error("Stringifying json value", {cause: t.err}))
     }
 
-    let c: types.CallToolResult = {
+    const c: types.CallToolResult = {
       content: [
         {
           type: "text",
@@ -1731,12 +1731,12 @@ async function fromResponse(res: apiCore.Response, s?: z.core.JSONSchema.JSONSch
   }
 
   if (h.startsWith("text/")) {
-    let t = await r.safeAsync(res.response.text.bind(res.response))
+    const t = await r.safeAsync(res.response.text.bind(res.response))
     if (t.err) {
       return fromError(new Error("Parsing text response", {cause: t.err}))
     }
 
-    let c: types.CallToolResult = {
+    const c: types.CallToolResult = {
       content: [
         {
           type: "text",
@@ -1752,12 +1752,12 @@ async function fromResponse(res: apiCore.Response, s?: z.core.JSONSchema.JSONSch
 }
 
 function fromObject(o: object, s?: z.core.JSONSchema.JSONSchema): types.CallToolResult {
-  let t = r.safeSync(JSON.stringify, o, undefined, 2)
+  const t = r.safeSync(JSON.stringify, o, undefined, 2)
   if (t.err) {
     return fromError(new Error("Stringifying object value", {cause: t.err}))
   }
 
-  let c: types.CallToolResult = {
+  const c: types.CallToolResult = {
     content: [
       {
         type: "text",

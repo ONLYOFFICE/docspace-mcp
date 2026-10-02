@@ -16,19 +16,19 @@ import type {SetupMcpOptions} from "./util.ts"
 import {once, setupMcp} from "./util.ts"
 
 async function readManifest(): Promise<r.Result<dist.Manifest, Error>> {
-  let rf: (p: string, e: "utf8") => Promise<string> = fs.readFile
+  const rf: (p: string, e: "utf8") => Promise<string> = fs.readFile
 
-  let f = await r.safeAsync(rf, "./mcpb/manifest.json", "utf8")
+  const f = await r.safeAsync(rf, "./mcpb/manifest.json", "utf8")
   if (f.err) {
     return r.error(new Error("Reading file", {cause: f.err}))
   }
 
-  let j = r.safeSync(JSON.parse, f.v)
+  const j = r.safeSync(JSON.parse, f.v)
   if (j.err) {
     return r.error(new Error("Parsing json", {cause: j.err}))
   }
 
-  let s = dist.ManifestSchema.safeParse(j.v)
+  const s = dist.ManifestSchema.safeParse(j.v)
   if (s.error) {
     return r.error(new Error("Parsing schema", {cause: s.error}))
   }
@@ -37,55 +37,55 @@ async function readManifest(): Promise<r.Result<dist.Manifest, Error>> {
 }
 
 void test.suite("mcpb manifest", () => {
-  let readManifestOnce = once(readManifest)
+  const readManifestOnce = once(readManifest)
 
   void test("validates against $schema", async() => {
-    let m = await readManifestOnce()
+    const m = await readManifestOnce()
     assert.ok(m.err === undefined)
 
-    let a = new ajv.Ajv()
+    const a = new ajv.Ajv()
     ajvFormats.default(a)
 
-    let rf: (p: string, e: "utf8") => Promise<string> = fs.readFile
+    const rf: (p: string, e: "utf8") => Promise<string> = fs.readFile
 
-    let s = await r.safeAsync(rf, m.v.$schema, "utf8")
+    const s = await r.safeAsync(rf, m.v.$schema, "utf8")
     assert.ok(s.err === undefined)
 
-    let o = r.safeSync(JSON.parse, s.v)
+    const o = r.safeSync(JSON.parse, s.v)
     assert.ok(o.err === undefined)
 
-    let v = r.safeSync(a.compile.bind(a), o.v)
+    const v = r.safeSync(a.compile.bind(a), o.v)
     assert.ok(v.err === undefined)
 
     assert.ok(v.v(m.v))
   })
 
   void test("matches server metadata", async(t) => {
-    let m = await readManifestOnce()
+    const m = await readManifestOnce()
     assert.ok(m.err === undefined)
 
-    let so: SetupMcpOptions = {
+    const so: SetupMcpOptions = {
       transport: "stdio",
       host: "",
       port: 0,
       env: {},
     }
 
-    let c = await setupMcp(t, so)
+    const c = await setupMcp(t, so)
 
-    let i = c.getServerVersion()
+    const i = c.getServerVersion()
     assert.ok(i !== undefined)
 
     assert.ok(m.v.version === i.version)
   })
 
   void test("declares all config options", async() => {
-    let m = await readManifestOnce()
+    const m = await readManifestOnce()
     assert.ok(m.err === undefined)
 
-    let o: Record<string, dist.ManifestOption> = {}
+    const o: Record<string, dist.ManifestOption> = {}
 
-    for (let i of Object.values(spec)) {
+    for (const i of Object.values(spec)) {
       if (i.distributions.includes("mcpb")) {
         o[`${config.envPrefix}${i.env}`.toLowerCase()] = {
           type: i.type,
@@ -101,12 +101,12 @@ void test.suite("mcpb manifest", () => {
   })
 
   void test("maps all config options", async() => {
-    let m = await readManifestOnce()
+    const m = await readManifestOnce()
     assert.ok(m.err === undefined)
 
-    let o: Record<string, string> = {}
+    const o: Record<string, string> = {}
 
-    for (let i of Object.values(spec)) {
+    for (const i of Object.values(spec)) {
       if (i.distributions.includes("mcpb")) {
         o[`${config.envPrefix}${i.env}`] =
           `\${user_config.${`${config.envPrefix}${i.env}`.toLowerCase()}}`
@@ -117,32 +117,32 @@ void test.suite("mcpb manifest", () => {
   })
 
   void test("matches server tools", async(t) => {
-    let m = await readManifestOnce()
+    const m = await readManifestOnce()
     assert.ok(m.err === undefined)
 
-    let so: SetupMcpOptions = {
+    const so: SetupMcpOptions = {
       transport: "stdio",
       host: "",
       port: 0,
       env: {},
     }
 
-    let c = await setupMcp(t, so)
+    const c = await setupMcp(t, so)
 
-    let req: types.ListToolsRequest = {
+    const req: types.ListToolsRequest = {
       method: "tools/list",
       params: {},
     }
 
-    let res = await r.safeAsync(c.request.bind(c), req, types.ListToolsResultSchema)
+    const res = await r.safeAsync(c.request.bind(c), req, types.ListToolsResultSchema)
     assert.ok(res.err === undefined)
 
-    for (let d of res.v.tools) {
+    for (const d of res.v.tools) {
       assert.ok(d.description)
 
       let a: dist.ManifestTool | undefined
 
-      for (let t of m.v.tools) {
+      for (const t of m.v.tools) {
         if (t.name === d.name) {
           a = t
           break
@@ -151,7 +151,7 @@ void test.suite("mcpb manifest", () => {
 
       assert.ok(a !== undefined)
 
-      let e: dist.ManifestTool = {
+      const e: dist.ManifestTool = {
         name: d.name,
         description: d.description,
       }

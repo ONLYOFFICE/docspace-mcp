@@ -27,7 +27,7 @@ export function withLogger(l: Logger, fetch: typeof globalThis.fetch): typeof gl
       throw new Error("Input is not a Request instance")
     }
 
-    let o: Payload = {
+    const o: Payload = {
       method: input.method,
       url: input.url,
     }
@@ -35,13 +35,13 @@ export function withLogger(l: Logger, fetch: typeof globalThis.fetch): typeof gl
     try {
       await l.info(incoming, o)
 
-      let now = Date.now()
+      const now = Date.now()
 
-      let r = await fetch(input, init)
+      const r = await fetch(input, init)
 
       o.status = r.status
 
-      let d = Date.now() - now
+      const d = Date.now() - now
       if (d < 1000) {
         o.duration = `${d}ms`
       } else {

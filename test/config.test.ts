@@ -13,11 +13,11 @@ import {powerSet, setupMcp} from "./util.ts"
 
 void test.suite("global config", () => {
   void test("declared all env variables", () => {
-    let x = Object.keys(config.EnvSchema.def.in.def.in.def.shape)
+    const x = Object.keys(config.EnvSchema.def.in.def.in.def.shape)
 
-    let y = Object.values(spec)
+    const y = Object.values(spec)
 
-    let i: spec.Item = {
+    const i: spec.Item = {
       title: "",
       description: "",
       distributions: [],
@@ -33,7 +33,7 @@ void test.suite("global config", () => {
 
     y.push(i)
 
-    for (let i of y) {
+    for (const i of y) {
       assert.ok(x.includes(`${config.envPrefix}${i.env}`))
     }
 
@@ -47,7 +47,7 @@ void test.suite("global config", () => {
       text: string
     }
 
-    let suits: Suite[] = [
+    const suits: Suite[] = [
       {
         name: "no tools left",
         tests: [
@@ -124,7 +124,7 @@ void test.suite("global config", () => {
     ]
 
     for (let i = 0; i < 4; i += 1) {
-      let t: Record<string, string> = {}
+      const t: Record<string, string> = {}
 
       switch (i) {
       case 0:
@@ -145,7 +145,7 @@ void test.suite("global config", () => {
       suits[3].tests.push(t)
     }
 
-    for (let tr of ["stdio", "sse", "streamable-http", "http"]) {
+    for (const tr of ["stdio", "sse", "streamable-http", "http"]) {
       if (tr !== "stdio") {
         suits[4].tests.push(
           {
@@ -188,7 +188,7 @@ void test.suite("global config", () => {
       }
 
       if (tr === "stdio") {
-        for (let g of powerSet([0, 1, 2, 3, 4])) {
+        for (const g of powerSet([0, 1, 2, 3, 4])) {
           if (
           // The case when no auth.
             g.length === 0 ||
@@ -202,12 +202,12 @@ void test.suite("global config", () => {
             continue
           }
 
-          let t: Record<string, string> = {
+          const t: Record<string, string> = {
             DOCSPACE_TRANSPORT: tr,
             DOCSPACE_BASE_URL: "http://localhost/",
           }
 
-          for (let i of g) {
+          for (const i of g) {
             switch (i) {
             case 0:
               t.DOCSPACE_AUTHORIZATION = "xxx"
@@ -232,7 +232,7 @@ void test.suite("global config", () => {
           suits[7].tests.push(t)
         }
       } else {
-        for (let g of powerSet([0, 1, 2, 3, 4, 5])) {
+        for (const g of powerSet([0, 1, 2, 3, 4, 5])) {
           if (
           // The case when no auth.
             g.length === 0 ||
@@ -246,11 +246,11 @@ void test.suite("global config", () => {
             continue
           }
 
-          let t: Record<string, string> = {
+          const t: Record<string, string> = {
             DOCSPACE_TRANSPORT: tr,
           }
 
-          for (let i of g) {
+          for (const i of g) {
             switch (i) {
             case 0:
               t.DOCSPACE_BASE_URL = "http://localhost/"
@@ -302,12 +302,12 @@ void test.suite("global config", () => {
       }
     }
 
-    for (let c of suits) {
+    for (const c of suits) {
       void test.suite(c.name, () => {
-        for (let tt of c.tests) {
+        for (const tt of c.tests) {
           let n = ""
 
-          for (let [k, v] of Object.entries(tt)) {
+          for (const [k, v] of Object.entries(tt)) {
             n += `${k}=${v} `
           }
 
@@ -316,26 +316,26 @@ void test.suite("global config", () => {
           }
 
           void test(n, async(t) => {
-            let so: SetupMcpOptions = {
+            const so: SetupMcpOptions = {
               transport: "stdio",
               host: "",
               port: 0,
               env: tt,
             }
 
-            let cl = await setupMcp(t, so)
+            const cl = await setupMcp(t, so)
 
-            let req: types.CallToolRequest = {
+            const req: types.CallToolRequest = {
               method: "tools/call",
               params: {
                 name: "non_existed",
               },
             }
 
-            let a = await r.safeAsync(cl.request.bind(cl), req, types.CallToolResultSchema)
+            const a = await r.safeAsync(cl.request.bind(cl), req, types.CallToolResultSchema)
             assert.ok(a.err === undefined)
 
-            let e: types.CallToolResult = {
+            const e: types.CallToolResult = {
               content: [
                 {
                   type: "text",

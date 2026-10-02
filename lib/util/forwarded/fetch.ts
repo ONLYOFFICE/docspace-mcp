@@ -8,7 +8,7 @@ import {forwardedForKey, realIpKey} from "./context.ts"
 
 export function wrapFetch(fetch: typeof globalThis.fetch): typeof globalThis.fetch {
   return async(input, init) => {
-    let ctx = context.get()
+    const ctx = context.get()
 
     if (ctx && (ctx[forwardedForKey] || ctx[realIpKey])) {
       if (!(input instanceof Request)) {

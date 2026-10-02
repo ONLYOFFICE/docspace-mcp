@@ -14,7 +14,7 @@ export function wrapMcpHandler(handler: McpHandler): McpHandler {
   return async(req, extra) => {
     let ctx = context.get()
 
-    let ac = new Controller()
+    const ac = new Controller()
 
     if (ctx && ctx[signalKey]) {
       ac.withSignal(ctx[signalKey])
@@ -26,8 +26,8 @@ export function wrapMcpHandler(handler: McpHandler): McpHandler {
       [signalKey]: ac.signal,
     }
 
-    let ex = (res: (v: Awaited<ReturnType<McpHandler>>) => void, rej: (err: unknown) => void): void => {
-      let cb = (): void => {
+    const ex = (res: (v: Awaited<ReturnType<McpHandler>>) => void, rej: (err: unknown) => void): void => {
+      const cb = (): void => {
         void (async() => {
           try {
             res(await handler(req, extra))

@@ -21,19 +21,19 @@ export class Controller {
   }
 
   clear(): void {
-    for (let c of this.ca) {
+    for (const c of this.ca) {
       c()
     }
   }
 
   withSignal(s: AbortSignal): void {
-    let l = (): void => {
+    const l = (): void => {
       this.ac.abort(s.reason)
     }
 
     s.addEventListener("abort", l)
 
-    let c = (): void => {
+    const c = (): void => {
       s.removeEventListener("abort", l)
     }
 
@@ -41,13 +41,13 @@ export class Controller {
   }
 
   withTimeout(t: number): void {
-    let f = (): void => {
+    const f = (): void => {
       this.ac.abort(new DOMException("Timeout exceeded", "AbortError"))
     }
 
-    let s = setTimeout(f, t)
+    const s = setTimeout(f, t)
 
-    let c = (): void => {
+    const c = (): void => {
       clearTimeout(s)
     }
 

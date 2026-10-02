@@ -63,10 +63,10 @@ export class SettingsParser {
     }
 
     if (config.headerPrefix) {
-      let dynamic = `${config.headerPrefix}${spec.dynamic.header}`.toLowerCase()
-      let toolsets = `${config.headerPrefix}${spec.toolsets.header}`.toLowerCase()
-      let enabledTools = `${config.headerPrefix}${spec.enabledTools.header}`.toLowerCase()
-      let disabledTools = `${config.headerPrefix}${spec.disabledTools.header}`.toLowerCase()
+      const dynamic = `${config.headerPrefix}${spec.dynamic.header}`.toLowerCase()
+      const toolsets = `${config.headerPrefix}${spec.toolsets.header}`.toLowerCase()
+      const enabledTools = `${config.headerPrefix}${spec.enabledTools.header}`.toLowerCase()
+      const disabledTools = `${config.headerPrefix}${spec.disabledTools.header}`.toLowerCase()
 
       this.requestHeaders.push(
         dynamic,
@@ -95,7 +95,7 @@ export class SettingsParser {
     let q: SettingsQuery | undefined
 
     if (this.querySchema) {
-      let p = this.querySchema.safeParse(req.query)
+      const p = this.querySchema.safeParse(req.query)
       if (!p.success) {
         return r.error(new Error("Parsing query", {cause: p.error}))
       }
@@ -105,14 +105,14 @@ export class SettingsParser {
     let h: SettingsHeader | undefined
 
     if (this.headerSchema) {
-      let p = this.headerSchema.safeParse(req.headers)
+      const p = this.headerSchema.safeParse(req.headers)
       if (!p.success) {
         return r.error(new Error("Parsing header", {cause: p.error}))
       }
       h = p.data
     }
 
-    let errs: Error[] = []
+    const errs: Error[] = []
 
     // todo: do not register errors if value in query and in header are equal
 
@@ -146,7 +146,7 @@ export class SettingsParser {
       dynamic = this.defaultDynamic
     }
 
-    let o: ResolveToolsOptions = {
+    const o: ResolveToolsOptions = {
       toolsets: [],
       enabledTools: [],
       disabledTools: [],
@@ -176,7 +176,7 @@ export class SettingsParser {
       o.disabledTools = []
     }
 
-    let t = resolveTools(o)
+    const t = resolveTools(o)
 
     if (t.toolsets.length === 0) {
       errs.push(new Error("No toolsets left"))
@@ -190,7 +190,7 @@ export class SettingsParser {
       return r.error(new AggregateError(errs, "Validating settings"))
     }
 
-    let s: Settings = {
+    const s: Settings = {
       dynamic,
       toolsets: t.toolsets,
       tools: t.tools,

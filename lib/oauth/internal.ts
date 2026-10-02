@@ -13,7 +13,7 @@ export function proxyError(ce: Error, fe: Error): [number, ErrorResponse] {
   let error_description: string | undefined
   let error_uri: string | undefined
 
-  let cr = errors.as(ce, ClientResponseError)
+  const cr = errors.as(ce, ClientResponseError)
   if (cr) {
     code = cr.response.status
     error = cr.error
@@ -25,7 +25,7 @@ export function proxyError(ce: Error, fe: Error): [number, ErrorResponse] {
     error_description = errors.format(fe)
   }
 
-  let er: ErrorResponse = {
+  const er: ErrorResponse = {
     error,
   }
 

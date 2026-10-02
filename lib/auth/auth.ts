@@ -84,8 +84,8 @@ export class AuthManager {
     this.oauthHandler = config.oauthHandler
     this.credentialParser = config.credentialParser
 
-    let requestHeaders: string[] = []
-    let responseHeaders: string[] = []
+    const requestHeaders: string[] = []
+    const responseHeaders: string[] = []
 
     if (config.oauthEnabled) {
       requestHeaders.push(...config.oauthHandlerRequestHeaders)
@@ -105,8 +105,8 @@ export class AuthManager {
   }
 
   handler(): express.Handler {
-    let end = (res: express.Response, code: number, err: Error): void => {
-      let er: ErrorResponse = {
+    const end = (res: express.Response, code: number, err: Error): void => {
+      const er: ErrorResponse = {
         message: errors.format(err),
       }
       res.status(code)
@@ -119,17 +119,17 @@ export class AuthManager {
         h = ""
       }
 
-      let c = this.credentialParser.parse(req)
+      const c = this.credentialParser.parse(req)
       if (c.err) {
-        let err = new Error("Parsing credential", {cause: c.err})
+        const err = new Error("Parsing credential", {cause: c.err})
         end(res, 400, err)
         return
       }
 
       if (this.oauthEnabled && h) {
-        let a = parseAuthHeader(h)
+        const a = parseAuthHeader(h)
         if (a.scheme === "bearer") {
-          let d = this.oauthAuthTokens.decode(a.params)
+          const d = this.oauthAuthTokens.decode(a.params)
           if (!d.err) {
             if (
               c.v.baseUrl === "" &&
@@ -142,7 +142,7 @@ export class AuthManager {
               return
             }
 
-            let err = new Error("OAuth token with credentials")
+            const err = new Error("OAuth token with credentials")
             end(res, 400, err)
             return
           }
@@ -169,7 +169,7 @@ export class AuthManager {
           return
         }
 
-        let err = new Error("Authorization header with credentials")
+        const err = new Error("Authorization header with credentials")
         end(res, 400, err)
         return
       }
@@ -193,7 +193,7 @@ export class AuthManager {
           return
         }
 
-        let err = new Error("Base URL without credentials")
+        const err = new Error("Base URL without credentials")
         end(res, 400, err)
         return
       }
@@ -216,7 +216,7 @@ export class AuthManager {
         return
       }
 
-      let err = new Error("Unauthorized")
+      const err = new Error("Unauthorized")
       end(res, 401, err)
     }
   }
@@ -228,7 +228,7 @@ type AuthHeader = {
 }
 
 function parseAuthHeader(h: string): AuthHeader {
-  let i = h.indexOf(" ")
+  const i = h.indexOf(" ")
 
   let s: string | undefined
   let p: string | undefined
@@ -241,7 +241,7 @@ function parseAuthHeader(h: string): AuthHeader {
     p = h.slice(i + 1)
   }
 
-  let a: AuthHeader = {
+  const a: AuthHeader = {
     scheme: s.toLowerCase(),
     params: p,
   }

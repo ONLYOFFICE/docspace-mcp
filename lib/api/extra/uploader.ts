@@ -30,15 +30,15 @@ export class Uploader {
 
     let done = false
 
-    let chunks = Math.ceil(buf.length / maxChunkSize)
+    const chunks = Math.ceil(buf.length / maxChunkSize)
 
     for (let i = 0; i < chunks; i += 1) {
-      let s = i * maxChunkSize
-      let e = (i + 1) * maxChunkSize
-      let c = buf.slice(s, e)
-      let b = new Blob([c], {type: "text/plain"})
+      const s = i * maxChunkSize
+      const e = (i + 1) * maxChunkSize
+      const c = buf.slice(s, e)
+      const b = new Blob([c], {type: "text/plain"})
 
-      let cr = await this.client.files.uploadChunk(id, b)
+      const cr = await this.client.files.uploadChunk(id, b)
       if (cr.err) {
         return error(new Error(`Uploading chunk ${i + 1} of ${chunks}.`, {cause: cr.err}))
       }

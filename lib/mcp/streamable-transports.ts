@@ -34,17 +34,17 @@ export class StreamableTransports {
   }
 
   create(): streamableHttp.StreamableHTTPServerTransport {
-    let t = new streamableHttp.StreamableHTTPServerTransport({
+    const t = new streamableHttp.StreamableHTTPServerTransport({
       sessionIdGenerator: () => {
         return crypto.randomUUID()
       },
       onsessioninitialized: (sessionId) => {
-        let o: SessionsCreateOptions = {
+        const o: SessionsCreateOptions = {
           id: sessionId,
           transport: t,
         }
 
-        let s = this.sessions.create(o)
+        const s = this.sessions.create(o)
         if (s.err) {
           this.logger.error("Creating session", {sessionId, err: s.err})
           return
@@ -60,7 +60,7 @@ export class StreamableTransports {
         return
       }
 
-      let err = this.sessions.delete(t.sessionId)
+      const err = this.sessions.delete(t.sessionId)
       if (err) {
         this.logger.error("Deleting session", {sessionId: t.sessionId, err})
         return
@@ -73,7 +73,7 @@ export class StreamableTransports {
   }
 
   retrieve(id: string): result.Result<streamableHttp.StreamableHTTPServerTransport, Error> {
-    let s = this.sessions.get(id)
+    const s = this.sessions.get(id)
     if (s.err) {
       return result.error(new Error("Getting session", {cause: s.err}))
     }

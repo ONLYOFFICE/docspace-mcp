@@ -66,7 +66,7 @@ export class SseServer {
     // todo: add allowedMethods middleware
     // todo: add supportedMediaTypes middleware
 
-    let allowedHostnames = (r: express.Router): void => {
+    const allowedHostnames = (r: express.Router): void => {
       if (this.allowedHostnames.length !== 0) {
         r.use(utilExpress.allowedHostnames(this.allowedHostnames, (_, res, err) => {
           res.end(errors.format(err))
@@ -74,9 +74,9 @@ export class SseServer {
       }
     }
 
-    let cors = (r: express.Router): void => {
+    const cors = (r: express.Router): void => {
       if (this.corsOrigin.length !== 0) {
-        let co: utilExpress.CorsOptions = {
+        const co: utilExpress.CorsOptions = {
           origin: this.corsOrigin,
           maxAge: this.corsMaxAge,
           methods: ["GET", "POST"],
@@ -99,13 +99,13 @@ export class SseServer {
       }
     }
 
-    let guard = (r: express.Router): void => {
+    const guard = (r: express.Router): void => {
       if (this.rateLimitCapacity && this.rateLimitWindow) {
-        let er = new errors.
+        const er = new errors.
           MessageError("Too many requests, please try again later").
           toString()
 
-        let ro: utilExpress.RateLimitOptions = {
+        const ro: utilExpress.RateLimitOptions = {
           capacity: this.rateLimitCapacity,
           window: this.rateLimitWindow,
         }
@@ -116,10 +116,10 @@ export class SseServer {
       }
     }
 
-    let r = express.Router()
+    const r = express.Router()
 
     r.use("/sse", (() => {
-      let r = express.Router()
+      const r = express.Router()
 
       r.use(express.json())
 
@@ -136,7 +136,7 @@ export class SseServer {
     })())
 
     r.use("/messages", (() => {
-      let r = express.Router()
+      const r = express.Router()
 
       r.use(express.json())
 
@@ -157,20 +157,20 @@ export class SseServer {
 
   private async handleSse(req: express.Request, res: express.Response): Promise<void> {
     try {
-      let s = this.protocols.create(req)
+      const s = this.protocols.create(req)
       if (s.err) {
         // It is most likely 400, rather than 500.
-        let err = new errors.MessageError("Creating protocol", {cause: s.err})
+        const err = new errors.MessageError("Creating protocol", {cause: s.err})
         res.writeHead(400)
         res.end(err.toString())
         return
       }
 
-      let t = this.transports.create("/messages", res)
+      const t = this.transports.create("/messages", res)
 
-      let c = await result.safeAsync(s.v.connect.bind(s.v), t)
+      const c = await result.safeAsync(s.v.connect.bind(s.v), t)
       if (c.err) {
-        let err = new errors.MessageError("Attaching server", {cause: c.err})
+        const err = new errors.MessageError("Attaching server", {cause: c.err})
         res.writeHead(500)
         res.end(err.toString())
         return
@@ -181,7 +181,7 @@ export class SseServer {
           res.end()
         }
       } else {
-        let err = new errors.MessageError("Internal Server Error", {cause: err_})
+        const err = new errors.MessageError("Internal Server Error", {cause: err_})
         res.writeHead(500)
         res.end(err.toString())
       }
@@ -190,11 +190,11 @@ export class SseServer {
 
   private async handleMessages(req: express.Request, res: express.Response): Promise<void> {
     try {
-      let id = req.headers["mcp-session-id"]
+      const id = req.headers["mcp-session-id"]
 
       if (id === undefined || id === "") {
         // https://github.com/modelcontextprotocol/typescript-sdk/blob/1.15.1/src/server/streamableHttp.ts#L587
-        let err = new errors.MessageError("Bad Request: Mcp-Session-Id header is required")
+        const err = new errors.MessageError("Bad Request: Mcp-Session-Id header is required")
         res.writeHead(400)
         res.end(err.toString())
         return
@@ -202,21 +202,21 @@ export class SseServer {
 
       if (Array.isArray(id)) {
         // https://github.com/modelcontextprotocol/typescript-sdk/blob/1.15.1/src/server/streamableHttp.ts#L597
-        let err = new errors.MessageError("Bad Request: Mcp-Session-Id header must be a single value")
+        const err = new errors.MessageError("Bad Request: Mcp-Session-Id header must be a single value")
         res.writeHead(400)
         res.end(err.toString())
         return
       }
 
-      let r = this.transports.retrieve(id)
+      const r = this.transports.retrieve(id)
       if (r.err) {
-        let err = new errors.MessageError("Retrieving transport", {cause: r.err})
+        const err = new errors.MessageError("Retrieving transport", {cause: r.err})
         res.writeHead(404)
         res.end(err.toString())
         return
       }
 
-      let h = await result.safeAsync(r.v.handlePostMessage.bind(r.v), req, res)
+      const h = await result.safeAsync(r.v.handlePostMessage.bind(r.v), req, res)
       if (h.err) {
         // The handlePostMessage will most likely populate the response itself;
         // however, if it does not, we will do it ourselves.
@@ -225,7 +225,7 @@ export class SseServer {
             res.end()
           }
         } else {
-          let err = new errors.MessageError("Handling post message", {cause: h.err})
+          const err = new errors.MessageError("Handling post message", {cause: h.err})
           res.writeHead(500)
           res.end(err.toString())
         }
@@ -237,7 +237,7 @@ export class SseServer {
           res.end()
         }
       } else {
-        let err = new errors.MessageError("Internal Server Error", {cause: err_})
+        const err = new errors.MessageError("Internal Server Error", {cause: err_})
         res.writeHead(500)
         res.end(err.toString())
       }

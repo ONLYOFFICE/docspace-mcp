@@ -14,6 +14,7 @@ Before interacting with the ONLYOFFICE Apps MCP server, you need to install or c
 
 You can configure your local machine to interact with the ONLYOFFICE Apps MCP server using:
 
+- [Quick install](#quick-install)
 - [Docker image](#install-with-docker-image)
 - [Docker MCP Toolkit](#install-with-docker-mcp-toolkit)
 - [MCP bundle](#install-with-mcp-bundle)
@@ -23,6 +24,13 @@ Before proceeding, ensure to set these environment variables:
 
 - `DOCSPACE_BASE_URL` - the URL of your ONLYOFFICE Apps instance (e.g. https://your-instance.onlyoffice.com).
 - `DOCSPACE_API_KEY` - your personal API key generated in ONLYOFFICE Apps settings → **Developer Tools** → **API keys**.
+
+### Quick install
+
+Use the buttons below to add the ONLYOFFICE Apps MCP server to your client in one click. VS Code prompts for the environment variable values during installation; in Cursor, replace the placeholder values in the generated configuration.
+
+<!--generate quick-install-start-->
+<!--generate quick-install-end-->
 
 ### Install with Docker image
 

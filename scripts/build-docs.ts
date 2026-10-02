@@ -45,8 +45,8 @@ type ConfigEnv = {
 
 async function main(): Promise<void> {
   await Promise.all([
-    updateTools("docs/features/tools.md"),
-    updateQuickInstall("docs/installation/local-server.md"),
+    updateTools("docs/reference/tools.md"),
+    updateQuickInstall("docs/getting-started/installation.md"),
   ])
 }
 

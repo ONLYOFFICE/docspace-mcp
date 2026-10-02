@@ -7,9 +7,9 @@ COPY package.json package.json
 COPY pnpm-lock.yaml pnpm-lock.yaml
 COPY tsconfig.json tsconfig.json
 RUN \
-	npm install --global pnpm@10.11.0 && \
-	pnpm install --frozen-lockfile && \
-	pnpm build-app
+  npm install --global pnpm@10.11.0 && \
+  pnpm install --frozen-lockfile && \
+  pnpm build-app
 
 FROM node:24.11.1-alpine3.22
 LABEL org.opencontainers.image.authors="Ascensio System SIA <integration@onlyoffice.com>"

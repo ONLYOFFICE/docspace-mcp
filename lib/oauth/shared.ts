@@ -9,183 +9,183 @@ import * as z from "zod"
  * {@link https://www.rfc-editor.org/rfc/rfc7515#section-4.1 | RFC 7515 Reference}
  */
 export const JwsHeaderSchema = z.looseObject({
-	"alg": z.string(),
-	"jku": z.string().optional(),
-	"jwk": z.string().optional(),
-	"kid": z.string().optional(),
-	"x5u": z.union([z.string(), z.array(z.string())]).optional(),
-	"x5c": z.union([z.string(), z.array(z.string())]).optional(),
-	"x5t": z.string().optional(),
-	"x5t#S256": z.string().optional(),
-	"typ": z.string().optional(),
-	"cty": z.string().optional(),
-	"crit": z.union([z.string(), z.array(z.string())]).optional(),
+  "alg": z.string(),
+  "jku": z.string().optional(),
+  "jwk": z.string().optional(),
+  "kid": z.string().optional(),
+  "x5u": z.union([z.string(), z.array(z.string())]).optional(),
+  "x5c": z.union([z.string(), z.array(z.string())]).optional(),
+  "x5t": z.string().optional(),
+  "x5t#S256": z.string().optional(),
+  "typ": z.string().optional(),
+  "cty": z.string().optional(),
+  "crit": z.union([z.string(), z.array(z.string())]).optional(),
 })
 
 /**
  * {@link https://www.rfc-editor.org/rfc/rfc7519#section-4 | RFC 7519 Reference}
  */
 export const JwtClaimsSchema = z.looseObject({
-	iss: z.string().optional(),
-	sub: z.string().optional(),
-	aud: z.union([z.string(), z.array(z.string())]).optional(),
-	exp: z.number().optional(),
-	nbf: z.number().optional(),
-	iat: z.number().optional(),
-	jti: z.string().optional(),
+  iss: z.string().optional(),
+  sub: z.string().optional(),
+  aud: z.union([z.string(), z.array(z.string())]).optional(),
+  exp: z.number().optional(),
+  nbf: z.number().optional(),
+  iat: z.number().optional(),
+  jti: z.string().optional(),
 })
 
 /**
  * {@link https://www.rfc-editor.org/rfc/rfc6749#section-2.3.1 | RFC 6749 Reference}
  */
 export const ClientPasswordSchema = z.object({
-	client_id: z.string(),
-	client_secret: z.string(),
+  client_id: z.string(),
+  client_secret: z.string(),
 })
 
 /**
  * {@link https://www.rfc-editor.org/rfc/rfc6749#section-2.3.1 | RFC 6749 Reference}
  */
 export const ClientCredentialsSchema = z.object({
-	client_id: z.string(),
-	client_secret: z.string().optional(),
+  client_id: z.string(),
+  client_secret: z.string().optional(),
 })
 
 /**
  * {@link https://www.rfc-editor.org/rfc/rfc6749#section-2.3.1 | RFC 6749 Reference}
  */
 export const PartialClientCredentialsSchema = z.object({
-	client_id: z.string().optional(),
-	client_secret: z.string().optional(),
+  client_id: z.string().optional(),
+  client_secret: z.string().optional(),
 })
 
 /**
  * {@link https://www.rfc-editor.org/rfc/rfc6749#section-4.1.1 | RFC 6749 Reference}
  */
 export const AuthorizeRequestSchema = z.object({
-	response_type: z.literal("code"),
-	client_id: z.string(),
-	redirect_uri: z.string().optional(),
-	scope: z.string().optional(),
-	state: z.string().optional(),
+  response_type: z.literal("code"),
+  client_id: z.string(),
+  redirect_uri: z.string().optional(),
+  scope: z.string().optional(),
+  state: z.string().optional(),
 })
 
 /**
  * {@link https://www.rfc-editor.org/rfc/rfc7662#section-2.1 | RFC 7662 Reference}
  */
 export const IntrospectRequestSchema = z.object({
-	token: z.string(),
+  token: z.string(),
 })
 
 /**
  * {@link https://www.rfc-editor.org/rfc/rfc7009#section-2.1 | RFC 7009 Reference}
  */
 export const RevokeRequestSchema = z.object({
-	token: z.string(),
-	token_type_hint: z.union([z.literal("access_token"), z.literal("refresh_token")]).optional().catch(undefined),
+  token: z.string(),
+  token_type_hint: z.union([z.literal("access_token"), z.literal("refresh_token")]).optional().catch(undefined),
 })
 
 /**
  * {@link https://www.rfc-editor.org/rfc/rfc6749#section-4.1.3 | RFC 6749 Reference}
  */
 export const AccessTokenRequestSchema = z.object({
-	grant_type: z.literal("authorization_code"),
-	code: z.string(),
-	redirect_uri: z.string().optional(),
+  grant_type: z.literal("authorization_code"),
+  code: z.string(),
+  redirect_uri: z.string().optional(),
 })
 
 /**
  * {@link https://www.rfc-editor.org/rfc/rfc6749#section-6 | RFC 6749 Reference}
  */
 export const RefreshTokenRequestSchema = z.object({
-	grant_type: z.literal("refresh_token"),
-	refresh_token: z.string(),
-	scope: z.string().optional(),
+  grant_type: z.literal("refresh_token"),
+  refresh_token: z.string(),
+  scope: z.string().optional(),
 })
 
 export const TokenRequestSchema = z.union([
-	AccessTokenRequestSchema,
-	RefreshTokenRequestSchema,
+  AccessTokenRequestSchema,
+  RefreshTokenRequestSchema,
 ])
 
 /**
  * {@link https://www.rfc-editor.org/rfc/rfc6749#section-5.2 | RFC 6749 Reference}
  */
 export const ErrorResponseSchema = z.object({
-	error: z.string(),
-	error_description: z.string().optional(),
-	error_uri: z.string().optional(),
+  error: z.string(),
+  error_description: z.string().optional(),
+  error_uri: z.string().optional(),
 })
 
 /**
  * {@link https://www.rfc-editor.org/rfc/rfc8414#section-3.2 | RFC 8414 Reference}
  */
 export const ServerMetadataResponseSchema = z.object({
-	issuer: z.string(),
-	authorization_endpoint: z.string().optional(),
-	token_endpoint: z.string().optional(),
-	registration_endpoint: z.string().optional(),
-	response_types_supported: z.array(z.string()),
-	grant_types_supported: z.array(z.string()).optional(),
-	token_endpoint_auth_methods_supported: z.array(z.string()).optional(),
-	revocation_endpoint: z.string().optional(),
-	revocation_endpoint_auth_methods_supported: z.array(z.string()).optional(),
-	introspection_endpoint: z.string().optional(),
-	introspection_endpoint_auth_methods_supported: z.array(z.string()).optional(),
-	code_challenge_methods_supported: z.array(z.string()).optional(),
+  issuer: z.string(),
+  authorization_endpoint: z.string().optional(),
+  token_endpoint: z.string().optional(),
+  registration_endpoint: z.string().optional(),
+  response_types_supported: z.array(z.string()),
+  grant_types_supported: z.array(z.string()).optional(),
+  token_endpoint_auth_methods_supported: z.array(z.string()).optional(),
+  revocation_endpoint: z.string().optional(),
+  revocation_endpoint_auth_methods_supported: z.array(z.string()).optional(),
+  introspection_endpoint: z.string().optional(),
+  introspection_endpoint_auth_methods_supported: z.array(z.string()).optional(),
+  code_challenge_methods_supported: z.array(z.string()).optional(),
 })
 
 /**
  * {@link https://www.rfc-editor.org/rfc/rfc9728#name-protected-resource-metadata-r | RFC 9728 Reference}
  */
 export const ResourceMetadataResponseSchema = z.object({
-	resource: z.string(),
-	authorization_servers: z.array(z.string()).optional(),
-	bearer_methods_supported: z.array(z.string()).optional(),
+  resource: z.string(),
+  authorization_servers: z.array(z.string()).optional(),
+  bearer_methods_supported: z.array(z.string()).optional(),
 })
 
 /**
  * {@link https://www.rfc-editor.org/rfc/rfc6749#section-4.1.2 | RFC 6749 Reference}
  */
 export const AuthorizeResponseSchema = z.object({
-	code: z.string(),
-	state: z.string().optional(),
+  code: z.string(),
+  state: z.string().optional(),
 })
 
 /**
  * {@link https://www.rfc-editor.org/rfc/rfc7662#section-2.2 | RFC 7662 Reference}
  */
 export const IntrospectResponseSchema = z.object({
-	active: z.boolean(),
-	scope: z.string().optional(),
-	client_id: z.string().optional(),
-	username: z.string().optional(),
-	token_type: z.string().optional(),
-	exp: z.number().optional(),
-	iat: z.number().optional(),
-	nbf: z.number().optional(),
-	sub: z.string().optional(),
-	aud: z.union([z.string(), z.array(z.string())]).optional(),
-	iss: z.string().optional(),
-	jti: z.string().optional(),
+  active: z.boolean(),
+  scope: z.string().optional(),
+  client_id: z.string().optional(),
+  username: z.string().optional(),
+  token_type: z.string().optional(),
+  exp: z.number().optional(),
+  iat: z.number().optional(),
+  nbf: z.number().optional(),
+  sub: z.string().optional(),
+  aud: z.union([z.string(), z.array(z.string())]).optional(),
+  iss: z.string().optional(),
+  jti: z.string().optional(),
 })
 
 /**
  * {@link https://www.rfc-editor.org/rfc/rfc7591#section-3.2.1 | RFC 7591 Reference}
  */
 export const RegisterResponseSchema = z.looseObject({
-	client_id: z.string(),
+  client_id: z.string(),
 })
 
 /**
  * {@link https://www.rfc-editor.org/rfc/rfc6749#section-5.1 | RFC 6749 Reference}
  */
 export const TokenResponseSchema = z.object({
-	access_token: z.string(),
-	token_type: z.string(),
-	expires_in: z.number().optional(),
-	refresh_token: z.string().optional(),
-	scope: z.string().optional(),
+  access_token: z.string(),
+  token_type: z.string(),
+  expires_in: z.number().optional(),
+  refresh_token: z.string().optional(),
+  scope: z.string().optional(),
 })
 
 export type ClientPassword = z.infer<typeof ClientPasswordSchema>

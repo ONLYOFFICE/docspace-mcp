@@ -1,54 +1,54 @@
 {
-	"$schema": "node_modules/@anthropic-ai/mcpb/schemas/mcpb-manifest-v0.3.schema.json",
-	"manifest_version": "0.3",
-	"name": "onlyoffice-docspace",
-	"display_name": "ONLYOFFICE Apps",
-	"version": "",
-	"description": "A room-based collaborative platform",
-	"long_description": "ONLYOFFICE Apps is a room-based collaborative platform which allows organizing a clear file structure depending on users' needs or project goals.",
-	"author": {
-		"name": "Ascensio System SIA",
-		"email": "integration@onlyoffice.com",
-		"url": "https://onlyoffice.com/"
-	},
-	"homepage": "https://github.com/onlyoffice/docspace-mcp/",
-	"documentation": "https://github.com/onlyoffice/docspace-mcp/blob/v{{version}}/README.md",
-	"support": "https://github.com/onlyoffice/docspace-mcp/issues/",
-	"icon": "docs/icon.png",
-	"server": {
-		"type": "node",
-		"entry_point": "bin/onlyoffice-docspace-mcp.js",
-		"mcp_config": {
-			"command": "node",
-			"args": [
-				"${__dirname}/bin/onlyoffice-docspace-mcp.js"
-			],
-			"env": {}
-		}
-	},
-	"tools": [],
-	"compatibility": {
-		"platforms": [
-			"darwin",
-			"win32",
-			"linux"
-		],
-		"runtimes": {
-			"node": ">=18.0.0"
-		}
-	},
-	"user_config": {},
-	"keywords": [
-		"onlyoffice",
-		"docspace"
-	],
-	"license": "MIT",
-	"privacy_policies": [
-		"https://www.onlyoffice.com/legalterms",
-		"https://www.onlyoffice.com/privacy"
-	],
-	"repository": {
-		"type": "git",
-		"url": "git+https://github.com/onlyoffice/docspace-mcp.git"
-	}
+  "$schema": "node_modules/@anthropic-ai/mcpb/schemas/mcpb-manifest-v0.3.schema.json",
+  "manifest_version": "0.3",
+  "name": "onlyoffice-docspace",
+  "display_name": "ONLYOFFICE Apps",
+  "version": "",
+  "description": "A room-based collaborative platform",
+  "long_description": "ONLYOFFICE Apps is a room-based collaborative platform which allows organizing a clear file structure depending on users' needs or project goals.",
+  "author": {
+    "name": "Ascensio System SIA",
+    "email": "integration@onlyoffice.com",
+    "url": "https://onlyoffice.com/"
+  },
+  "homepage": "https://github.com/onlyoffice/docspace-mcp/",
+  "documentation": "https://github.com/onlyoffice/docspace-mcp/blob/v{{version}}/README.md",
+  "support": "https://github.com/onlyoffice/docspace-mcp/issues/",
+  "icon": "docs/icon.png",
+  "server": {
+    "type": "node",
+    "entry_point": "bin/onlyoffice-docspace-mcp.js",
+    "mcp_config": {
+      "command": "node",
+      "args": [
+        "${__dirname}/bin/onlyoffice-docspace-mcp.js"
+      ],
+      "env": {}
+    }
+  },
+  "tools": [],
+  "compatibility": {
+    "platforms": [
+      "darwin",
+      "win32",
+      "linux"
+    ],
+    "runtimes": {
+      "node": ">=18.0.0"
+    }
+  },
+  "user_config": {},
+  "keywords": [
+    "onlyoffice",
+    "docspace"
+  ],
+  "license": "MIT",
+  "privacy_policies": [
+    "https://www.onlyoffice.com/legalterms",
+    "https://www.onlyoffice.com/privacy"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/onlyoffice/docspace-mcp.git"
+  }
 }

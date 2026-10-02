@@ -9,18 +9,18 @@ import * as http from "../http.ts"
 import {sessionIdKey} from "./context.ts"
 
 export function expressHandler(): express.Handler {
-	return (req, _, next) => {
-		let id = http.header(req, "Mcp-Session-Id")
+  return (req, _, next) => {
+    let id = http.header(req, "Mcp-Session-Id")
 
-		if (id) {
-			let ctx: context.Context = {
-				[sessionIdKey]: id,
-			}
+    if (id) {
+      let ctx: context.Context = {
+        [sessionIdKey]: id,
+      }
 
-			context.run(ctx, next)
-			return
-		}
+      context.run(ctx, next)
+      return
+    }
 
-		next()
-	}
+    next()
+  }
 }

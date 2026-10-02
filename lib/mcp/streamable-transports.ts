@@ -8,80 +8,80 @@ import * as result from "../util/result.ts"
 import type {Session, SessionsCreateOptions} from "./sessions.ts"
 
 export type StreamableTransportsConfig = {
-	logger: StreamableTransportsLogger
-	sessions: StreamableTransportsSessions
+  logger: StreamableTransportsLogger
+  sessions: StreamableTransportsSessions
 }
 
 export type StreamableTransportsLogger = {
-	info(msg: string, o?: object): void
-	warn(msg: string, o?: object): void
-	error(msg: string, o?: object): void
+  info(msg: string, o?: object): void
+  warn(msg: string, o?: object): void
+  error(msg: string, o?: object): void
 }
 
 export type StreamableTransportsSessions = {
-	create(o: SessionsCreateOptions): result.Result<Session, Error>
-	get(id: string): result.Result<Session, Error>
-	delete(id: string): Error | undefined
+  create(o: SessionsCreateOptions): result.Result<Session, Error>
+  get(id: string): result.Result<Session, Error>
+  delete(id: string): Error | undefined
 }
 
 export class StreamableTransports {
-	private logger: StreamableTransportsLogger
-	private sessions: StreamableTransportsSessions
+  private logger: StreamableTransportsLogger
+  private sessions: StreamableTransportsSessions
 
-	constructor(config: StreamableTransportsConfig) {
-		this.logger = config.logger
-		this.sessions = config.sessions
-	}
+  constructor(config: StreamableTransportsConfig) {
+    this.logger = config.logger
+    this.sessions = config.sessions
+  }
 
-	create(): streamableHttp.StreamableHTTPServerTransport {
-		let t = new streamableHttp.StreamableHTTPServerTransport({
-			sessionIdGenerator: () => {
-				return crypto.randomUUID()
-			},
-			onsessioninitialized: (sessionId) => {
-				let o: SessionsCreateOptions = {
-					id: sessionId,
-					transport: t,
-				}
+  create(): streamableHttp.StreamableHTTPServerTransport {
+    let t = new streamableHttp.StreamableHTTPServerTransport({
+      sessionIdGenerator: () => {
+        return crypto.randomUUID()
+      },
+      onsessioninitialized: (sessionId) => {
+        let o: SessionsCreateOptions = {
+          id: sessionId,
+          transport: t,
+        }
 
-				let s = this.sessions.create(o)
-				if (s.err) {
-					this.logger.error("Creating session", {sessionId, err: s.err})
-					return
-				}
+        let s = this.sessions.create(o)
+        if (s.err) {
+          this.logger.error("Creating session", {sessionId, err: s.err})
+          return
+        }
 
-				this.logger.info("Session created", {sessionId: s.v.id})
-			},
-		})
+        this.logger.info("Session created", {sessionId: s.v.id})
+      },
+    })
 
-		t.onclose = () => {
-			if (!t.sessionId) {
-				this.logger.warn("Transport closed without a session ID")
-				return
-			}
+    t.onclose = () => {
+      if (!t.sessionId) {
+        this.logger.warn("Transport closed without a session ID")
+        return
+      }
 
-			let err = this.sessions.delete(t.sessionId)
-			if (err) {
-				this.logger.error("Deleting session", {sessionId: t.sessionId, err})
-				return
-			}
+      let err = this.sessions.delete(t.sessionId)
+      if (err) {
+        this.logger.error("Deleting session", {sessionId: t.sessionId, err})
+        return
+      }
 
-			this.logger.info("Session deleted", {sessionId: t.sessionId})
-		}
+      this.logger.info("Session deleted", {sessionId: t.sessionId})
+    }
 
-		return t
-	}
+    return t
+  }
 
-	retrieve(id: string): result.Result<streamableHttp.StreamableHTTPServerTransport, Error> {
-		let s = this.sessions.get(id)
-		if (s.err) {
-			return result.error(new Error("Getting session", {cause: s.err}))
-		}
+  retrieve(id: string): result.Result<streamableHttp.StreamableHTTPServerTransport, Error> {
+    let s = this.sessions.get(id)
+    if (s.err) {
+      return result.error(new Error("Getting session", {cause: s.err}))
+    }
 
-		if (!(s.v.transport instanceof streamableHttp.StreamableHTTPServerTransport)) {
-			return result.error(new Error("Session transport is not a StreamableHTTPServerTransport"))
-		}
+    if (!(s.v.transport instanceof streamableHttp.StreamableHTTPServerTransport)) {
+      return result.error(new Error("Session transport is not a StreamableHTTPServerTransport"))
+    }
 
-		return result.ok(s.v.transport)
-	}
+    return result.ok(s.v.transport)
+  }
 }

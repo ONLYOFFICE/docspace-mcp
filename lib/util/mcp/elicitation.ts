@@ -17,59 +17,59 @@ export const ElicitationFormRequestedSchemaSchema = types.ElicitRequestFormParam
 export type ElicitationFormRequestedSchema = z.infer<typeof ElicitationFormRequestedSchemaSchema>
 
 export type ElicitationProtocol = {
-	getClientCapabilities(): types.ClientCapabilities
-	request<T extends zodCompat.AnySchema>(request: types.Request, resultSchema: T, options?: protocol.RequestOptions): Promise<zodCompat.SchemaOutput<T>>
+  getClientCapabilities(): types.ClientCapabilities
+  request<T extends zodCompat.AnySchema>(request: types.Request, resultSchema: T, options?: protocol.RequestOptions): Promise<zodCompat.SchemaOutput<T>>
 }
 
 export class Elicitation {
-	private protocol: ElicitationProtocol
+  private protocol: ElicitationProtocol
 
-	constructor(protocol: ElicitationProtocol) {
-		this.protocol = protocol
-	}
+  constructor(protocol: ElicitationProtocol) {
+    this.protocol = protocol
+  }
 
-	async form(m: string, s: ElicitationFormRequestedSchema): Promise<r.Result<types.ElicitResult, Error>> {
-		let ctx = context.get()
+  async form(m: string, s: ElicitationFormRequestedSchema): Promise<r.Result<types.ElicitResult, Error>> {
+    let ctx = context.get()
 
-		let cc = this.protocol.getClientCapabilities()
+    let cc = this.protocol.getClientCapabilities()
 
-		if (!cc.elicitation || !cc.elicitation.form) {
-			return r.error(new Error("Client does not support form elicitation"))
-		}
+    if (!cc.elicitation || !cc.elicitation.form) {
+      return r.error(new Error("Client does not support form elicitation"))
+    }
 
-		let er: types.ElicitRequest = {
-			method: "elicitation/create",
-			params: {
-				mode: "form",
-				message: m,
-				requestedSchema: s,
-			},
-		}
+    let er: types.ElicitRequest = {
+      method: "elicitation/create",
+      params: {
+        mode: "form",
+        message: m,
+        requestedSchema: s,
+      },
+    }
 
-		let ro: protocol.RequestOptions = {}
+    let ro: protocol.RequestOptions = {}
 
-		if (ctx[abort.signalKey]) {
-			ro.signal = ctx[abort.signalKey]
-		}
+    if (ctx[abort.signalKey]) {
+      ro.signal = ctx[abort.signalKey]
+    }
 
-		if (ctx[requestIdKey]) {
-			ro.relatedRequestId = ctx[requestIdKey]
-		}
+    if (ctx[requestIdKey]) {
+      ro.relatedRequestId = ctx[requestIdKey]
+    }
 
-		if (ctx[taskIdKey]) {
-			ro.relatedTask = {taskId: ctx[taskIdKey]}
-		}
+    if (ctx[taskIdKey]) {
+      ro.relatedTask = {taskId: ctx[taskIdKey]}
+    }
 
-		let rw = await r.safeAsync(
-			this.protocol.request.bind(this.protocol),
-			er,
-			types.ElicitResultSchema,
-			ro,
-		)
-		if (rw.err) {
-			return r.error(new Error("Making request", {cause: rw.err}))
-		}
+    let rw = await r.safeAsync(
+      this.protocol.request.bind(this.protocol),
+      er,
+      types.ElicitResultSchema,
+      ro,
+    )
+    if (rw.err) {
+      return r.error(new Error("Making request", {cause: rw.err}))
+    }
 
-		return r.ok(rw.v)
-	}
+    return r.ok(rw.v)
+  }
 }

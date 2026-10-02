@@ -26,16 +26,16 @@ export type Result<V, E> = Ok<V, E> | Error<V, E>
  * Ok is the result of a successful operation.
  */
 export type Ok<V, _> = {
-	v: V
-	err: undefined
+  v: V
+  err: undefined
 }
 
 /**
  * Error is the result of a failed operation.
  */
 export type Error<_, E> = {
-	v: undefined
-	err: E
+  v: undefined
+  err: E
 }
 
 /**
@@ -50,10 +50,10 @@ export function ok<V, E = never>(v: V): Ok<V, E>
 export function ok<E = never>(v: void): Ok<void, E>
 
 export function ok<V, E = never>(v: V): Ok<V, E> {
-	return {
-		v,
-		err: undefined,
-	}
+  return {
+    v,
+    err: undefined,
+  }
 }
 
 /**
@@ -63,10 +63,10 @@ export function ok<V, E = never>(v: V): Ok<V, E> {
  * @returns A new Error result.
  */
 export function error<V = never, E = unknown>(err: E): Error<V, E> {
-	return {
-		v: undefined,
-		err,
-	}
+  return {
+    v: undefined,
+    err,
+  }
 }
 
 /**
@@ -83,20 +83,20 @@ export function error<V = never, E = unknown>(err: E): Error<V, E> {
  *   the function call failed.
  */
 export function safeSync<
-	A extends unknown[],
-	R,
+  A extends unknown[],
+  R,
 >(
-	fn: (...args: A) => R,
-	...args: A
+  fn: (...args: A) => R,
+  ...args: A
 ): Result<R, globalThis.Error> {
-	try {
-		return ok(fn(...args))
-	} catch (err) {
-		if (err instanceof Error) {
-			return error(err)
-		}
-		return error(new Error("Unknown error.", {cause: err}))
-	}
+  try {
+    return ok(fn(...args))
+  } catch (err) {
+    if (err instanceof Error) {
+      return error(err)
+    }
+    return error(new Error("Unknown error.", {cause: err}))
+  }
 }
 
 /**
@@ -113,20 +113,20 @@ export function safeSync<
  *   the function call failed.
  */
 export async function safeAsync<
-	A extends unknown[],
-	R,
+  A extends unknown[],
+  R,
 >(
-	fn: (...args: A) => PromiseLike<R>,
-	...args: A
+  fn: (...args: A) => PromiseLike<R>,
+  ...args: A
 ): Promise<Result<Awaited<R>, globalThis.Error>> {
-	try {
-		return ok(await Promise.resolve(fn(...args)))
-	} catch (err) {
-		if (err instanceof Error) {
-			return error(err)
-		}
-		return error(new Error("Unknown error.", {cause: err}))
-	}
+  try {
+    return ok(await Promise.resolve(fn(...args)))
+  } catch (err) {
+    if (err instanceof Error) {
+      return error(err)
+    }
+    return error(new Error("Unknown error.", {cause: err}))
+  }
 }
 
 /**
@@ -143,18 +143,18 @@ export async function safeAsync<
  *   if the constructor call failed.
  */
 export function safeNew<
-	A extends unknown[],
-	R,
+  A extends unknown[],
+  R,
 >(
-	fn: new (...args: A) => R,
-	...args: A
+  fn: new (...args: A) => R,
+  ...args: A
 ): Result<R, globalThis.Error> {
-	try {
-		return ok(new fn(...args))
-	} catch (err) {
-		if (err instanceof Error) {
-			return error(err)
-		}
-		return error(new Error("Unknown error.", {cause: err}))
-	}
+  try {
+    return ok(new fn(...args))
+  } catch (err) {
+    if (err instanceof Error) {
+      return error(err)
+    }
+    return error(new Error("Unknown error.", {cause: err}))
+  }
 }

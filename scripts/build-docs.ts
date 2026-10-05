@@ -141,7 +141,7 @@ function createCursorNpxLink(): string {
 
 function createCursorQuery(c: Config): CursorQuery {
   return {
-    name: "onlyoffice-docspace",
+    name: "onlyoffice-apps",
     config: Buffer.from(JSON.stringify(c)).toString("base64"),
   }
 }
@@ -221,7 +221,7 @@ function createVscodeInsidersQuery(i: VscodeInput[], c: Config): VscodeQuery {
 
 function createVscodeQuery(i: VscodeInput[], c: Config): VscodeQuery {
   return {
-    name: "onlyoffice-docspace",
+    name: "onlyoffice-apps",
     inputs: JSON.stringify(i),
     config: JSON.stringify(c),
   }

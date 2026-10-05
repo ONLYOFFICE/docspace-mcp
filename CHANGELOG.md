@@ -5,8 +5,6 @@ Changelog] format and adhering to [Semantic Versioning].
 
 ## [Unreleased]
 
-<!-- There are no notable changes in this release. -->
-
 ### Changed
 
 - Add the `openWorldHint` annotation to all tools and mark the `archive_room`,
@@ -16,6 +14,16 @@ Changelog] format and adhering to [Semantic Versioning].
 - Update `ajv` to v8.20.0 ([35af45a]).
 - Update `express-rate-limit` to v8.7.0 ([35af45a]).
 - Update `zod` to v4.6.5 ([35af45a]).
+- Rename the product from ONLYOFFICE DocSpace to ONLYOFFICE Apps in the
+  documentation, option descriptions, and distributed metadata files. The
+  package name, OCI image name, MCP registry name, extension name, and
+  `DOCSPACE_*` options remain unchanged, so existing configurations continue to
+  work ([084ab40]).
+- Add the `onlyoffice-apps` keyword to the package and extension metadata
+  ([a1cdc95]).
+- Rename the server key in client configuration examples from
+  `onlyoffice-docspace` to `onlyoffice-apps`. Existing configurations with the
+  previous key continue to work ([8204500]).
 
 ### Removed
 
@@ -350,6 +358,9 @@ There are no noticeable changes in version [3.0.1].
 
 [bac7e04]: https://github.com/onlyoffice/docspace-mcp/commit/bac7e04dd1fda09c8db7e23c3c36973511df5ea9/
 [35af45a]: https://github.com/onlyoffice/docspace-mcp/commit/35af45aaaf92a6e09e804bfea2831f9149eed164/
+[8204500]: https://github.com/onlyoffice/docspace-mcp/commit/8204500712da4785b5764a36e7b670df8832b8bd/
+[a1cdc95]: https://github.com/onlyoffice/docspace-mcp/commit/a1cdc957e4b82dcf2f38df38c7ff8e02e6bd1ca5/
+[084ab40]: https://github.com/onlyoffice/docspace-mcp/commit/084ab400bdd570002abb4dc6f03d1e33c6601ad9/
 [7444a56]: https://github.com/onlyoffice/docspace-mcp/commit/7444a56c8cc5b2d0693ab9f828425d731a71376a/
 [d0d74ce]: https://github.com/onlyoffice/docspace-mcp/commit/d0d74ce1bbf46be2850e6d41b049b7e53583f859/
 [cd38376]: https://github.com/onlyoffice/docspace-mcp/commit/cd3837673680c79bea998ec287cceee07729a91f/

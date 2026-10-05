@@ -36,7 +36,7 @@ Insert the following block into the `mcpServers` section of your `.json` configu
 ```json
 {
   "mcpServers": {
-    "onlyoffice-docspace": {
+    "onlyoffice-apps": {
       "command": "docker",
       "args": [
         "run",
@@ -112,7 +112,7 @@ configuration to your client's configuration file:
 ```json
 {
   "mcpServers": {
-    "onlyoffice-docspace": {
+    "onlyoffice-apps": {
       "command": "npx",
       "args": [
         "--yes",

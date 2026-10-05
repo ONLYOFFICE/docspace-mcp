@@ -8,7 +8,7 @@ This may be due to any of the following reasons:
 
 - **JSON syntax error.** Verify that the configuration file is valid JSON as missing commas, unclosed brackets, or extra trailing commas will prevent the file from being parsed. Use a JSON validator (e.g., [jsonlint.com](https://jsonlint.com)) to check the syntax.
 - **The server was not reloaded.** After saving the configuration file, restart Windsurf or reload the MCP server list via **Open MCP Marketplace**.
-- **Missing or misplaced `mcpServers` key.** Make sure the `onlyoffice-docspace` record is nested directly inside the `mcpServers` object, not at the root level of the file.
+- **Missing or misplaced `mcpServers` key.** Make sure the `onlyoffice-apps` record is nested directly inside the `mcpServers` object, not at the root level of the file.
 
 ## Changes to the configuration file are not applied
 

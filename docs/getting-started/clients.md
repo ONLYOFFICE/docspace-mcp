@@ -35,7 +35,7 @@ Connect to the locally running MCP server using stdio transport.
 ```json
 {
   "mcpServers": {
-    "onlyoffice-docspace": {
+    "onlyoffice-apps": {
       "command": "docker",
       "args": [
         "run",
@@ -117,7 +117,7 @@ Connect to the locally running MCP server using Claude's Local MCP servers.
    ```json
    {
      "mcpServers": {
-       "onlyoffice-docspace": {
+       "onlyoffice-apps": {
          "command": "docker",
          "args": [
            "run",
@@ -181,7 +181,7 @@ Connect to the MCP server running remotely using Streamable-HTTP transport.
    ```json
    {
      "mcpServers": {
-       "onlyoffice-docspace": {
+       "onlyoffice-apps": {
          "type": "http",
          "url": "https://mcp.onlyoffice.com/mcp"
        }
@@ -208,7 +208,7 @@ Connect to the locally running MCP server using stdio transport.
    ```json
    {
      "mcpServers": {
-       "onlyoffice-docspace": {
+       "onlyoffice-apps": {
          "command": "docker",
          "args": [
            "run",
@@ -272,7 +272,7 @@ This is the preferred connection method and connects to the remote MCP server us
    ```json
    {
      "servers": {
-       "onlyoffice-docspace": {
+       "onlyoffice-apps": {
          "type": "http",
          "url": "https://mcp.onlyoffice.com/mcp"
        }
@@ -282,7 +282,7 @@ This is the preferred connection method and connects to the remote MCP server us
 5. Save the file.
 6. Bring up Command Palette.
 7. Select **MCP: List Servers**.
-8. Select **onlyoffice-docspace**.
+8. Select **onlyoffice-apps**.
 9. Select **Start Server**.
 10. Complete the OAuth authentication process:
     - Sign in to your ONLYOFFICE Apps account by entering your email and password and clicking **Sign In**.
@@ -300,7 +300,7 @@ Connect to the locally running MCP server using stdio transport.
    ```json
    {
      "servers": {
-       "onlyoffice-docspace": {
+       "onlyoffice-apps": {
          "command": "docker",
          "args": [
            "run",
@@ -323,7 +323,7 @@ Connect to the locally running MCP server using stdio transport.
 5. Save the file.
 6. Bring up Command Palette.
 7. Select **MCP: List Servers**.
-8. Select **onlyoffice-docspace**.
+8. Select **onlyoffice-apps**.
 9. Select **Start Server**.
 
 ## Connect to Windsurf
@@ -347,7 +347,7 @@ This is the recommended method and connects to the remote MCP server using Strea
    ```json
    {
      "mcpServers": {
-       "onlyoffice-docspace": {
+       "onlyoffice-apps": {
          "serverUrl": "https://mcp.onlyoffice.com/mcp"
        }
      }
@@ -373,7 +373,7 @@ This method uses stdio transport to connect to a locally running MCP server.
    ```json
    {
      "mcpServers": {
-       "onlyoffice-docspace": {
+       "onlyoffice-apps": {
          "command": "docker",
          "args": [
            "run",
@@ -395,4 +395,4 @@ This method uses stdio transport to connect to a locally running MCP server.
    ```
 8. Save the file.
 9. Open **Cascade**. 
-10. Click **Actions(...)**. You'll find **onlyoffice-docspace** under the MCP section if connection was successful. Toggle to enable the connection.
+10. Click **Actions(...)**. You'll find **onlyoffice-apps** under the MCP section if connection was successful. Toggle to enable the connection.

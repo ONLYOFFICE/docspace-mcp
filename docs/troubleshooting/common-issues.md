@@ -32,7 +32,7 @@ Sometimes OAuth authentication fails or the browser fails to open to authenticat
 - **No default browser configured.** The client opens the OAuth page in the system default browser. Ensure a default browser is set in your OS settings.
 - **The MCP server URL is incorrect.** Verify that the URL entered in is correct with no trailing slash issues or typos.
 - **Pop-ups are blocked.** If the authentication page does not appear, check that your browser is not blocking pop-ups from `mcp.onlyoffice.com`.
-- **Session expired or token revoked.** Delete the existing `onlyoffice-docspace` entry, re-add it, and repeat the authentication process.
+- **Session expired or token revoked.** Delete the existing `onlyoffice-apps` entry, re-add it, and repeat the authentication process.
 - **Corporate firewall or proxy.** If your organization uses a proxy, make sure that `mcp.onlyoffice.com` is reachable. Contact your network administrator if needed.
 
 ## The API key is invalid or authentication returns a 401 error (Local MCP Server)
@@ -99,7 +99,7 @@ After installing the MCP bundle, the extension is not listed under **Extensions*
 
 ## Docker-based Local MCP server fails to start
 
-After editing the client `config.json` file, the client displays an error for the `onlyoffice-docspace` server, or the server is not listed among the available connections.
+After editing the client `config.json` file, the client displays an error for the `onlyoffice-apps` server, or the server is not listed among the available connections.
 
 - **Docker is not running:** Make sure Docker Desktop (or the Docker daemon on Linux) is started before launching the client.
 - **The Docker image is not pulled:** Run `docker pull onlyoffice/docspace-mcp` manually in a terminal to verify the image can be downloaded.

@@ -19,7 +19,7 @@ To connect Claude Desktop to your local MCP server:
    ```json
    {
      "mcpServers": {
-       "onlyoffice-docspace": {
+       "onlyoffice-apps": {
          "command": "docker",
          "args": [
            "run",
@@ -53,7 +53,7 @@ Where:
 1. Open Claude Desktop.
 2. Click **+** > **Connectors** on the chat bar.
 
-   Our newly configured MCP server (**onlyoffice-docspace**) is now enabled.
+   Our newly configured MCP server (**onlyoffice-apps**) is now enabled.
 
 ![This image confirms a successful client-ONLYOFFICE Apps MCP server connection](/docs/img/confirm-connection.light.png#gh-light-mode-only)![This image confirms a successful client-ONLYOFFICE Apps MCP server connection](/docs/img/confirm-connection.dark.png#gh-dark-mode-only)
 

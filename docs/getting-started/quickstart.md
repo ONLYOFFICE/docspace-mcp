@@ -46,7 +46,7 @@ Where:
 
 7. Save the file and quit Claude Desktop.
 
-> **Note:** It's important to quit and not just close the Claude Desktop window as quitting and restarting the app reloads the `claude_desktop_config.json` configuration with the new `mcpServers` entry.
+> **Note:** It's important to quit and not just close the Claude Desktop window as quitting and restarting the app reloads the `claude_desktop_config.json` configuration with the new `mcpServers` entry. On Windows, right-click the Claude icon in the system tray and select **Exit**.
 
 ## Step 2: Confirm the connection
 

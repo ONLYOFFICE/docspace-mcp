@@ -137,7 +137,7 @@ Connect to the locally running MCP server using Claude's Local MCP servers.
      }
    }
    ```
-7. Save the file.
+7. Save the file, then fully quit Claude Desktop and relaunch it. Closing the window is not enough, as Claude Desktop reads the configuration only at startup.
 
 ## Connect to Claude Web
 

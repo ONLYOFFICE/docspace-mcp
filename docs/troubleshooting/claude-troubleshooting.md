@@ -48,4 +48,4 @@ After installing the MCP bundle, the extension is not listed under **Extensions*
 
 After editing `claude_desktop_config.json`, the changes seem to have no effect. To fix:
 
-- Fully quit the application and relaunch it as Claude Desktop reads the configuration only at startup. On macOS, use **Quit Claude** from the menu bar icon rather than simply closing the window.
+- Fully quit the application and relaunch it as Claude Desktop reads the configuration only at startup. On macOS, use **Quit Claude** from the menu bar icon rather than simply closing the window. On Windows, right-click the Claude icon in the system tray and select **Exit**.

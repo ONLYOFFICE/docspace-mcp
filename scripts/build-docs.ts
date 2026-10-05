@@ -334,19 +334,27 @@ function createMetaToolsTable(tools: utilMcp.ToolSummary[]): string {
 }
 
 function createMarkdownTable(h: string[], r: string[][]): string {
-  let w = h.map((c, i) => {
+  let w: number[] = []
+  let d: string[] = []
+
+  for (let [i, c] of h.entries()) {
     let m = Math.max(3, c.length)
     for (let l of r) {
       m = Math.max(m, l[i].length)
     }
-    return m
-  })
-
-  let f = (l: string[]): string => {
-    return `| ${l.map((c, i) => c.padEnd(w[i])).join(" | ")} |`
+    w.push(m)
+    d.push("-".repeat(m))
   }
 
-  let c = [f(h), f(w.map((n) => "-".repeat(n)))]
+  let f = (l: string[]): string => {
+    let p: string[] = []
+    for (let [i, c] of l.entries()) {
+      p.push(c.padEnd(w[i]))
+    }
+    return `| ${p.join(" | ")} |`
+  }
+
+  let c = [f(h), f(d)]
 
   for (let l of r) {
     c.push(f(l))

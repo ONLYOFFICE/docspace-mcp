@@ -386,7 +386,7 @@ const SuccessResponseSchema = z.
     }
 
     switch (true) {
-    case "response" in o:
+    case "response" in o: {
       let u = UploadSessionObjectSchema.safeParse(o.response)
       if (u.success) {
         t.data = u.data.data
@@ -394,6 +394,7 @@ const SuccessResponseSchema = z.
         t.data = o.response
       }
       break
+    }
 
     case "data" in o:
       t.data = o.data

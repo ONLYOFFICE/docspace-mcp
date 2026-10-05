@@ -46,7 +46,6 @@ export type Error<_, E> = {
  */
 export function ok<V, E = never>(v: V): Ok<V, E>
 
-// eslint-disable-next-line typescript/no-invalid-void-type
 export function ok<E = never>(v: void): Ok<void, E>
 
 export function ok<V, E = never>(v: V): Ok<V, E> {

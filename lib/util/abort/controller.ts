@@ -15,7 +15,7 @@ export class Controller {
     return this.ac.signal
   }
 
-  // eslint-disable-next-line typescript/explicit-module-boundary-types, typescript/no-explicit-any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   abort(reason?: any): void {
     this.ac.abort(reason)
   }

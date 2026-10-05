@@ -53,48 +53,38 @@ const RoomInvitationAccessSchema = z.union([
 ])
 
 const FormFillingRoomInvitationAccessSchema = z.union([
-  /* eslint-disable no-underscore-dangle */
   RoomInvitationAccessSchema._zod.def.options[4],
   RoomInvitationAccessSchema._zod.def.options[5],
   RoomInvitationAccessSchema._zod.def.options[7],
-  /* eslint-enable no-underscore-dangle */
 ])
 
 const CollaborationRoomInvitationAccessSchema = z.union([
-  /* eslint-disable no-underscore-dangle */
   RoomInvitationAccessSchema._zod.def.options[1],
   RoomInvitationAccessSchema._zod.def.options[5],
   RoomInvitationAccessSchema._zod.def.options[6],
   RoomInvitationAccessSchema._zod.def.options[7],
-  /* eslint-enable no-underscore-dangle */
 ])
 
 const CustomRoomInvitationAccessSchema = z.union([
-  /* eslint-disable no-underscore-dangle */
   RoomInvitationAccessSchema._zod.def.options[1],
   RoomInvitationAccessSchema._zod.def.options[2],
   RoomInvitationAccessSchema._zod.def.options[3],
   RoomInvitationAccessSchema._zod.def.options[5],
   RoomInvitationAccessSchema._zod.def.options[6],
   RoomInvitationAccessSchema._zod.def.options[7],
-  /* eslint-enable no-underscore-dangle */
 ])
 
 const PublicRoomInvitationAccessSchema = z.union([
-  /* eslint-disable no-underscore-dangle */
   RoomInvitationAccessSchema._zod.def.options[5],
   RoomInvitationAccessSchema._zod.def.options[7],
-  /* eslint-enable no-underscore-dangle */
 ])
 
 const VirtualDataRoomInvitationAccessSchema = z.union([
-  /* eslint-disable no-underscore-dangle */
   RoomInvitationAccessSchema._zod.def.options[1],
   RoomInvitationAccessSchema._zod.def.options[4],
   RoomInvitationAccessSchema._zod.def.options[5],
   RoomInvitationAccessSchema._zod.def.options[6],
   RoomInvitationAccessSchema._zod.def.options[7],
-  /* eslint-enable no-underscore-dangle */
 ])
 
 const ArchiveRoomInputSchema = z.object({
@@ -1071,11 +1061,11 @@ export class Server {
     }
 
     let co: core.CopyBatchItemsOptions = {
-      // @ts-ignore See the type above for the reason.
+      // @ts-expect-error See the type above for the reason.
       folderIds: pr.data.folderIds,
-      // @ts-ignore See the type above for the reason.
+      // @ts-expect-error See the type above for the reason.
       fileIds: pr.data.fileIds,
-      // @ts-ignore See the type above for the reason.
+      // @ts-expect-error See the type above for the reason.
       destFolderId: pr.data.destFolderId,
       conflictResolveType: 2,
       deleteAfter: false,
@@ -1505,11 +1495,11 @@ export class Server {
     }
 
     let mo: core.MoveBatchItemsOptions = {
-      // @ts-ignore See the type above for the reason.
+      // @ts-expect-error See the type above for the reason.
       folderIds: pr.data.folderIds,
-      // @ts-ignore See the type above for the reason.
+      // @ts-expect-error See the type above for the reason.
       fileIds: pr.data.fileIds,
-      // @ts-ignore See the type above for the reason.
+      // @ts-expect-error See the type above for the reason.
       destFolderId: pr.data.destFolderId,
       conflictResolveType: 2,
       deleteAfter: false,

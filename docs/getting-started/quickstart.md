@@ -4,9 +4,9 @@ Connect the [ONLYOFFICE Apps MCP server](README.md) to Claude Desktop and start 
 
 ## Step 1: Connect to MCP client
 
-[MCP clients](clients.md) like Claude, VS Code, and Windsurf act as a bridge to the ONLYOFFICE Apps MCP server, enabling LLMs to access and use ONLYOFFICE Apps workspace and tools, thus improving the overall capabilities of ONLYOFFICE Apps. This guide uses the Claude Desktop client and connects to a local MCP server. You can also [access via a remote server](installation.md#access-via-the-remote-onlyoffice-apps-mcp-server).
+[MCP clients](clients.md) like Claude, VS Code, and Windsurf act as a bridge to the ONLYOFFICE Apps MCP server, enabling LLMs to access and use the ONLYOFFICE Apps workspace and tools, thus improving the overall capabilities of ONLYOFFICE Apps. This guide uses the Claude Desktop client and connects to a local MCP server. You can also [access via a remote server](installation.md#access-via-the-remote-onlyoffice-apps-mcp-server).
 
-> **Note:** Ensure Docker is installed on your system.
+> **Note:** Ensure [Docker](https://www.docker.com/) is installed on your system.
 
 To connect Claude Desktop to your local MCP server:
 
@@ -14,7 +14,7 @@ To connect Claude Desktop to your local MCP server:
 2. Navigate to **Settings**.
 3. Navigate to **Developer**.
 4. Click **Edit config**.
-5. Open the configuration file (`config.json`) in a text editor.
+5. Open the configuration file (`claude_desktop_config.json`) in a text editor.
 6. Add a new record to the `mcpServers` section:
    ```json
    {
@@ -46,7 +46,7 @@ Where:
 
 7. Save the file and quit Claude Desktop.
 
-> **Note:** It's important to quit and not just close the Claude Desktop window as quitting and restarting the app reloads the `config.json` configuration with the new `mcpServers` entry.
+> **Note:** It's important to quit and not just close the Claude Desktop window as quitting and restarting the app reloads the `claude_desktop_config.json` configuration with the new `mcpServers` entry.
 
 ## Step 2: Confirm the connection
 

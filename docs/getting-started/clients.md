@@ -112,7 +112,7 @@ Connect to the locally running MCP server using Claude's Local MCP servers.
 2. Navigate to Settings.
 3. Navigate to Developer.
 4. Click "Edit config".
-5. Open the configuration file in a text editor.
+5. Open the configuration file (`claude_desktop_config.json`) in a text editor.
 6. Add a new record to the `mcpServers` section:
    ```json
    {

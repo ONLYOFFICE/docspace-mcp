@@ -407,7 +407,7 @@ const UploadFileInputJsonSchema = z.toJSONSchema(UploadFileInputSchema)
 export const metaTools = [
   {
     name: "list_toolsets",
-    description: "This is a meta-tool for listing available toolsets. Toolset is a set of available tools.",
+    description: "This is a meta tool for listing available toolsets. Toolset is a set of available tools.",
     inputSchema: z.toJSONSchema(z.object({})),
     annotations: {
       readOnlyHint: true,
@@ -416,7 +416,7 @@ export const metaTools = [
   },
   {
     name: "list_tools",
-    description: "This is a meta-tool for listing available tools of a specific toolset. The list of available toolsets can be obtained using the list_toolsets meta-tool.",
+    description: "This is a meta tool for listing available tools of a specific toolset. The list of available toolsets can be obtained using the list_toolsets meta tool.",
     inputSchema: ListToolsInputJsonSchema,
     annotations: {
       readOnlyHint: true,
@@ -425,7 +425,7 @@ export const metaTools = [
   },
   {
     name: "get_tool_input_schema",
-    description: "This is a meta-tool for getting an input schema for a specific tool. The list of available tools can be obtained using the list_tools meta-tool.",
+    description: "This is a meta tool for getting an input schema for a specific tool. The list of available tools can be obtained using the list_tools meta tool.",
     inputSchema: GetToolInputSchemaInputJsonSchema,
     annotations: {
       readOnlyHint: true,
@@ -434,7 +434,7 @@ export const metaTools = [
   },
   {
     name: "get_tool_output_schema",
-    description: "This is a meta-tool for getting an output schema for a specific tool. The list of available tools can be obtained using the list_tools meta-tool.",
+    description: "This is a meta tool for getting an output schema for a specific tool. The list of available tools can be obtained using the list_tools meta tool.",
     inputSchema: GetToolOutputSchemaInputJsonSchema,
     annotations: {
       readOnlyHint: true,
@@ -443,7 +443,7 @@ export const metaTools = [
   },
   {
     name: "call_tool",
-    description: "This is a meta-tool for calling a tool. The list of available tools can be obtained using the list_tools meta-tool. The input schema can be obtained using the get_tool_input_schema meta-tool.",
+    description: "This is a meta tool for calling a tool. The list of available tools can be obtained using the list_tools meta tool. The input schema can be obtained using the get_tool_input_schema meta tool.",
     inputSchema: CallToolInputJsonSchema,
     annotations: {
       readOnlyHint: false,

@@ -10,6 +10,10 @@ Changelog] format and adhering to [Semantic Versioning].
 - Add the `openWorldHint` annotation to all tools and mark the `archive_room`,
   `copy_batch_items`, `move_batch_items` and `upload_file` tools as
   non-destructive ([bac7e04]).
+- Update `@modelcontextprotocol/sdk` to v1.31.0 ([35af45a]).
+- Update `ajv` to v8.20.0 ([35af45a]).
+- Update `express-rate-limit` to v8.7.0 ([35af45a]).
+- Update `zod` to v4.6.5 ([35af45a]).
 - Rename the product from ONLYOFFICE DocSpace to ONLYOFFICE Apps in the
   documentation, option descriptions, and distributed metadata files. The
   package name, OCI image name, MCP registry name, extension name, and
@@ -353,6 +357,7 @@ There are no noticeable changes in version [3.0.1].
 [0.1.0]: https://github.com/onlyoffice/docspace-mcp/releases/tag/v0.1.0/
 
 [bac7e04]: https://github.com/onlyoffice/docspace-mcp/commit/bac7e04dd1fda09c8db7e23c3c36973511df5ea9/
+[35af45a]: https://github.com/onlyoffice/docspace-mcp/commit/35af45aaaf92a6e09e804bfea2831f9149eed164/
 [8204500]: https://github.com/onlyoffice/docspace-mcp/commit/8204500712da4785b5764a36e7b670df8832b8bd/
 [a1cdc95]: https://github.com/onlyoffice/docspace-mcp/commit/a1cdc957e4b82dcf2f38df38c7ff8e02e6bd1ca5/
 [084ab40]: https://github.com/onlyoffice/docspace-mcp/commit/084ab400bdd570002abb4dc6f03d1e33c6601ad9/

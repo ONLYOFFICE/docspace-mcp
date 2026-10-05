@@ -15,7 +15,7 @@ To connect Claude Desktop to your local MCP server:
 3. Navigate to **Developer**.
 4. Click **Edit config**.
 5. Open the configuration file (`claude_desktop_config.json`) in a text editor.
-6. Add a new record to the `mcpServers` section:
+6. Add the `mcpServers` section from the example below to the top level of the file. If the file already contains other settings, copy the example without its outer braces and separate it from the existing settings with a comma:
    ```json
    {
      "mcpServers": {

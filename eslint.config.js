@@ -2,7 +2,6 @@ import js from "@eslint/js"
 import stylistic from "@stylistic/eslint-plugin"
 import {defineConfig, globalIgnores} from "eslint/config"
 import importX from "eslint-plugin-import-x"
-import preferLet from "eslint-plugin-prefer-let"
 import typescript from "typescript-eslint"
 
 export default defineConfig([
@@ -25,7 +24,6 @@ export default defineConfig([
     plugins: {
       // The types of eslint-plugin-import-x are incompatible with ESLint's.
       "import-x": /** @type {import("eslint").ESLint.Plugin} */ (/** @type {unknown} */ (importX)),
-      "prefer-let": preferLet,
     },
     languageOptions: {
       parserOptions: {
@@ -38,7 +36,6 @@ export default defineConfig([
     rules: {
       "eqeqeq": "error",
       "prefer-const": ["error", {destructuring: "all"}],
-      "prefer-let/prefer-let": "off",
       "@typescript-eslint/no-unused-vars": ["error", {argsIgnorePattern: "^_+", caughtErrorsIgnorePattern: "^_+", destructuredArrayIgnorePattern: "^_+", ignoreRestSiblings: true, varsIgnorePattern: "^_+"}],
       // todo: enable once JWT payloads, request bodies and query values are typed
       "@typescript-eslint/no-unsafe-argument": "off",

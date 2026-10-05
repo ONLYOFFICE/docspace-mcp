@@ -3431,7 +3431,7 @@ void test.suite("oauth server", async() => {
             await sendAccessToken(_, res)
             break
 
-          case 1:
+          case 1: {
             let b: object = {
               active: false,
             }
@@ -3440,6 +3440,7 @@ void test.suite("oauth server", async() => {
             assert.ok(s.err === undefined)
 
             break
+          }
 
           default:
             assert.fail()
@@ -3547,7 +3548,7 @@ void test.suite("oauth server", async() => {
             await sendAccessToken(_, res)
             break
 
-          case 1:
+          case 1: {
             let now = Date.now()
 
             let b: object = {
@@ -3559,6 +3560,7 @@ void test.suite("oauth server", async() => {
             assert.ok(s.err === undefined)
 
             break
+          }
 
           default:
             assert.fail()
@@ -3660,7 +3662,7 @@ void test.suite("oauth server", async() => {
             await sendAccessToken(_, res)
             break
 
-          case 1:
+          case 1: {
             let b: object = {
               active: true,
             }
@@ -3669,6 +3671,7 @@ void test.suite("oauth server", async() => {
             assert.ok(s.err === undefined)
 
             break
+          }
 
           default:
             assert.fail()
@@ -4059,7 +4062,6 @@ void test.suite("oauth server", async() => {
       ]
 
       for (let tt of ta) {
-        // eslint-disable-next-line typescript/no-loop-func
         void test(`forwards token_type_hint ${tt} when provided`, async(t) => {
           let [hs, ha] = await setupHttp(t)
 

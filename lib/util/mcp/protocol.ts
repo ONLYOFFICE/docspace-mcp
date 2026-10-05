@@ -143,8 +143,6 @@ export class Protocol extends protocol.Protocol<types.Request, types.Notificatio
       return async(req, extra) => {
         let ctx: context.Context = {}
 
-        /* eslint-disable no-underscore-dangle */
-
         if (extra._meta && extra._meta.progressToken !== undefined) {
           ctx[progressTokenKey] = extra._meta.progressToken
         }
@@ -154,8 +152,6 @@ export class Protocol extends protocol.Protocol<types.Request, types.Notificatio
         if (extra.taskId) {
           ctx[taskIdKey] = extra.taskId
         }
-
-        /* eslint-enable no-underscore-dangle */
 
         let ex = (res: (v: Awaited<ReturnType<typeof handler>>) => void, rej: (err: unknown) => void): void => {
           let cb = (): void => {

@@ -13,7 +13,6 @@ import {proxyError} from "./internal.ts"
 import type {ErrorResponse, IntrospectRequest, IntrospectResponse} from "./shared.ts"
 
 declare module "express-serve-static-core" {
-  // eslint-disable-next-line typescript/consistent-type-definitions
   interface Request {
     [oauthKey]?: Oauth
   }

@@ -228,7 +228,7 @@ function startStdio(env: z.ZodSafeParseResult<config.Env>): r.Result<Start, Erro
   if (mp.err) {
     promise = Promise.resolve(r.error(new Error("Creating protocol", {cause: mp.err})))
 
-    // eslint-disable-next-line typescript/require-await
+    // eslint-disable-next-line @typescript-eslint/require-await
     cleanup = async() => {
       return r.ok()
     }
@@ -237,12 +237,10 @@ function startStdio(env: z.ZodSafeParseResult<config.Env>): r.Result<Start, Erro
 
     promise = new Promise<r.Result<void, Error>>((res) => {
       mp.v.connect(mt).
-      // eslint-disable-next-line promise/prefer-await-to-then
         then(() => {
           res(r.ok())
           return
         }).
-      // eslint-disable-next-line promise/prefer-await-to-then
         catch((err: unknown) => {
           res(r.error(new Error("Attaching server", {cause: err})))
         })

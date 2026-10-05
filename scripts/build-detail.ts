@@ -70,7 +70,7 @@ async function main(): Promise<void> {
     }
 
     switch (p.registryType) {
-    case "mcpb":
+    case "mcpb": {
       let a = await fs.readFile(`./onlyoffice-docspace-mcp-${meta.version}.mcpb`)
 
       p.identifier = p.identifier.replaceAll("{{version}}", meta.version)
@@ -86,6 +86,7 @@ async function main(): Promise<void> {
       packages.push(p)
 
       break
+    }
 
     case "npm":
       p.version = meta.version

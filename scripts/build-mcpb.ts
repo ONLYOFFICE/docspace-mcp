@@ -9,7 +9,6 @@ import * as mcp from "../lib/mcp.ts"
 import * as meta from "../lib/meta.ts"
 import * as tools from "./tools.ts"
 
-// eslint-disable-next-line typescript/strict-void-return
 const exec = util.promisify(child.exec)
 
 const files: string[] = [

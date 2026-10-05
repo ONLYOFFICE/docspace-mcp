@@ -39,7 +39,7 @@ export class SseTransports {
     // https://github.com/modelcontextprotocol/typescript-sdk/blob/1.17.0/src/server/sse.ts#L101
     let w = res.writeHead.bind(res)
 
-    // @ts-ignore
+    // @ts-expect-error The override does not match all writeHead overloads.
     res.writeHead = (statusCode, statusMessage, headers) => {
       if (statusCode === 200) {
         let o: SessionsCreateOptions = {

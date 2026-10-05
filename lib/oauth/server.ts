@@ -971,7 +971,6 @@ function guard(r: express.Router, o: GuardOptions): void {
 }
 
 declare module "express-serve-static-core" {
-  // eslint-disable-next-line typescript/consistent-type-definitions
   interface Request {
     [authKey]?: Auth
   }

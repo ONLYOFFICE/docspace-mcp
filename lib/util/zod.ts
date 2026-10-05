@@ -117,7 +117,7 @@ export function unionToEnum<T extends string | number>(
   }
 
   // It is hard to write the return type without using any.
-  // eslint-disable-next-line typescript/no-explicit-any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return t as any
 }
 

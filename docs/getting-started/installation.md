@@ -14,6 +14,7 @@ Before interacting with the ONLYOFFICE Apps MCP server, you need to install or c
 
 You can configure your local machine to interact with the ONLYOFFICE Apps MCP server using:
 
+- [Quick install](#quick-install)
 - [Docker image](#install-with-docker-image)
 - [Docker MCP Toolkit](#install-with-docker-mcp-toolkit)
 - [MCP bundle](#install-with-mcp-bundle)
@@ -23,6 +24,20 @@ Before proceeding, ensure to set these environment variables:
 
 - `DOCSPACE_BASE_URL` - the URL of your ONLYOFFICE Apps instance (e.g. https://your-instance.onlyoffice.com).
 - `DOCSPACE_API_KEY` - your personal API key generated in ONLYOFFICE Apps settings → **Developer Tools** → **API keys**.
+
+### Quick install
+
+Use the buttons below to add the ONLYOFFICE Apps MCP server to your client in one click. VS Code prompts for the environment variable values during installation; in Cursor, replace the placeholder values in the generated configuration.
+
+<!--generate quick-install-start-->
+
+| Docker Image | Node.js Application |
+|:-:|:-:|
+| [![Add to Cursor using Docker Image](https://badgen.net/static/Add%20to/Cursor/black)](https://cursor.com/en/install-mcp?name=onlyoffice-docspace&config=eyJjb21tYW5kIjoiZG9ja2VyIiwiYXJncyI6WyJydW4iLCItLWludGVyYWN0aXZlIiwiLS1ybSIsIi0tZW52IiwiRE9DU1BBQ0VfQkFTRV9VUkwiLCItLWVudiIsIkRPQ1NQQUNFX0FQSV9LRVkiLCJvbmx5b2ZmaWNlL2RvY3NwYWNlLW1jcCJdLCJlbnYiOnsiRE9DU1BBQ0VfQkFTRV9VUkwiOiJodHRwczovL3lvdXItaW5zdGFuY2Uub25seW9mZmljZS5jb20iLCJET0NTUEFDRV9BUElfS0VZIjoieW91ci1hcGkta2V5In19) | [![Add to Cursor using npx](https://badgen.net/static/Add%20to/Cursor/black)](https://cursor.com/en/install-mcp?name=onlyoffice-docspace&config=eyJjb21tYW5kIjoibnB4IiwiYXJncyI6WyItLXllcyIsIkBvbmx5b2ZmaWNlL2RvY3NwYWNlLW1jcCJdLCJlbnYiOnsiRE9DU1BBQ0VfQkFTRV9VUkwiOiJodHRwczovL3lvdXItaW5zdGFuY2Uub25seW9mZmljZS5jb20iLCJET0NTUEFDRV9BUElfS0VZIjoieW91ci1hcGkta2V5In19) |
+| [![Add to VS Code using Docker Image](https://badgen.net/static/Add%20to/VS%20Code/blue)](https://insiders.vscode.dev/redirect/mcp/install?name=onlyoffice-docspace&inputs=%5B%7B%22type%22%3A%22promptString%22%2C%22id%22%3A%22docspace_base_url%22%2C%22description%22%3A%22The+base+URL+of+the+ONLYOFFICE+Apps+instance+for+API+requests.%22%7D%2C%7B%22type%22%3A%22promptString%22%2C%22id%22%3A%22docspace_api_key%22%2C%22description%22%3A%22The+API+key+for+accessing+the+ONLYOFFICE+Apps+API.%22%2C%22password%22%3Atrue%7D%5D&config=%7B%22command%22%3A%22docker%22%2C%22args%22%3A%5B%22run%22%2C%22--interactive%22%2C%22--rm%22%2C%22--env%22%2C%22DOCSPACE_BASE_URL%22%2C%22--env%22%2C%22DOCSPACE_API_KEY%22%2C%22onlyoffice%2Fdocspace-mcp%22%5D%2C%22env%22%3A%7B%22DOCSPACE_BASE_URL%22%3A%22%24%7Binput%3Adocspace_base_url%7D%22%2C%22DOCSPACE_API_KEY%22%3A%22%24%7Binput%3Adocspace_api_key%7D%22%7D%7D) | [![Add to VS Code using npx](https://badgen.net/static/Add%20to/VS%20Code/blue)](https://insiders.vscode.dev/redirect/mcp/install?name=onlyoffice-docspace&inputs=%5B%7B%22type%22%3A%22promptString%22%2C%22id%22%3A%22docspace_base_url%22%2C%22description%22%3A%22The+base+URL+of+the+ONLYOFFICE+Apps+instance+for+API+requests.%22%7D%2C%7B%22type%22%3A%22promptString%22%2C%22id%22%3A%22docspace_api_key%22%2C%22description%22%3A%22The+API+key+for+accessing+the+ONLYOFFICE+Apps+API.%22%2C%22password%22%3Atrue%7D%5D&config=%7B%22command%22%3A%22npx%22%2C%22args%22%3A%5B%22--yes%22%2C%22%40onlyoffice%2Fdocspace-mcp%22%5D%2C%22env%22%3A%7B%22DOCSPACE_BASE_URL%22%3A%22https%3A%2F%2Fyour-instance.onlyoffice.com%22%2C%22DOCSPACE_API_KEY%22%3A%22your-api-key%22%7D%7D) |
+| [![Add to VS Code Insiders using Docker Image](https://badgen.net/static/Add%20to/VS%20Code%20Insiders/cyan)](https://insiders.vscode.dev/redirect/mcp/install?name=onlyoffice-docspace&inputs=%5B%7B%22type%22%3A%22promptString%22%2C%22id%22%3A%22docspace_base_url%22%2C%22description%22%3A%22The+base+URL+of+the+ONLYOFFICE+Apps+instance+for+API+requests.%22%7D%2C%7B%22type%22%3A%22promptString%22%2C%22id%22%3A%22docspace_api_key%22%2C%22description%22%3A%22The+API+key+for+accessing+the+ONLYOFFICE+Apps+API.%22%2C%22password%22%3Atrue%7D%5D&config=%7B%22command%22%3A%22docker%22%2C%22args%22%3A%5B%22run%22%2C%22--interactive%22%2C%22--rm%22%2C%22--env%22%2C%22DOCSPACE_BASE_URL%22%2C%22--env%22%2C%22DOCSPACE_API_KEY%22%2C%22onlyoffice%2Fdocspace-mcp%22%5D%2C%22env%22%3A%7B%22DOCSPACE_BASE_URL%22%3A%22%24%7Binput%3Adocspace_base_url%7D%22%2C%22DOCSPACE_API_KEY%22%3A%22%24%7Binput%3Adocspace_api_key%7D%22%7D%7D&quality=insiders) | [![Add to VS Code Insiders using npx](https://badgen.net/static/Add%20to/VS%20Code%20Insiders/cyan)](https://insiders.vscode.dev/redirect/mcp/install?name=onlyoffice-docspace&inputs=%5B%7B%22type%22%3A%22promptString%22%2C%22id%22%3A%22docspace_base_url%22%2C%22description%22%3A%22The+base+URL+of+the+ONLYOFFICE+Apps+instance+for+API+requests.%22%7D%2C%7B%22type%22%3A%22promptString%22%2C%22id%22%3A%22docspace_api_key%22%2C%22description%22%3A%22The+API+key+for+accessing+the+ONLYOFFICE+Apps+API.%22%2C%22password%22%3Atrue%7D%5D&config=%7B%22command%22%3A%22npx%22%2C%22args%22%3A%5B%22--yes%22%2C%22%40onlyoffice%2Fdocspace-mcp%22%5D%2C%22env%22%3A%7B%22DOCSPACE_BASE_URL%22%3A%22https%3A%2F%2Fyour-instance.onlyoffice.com%22%2C%22DOCSPACE_API_KEY%22%3A%22your-api-key%22%7D%7D&quality=insiders) |
+
+<!--generate quick-install-end-->
 
 ### Install with Docker image
 

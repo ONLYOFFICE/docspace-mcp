@@ -45,8 +45,8 @@ type ConfigEnv = {
 
 async function main(): Promise<void> {
   await Promise.all([
-    updateTools("docs/features/tools.md"),
-    updateQuickInstall("docs/installation/local-server.md"),
+    updateTools("docs/reference/tools.md"),
+    updateQuickInstall("docs/getting-started/installation.md"),
   ])
 }
 
@@ -267,80 +267,100 @@ function createNpxConfig(e: ConfigEnv): Config {
   }
 }
 
+const toolsetNotes: Record<string, string> = {
+  files: "> **Note:** Supported file formats for uploading: `txt`, `md`.",
+}
+
 function createToolsetsTable(toolsets: utilMcp.Toolset[]): string {
-  let c = ""
+  let r: string[][] = []
 
   for (let [i, t] of toolsets.entries()) {
-    c += `| ${i + 1} | \`${t.name}\` | ${t.description} |\n`
+    r.push([String(i + 1), `\`${t.name}\``, t.description])
   }
 
-  if (c.length !== 0) {
-    c = c.slice(0, -1)
-    let h = "| # | Toolset Name | Toolset Description |\n|-|-|-|"
-    c = `${h}\n${c}`
-  }
-
-  if (c.length === 0) {
+  if (r.length === 0) {
     throw new Error("Toolsets table is empty")
   }
 
-  return c
+  return createMarkdownTable(["#", "Toolset Name", "Toolset Description"], r)
 }
 
 function createToolsTable(toolsets: utilMcp.Toolset[]): string {
-  let c = ""
+  let c: string[] = []
 
   let i = 0
 
   for (let s of toolsets) {
-    let b = ""
+    let r: string[][] = []
 
     for (let [j, t] of s.tools.entries()) {
-      b += `<tr><td>${j + 1 + i}</td><td><code>${t.name}</code></td><td>${t.description}</td></tr>\n`
+      r.push([String(j + 1 + i), `\`${t.name}\``, t.description])
     }
 
-    if (b.length !== 0) {
-      b = b.slice(0, -1)
+    if (r.length !== 0) {
       let n = s.name[0].toUpperCase() + s.name.slice(1)
-      let h = `<tr><td></td><th scope="rowgroup">${n} Toolset</th><td></td></tr>`
-      b = `<tbody>\n${h}\n${b}\n</tbody>`
-      c += `${b}\n`
+      let b = `### ${n} toolset\n\n${createMarkdownTable(["#", "Tool Name", "Tool Description"], r)}`
+
+      let o = toolsetNotes[s.name]
+      if (o) {
+        b += `\n\n${o}`
+      }
+
+      c.push(b)
     }
 
     i += s.tools.length
-  }
-
-  if (c.length !== 0) {
-    c = c.slice(0, -1)
-    let h = "<thead>\n<tr><th>#</th><th>Tool Name</th><th>Tool Description</th></tr>\n</thead>"
-    c = `<table>\n${h}\n${c}\n</table>`
   }
 
   if (c.length === 0) {
     throw new Error("Tools table is empty")
   }
 
-  return c
+  return c.join("\n\n")
 }
 
 function createMetaToolsTable(tools: utilMcp.ToolSummary[]): string {
-  let c = ""
+  let r: string[][] = []
 
   for (let [i, t] of tools.entries()) {
-    c += `| ${i + 1} | \`${t.name}\` | ${t.description} |\n`
+    r.push([String(i + 1), `\`${t.name}\``, t.description])
   }
 
-  if (c.length !== 0) {
-    c = c.slice(0, -1)
-    let h = "| # | Meta Tool Name | Meta Tool Description |\n|-|-|-|"
-    c = `${h}\n${c}`
-  }
-
-  if (c.length === 0) {
+  if (r.length === 0) {
     throw new Error("Meta tools table is empty")
   }
 
-  return c
+  return createMarkdownTable(["#", "Meta Tool Name", "Meta Tool Description"], r)
+}
+
+function createMarkdownTable(h: string[], r: string[][]): string {
+  let w: number[] = []
+  let d: string[] = []
+
+  for (let [i, c] of h.entries()) {
+    let m = Math.max(3, c.length)
+    for (let l of r) {
+      m = Math.max(m, l[i].length)
+    }
+    w.push(m)
+    d.push("-".repeat(m))
+  }
+
+  let f = (l: string[]): string => {
+    let p: string[] = []
+    for (let [i, c] of l.entries()) {
+      p.push(c.padEnd(w[i]))
+    }
+    return `| ${p.join(" | ")} |`
+  }
+
+  let c = [f(h), f(d)]
+
+  for (let l of r) {
+    c.push(f(l))
+  }
+
+  return c.join("\n")
 }
 
 function insert(s: string, c: string, p: string): string {

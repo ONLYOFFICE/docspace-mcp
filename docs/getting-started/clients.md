@@ -200,6 +200,8 @@ Connect to the MCP server running remotely using Streamable-HTTP transport.
 
 Connect to the locally running MCP server using stdio transport.
 
+> **Tip:** You can also add the server to Cursor in one click using the [Quick install](installation.md#quick-install) buttons.
+
 1. Open Cursor.
 2. Bring up Command Palette.
 3. Select **View: Open MCP Settings**.
@@ -292,6 +294,8 @@ This is the preferred connection method and connects to the remote MCP server us
 ### Connect VS Code to local ONLYOFFICE Apps MCP server via command
 
 Connect to the locally running MCP server using stdio transport.
+
+> **Tip:** You can also add the server to VS Code in one click using the [Quick install](installation.md#quick-install) buttons.
 
 1. Open Visual Studio Code.
 2. Bring up Command Palette.

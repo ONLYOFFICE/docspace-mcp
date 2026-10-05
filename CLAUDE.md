@@ -25,7 +25,7 @@ pnpm inspect        # run under @modelcontextprotocol/inspector with DOCSPACE_* 
 
 - Tests spawn the **bundled** `./bin/onlyoffice-docspace-mcp.js`, so run `pnpm build-app` before `pnpm test` (and `build-mcpb`/`build-detail` for `mcpb.test.ts`/`detail.test.ts`). CI (`.github/workflows/audit.yml`) runs: build-app, build-mcpb, build-detail, lint-types, lint-code, test.
 - `scripts/env.ts` loads `.env` from the repo root for `serve`/`inspect`.
-- `scripts/build-docs.ts` still targets `docs/features/tools.md` and `docs/installation/local-server.md`, which no longer exist (docs moved to `docs/reference/`, `docs/getting-started/`).
+- `scripts/build-docs.ts` regenerates the `<!--generate ...-->` sections in `docs/reference/tools.md` and `docs/getting-started/installation.md`.
 
 ## Architecture
 

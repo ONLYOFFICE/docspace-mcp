@@ -46,8 +46,7 @@ type ConfigEnv = {
 async function main(): Promise<void> {
   await Promise.all([
     updateTools("docs/reference/tools.md"),
-    // todo: the quick install section was dropped during the docs restructuring
-    // updateQuickInstall("docs/installation/local-server.md"),
+    updateQuickInstall("docs/getting-started/installation.md"),
   ])
 }
 

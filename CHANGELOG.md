@@ -7,6 +7,12 @@ Changelog] format and adhering to [Semantic Versioning].
 
 <!-- There are no notable changes in this release. -->
 
+### Changed
+
+- Add the `openWorldHint` annotation to all tools and mark the `archive_room`,
+  `copy_batch_items`, `move_batch_items` and `upload_file` tools as
+  non-destructive ([bac7e04]).
+
 ### Removed
 
 - Remove choices from toolsets, enabled tools and disabled tools in distributed
@@ -338,6 +344,7 @@ There are no noticeable changes in version [3.0.1].
 [0.1.1]: https://github.com/onlyoffice/docspace-mcp/compare/v0.1.0...v0.1.1/
 [0.1.0]: https://github.com/onlyoffice/docspace-mcp/releases/tag/v0.1.0/
 
+[bac7e04]: https://github.com/onlyoffice/docspace-mcp/commit/bac7e04dd1fda09c8db7e23c3c36973511df5ea9/
 [7444a56]: https://github.com/onlyoffice/docspace-mcp/commit/7444a56c8cc5b2d0693ab9f828425d731a71376a/
 [d0d74ce]: https://github.com/onlyoffice/docspace-mcp/commit/d0d74ce1bbf46be2850e6d41b049b7e53583f859/
 [cd38376]: https://github.com/onlyoffice/docspace-mcp/commit/cd3837673680c79bea998ec287cceee07729a91f/

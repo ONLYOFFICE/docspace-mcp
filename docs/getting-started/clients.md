@@ -174,10 +174,9 @@ Cursor allows you to connect to the ONLYOFFICE Apps MCP server either via:
 Connect to the MCP server running remotely using Streamable-HTTP transport.
 
 1. Open Cursor.
-2. Bring up Command Palette.
-3. Select **View: Open MCP Settings**.
-4. Click **Add Custom MCP**.
-5. Add a new record to the `mcpServers` section:
+2. Bring up Command Palette and select **Open MCPs**.
+3. Click **New MCP Server**. Cursor opens the `~/.cursor/mcp.json` file.
+4. Add the `onlyoffice-apps` record to the `mcpServers` section:
    ```json
    {
      "mcpServers": {
@@ -188,13 +187,15 @@ Connect to the MCP server running remotely using Streamable-HTTP transport.
      }
    }
    ```
-6. Save the file.
-7. Navigate back to **MCP Settings**.
-8. Click **Connect** next to the newly added MCP server.
-9. Complete the OAuth authentication process:
+5. Save the file. The server appears under **Needs Attention** with the **Needs authentication** status.
+6. Click **Authenticate** next to **onlyoffice-apps**.
+7. Complete the OAuth authentication process in your browser:
     - Sign in to your ONLYOFFICE Apps account by entering your email and password and clicking **Sign In**.
     - If you have more than one account associated with the entered email, choose one of them.
     - Allow the MCP Remote Server to access the specified data in your ONLYOFFICE Apps account.
+    - When the browser asks to open Cursor, click **Open Cursor**.
+
+   The server moves to the **Connected** list and shows the number of enabled tools.
     
 ### Connect Cursor to local ONLYOFFICE Apps MCP server via command
 
@@ -203,10 +204,9 @@ Connect to the locally running MCP server using stdio transport.
 > **Tip:** You can also add the server to Cursor in one click using the [Quick install](installation.md#quick-install) buttons.
 
 1. Open Cursor.
-2. Bring up Command Palette.
-3. Select **View: Open MCP Settings**.
-4. Click **Add Custom MCP**.
-5. Add a new record to the `mcpServers` section:
+2. Bring up Command Palette and select **Open MCPs**.
+3. Click **New MCP Server**. Cursor opens the `~/.cursor/mcp.json` file.
+4. Add the `onlyoffice-apps` record to the `mcpServers` section and replace the `DOCSPACE_BASE_URL` and `DOCSPACE_API_KEY` values with your own:
    ```json
    {
      "mcpServers": {
@@ -230,8 +230,9 @@ Connect to the locally running MCP server using stdio transport.
      }
    }
    ```
-6. Enter the values of the `DOCSPACE_BASE_URL` and `DOCSPACE_API_KEY` environment variables. 
-7. Save the file.
+5. Save the file.
+
+   The server appears in the **Connected** list and shows the number of enabled tools.
 
 ## Connect to Le Chat
 

@@ -1,6 +1,6 @@
 # Troubleshooting issues with Cursor client
 
-The following issues can occur when connecting the ONLYOFFICE Apps MCP server to the Cursor client via the local MCP server.
+The following issues can occur when connecting the ONLYOFFICE Apps MCP server to the Cursor client.
 
 ## Docker image fails to pull
 
@@ -25,6 +25,8 @@ docker run --interactive --rm \
 
 Review the output for error messages and fix the reported issue before reconnecting in Cursor.
 
+You can also check the server logs in Cursor. Switch to the IDE view, bring up Command Palette, select **Output: Show Output Channels**, and then select **MCP: user-onlyoffice-apps**.
+
 ## Permission denied when running Docker
 
 On Linux, your user account may not be in the `docker` group. Add your user and restart the session:
@@ -32,3 +34,12 @@ On Linux, your user account may not be in the `docker` group. Add your user and 
 ```bash
 sudo usermod -aG docker $USER
 ```
+
+## Remote server tools stop working after authentication
+
+If the remote server was connected but its tools stop working, for example, because the session has expired, sign in again:
+
+1. Bring up Command Palette and select **Open MCPs**.
+2. Click **onlyoffice-apps**.
+3. In the **Environments** section, click **Logout**.
+4. Click **Authenticate**, which appears in the same section, and complete the OAuth authentication process again.

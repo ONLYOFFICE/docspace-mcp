@@ -38,7 +38,7 @@ The OAuth token was not saved correctly, or the session expired before the hands
 This happens when the `DOCSPACE_BASE_URL` value is incorrect or the API key is invalid/expired. To fix:
 
 - Verify that the URL is correct and accessible: open it in a browser and confirm the ONLYOFFICE Apps login page loads.
-- Regenerate the API key in ONLYOFFICE Apps **Settings → Developer Tools → API Keys** and update the value in the configuration file.
+- Create a new API key in ONLYOFFICE Apps **Developer Tools** → **API keys** and update the value in the configuration file.
 - Ensure the URL does not have a trailing slash (e.g., use `https://your-instance.onlyoffice.com`, not `https://your-instance.onlyoffice.com/`).
 
 ## Docker container exits immediately after starting

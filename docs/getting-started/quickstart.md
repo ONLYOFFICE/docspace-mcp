@@ -42,7 +42,7 @@ To connect Claude Desktop to your local MCP server:
 
 Where:
 - `DOCSPACE_BASE_URL` - the URL of your ONLYOFFICE Apps instance (e.g. https://your-instance.onlyoffice.com).
-- `DOCSPACE_API_KEY` - your personal API key generated in ONLYOFFICE Apps **Settings** -> **Developer Tools** -> **API keys**.
+- `DOCSPACE_API_KEY` - your personal API key generated in ONLYOFFICE Apps **Developer Tools** → **API keys** (open **Developer Tools** from the banner at the bottom of the left sidebar).
 
 7. Save the file and quit Claude Desktop.
 

@@ -23,7 +23,7 @@ You can configure your local machine to interact with the ONLYOFFICE Apps MCP se
 Before proceeding, ensure to set these environment variables:
 
 - `DOCSPACE_BASE_URL` - the URL of your ONLYOFFICE Apps instance (e.g. https://your-instance.onlyoffice.com).
-- `DOCSPACE_API_KEY` - your personal API key generated in ONLYOFFICE Apps settings → **Developer Tools** → **API keys**.
+- `DOCSPACE_API_KEY` - your personal API key generated in ONLYOFFICE Apps **Developer Tools** → **API keys** (open **Developer Tools** from the banner at the bottom of the left sidebar).
 
 ### Quick install
 

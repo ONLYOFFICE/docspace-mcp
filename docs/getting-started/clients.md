@@ -15,7 +15,7 @@ The ONLYOFFICE Apps MCP server allows you to connect numerous MCP clients, offer
 Take note of these environment variables used when configuring the ONLYOFFICE Apps MCP server:
 
 - `DOCSPACE_BASE_URL` — the URL of your ONLYOFFICE Apps instance (e.g., `https://your-instance.onlyoffice.com`).
-- `DOCSPACE_API_KEY` — your personal API key generated in ONLYOFFICE Apps settings → **Developer Tools** → **API Keys**.
+- `DOCSPACE_API_KEY` — your personal API key generated in ONLYOFFICE Apps **Developer Tools** → **API keys** (open **Developer Tools** from the banner at the bottom of the left sidebar).
 
 **Ensure your API key is valid**.
 
@@ -252,7 +252,7 @@ Connect to the locally running MCP server using stdio transport.
         - Enter your **Client ID** and **Client Secret** gotten from [creating your custom app on ONLYOFFICE Apps](https://api.onlyoffice.com/docspace/api-backend/get-started/authentication/oauth2/creating-oauth-app/)
     - **API Token**: 
         - Select "API Token Authentication" from "Authentication Methods" section and 
-        - In the "Header value" field, enter your personal API key generated in ONLYOFFICE Apps settings -> Developer Tools -> API keys.
+        - In the "Header value" field, enter your personal API key generated in ONLYOFFICE Apps **Developer Tools** → **API keys**.
 9. Click **Connect**.
 10. Confirm connection by enabling the ONLYOFFICE Apps MCP server in the **Enable tools** section of the chat bar.
 

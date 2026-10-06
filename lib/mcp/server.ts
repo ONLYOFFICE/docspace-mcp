@@ -306,6 +306,34 @@ const RenameFolderOutputSchema = core.SuccessApiResponseSchema.extend({
 
 const RenameFolderOutputJsonSchema = z.toJSONSchema(RenameFolderOutputSchema)
 
+const RunBuilderScriptInputSchema = z.object({
+  script: z.string().describe([
+    "The ONLYOFFICE Document Builder script to run, written in JavaScript against the Office JavaScript API (Api.GetDocument(), Api.CreateParagraph() and so on).",
+    "Start it with builder.CreateFile(\"docx\") to make a new document (or \"xlsx\", \"pptx\", \"pdf\"), or with builder.OpenFile(\"<file ID>\") to open a portal file by its ID; addresses and http or https URLs are refused.",
+    "Save each result with builder.SaveFile(\"<format>\", \"<name with extension>\") and finish with builder.CloseFile().",
+    "Every builder.* call has to be on its own line; a script that puts them on one line saves nothing.",
+    "OpenFile and SaveFile may be called at most 20 times each.",
+  ].join(" ")),
+  folderId: z.number().optional().describe("The ID of the folder to save the produced files that are not listed in outputs to. Required when the script creates a file instead of opening one; otherwise the files are saved to the folder of the opened file."),
+  outputs: z.
+    record(
+      z.string(),
+      z.object({
+        fileId: z.number().optional().describe("The ID of the file to store the result in as a new version. The result has to be in the format of that file. Do not combine with folderId and title."),
+        folderId: z.number().optional().describe("The ID of the folder to save the result to as a new file."),
+        title: z.string().optional().describe("The title of the new file, when it has to differ from the name passed to SaveFile. Only with folderId."),
+      }),
+    ).
+    optional().
+    describe("Destinations of the produced files, keyed by the name passed to builder.SaveFile. Each entry names exactly one of fileId and folderId."),
+  argument: z.
+    record(z.string(), z.unknown()).
+    optional().
+    describe("Values the script reads through the global Argument object, such as Argument.title. Must not contain http or https URLs."),
+})
+
+const RunBuilderScriptInputJsonSchema = z.toJSONSchema(RunBuilderScriptInputSchema)
+
 const SetRoomSecurityInputSchema = z.object({
   roomId: z.
     number().
@@ -522,6 +550,16 @@ export const regularToolsets = [
         annotations: {
           readOnlyHint: false,
           destructiveHint: false,
+          openWorldHint: false,
+        },
+      },
+      {
+        name: "run_builder_script",
+        description: "Run an ONLYOFFICE Document Builder script to create or edit documents, spreadsheets, presentations or PDFs, and wait for it to finish. Returns the finished operation with the saved files in its files field.",
+        inputSchema: RunBuilderScriptInputJsonSchema,
+        annotations: {
+          readOnlyHint: false,
+          destructiveHint: true,
           openWorldHint: false,
         },
       },
@@ -781,6 +819,7 @@ export class Server {
     get_rooms_folder: this.handleGetRoomsFolder.bind(this),
     move_batch_items: this.handleMoveBatchItems.bind(this),
     rename_folder: this.handleRenameFolder.bind(this),
+    run_builder_script: this.handleRunBuilderScript.bind(this),
     set_room_security: this.handleSetRoomSecurity.bind(this),
     update_file: this.handleUpdateFile.bind(this),
     update_room: this.handleUpdateRoom.bind(this),
@@ -1538,6 +1577,38 @@ export class Server {
     let [, res] = rr.v
 
     return await fromResponse(res, RenameFolderOutputJsonSchema)
+  }
+
+  private async handleRunBuilderScript(req: types.CallToolRequest): Promise<types.CallToolResult> {
+    let pr = RunBuilderScriptInputSchema.safeParse(req.params.arguments)
+    if (!pr.success) {
+      return fromError(new Error("Parsing input.", {cause: pr.error}))
+    }
+
+    let ro: core.RunBuilderScriptOptions = {
+      script: pr.data.script,
+      folderId: pr.data.folderId,
+      outputs: pr.data.outputs,
+      argument: pr.data.argument,
+    }
+
+    let it = await this.fileOperationCaller.call(() => this.client.files.runBuilderScript(ro))
+
+    for await (let _ of it) {
+      // Wait for the operation to finish.
+    }
+
+    let rr = it.result()
+    if (rr.err) {
+      return fromError(new Error("Running builder script.", {cause: rr.err}))
+    }
+
+    // The operation may end without a single status having been received.
+    if (!rr.v) {
+      return fromError(new Error("Builder script operation has no result."))
+    }
+
+    return fromObject(rr.v)
   }
 
   private async handleSetRoomSecurity(req: types.CallToolRequest): Promise<types.CallToolResult> {

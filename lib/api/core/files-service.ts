@@ -16,6 +16,7 @@ import type {
   CreateRoomRequestDtoSchema,
   DeleteFolderSchema,
   DeleteSchema,
+  DocsBuilderRequestDtoSchema,
   DownloadRequestDtoSchema,
   GetFileInfoFiltersSchema,
   GetFolderFiltersSchema,
@@ -42,6 +43,12 @@ import {
   RoomSecurityDtoSchema,
   UploadSessionObjectDataSchema,
 } from "./schemas.ts"
+
+// DocsController: Options
+export type RunBuilderScriptOptions = z.input<typeof DocsBuilderRequestDtoSchema>
+
+// DocsController: Responses
+export type RunBuilderScriptResponse = z.output<typeof FileOperationDtoSchema>
 
 // FilesController: Options
 export type DeleteFileOptions = z.input<typeof DeleteSchema>
@@ -126,6 +133,39 @@ export class FilesService {
 
   constructor(s: Client) {
     this.c = s
+  }
+
+  //
+  // DocsController
+  //
+
+  /**
+   * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/develop/products/ASC.Files/Server/Api/DocsController.cs | ONLYOFFICE Apps Reference}
+   */
+  async runBuilderScript(o: RunBuilderScriptOptions): Promise<Result<[RunBuilderScriptResponse, Response], Error>> {
+    let u = this.c.createUrl("api/2.0/docs/builder")
+    if (u.err) {
+      return error(new Error("Creating URL.", {cause: u.err}))
+    }
+
+    let req = this.c.createRequest("POST", u.v, o)
+    if (req.err) {
+      return error(new Error("Creating request.", {cause: req.err}))
+    }
+
+    let f = await this.c.fetch(req.v)
+    if (f.err) {
+      return error(new Error("Fetching request.", {cause: f.err}))
+    }
+
+    let [p, res] = f.v
+
+    let e = FileOperationDtoSchema.safeParse(p)
+    if (!e.success) {
+      return error(new Error("Parsing response.", {cause: e.error}))
+    }
+
+    return ok([e.data, res])
   }
 
   //

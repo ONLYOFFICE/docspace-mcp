@@ -221,6 +221,25 @@ export const DownloadRequestDtoSchema = BaseBatchRequestDtoSchema.extend({
 })
 
 /**
+ * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/develop/products/ASC.Files/Core/ApiModels/RequestDto/DocsBuilderRequestDto.cs | ONLYOFFICE Apps Reference}
+ */
+export const DocsBuilderOutputDtoSchema = z.object({
+  fileId: z.number().optional(),
+  folderId: z.number().optional(),
+  title: z.string().optional(),
+})
+
+/**
+ * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/develop/products/ASC.Files/Core/ApiModels/RequestDto/DocsBuilderRequestDto.cs | ONLYOFFICE Apps Reference}
+ */
+export const DocsBuilderRequestDtoSchema = z.object({
+  script: z.string(),
+  folderId: z.number().optional(),
+  outputs: z.record(z.string(), DocsBuilderOutputDtoSchema).optional(),
+  argument: z.record(z.string(), z.unknown()).optional(),
+})
+
+/**
  * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/products/ASC.Files/Core/ApiModels/RequestDto/BatchModelRequestDto.cs/#L93 | ONLYOFFICE Apps Reference}
  */
 export const DeleteSchema = z.object({

@@ -99,18 +99,20 @@ Connect to the MCP server running remotely using Claude's Connectors. This is th
 
 ### Connect via extensions
 
-Connect to the locally running MCP server using Claude's Extensions. Before connecting, ensure you have:
+Connect to the locally running MCP server using Claude's Extensions. Before connecting, download the MCP bundle file (`onlyoffice-docspace-mcp-<version>.mcpb`) from the **Assets** section of the [latest GitHub release](https://github.com/ONLYOFFICE/docspace-mcp/releases/latest). For other download options, see [Download the MCP bundle GitHub release](../distribution/distribution-combined.md#download-the-mcp-bundle-github-release).
 
-- Node.js (v18 or higher)
-- Download the GitHub MCP bundle. Follow [these steps](../distribution/distribution-combined.md#download-the-github-release) to install Node and the GitHub release.
+> **Note:** Claude Desktop includes a built-in Node.js runtime for extensions, so you do not need to install Node.js separately.
 
 1. Open Claude Desktop.
-2. Navigate to Settings.
-3. Navigate to Extensions.
-4. Click "Advanced settings".
-5. Click "Install extension".
-6. Select the downloaded MCP bundle.
-7. Click "Install".
+2. Navigate to **Settings** → **Extensions**.
+3. Click **Advanced settings** → **Install extension**, and select the downloaded MCP bundle file. Alternatively, drag the file to the **Extensions** page.
+4. In the extension window, click **Install**, and then confirm the installation.
+5. On the extension page, click **Configure**.
+6. Fill in the extension settings, and then click **Save**:
+    - **Base URL**: the URL of your ONLYOFFICE Apps instance (e.g., `https://your-instance.onlyoffice.com`).
+    - **API Key**: your personal API key generated in ONLYOFFICE Apps **Developer Tools** → **API keys**.
+
+   The extension is enabled, and its tools are available in Claude.
 
 ### Connect via local MCP
 

@@ -41,9 +41,17 @@ The session may have expired, or the connector needs to be refreshed.
 
 After installing the MCP bundle, the extension is not listed under **Extensions** due to any of the following:
 
-- **Unsupported Node.js version.** Verify that Node.js 18 or higher is installed by running `node --version` in a terminal. Install the required version from [nodejs.org](https://nodejs.org/).
+- **Node.js settings.** Claude Desktop uses its built-in Node.js when the system Node.js is missing or outdated. Make sure **Use built-in Node.js for MCP** is turned on in **Settings** → **Extensions** → **Advanced settings**.
 - **The bundle file is corrupted or from an outdated release.** Re-download the latest MCP bundle from [GitHub Releases](https://github.com/ONLYOFFICE/docspace-mcp/releases).
 - **Claude Desktop needs to be restarted.** Fully quit Claude Desktop (not just close the window) and relaunch it after installation.
+
+### Extension tools return "No authentication method"
+
+The extension is installed and enabled, but tool calls fail with the `No authentication method` error. The extension settings are empty. To fix:
+
+1. Navigate to **Settings** → **Extensions** and click the ONLYOFFICE Apps extension.
+2. Click **Configure**.
+3. Fill in **Base URL** and **API Key**, and then click **Save**.
 
 ### Claude Desktop does not reflect config changes
 

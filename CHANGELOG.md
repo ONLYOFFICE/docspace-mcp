@@ -5,6 +5,12 @@ Changelog] format and adhering to [Semantic Versioning].
 
 ## [Unreleased]
 
+### Added
+
+- Add the `run_builder_script` tool to the `files` toolset. It runs an
+  ONLYOFFICE Document Builder script through `POST api/2.0/docs/builder` and
+  waits for the operation to finish.
+
 ### Changed
 
 - Refer to the "My documents" section as "Files" in the `get_my_folder` tool

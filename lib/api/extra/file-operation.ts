@@ -156,7 +156,9 @@ export class FileOperationPoller {
         errs.push(new Error(e.error))
       }
 
-      if (e.status && e.status === 2 && e.processed && e.processed === "0") {
+      // A document builder run reports nothing processed even when it saves
+      // files, so the saved files are what tell it from an empty operation.
+      if (e.status && e.status === 2 && e.processed && e.processed === "0" && !(Array.isArray(e.files) && e.files.length !== 0)) {
         errs.push(new Error("No items processed"))
       }
 

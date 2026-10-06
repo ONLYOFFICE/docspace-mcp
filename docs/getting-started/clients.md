@@ -25,12 +25,14 @@ For local (command-based) connections, [Docker](https://www.docker.com/) must al
 
 Connect to the locally running MCP server using stdio transport.
 
+> **Note:** These steps apply to ONLYOFFICE Desktop Editors 10.0 and later.
+
 1. Open ONLYOFFICE Desktop Editors.
-2. Navigate to **AI agent**.
-3. Navigate to **Settings**.
-4. Navigate to **MCP Servers**.
+2. In the left panel, click **AI Tools**. If AI Tools are not installed yet, click **Accept & Install**, and then restart the application.
+3. Connect an AI model. In the **AI Chat** panel, select a provider, enter its API key, select a model, and click **Add Model**. You can also do this later in **Settings** → **AI Models**. The **MCP Servers** settings are unavailable until at least one AI model is added.
+4. In the left panel, click **Settings** and navigate to **MCP Servers**.
 5. Click **Edit configuration**.
-6. Add a new record to the `mcpServers` section:
+6. Add the `onlyoffice-apps` record to the `mcpServers` section and replace the `DOCSPACE_BASE_URL` and `DOCSPACE_API_KEY` values with your own:
 
 ```json
 {
@@ -56,7 +58,10 @@ Connect to the locally running MCP server using stdio transport.
 }
 ```
 
-7. Click **Save**.
+7. Click **Save**. The server starts automatically and appears in the **Permissions** section.
+8. Make sure the **onlyoffice-apps** toggle is on. To enable or disable individual tools, expand the server entry.
+
+You can now use the ONLYOFFICE Apps tools in **AI Chat**.
 
 ## Connect to Claude Desktop
 

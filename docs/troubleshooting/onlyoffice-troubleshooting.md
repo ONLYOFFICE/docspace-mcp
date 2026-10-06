@@ -13,15 +13,15 @@ The MCP server fails to start with an error like `command not found: docker` or 
 
 ## The MCP server container fails to start
 
-The server starts but immediately exits, or no tools appear in the AI agent. Try any of these solutions to fix:
+The server starts but immediately exits, or no tools appear in **AI Chat**. In **Settings** → **MCP Servers**, an error icon appears next to **onlyoffice-apps** in the **Permissions** section. Expand the server entry to see the connection log. Try any of these solutions to fix:
 
 - Pull the latest image manually to make sure it is available locally:
   ```bash
   docker pull onlyoffice/docspace-mcp
   ```
-- Check Docker logs for detailed error output:
+- Run the container manually to see the full error output:
   ```bash
-  docker logs $(docker ps -lq)
+  docker run --interactive --rm \n    --env DOCSPACE_BASE_URL=https://your-instance.onlyoffice.com \n    --env DOCSPACE_API_KEY=your-api-key \n    onlyoffice/docspace-mcp
   ```
 - Verify that the `DOCSPACE_BASE_URL` value is a valid, reachable URL (including `https://`).
 
@@ -41,6 +41,21 @@ Connection timeout or `ERR_NAME_NOT_RESOLVED` when the server tries to reach `DO
     ]
   }
   ```
+
+
+## Tool calls return 401 Unauthorized
+
+The server starts without errors, but the tool call result in **AI Chat** contains `401 Unauthorized`. The server cannot authenticate with your ONLYOFFICE Apps instance. To fix:
+
+- Check that `DOCSPACE_API_KEY` contains a valid API key, not the `your-api-key` placeholder.
+- Make sure the API key is enabled and was not deleted in ONLYOFFICE Apps **Developer Tools** → **API keys**.
+- Make sure `DOCSPACE_BASE_URL` points to the same instance where the API key was created.
+
+After you fix the configuration, click **Save**. The server restarts with the new values.
+
+## The AI model fails to call the tools
+
+The tool call result contains an error like `filters: invalid_type Invalid input: expected object, received undefined`, and the model repeats the same call. Some models, especially smaller ones, do not pass the required tool parameters. Select a different model in **AI Chat** and try again.
 
 ## Invalid JSON in the configuration file
 

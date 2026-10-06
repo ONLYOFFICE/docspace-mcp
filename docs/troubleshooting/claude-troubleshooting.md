@@ -4,25 +4,26 @@ The following issues can occur with Claude Web and Claude Desktop clients.
 
 ## Claude Web
 
-### The Connectors option is not available in Settings
+### You cannot add a custom connector
 
-The Connectors feature is only available on paid Claude plans (Pro, Team, or Enterprise). To fix:
+The **Add custom connector** option is unavailable. On the Claude Free plan, you can add only one custom connector. To fix:
 
-- Upgrade your Claude plan at [claude.ai/upgrade](https://claude.ai/upgrade). If you are on a Team or Enterprise plan, contact your workspace administrator to confirm that the feature is enabled for your organization.
+- Remove the existing custom connector: click its name in the **Connectors** list, click **⋮**, and select **Remove**.
+- Alternatively, upgrade your Claude plan at [claude.ai/upgrade](https://claude.ai/upgrade). If you are on a Team or Enterprise plan, contact your workspace administrator to confirm that custom connectors are enabled for your organization.
 
 ### The connector was added but the Connect button is missing or inactive
 
 The connector URL may have been entered incorrectly, or the MCP server is temporarily unavailable. Try the following solutions:
 
 - Click the connector name to open its settings and verify the URL is exactly `https://mcp.onlyoffice.com/mcp`.
-- Delete the connector and add it again.
+- Delete the connector (click its name, click **⋮**, and select **Remove**) and add it again.
 - Check the ONLYOFFICE Apps MCP server status or contact your ONLYOFFICE Apps administrator.
 
 ### Authentication succeeds, but Claude cannot read or modify ONLYOFFICE Apps files
 
 The granted OAuth permissions may not include the required scopes, or the permissions were accidentally denied. Try any of these fixes:
 
-- Go to **Settings → Connectors**, disconnect the connector, and click **Connect** again.
+- Go to **Settings → Connectors**, click the connector name, click **Disconnect**, and then click **Connect** again.
 - During the OAuth flow, click **Allow** when prompted to grant access to your ONLYOFFICE Apps data.
 - Check your ONLYOFFICE Apps account permissions with your administrator.
 
@@ -30,7 +31,7 @@ The granted OAuth permissions may not include the required scopes, or the permis
 
 The session may have expired, or the connector needs to be refreshed.
 
-- Go to **Settings → Connectors**, disconnect the connector, and reconnect it.
+- Go to **Settings → Connectors**, click the connector name, click **Disconnect**, and then click **Connect** again.
 - Sign out of Claude Web and sign back in.
 - If the issue persists, delete the connector and retry adding the connection.
 

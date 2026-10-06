@@ -147,25 +147,38 @@ Connect to the locally running MCP server using Claude's Local MCP servers.
 ## Connect to Claude Web
 
 1. Open Claude Web in your web browser.
-2. Navigate to Settings.
-3. Navigate to Connectors.
-4. Click "Add custom connector".
-5. Enter a name for the connector (e.g., "ONLYOFFICE Apps MCP").
-6. Enter connection URL based on your preferred authentication method:
-    - **OAuth with public app (Recommended)**
-        - Enter the connection URL (e.g., https://mcp.onlyoffice.com/mcp).
-    - **Authentication with URL-encoded credentials**:
-        - Enter the connection URL with your encoded credentials:
-       `https://{encoded_username}:{encoded_password}@mcp.onlyoffice.com/mcp?base_url=https://your-instance.onlyoffice.com/`
-        - Replace `{encoded_username}` with your URL-encoded ONLYOFFICE Apps email
-        - Replace `{encoded_password}` with your URL-encoded ONLYOFFICE Apps password
-        - Replace `your-instance.onlyoffice.com` with your actual ONLYOFFICE Apps domain
-7. Click "Add".
-8. Click "Connect" next to the newly added connector.
-9. If you chose OAuth, complete the authentication process:
-    - Sign in to your ONLYOFFICE Apps account by entering your email and password and clicking "Sign In".
+2. Navigate to **Settings** → **Connectors**.
+3. Click **Add** → **Add custom connector**.
+4. Enter a name for the connector (e.g., "ONLYOFFICE Apps MCP").
+5. Enter the connection URL based on your preferred authentication method, and then click **Continue**:
+    - **OAuth with public app (Recommended)**: `https://mcp.onlyoffice.com/mcp`
+    - **Authentication with URL-encoded credentials**: the connection URL with your encoded credentials:
+       `https://{encoded_username}:{encoded_password}@mcp.onlyoffice.com/mcp?base_url=https://your-instance.onlyoffice.com`
+        - Replace `{encoded_username}` with your URL-encoded ONLYOFFICE Apps email.
+        - Replace `{encoded_password}` with your URL-encoded ONLYOFFICE Apps password.
+        - Replace `your-instance.onlyoffice.com` with your actual ONLYOFFICE Apps domain.
+6. Keep the detected authentication settings and click **Add**:
+    - For OAuth: **Sign in now** and **Register automatically**.
+    - For URL-encoded credentials: **No sign-in**.
+7. Click **Connect**.
+8. If you chose OAuth, complete the authentication process:
+    - Sign in to your ONLYOFFICE Apps account by entering your email and password and clicking **Sign In**.
     - If you have more than one account associated with the entered email, choose one of them.
     - Allow the MCP Remote Server to access the specified data in your ONLYOFFICE Apps account.
+
+   The connector page shows the **Disconnect** button and the list of tool permissions.
+
+> **Note:** On the Claude Free plan, you can add only one custom connector. To remove a connector, click its name in the **Connectors** list, click **⋮**, and select **Remove**.
+
+### Encode credentials for the URL
+
+> **Note:** Credentials in the URL are stored in the connector settings and are visible to anyone who opens them. They may also be logged in browser history or network monitoring tools. Use this method only for testing, and prefer OAuth for regular use.
+
+To encode your credentials:
+
+- Encode the `@` symbol in your email as `%40` (e.g., `username%40example.com`).
+- Encode special characters in your password (e.g., `!` becomes `%21`, `#` becomes `%23`).
+- To encode a value without sending it anywhere, open a new browser tab, open the developer tools (F12), go to the **Console** tab, and run `encodeURIComponent("your-value")`.
 
 ## Connect to Cursor
 

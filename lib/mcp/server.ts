@@ -334,7 +334,7 @@ const RunBuilderScriptInputSchema = z.object({
     "Save each result with builder.SaveFile(\"<format>\", \"<name with extension>\") and finish with builder.CloseFile().",
     "Every builder.* call has to be on its own line; a script that puts them on one line saves nothing.",
     "OpenFile and SaveFile may be called at most 20 times each.",
-    "An error raised by the script is reported without details, so look up the classes and methods you are not sure about with the get_office_api_reference tool before using them.",
+    "Take the signatures of the methods it calls from the get_office_api_reference tool, not from memory: parameters change between versions, and an error raised by the script is reported without details.",
   ].join(" ")),
   folderId: z.number().optional().describe("The ID of the folder to save the produced files that are not listed in outputs to. Required when the script creates a file instead of opening one; otherwise the files are saved to the folder of the opened file."),
   outputs: z.
@@ -599,7 +599,7 @@ export const regularToolsets = [
       },
       {
         name: "get_office_api_reference",
-        description: "Look up the Office JavaScript API that run_builder_script scripts are written against. Without class and query, returns an overview of the editor API with the list of its classes and enumerations; with query, finds classes, methods and enumerations; with class, returns the methods of a class or the values of an enumeration; with class and method, returns the syntax, parameters and an example of a method. The reference is read from api.onlyoffice.com.",
+        description: "Look up the Office JavaScript API that run_builder_script scripts are written against. Use it before every run_builder_script call to check the methods the script uses, since the API changes between versions and remembered signatures may be outdated. Without class and query, returns an overview of the editor API with the list of its classes and enumerations; with query, finds classes, methods and enumerations; with class, returns the methods of a class or the values of an enumeration; with class and method, returns the syntax, parameters and an example of a method. The reference is read from api.onlyoffice.com.",
         inputSchema: GetOfficeApiReferenceInputJsonSchema,
         annotations: {
           readOnlyHint: true,
@@ -609,7 +609,7 @@ export const regularToolsets = [
       },
       {
         name: "run_builder_script",
-        description: "Run an ONLYOFFICE Document Builder script to create or edit documents, spreadsheets, presentations or PDFs, and wait for it to finish. Returns the saved files in the files field; a file may get a different title than the name passed to builder.SaveFile when the folder already has a file with that name.",
+        description: "Run an ONLYOFFICE Document Builder script to create or edit documents, spreadsheets, presentations or PDFs, and wait for it to finish. The Office JavaScript API changes between versions (since 9.4.0, for example, Api.CreateTable takes rows before columns), so do not write the script from memory: look up every class and method it uses with the get_office_api_reference tool first. Returns the saved files in the files field; a file may get a different title than the name passed to builder.SaveFile when the folder already has a file with that name.",
         inputSchema: RunBuilderScriptInputJsonSchema,
         outputSchema: RunBuilderScriptOutputJsonSchema,
         annotations: {

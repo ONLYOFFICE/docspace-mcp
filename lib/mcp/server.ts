@@ -1724,7 +1724,7 @@ async function fromResponse(res: apiCore.Response, s?: z.core.JSONSchema.JSONSch
     }
 
     if (s) {
-      c.structuredContent = s
+      c.structuredContent = j.v
     }
 
     return c
@@ -1767,7 +1767,7 @@ function fromObject(o: object, s?: z.core.JSONSchema.JSONSchema): types.CallTool
   }
 
   if (s) {
-    c.structuredContent = s
+    c.structuredContent = o as Record<string, unknown>
   }
 
   return c

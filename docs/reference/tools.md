@@ -28,16 +28,17 @@ ONLYOFFICE Apps operation.
 
 ### Files toolset
 
-| #   | Tool Name               | Tool Description                                                                                                                                                                                                                                                                                                |
-| --- | ----------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1   | `copy_batch_items`      | Copy to a folder.                                                                                                                                                                                                                                                                                               |
-| 2   | `delete_file`           | Delete a file.                                                                                                                                                                                                                                                                                                  |
-| 3   | `download_file_as_text` | Download a file as text.                                                                                                                                                                                                                                                                                        |
-| 4   | `get_file_info`         | Get file information.                                                                                                                                                                                                                                                                                           |
-| 5   | `move_batch_items`      | Move to a folder.                                                                                                                                                                                                                                                                                               |
-| 6   | `run_builder_script`    | Run an ONLYOFFICE Document Builder script to create or edit documents, spreadsheets, presentations or PDFs, and wait for it to finish. Returns the saved files in the files field; a file may get a different title than the name passed to builder.SaveFile when the folder already has a file with that name. |
-| 7   | `update_file`           | Update a file.                                                                                                                                                                                                                                                                                                  |
-| 8   | `upload_file`           | Upload a file.                                                                                                                                                                                                                                                                                                  |
+| #   | Tool Name                  | Tool Description                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| --- | -------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | `copy_batch_items`         | Copy to a folder.                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| 2   | `delete_file`              | Delete a file.                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| 3   | `download_file_as_text`    | Download a file as text.                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| 4   | `get_file_info`            | Get file information.                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| 5   | `get_office_api_reference` | Look up the Office JavaScript API that run_builder_script scripts are written against. Without class and query, returns an overview of the editor API with the list of its classes and enumerations; with query, finds classes, methods and enumerations; with class, returns the methods of a class or the values of an enumeration; with class and method, returns the syntax, parameters and an example of a method. The reference is read from api.onlyoffice.com. |
+| 6   | `move_batch_items`         | Move to a folder.                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| 7   | `run_builder_script`       | Run an ONLYOFFICE Document Builder script to create or edit documents, spreadsheets, presentations or PDFs, and wait for it to finish. Returns the saved files in the files field; a file may get a different title than the name passed to builder.SaveFile when the folder already has a file with that name.                                                                                                                                                        |
+| 8   | `update_file`              | Update a file.                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| 9   | `upload_file`              | Upload a file.                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
 
 > **Note:** Supported file formats for uploading: `txt`, `md`.
 
@@ -45,32 +46,32 @@ ONLYOFFICE Apps operation.
 
 | #   | Tool Name            | Tool Description               |
 | --- | -------------------- | ------------------------------ |
-| 9   | `create_folder`      | Create a folder.               |
-| 10  | `delete_folder`      | Delete a folder.               |
-| 11  | `get_folder_content` | Get content of a folder.       |
-| 12  | `get_folder_info`    | Get folder information.        |
-| 13  | `get_my_folder`      | Get the 'My Documents' folder. |
-| 14  | `rename_folder`      | Rename a folder.               |
+| 10  | `create_folder`      | Create a folder.               |
+| 11  | `delete_folder`      | Delete a folder.               |
+| 12  | `get_folder_content` | Get content of a folder.       |
+| 13  | `get_folder_info`    | Get folder information.        |
+| 14  | `get_my_folder`      | Get the 'My Documents' folder. |
+| 15  | `rename_folder`      | Rename a folder.               |
 
 ### People toolset
 
 | #   | Tool Name        | Tool Description |
 | --- | ---------------- | ---------------- |
-| 15  | `get_all_people` | Get all people.  |
+| 16  | `get_all_people` | Get all people.  |
 
 ### Rooms toolset
 
 | #   | Tool Name                | Tool Description                                        |
 | --- | ------------------------ | ------------------------------------------------------- |
-| 16  | `archive_room`           | Archive a room.                                         |
-| 17  | `create_room`            | Create a room.                                          |
-| 18  | `get_room_access_levels` | Get a list of available room invitation access levels.  |
-| 19  | `get_room_info`          | Get room information.                                   |
-| 20  | `get_room_security_info` | Get a list of users with their access levels to a room. |
-| 21  | `get_room_types`         | Get a list of available room types.                     |
-| 22  | `get_rooms_folder`       | Get the 'Rooms' folder.                                 |
-| 23  | `set_room_security`      | Invite or remove users from a room.                     |
-| 24  | `update_room`            | Update a room.                                          |
+| 17  | `archive_room`           | Archive a room.                                         |
+| 18  | `create_room`            | Create a room.                                          |
+| 19  | `get_room_access_levels` | Get a list of available room invitation access levels.  |
+| 20  | `get_room_info`          | Get room information.                                   |
+| 21  | `get_room_security_info` | Get a list of users with their access levels to a room. |
+| 22  | `get_room_types`         | Get a list of available room types.                     |
+| 23  | `get_rooms_folder`       | Get the 'Rooms' folder.                                 |
+| 24  | `set_room_security`      | Invite or remove users from a room.                     |
+| 25  | `update_room`            | Update a room.                                          |
 
 <!--generate tools-end-->
 

@@ -9,6 +9,7 @@ import * as z from "zod"
 import type * as apiCore from "../api/core.ts"
 import * as core from "../api/core.ts"
 import type * as apiExtra from "../api/extra.ts"
+import * as officeApi from "../office-api.ts"
 import * as errors from "../util/errors.ts"
 import type * as mcp from "../util/mcp.ts"
 import * as r from "../util/result.ts"
@@ -225,6 +226,15 @@ const GetMyFolderOutputSchema = core.SuccessApiResponseSchema.extend({
 
 const GetMyFolderOutputJsonSchema = z.toJSONSchema(GetMyFolderOutputSchema)
 
+const GetOfficeApiReferenceInputSchema = z.object({
+  editor: z.enum(officeApi.editors).describe("The editor whose API to look up: document, spreadsheet, presentation, form for the form fields of a document or a PDF form, or pdf."),
+  query: z.string().optional().describe("Words to look for in the names and descriptions of classes, methods and enumerations, such as \"watermark\" or \"table border\". Use it to find out what to get with class and method."),
+  class: z.string().optional().describe("The name of a class or an enumeration to get, such as ApiParagraph or Drawing. Without method, returns the description of the class and the list of its methods."),
+  method: z.string().optional().describe("The name of a method of the class to get, such as AddText. Returns its syntax, parameters, return value and an example."),
+})
+
+const GetOfficeApiReferenceInputJsonSchema = z.toJSONSchema(GetOfficeApiReferenceInputSchema)
+
 const GetRoomAccessLevelsInputSchema = z.object({
   roomId: z.number().describe("The ID of the room to get the invitation access for."),
 })
@@ -324,6 +334,7 @@ const RunBuilderScriptInputSchema = z.object({
     "Save each result with builder.SaveFile(\"<format>\", \"<name with extension>\") and finish with builder.CloseFile().",
     "Every builder.* call has to be on its own line; a script that puts them on one line saves nothing.",
     "OpenFile and SaveFile may be called at most 20 times each.",
+    "An error raised by the script is reported without details, so look up the classes and methods you are not sure about with the get_office_api_reference tool before using them.",
   ].join(" ")),
   folderId: z.number().optional().describe("The ID of the folder to save the produced files that are not listed in outputs to. Required when the script creates a file instead of opening one; otherwise the files are saved to the folder of the opened file."),
   outputs: z.
@@ -587,6 +598,16 @@ export const regularToolsets = [
         },
       },
       {
+        name: "get_office_api_reference",
+        description: "Look up the Office JavaScript API that run_builder_script scripts are written against. Without class and query, returns an overview of the editor API with the list of its classes and enumerations; with query, finds classes, methods and enumerations; with class, returns the methods of a class or the values of an enumeration; with class and method, returns the syntax, parameters and an example of a method. The reference is read from api.onlyoffice.com.",
+        inputSchema: GetOfficeApiReferenceInputJsonSchema,
+        annotations: {
+          readOnlyHint: true,
+          destructiveHint: false,
+          openWorldHint: true,
+        },
+      },
+      {
         name: "run_builder_script",
         description: "Run an ONLYOFFICE Document Builder script to create or edit documents, spreadsheets, presentations or PDFs, and wait for it to finish. Returns the saved files in the files field; a file may get a different title than the name passed to builder.SaveFile when the folder already has a file with that name.",
         inputSchema: RunBuilderScriptInputJsonSchema,
@@ -810,6 +831,7 @@ export type ServerConfig = {
   resolver: apiExtra.Resolver
   uploader: apiExtra.Uploader
   fileOperationCaller: apiExtra.FileOperationCaller
+  officeApiReference: officeApi.Reference
 }
 
 export type ServerElicitation = {
@@ -846,6 +868,7 @@ export class Server {
     get_folder_content: this.handleGetFolderContent.bind(this),
     get_folder_info: this.handleGetFolderInfo.bind(this),
     get_my_folder: this.handleGetMyFolder.bind(this),
+    get_office_api_reference: this.handleGetOfficeApiReference.bind(this),
     get_room_access_levels: this.handleGetRoomAccessLevels.bind(this),
     get_room_info: this.handleGetRoomInfo.bind(this),
     get_room_security_info: this.handleGetRoomSecurityInfo.bind(this),
@@ -869,6 +892,7 @@ export class Server {
   private resolver: apiExtra.Resolver
   private uploader: apiExtra.Uploader
   private fileOperationCaller: apiExtra.FileOperationCaller
+  private officeApiReference: officeApi.Reference
 
   constructor(config: ServerConfig) {
     this.dynamic = config.dynamic
@@ -915,6 +939,7 @@ export class Server {
     this.resolver = config.resolver
     this.uploader = config.uploader
     this.fileOperationCaller = config.fileOperationCaller
+    this.officeApiReference = config.officeApiReference
   }
 
   router(): mcp.Router {
@@ -1466,6 +1491,104 @@ export class Server {
     return await fromResponse(res, GetMyFolderOutputJsonSchema)
   }
 
+  private async handleGetOfficeApiReference(req: types.CallToolRequest): Promise<types.CallToolResult> {
+    let pr = GetOfficeApiReferenceInputSchema.safeParse(req.params.arguments)
+    if (!pr.success) {
+      return fromError(new Error("Parsing input.", {cause: pr.error}))
+    }
+
+    if (pr.data.method !== undefined && pr.data.class === undefined) {
+      return fromError(new Error("The method has to be given together with its class."))
+    }
+
+    let ir = await this.officeApiReference.index(pr.data.editor)
+    if (ir.err) {
+      return fromError(new Error("Getting reference index.", {cause: ir.err}))
+    }
+
+    let a = ir.v
+
+    if (pr.data.class !== undefined) {
+      let n = pr.data.class
+      let k: officeApi.ReferenceEntryKind[] = ["class", "enumeration"]
+
+      if (pr.data.method !== undefined) {
+        n = `${pr.data.class}.${pr.data.method}`
+        k = ["method"]
+      }
+
+      let en = officeApi.findEntry(a, n, k)
+
+      if (!en) {
+        return fromError(new Error(notFoundReferenceMessage(a, pr.data.editor, pr.data.class, pr.data.method)))
+      }
+
+      let pg = await this.officeApiReference.page(en)
+      if (pg.err) {
+        return fromError(new Error("Getting reference page.", {cause: pg.err}))
+      }
+
+      return fromString(pg.v)
+    }
+
+    if (pr.data.query !== undefined) {
+      let f = officeApi.searchEntries(a, pr.data.query)
+
+      if (f.length === 0) {
+        return fromString(`Nothing in the ${pr.data.editor} API matches "${pr.data.query}". Try other words, or call the tool without query for the list of classes.`)
+      }
+
+      let m = 50
+      let t = ""
+
+      for (let e of f.slice(0, m)) {
+        t += `- ${e.name} (${e.kind}): ${e.description}\n`
+      }
+
+      if (f.length > m) {
+        t += `\n${f.length - m} more matches are not shown; add words to the query to narrow it.\n`
+      }
+
+      return fromString(t.trim())
+    }
+
+    let ov = a.find((e) => e.kind === "overview")
+
+    let t = ""
+
+    if (ov) {
+      let pg = await this.officeApiReference.page(ov)
+      if (pg.err) {
+        return fromError(new Error("Getting reference overview.", {cause: pg.err}))
+      }
+
+      t += `${pg.v}\n\n`
+    }
+
+    t += "## Classes\n\n"
+
+    for (let e of a) {
+      if (e.kind === "class") {
+        t += `- ${e.name}: ${e.description}\n`
+      }
+    }
+
+    t += "\n## Enumerations\n\n"
+
+    let en: string[] = []
+
+    for (let e of a) {
+      if (e.kind === "enumeration") {
+        en.push(e.name)
+      }
+    }
+
+    t += `${en.join(", ")}\n\n`
+    t += "Pass class to get the methods of a class or the values of an enumeration, class and method to get a method, and query to search."
+
+    return fromString(t)
+  }
+
   private async handleGetRoomAccessLevels(req: types.CallToolRequest): Promise<types.CallToolResult> {
     let pr = GetRoomAccessLevelsInputSchema.safeParse(req.params.arguments)
     if (!pr.success) {
@@ -1800,6 +1923,44 @@ export class ErroredServer {
       tools: regularTools,
     }
   }
+}
+
+function notFoundReferenceMessage(a: officeApi.ReferenceEntry[], ed: string, c: string, m?: string): string {
+  if (m !== undefined) {
+    let ce = officeApi.findEntry(a, c, ["class"])
+
+    if (ce) {
+      let p = `${ce.name}.`
+      let n: string[] = []
+
+      for (let e of a) {
+        if (e.kind === "method" && e.name.startsWith(p)) {
+          n.push(e.name.slice(p.length))
+        }
+      }
+
+      return `The ${ce.name} class of the ${ed} API has no ${m} method. Its methods are: ${n.join(", ")}.`
+    }
+  }
+
+  let l = c.toLowerCase()
+  let s: string[] = []
+
+  for (let e of a) {
+    if ((e.kind === "class" || e.kind === "enumeration") && e.name.toLowerCase().includes(l)) {
+      s.push(e.name)
+    }
+  }
+
+  let t = `The ${ed} API has no ${c} class or enumeration.`
+
+  if (s.length !== 0) {
+    t += ` Similar names: ${s.slice(0, 20).join(", ")}.`
+  } else {
+    t += " Call the tool without class for the list of classes, or with query to search."
+  }
+
+  return t
 }
 
 // Fields address nested values with dots, such as createdBy.displayName.

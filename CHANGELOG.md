@@ -13,6 +13,10 @@ Changelog] format and adhering to [Semantic Versioning].
   its `id`, `title`, `version`, `webUrl` and `folderId` unless `filters.fields`
   asks for other fields. When the script fails, it explains the Document
   Builder error code that the portal reports and what to do about it.
+- Add the `get_office_api_reference` tool to the `files` toolset. It looks up
+  classes, methods and enumerations of the Office JavaScript API that
+  `run_builder_script` scripts are written against, reading the reference from
+  api.onlyoffice.com and caching it in memory.
 
 ### Changed
 

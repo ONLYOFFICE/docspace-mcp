@@ -12,6 +12,7 @@ import * as config from "../lib/config.ts"
 import * as mcp from "../lib/mcp.ts"
 import * as meta from "../lib/meta.ts"
 import * as oauth from "../lib/oauth.ts"
+import * as officeApi from "../lib/office-api.ts"
 import * as utilAbort from "../lib/util/abort.ts"
 import * as errors from "../lib/util/errors.ts"
 import * as utilExpress from "../lib/util/express.ts"
@@ -192,6 +193,18 @@ function startStdio(env: z.ZodSafeParseResult<config.Env>): r.Result<Start, Erro
 
       let fc = new apiExtra.FileOperationCaller(fcc)
 
+      let rf = globalThis.fetch
+
+      rf = utilFetch.withLogger(ml, rf)
+      rf = utilAbort.wrapFetch(rf)
+
+      let orc: officeApi.ReferenceConfig = {
+        baseUrl: officeApi.defaultBaseUrl,
+        userAgent: env.data.api.userAgent,
+        ttl: officeApi.defaultTtl,
+        fetch: rf,
+      }
+
       let csc: mcp.ServerConfig = {
         dynamic: env.data.mcp.dynamic,
         tools: env.data.mcp.tools,
@@ -201,6 +214,7 @@ function startStdio(env: z.ZodSafeParseResult<config.Env>): r.Result<Start, Erro
         resolver: new apiExtra.Resolver(c),
         uploader: new apiExtra.Uploader(c),
         fileOperationCaller: fc,
+        officeApiReference: new officeApi.Reference(orc),
       }
 
       let cs = new mcp.Server(csc)
@@ -423,6 +437,20 @@ function startHttp(env: config.Env, logger: utilLogger.Logger): r.Result<Start, 
 
   let sp = new config.SettingsParser(spc)
 
+  let rf = globalThis.fetch
+
+  rf = utilFetch.withLogger(logger, rf)
+  rf = utilAbort.wrapFetch(rf)
+
+  let orc: officeApi.ReferenceConfig = {
+    baseUrl: officeApi.defaultBaseUrl,
+    userAgent: env.api.userAgent,
+    ttl: officeApi.defaultTtl,
+    fetch: rf,
+  }
+
+  let or = new officeApi.Reference(orc)
+
   let create = (req: express.Request): r.Result<utilMcp.Protocol, Error> => {
     let s = sp.parse(req)
     if (s.err) {
@@ -540,6 +568,7 @@ function startHttp(env: config.Env, logger: utilLogger.Logger): r.Result<Start, 
       resolver: new apiExtra.Resolver(c),
       uploader: new apiExtra.Uploader(c),
       fileOperationCaller: fc,
+      officeApiReference: or,
     }
 
     let cs = new mcp.Server(csc)

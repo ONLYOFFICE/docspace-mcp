@@ -27,7 +27,7 @@ Before proceeding, make sure to set these environment variables:
 
 ### Quick install
 
-Use the buttons below to add the ONLYOFFICE Apps MCP server to your client in one click. When the browser asks to open the application, confirm it. VS Code prompts for the environment variable values during installation. In Cursor, replace the placeholder values in the **Secrets** section of the **Install MCP server** dialog before clicking **Install**. If Cursor does not open, copy the configuration shown on the page and add it to `~/.cursor/mcp.json` manually.
+Use the buttons below to add the ONLYOFFICE Apps MCP server to your client in one click. When the browser asks to open the application, confirm it. In VS Code, click **Install** on the server page and enter the environment variable values when prompted. In Cursor, replace the placeholder values in the **Secrets** section of the **Install MCP server** dialog before clicking **Install**. If Cursor does not open, copy the configuration shown on the page and add it to `~/.cursor/mcp.json` manually.
 
 <!--generate quick-install-start-->
 

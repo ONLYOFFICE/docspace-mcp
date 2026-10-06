@@ -274,9 +274,8 @@ VS Code client also connects to ONLYOFFICE Apps MCP server using:
 This is the preferred connection method and connects to the remote MCP server using Streamable-HTTP transport. 
 
 1. Open Visual Studio Code.
-2. Bring up Command Palette.
-3. Select **MCP: Open User Configuration**.
-4. Add a new record to the `servers` section:
+2. Bring up Command Palette and select **MCP: Open User Configuration**. VS Code opens the `mcp.json` file.
+3. Add the `onlyoffice-apps` record to the `servers` section:
    ```json
    {
      "servers": {
@@ -287,15 +286,16 @@ This is the preferred connection method and connects to the remote MCP server us
      }
    }
    ```
-5. Save the file.
-6. Bring up Command Palette.
-7. Select **MCP: List Servers**.
-8. Select **onlyoffice-apps**.
-9. Select **Start Server**.
-10. Complete the OAuth authentication process:
+4. Save the file.
+5. Click **Start** above the `onlyoffice-apps` record in the file.
+6. When VS Code asks to authenticate to `mcp.onlyoffice.com`, click **Allow**, and then click **Open** to open the sign-in page in your browser.
+7. Complete the OAuth authentication process:
     - Sign in to your ONLYOFFICE Apps account by entering your email and password and clicking **Sign In**.
     - If you have more than one account associated with the entered email, choose one of them.
     - Allow the MCP Remote Server to access the specified data in your ONLYOFFICE Apps account.
+    - When the browser asks to open Visual Studio Code, click **Open Visual Studio Code**.
+
+   The server status above the record changes to **Running** and shows the number of available tools.
 
 ### Connect VS Code to local ONLYOFFICE Apps MCP server via command
 
@@ -304,9 +304,8 @@ Connect to the locally running MCP server using stdio transport.
 > **Tip:** You can also add the server to VS Code in one click using the [Quick install](installation.md#quick-install) buttons.
 
 1. Open Visual Studio Code.
-2. Bring up Command Palette.
-3. Select **MCP: Open User Configuration**.
-4. Add a new record to the `servers` section:
+2. Bring up Command Palette and select **MCP: Open User Configuration**. VS Code opens the `mcp.json` file.
+3. Add the `onlyoffice-apps` record to the `servers` section and replace the `DOCSPACE_BASE_URL` and `DOCSPACE_API_KEY` values with your own:
    ```json
    {
      "servers": {
@@ -330,11 +329,10 @@ Connect to the locally running MCP server using stdio transport.
      }
    }
    ```
-5. Save the file.
-6. Bring up Command Palette.
-7. Select **MCP: List Servers**.
-8. Select **onlyoffice-apps**.
-9. Select **Start Server**.
+4. Save the file.
+5. Click **Start** above the `onlyoffice-apps` record in the file.
+
+   The server status changes to **Running** and shows the number of available tools.
 
 ## Connect to Windsurf
 

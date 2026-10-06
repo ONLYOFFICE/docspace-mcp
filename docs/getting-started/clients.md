@@ -76,23 +76,26 @@ Claude Desktop offers three different ways to connect to the ONLYOFFICE Apps MCP
 Connect to the MCP server running remotely using Claude's Connectors. This is the preferred connection method.
 
 1. Open Claude Desktop.
-2. Navigate to Settings.
-3. Navigate to Connectors.
-4. Click "Add custom connector".
-5. Enter a name for the connector (e.g., "ONLYOFFICE Apps MCP").
-6. Enter the connection URL (e.g., https://mcp.onlyoffice.com/mcp).
-7. Follow based on your authentication preference:
-    - **OAuth with public app**: Click **Add**
-    - **OAuth with custom app**:
-        1. Click "Advanced settings".
-        2. In the "OAuth Client ID" field, enter the Client ID from your [ONLYOFFICE Apps OAuth application](https://api.onlyoffice.com/docspace/api-backend/get-started/authentication/oauth2/creating-oauth-app/).
-        3. In the "OAuth Client Secret" field, enter the Client Secret from your ONLYOFFICE Apps OAuth application.
-        4. Click "Add".
-8. Click "Connect" next to the newly added connector.
-9. Complete the OAuth authentication process:
-    - Sign in to your ONLYOFFICE Apps account by entering your email and password and clicking "Sign In".
+2. Navigate to **Settings** → **Connectors**.
+3. Click **Add** → **Add custom connector**.
+4. Enter a name for the connector (e.g., "ONLYOFFICE Apps MCP") and the connection URL `https://mcp.onlyoffice.com/mcp`, and then click **Continue**.
+5. Select the authentication settings based on your preference, and then click **Add**:
+    - **OAuth with public app**: Keep the detected settings: **Sign in now** and **Register automatically**.
+    - **OAuth with custom app**: Keep **Sign in now**, select **Use your own OAuth client**, and enter the Client ID and Client Secret from your [ONLYOFFICE Apps OAuth application](https://api.onlyoffice.com/docspace/api-backend/get-started/authentication/oauth2/creating-oauth-app/). When creating the application:
+        - Add `https://mcp.onlyoffice.com/oauth/callback` to **Redirects URLs**.
+        - Add `https://mcp.onlyoffice.com` to **Allowed origins**.
+        - Select the **Write** access for **Profile**, **Contacts**, **Rooms**, and **Files & Folders**, and select **Open ID**.
+6. Click **Connect**. Claude Desktop opens your browser.
+7. On the **Finish connecting a connector?** page, click **Continue connecting**.
+8. Complete the OAuth authentication process:
+    - Sign in to your ONLYOFFICE Apps account by entering your email and password and clicking **Sign In**.
     - If you have more than one account associated with the entered email, choose one of them.
-    - Allow the MCP Remote Server to access the specified data in your ONLYOFFICE Apps account.
+    - Allow the application to access the specified data in your ONLYOFFICE Apps account.
+9. When the browser asks to open Claude, click **Open Claude**.
+
+   The connector page shows the **Disconnect** button and the list of tool permissions.
+
+> **Note:** Connectors are linked to your Claude account. A connector added in Claude Desktop is also available in Claude Web, and vice versa. On the Claude Free plan, you can add only one custom connector.
 
 ### Connect via extensions
 
@@ -168,7 +171,7 @@ Connect to the locally running MCP server using Claude's Local MCP servers.
 
    The connector page shows the **Disconnect** button and the list of tool permissions.
 
-> **Note:** On the Claude Free plan, you can add only one custom connector. To remove a connector, click its name in the **Connectors** list, click **⋮**, and select **Remove**.
+> **Note:** Connectors are linked to your Claude account. A connector added in Claude Web is also available in Claude Desktop, and vice versa. On the Claude Free plan, you can add only one custom connector. To remove a connector, click its name in the **Connectors** list, click **⋮**, and select **Remove**.
 
 ### Encode credentials for the URL
 

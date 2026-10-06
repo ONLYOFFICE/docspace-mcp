@@ -1,13 +1,16 @@
-# Troubleshooting issues with Le Chat MCP client
+# Troubleshooting issues with Mistral Vibe MCP client
 
-The following issues can occur when connecting the ONLYOFFICE Apps MCP server to the Le Chat client.
+The following issues can occur when connecting the ONLYOFFICE Apps MCP server to the Mistral Vibe client (formerly Le Chat).
 
-## The "Custom MCP Connector" option is not available
+## The "Add a custom connector" option is not available
 
-The Custom MCP Connector feature may require a paid Le Chat subscription or may not yet be available in your region. To fix:
+In Mistral Vibe, custom connectors are added from the connector marketplace. To find the option:
 
-- Verify that your Le Chat account plan includes access to custom MCP connectors.
-- Check the [Le Chat documentation](https://chat.mistral.ai) for the latest information on feature availability.
+1. Navigate to **Context** → **Connectors**.
+2. Click **Add connector**. The **Marketplace** page opens.
+3. Click **Add a custom connector**.
+
+If the option is still not available, check the [Mistral Vibe documentation](https://chat.mistral.ai) for the latest information on feature availability.
 
 ## Multiple accounts appear during sign-in but selection has no effect
 
@@ -20,22 +23,22 @@ A session or cookie conflict may be preventing the correct account from being se
 
 The permission consent step may have been skipped or declined. Follow these steps to fix:
 
-1. Repeat the [connection process](../getting-started/clients.md#connect-to-le-chat) from step 9.
+1. Repeat the [connection process](../getting-started/clients.md#connect-to-mistral-vibe) from step 8.
 2. On the final OAuth screen, make sure to click **Allow** (or equivalent) to grant the MCP server access to your ONLYOFFICE Apps account.
 3. If the consent screen does not appear, revoke the existing OAuth token in your ONLYOFFICE Apps account settings and try again.
 
-## The connector appears in Le Chat but ONLYOFFICE Apps tools are not called
+## The connector appears in Mistral Vibe but ONLYOFFICE Apps tools are not called
 
-After a successful connection, the ONLYOFFICE Apps connector must be explicitly enabled in the **Tools** window for each conversation. If it is not selected, Le Chat will not invoke any ONLYOFFICE Apps tools even though the connector is configured correctly. To fix:
+The connector must be selected in the conversation. If it is not selected, Mistral Vibe does not invoke any ONLYOFFICE Apps tools even though the connector is configured correctly. To fix:
 
-1. Open the **Tools** panel in Le Chat.
-2. In the **Connectors** list, make sure **ONLYOFFICE_ONLYOFFICE Apps_MCP** (or the name you assigned) is selected.
-3. Start a new conversation and try again.
+1. Navigate to **Context** → **Connectors** and click the connector name (e.g., **ONLYOFFICE_Apps_MCP**).
+2. Click **Try now**. Mistral Vibe opens a new chat with the connector selected in the message field.
+3. Send your request again.
 
-## The connector appears in Le Chat but returns no data
+## The connector appears in Mistral Vibe but returns no data
 
 The MCP server connection may have been established, but the OAuth token has expired or the connector is misconfigured. Retry any of these solutions to fix:
 
-- Remove the existing connector in Le Chat and retry [adding it](../getting-started/clients.md#connect-to-le-chat).
+- Delete the existing connector (click its name, click **⋮**, and select **Delete**) and retry [adding it](../getting-started/clients.md#connect-to-mistral-vibe).
 - Check that the server URL is `https://mcp.onlyoffice.com/mcp` and that **OAuth2.1** is selected as the authentication method.
 - Contact your ONLYOFFICE Apps administrator to verify that the MCP server is running and accessible.

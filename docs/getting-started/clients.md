@@ -6,7 +6,7 @@ The ONLYOFFICE Apps MCP server allows you to connect numerous MCP clients, offer
 - [Claude Desktop](#connect-to-claude-desktop)
 - [Claude Web](#connect-to-claude-web)
 - [Cursor](#connect-to-cursor)
-- [Le Chat](#connect-to-le-chat)
+- [Mistral Vibe](#connect-to-mistral-vibe)
 - [VS Code](#connect-to-vs-code)
 - [Windsurf](#connect-to-windsurf)
 
@@ -151,7 +151,7 @@ Connect to the locally running MCP server using Claude's Local MCP servers.
 
 ## Connect to Claude Web
 
-1. Open Claude Web in your web browser.
+1. Open [Claude Web](https://claude.ai) in your web browser.
 2. Navigate to **Settings** → **Connectors**.
 3. Click **Add** → **Add custom connector**.
 4. Enter a name for the connector (e.g., "ONLYOFFICE Apps MCP").
@@ -257,28 +257,31 @@ Connect to the locally running MCP server using stdio transport.
 
    The server appears in the **Connected** list and shows the number of enabled tools.
 
-## Connect to Le Chat
+## Connect to Mistral Vibe
 
-1. Open Le Chat in your web browser.
-2. Navigate to Intelligence.
-3. Navigate to Connectors.
-4. Click **Add Connector**.
-5. Navigate to Custom MCP Connector.
-6. Enter a name for the connector (e.g., "ONLYOFFICE_ONLYOFFICE Apps_MCP").
-7. Enter the server URL based on your preferred authentication method:
-    - **OAuth**: `https://mcp.onlyoffice.com/mcp` 
-    - **API Token Authentication**: server URL with your ONLYOFFICE Apps instance as a query parameter:
-   `https://mcp.onlyoffice.com/mcp?base_url=https://your-instance.onlyoffice.com`
-   (replace the base_url value with your actual ONLYOFFICE Apps URL).
-8. Authenticate the connection with any of these auth methods:
-    - **OAuth**: 
-        - Select **OAuth 2.1** from **Authentication method**. 
-        - Enter your **Client ID** and **Client Secret** gotten from [creating your custom app on ONLYOFFICE Apps](https://api.onlyoffice.com/docspace/api-backend/get-started/authentication/oauth2/creating-oauth-app/)
-    - **API Token**: 
-        - Select "API Token Authentication" from "Authentication Methods" section and 
-        - In the "Header value" field, enter your personal API key generated in ONLYOFFICE Apps **Developer Tools** → **API keys**.
-9. Click **Connect**.
-10. Confirm connection by enabling the ONLYOFFICE Apps MCP server in the **Enable tools** section of the chat bar.
+> **Note:** In May 2026, Mistral renamed Le Chat to Mistral Vibe.
+
+1. Open [Mistral Vibe](https://chat.mistral.ai) in your web browser.
+2. Navigate to **Context** → **Connectors**.
+3. Click **Add connector**, and then click **Add a custom connector**.
+4. Enter a name for the connector (e.g., `ONLYOFFICE_Apps_MCP`). Spaces are not allowed, so use underscores instead.
+5. Enter the server URL based on your preferred authentication method:
+    - **OAuth**: `https://mcp.onlyoffice.com/mcp`
+    - **API token**: `https://mcp.onlyoffice.com/mcp?base_url=https://your-instance.onlyoffice.com`. Replace `your-instance.onlyoffice.com` with your actual ONLYOFFICE Apps domain.
+6. Select the authentication method in the **Authentication** section:
+    - **OAuth**: Mistral Vibe detects **OAuth2.1** automatically. To use your own [ONLYOFFICE Apps OAuth application](https://api.onlyoffice.com/docspace/api-backend/get-started/authentication/oauth2/creating-oauth-app/), turn on **Advanced OAuth Settings** and enter the application's **Client ID** and **Client Secret**. When creating the application:
+        - Add `https://mcp.onlyoffice.com/oauth/callback` to **Redirects URLs**. You do not need to add the **Redirect URI** shown by Mistral Vibe.
+        - Add `https://mcp.onlyoffice.com` to **Allowed origins**.
+        - Select the **Write** access for **Profile**, **Contacts**, **Rooms**, and **Files & Folders**, and select **Open ID**.
+    - **API token**: Select **API Token Authentication**, keep **Bearer**, and enter your personal API key generated in ONLYOFFICE Apps **Developer Tools** → **API keys** in the **Authorization header value** field.
+7. Click **Add connector**.
+8. If you chose OAuth, complete the OAuth authentication process:
+    - Sign in to your ONLYOFFICE Apps account by entering your email and password and clicking **Sign In**.
+    - If you have more than one account associated with the entered email, choose one of them.
+    - Allow the application to access the specified data in your ONLYOFFICE Apps account.
+
+   The connector page shows the connection with the **Valid** status and the list of tools.
+9. Click **Try now** to open a new chat with the connector selected.
 
 ## Connect to VS Code
 

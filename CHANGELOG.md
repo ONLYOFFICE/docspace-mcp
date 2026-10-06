@@ -9,7 +9,9 @@ Changelog] format and adhering to [Semantic Versioning].
 
 - Add the `run_builder_script` tool to the `files` toolset. It runs an
   ONLYOFFICE Document Builder script through `POST api/2.0/docs/builder` and
-  waits for the operation to finish.
+  waits for the operation to finish. It returns only the saved files, each with
+  its `id`, `title`, `version`, `webUrl` and `folderId` unless `filters.fields`
+  asks for other fields.
 
 ### Changed
 

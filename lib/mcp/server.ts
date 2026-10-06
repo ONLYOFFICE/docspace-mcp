@@ -306,6 +306,17 @@ const RenameFolderOutputSchema = core.SuccessApiResponseSchema.extend({
 
 const RenameFolderOutputJsonSchema = z.toJSONSchema(RenameFolderOutputSchema)
 
+// The saved files come from the operation status, which the shared poller
+// requests for all operations at once, so the fields are picked here instead
+// of being passed to the server.
+const RunBuilderScriptFileFieldSchema = z.union([
+  ...core.FileDtoFieldSchema.options,
+  z.literal("version").describe("The file version."),
+  z.literal("webUrl").describe("The Web URL link to the file."),
+  z.literal("viewUrl").describe("The URL link to download the file."),
+  z.literal("contentLength").describe("The content length of the file."),
+])
+
 const RunBuilderScriptInputSchema = z.object({
   script: z.string().describe([
     "The ONLYOFFICE Document Builder script to run, written in JavaScript against the Office JavaScript API (Api.GetDocument(), Api.CreateParagraph() and so on).",
@@ -330,6 +341,13 @@ const RunBuilderScriptInputSchema = z.object({
     record(z.string(), z.unknown()).
     optional().
     describe("Values the script reads through the global Argument object, such as Argument.title. Must not contain http or https URLs."),
+  filters: z.
+    object({
+      fields: z.array(unionToEnum(RunBuilderScriptFileFieldSchema, "The fields of the saved files to include in the response.")),
+    }).
+    optional().
+    default({fields: ["id", "title", "version", "webUrl", "folderId"]}).
+    describe("The filters to apply to the saved files. Without them, each file has only its id, title, version, webUrl and folderId."),
 })
 
 const RunBuilderScriptInputJsonSchema = z.toJSONSchema(RunBuilderScriptInputSchema)
@@ -555,7 +573,7 @@ export const regularToolsets = [
       },
       {
         name: "run_builder_script",
-        description: "Run an ONLYOFFICE Document Builder script to create or edit documents, spreadsheets, presentations or PDFs, and wait for it to finish. Returns the finished operation with the saved files in its files field.",
+        description: "Run an ONLYOFFICE Document Builder script to create or edit documents, spreadsheets, presentations or PDFs, and wait for it to finish. Returns the saved files in the files field; a file may get a different title than the name passed to builder.SaveFile when the folder already has a file with that name.",
         inputSchema: RunBuilderScriptInputJsonSchema,
         annotations: {
           readOnlyHint: false,
@@ -1608,7 +1626,15 @@ export class Server {
       return fromError(new Error("Builder script operation has no result."))
     }
 
-    return fromObject(rr.v)
+    let files: unknown[] = []
+
+    if (Array.isArray(rr.v.files)) {
+      for (let f of rr.v.files) {
+        files.push(pickFields(f, pr.data.filters.fields))
+      }
+    }
+
+    return fromObject({files})
   }
 
   private async handleSetRoomSecurity(req: types.CallToolRequest): Promise<types.CallToolResult> {
@@ -1754,6 +1780,42 @@ export class ErroredServer {
       tools: regularTools,
     }
   }
+}
+
+// Fields address nested values with dots, such as createdBy.displayName.
+function pickFields(v: unknown, fields: string[]): unknown {
+  if (typeof v !== "object" || v === null) {
+    return v
+  }
+
+  let o: Record<string, unknown> = {}
+
+  for (let f of fields) {
+    let s: unknown = v
+    let d = o
+    let k = f.split(".")
+
+    for (let [i, p] of k.entries()) {
+      if (typeof s !== "object" || s === null || !(p in s)) {
+        break
+      }
+
+      s = (s as Record<string, unknown>)[p]
+
+      if (i === k.length - 1) {
+        d[p] = s
+        break
+      }
+
+      if (typeof d[p] !== "object" || d[p] === null) {
+        d[p] = {}
+      }
+
+      d = d[p] as Record<string, unknown>
+    }
+  }
+
+  return o
 }
 
 function fromError(err: Error): types.CallToolResult {

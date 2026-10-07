@@ -213,6 +213,49 @@ export function searchEntries(a: ReferenceEntry[], q: string): ReferenceEntry[] 
   return [...x, ...y]
 }
 
+/**
+ * Explains that a class, an enumeration or a method is missing from an index
+ * and names what can be asked for instead: the methods of the class, or the
+ * classes and enumerations with similar names.
+ */
+export function notFoundMessage(a: ReferenceEntry[], ed: Editor, c: string, m?: string): string {
+  if (m !== undefined) {
+    let ce = findEntry(a, c, ["class"])
+
+    if (ce) {
+      let p = `${ce.name}.`
+      let n: string[] = []
+
+      for (let e of a) {
+        if (e.kind === "method" && e.name.startsWith(p)) {
+          n.push(e.name.slice(p.length))
+        }
+      }
+
+      return `The ${ce.name} class of the ${ed} API has no ${m} method. Its methods are: ${n.join(", ")}.`
+    }
+  }
+
+  let l = c.toLowerCase()
+  let s: string[] = []
+
+  for (let e of a) {
+    if ((e.kind === "class" || e.kind === "enumeration") && e.name.toLowerCase().includes(l)) {
+      s.push(e.name)
+    }
+  }
+
+  let t = `The ${ed} API has no ${c} class or enumeration.`
+
+  if (s.length !== 0) {
+    t += ` Similar names: ${s.slice(0, 20).join(", ")}.`
+  } else {
+    t += " Call the tool without class for the list of classes, or with query to search."
+  }
+
+  return t
+}
+
 export function parseIndex(t: string): ReferenceEntry[] {
   let a: ReferenceEntry[] = []
   let s = ""

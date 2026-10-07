@@ -352,6 +352,21 @@ const RunBuilderScriptInputSchema = z.object({
 
 const RunBuilderScriptInputJsonSchema = z.toJSONSchema(RunBuilderScriptInputSchema)
 
+const RunBuilderScriptOutputSchema = z.object({
+  files: z.
+    array(
+      core.FileDtoSchema.extend({
+        version: z.number().optional().describe("The file version."),
+        webUrl: z.string().optional().describe("The Web URL link to the file."),
+        viewUrl: z.string().optional().describe("The URL link to download the file."),
+        contentLength: z.string().optional().describe("The content length of the file."),
+      }),
+    ).
+    describe("The files saved by the script, with only the fields asked for in filters."),
+})
+
+const RunBuilderScriptOutputJsonSchema = z.toJSONSchema(RunBuilderScriptOutputSchema)
+
 const SetRoomSecurityInputSchema = z.object({
   roomId: z.
     number().
@@ -575,6 +590,7 @@ export const regularToolsets = [
         name: "run_builder_script",
         description: "Run an ONLYOFFICE Document Builder script to create or edit documents, spreadsheets, presentations or PDFs, and wait for it to finish. Returns the saved files in the files field; a file may get a different title than the name passed to builder.SaveFile when the folder already has a file with that name.",
         inputSchema: RunBuilderScriptInputJsonSchema,
+        outputSchema: RunBuilderScriptOutputJsonSchema,
         annotations: {
           readOnlyHint: false,
           destructiveHint: true,
@@ -1634,7 +1650,7 @@ export class Server {
       }
     }
 
-    return fromObject({files})
+    return fromObject({files}, RunBuilderScriptOutputJsonSchema)
   }
 
   private async handleSetRoomSecurity(req: types.CallToolRequest): Promise<types.CallToolResult> {

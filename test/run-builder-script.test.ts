@@ -283,7 +283,7 @@ void test.suite("run builder script", () => {
       let c = cr.v.content as types.TextContent[]
       assert.ok(c[0].text.includes("error -3"), c[0].text)
       assert.ok(c[0].text.includes("Document Builder error -3 (document generation error)"), c[0].text)
-      assert.ok(c[0].text.includes("Office JavaScript API reference"), c[0].text)
+      assert.ok(c[0].text.includes("get_office_api_reference"), c[0].text)
       assert.ok(!c[0].text.includes("No items processed"), c[0].text)
     }
 

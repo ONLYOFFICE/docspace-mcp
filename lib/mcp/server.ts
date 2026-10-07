@@ -1634,6 +1634,10 @@ export class Server {
 
     let rr = it.result()
     if (rr.err) {
+      let h = builderErrorHint(rr.err)
+      if (h) {
+        return fromError(new Error("Running builder script.", {cause: new AggregateError([rr.err, new Error(h)])}))
+      }
       return fromError(new Error("Running builder script.", {cause: rr.err}))
     }
 
@@ -1832,6 +1836,41 @@ function pickFields(v: unknown, fields: string[]): unknown {
   }
 
   return o
+}
+
+// Document Builder reports no details on a failed script, only one of the
+// codes from
+// https://api.onlyoffice.com/docs/docs-api/additional-api/document-builder-api#possible-error-codes-and-their-description,
+// which the portal puts at the end of the operation error as "error -3".
+const builderErrorHints: Record<string, string> = {
+  "-1": "Document Builder error -1 (unknown error): the script failed for a reason Document Builder does not report.",
+  "-2": "Document Builder error -2 (generation timeout): the script ran too long. Make it do less, or split the work across several scripts.",
+  "-3": "Document Builder error -3 (document generation error): the script threw. Document Builder reports neither the message nor the line, so the cause is one of: a syntax error, a call to a method that does not exist in this version of the Office JavaScript API, wrong arguments, or an explicit throw. Check every class and method the script uses against the Office JavaScript API reference, fix the script and run it again; if the cause is still unclear, run a shorter part of the script to find the failing line.",
+  "-4": "Document Builder error -4 (download error): the document opened with builder.OpenFile could not be downloaded. Check that the file ID is right and the file is accessible.",
+  "-6": "Document Builder error -6 (result database error): a server-side failure unrelated to the script. Try again later.",
+  "-8": "Document Builder error -8 (invalid token): the portal and ONLYOFFICE Docs are misconfigured, which no change to the script fixes. Tell the user to contact the portal administrator.",
+}
+
+function builderErrorHint(err: unknown): string | undefined {
+  if (err instanceof AggregateError) {
+    for (let e of err.errors) {
+      let h = builderErrorHint(e)
+      if (h) {
+        return h
+      }
+    }
+  }
+
+  if (err instanceof Error) {
+    let m = /\berror (-\d+)\)\s*$/.exec(err.message)
+    if (m && Object.hasOwn(builderErrorHints, m[1])) {
+      return builderErrorHints[m[1]]
+    }
+
+    return builderErrorHint(err.cause)
+  }
+
+  return
 }
 
 function fromError(err: Error): types.CallToolResult {

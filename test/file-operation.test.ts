@@ -107,6 +107,14 @@ void test.suite("file operation poller", () => {
     assert.deepEqual(await poll(t, d), ["error: No items processed"])
   })
 
+  void test("fails an operation with its error alone when it processed nothing", async(t) => {
+    let d: apiExtra.FileOperationDto[] = [
+      {id: "op", status: 2, processed: "0", finished: true, error: "Error occurred in the Documents Service (convertation, error -3)"},
+    ]
+
+    assert.deepEqual(await poll(t, d), ["error: Error occurred in the Documents Service (convertation, error -3)"])
+  })
+
   void test("ends an operation that processed items", async(t) => {
     let d: apiExtra.FileOperationDto[] = [
       {id: "op", status: 2, processed: "3", finished: true},

@@ -36,9 +36,9 @@ function wrap(response: unknown): unknown {
 }
 
 // Answers the builder request with an operation and every status request with
-// that operation finished with the given files, and keeps the bodies of the
-// builder requests.
-function listener(files: unknown[], bodies: unknown[]): AsyncRequestListener {
+// that operation finished with the given files and error, and keeps the bodies
+// of the builder requests.
+function listener(files: unknown[], bodies: unknown[], error: string): AsyncRequestListener {
   return async(req, res) => {
     if (req.method === "POST" && req.url && req.url.startsWith("/api/2.0/docs/builder")) {
       assert.ok(req.headers["content-type"]?.startsWith("application/json"))
@@ -65,6 +65,7 @@ function listener(files: unknown[], bodies: unknown[]): AsyncRequestListener {
         progress: 100,
         finished: true,
         files,
+        error,
       }
 
       const s = await sendJson(res, 200, wrap([o]))
@@ -77,10 +78,10 @@ function listener(files: unknown[], bodies: unknown[]): AsyncRequestListener {
   }
 }
 
-async function setup(t: test.TestContext, files: unknown[], bodies: unknown[]): Promise<[client.Client, Promise<void>]> {
+async function setup(t: test.TestContext, files: unknown[], bodies: unknown[], error = ""): Promise<[client.Client, Promise<void>]> {
   const [hs, ha] = await setupHttp(t)
 
-  const hp = onRequest(t, hs, listener(files, bodies))
+  const hp = onRequest(t, hs, listener(files, bodies, error))
 
   const so: SetupMcpOptions = {
     transport: "stdio",
@@ -255,6 +256,63 @@ void test.suite("run builder script", () => {
 
       const c = cr.v.content as types.TextContent[]
       assert.ok(c[0].text.includes("No items processed"), c[0].text)
+    }
+
+    await Promise.race([hp, tf()])
+  })
+
+  void test("explains the error code of a failed script", async(t) => {
+    const bodies: unknown[] = []
+
+    const [cl, hp] = await setup(t, [], bodies, "Error occurred in the Documents Service (convertation, error -3)")
+
+    const tf = async(): Promise<void> => {
+      const cp: types.CallToolRequest["params"] = {
+        name: "run_builder_script",
+        arguments: {
+          script: "builder.CreateFile(\"docx\")\nthrow new Error(\"boom\")",
+          folderId: 5,
+        },
+      }
+
+      const cr = await r.safeAsync(cl.callTool.bind(cl), cp)
+      assert.ok(cr.err === undefined)
+
+      assert.ok(cr.v.isError)
+
+      const c = cr.v.content as types.TextContent[]
+      assert.ok(c[0].text.includes("error -3"), c[0].text)
+      assert.ok(c[0].text.includes("Document Builder error -3 (document generation error)"), c[0].text)
+      assert.ok(c[0].text.includes("Office JavaScript API reference"), c[0].text)
+      assert.ok(!c[0].text.includes("No items processed"), c[0].text)
+    }
+
+    await Promise.race([hp, tf()])
+  })
+
+  void test("returns the error of a failed script without a code as is", async(t) => {
+    const bodies: unknown[] = []
+
+    const [cl, hp] = await setup(t, [], bodies, "Error occurred in the Documents Service (convertation)")
+
+    const tf = async(): Promise<void> => {
+      const cp: types.CallToolRequest["params"] = {
+        name: "run_builder_script",
+        arguments: {
+          script: "builder.CreateFile(\"docx\")\nthrow new Error(\"boom\")",
+          folderId: 5,
+        },
+      }
+
+      const cr = await r.safeAsync(cl.callTool.bind(cl), cp)
+      assert.ok(cr.err === undefined)
+
+      assert.ok(cr.v.isError)
+
+      const c = cr.v.content as types.TextContent[]
+      assert.ok(c[0].text.includes("Error occurred in the Documents Service (convertation)"), c[0].text)
+      assert.ok(!c[0].text.includes("Document Builder error"), c[0].text)
+      assert.ok(!c[0].text.includes("No items processed"), c[0].text)
     }
 
     await Promise.race([hp, tf()])

@@ -11,7 +11,8 @@ Changelog] format and adhering to [Semantic Versioning].
   ONLYOFFICE Document Builder script through `POST api/2.0/docs/builder` and
   waits for the operation to finish. It returns only the saved files, each with
   its `id`, `title`, `version`, `webUrl` and `folderId` unless `filters.fields`
-  asks for other fields.
+  asks for other fields. When the script fails, it explains the Document
+  Builder error code that the portal reports and what to do about it.
 
 ### Changed
 

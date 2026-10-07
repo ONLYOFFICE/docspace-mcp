@@ -124,6 +124,35 @@ void test.suite("office api reference", () => {
     assert.ok(mr.err)
   })
 
+  void test("refuses pages that step out of the reference with dot segments", async() => {
+    const c: string[] = []
+
+    const fetch = (input: unknown): Promise<Response> => {
+      const u = input instanceof Request ? input.url : String(input)
+      c.push(u)
+      return Promise.resolve(new Response("# Api"))
+    }
+
+    const rf = new officeApi.Reference({baseUrl: base, userAgent: "", ttl: 60000, fetch})
+
+    const a = [
+      `${base}document-api/../../../../evil.md`,
+      `${base}%2e%2e/evil.md`,
+    ]
+
+    for (const u of a) {
+      const pr = await rf.page({kind: "class", name: "Api", description: "", url: u})
+      assert.ok(pr.err, u)
+    }
+
+    assert.deepEqual(c, [])
+
+    const pr = await rf.page({kind: "class", name: "Api", description: "", url: `${base}document-api/./Api.md`})
+    assert.ok(!pr.err)
+
+    assert.deepEqual(c, [`${base}document-api/Api.md`])
+  })
+
   void test("names the methods of the class when the method is missing", () => {
     const a = officeApi.parseIndex(index)
 

@@ -1520,7 +1520,7 @@ export class Server {
       const en = officeApi.findEntry(a, n, k)
 
       if (!en) {
-        return fromError(new Error(notFoundReferenceMessage(a, pr.data.editor, pr.data.class, pr.data.method)))
+        return fromError(new Error(officeApi.notFoundMessage(a, pr.data.editor, pr.data.class, pr.data.method)))
       }
 
       const pg = await this.officeApiReference.page(en)
@@ -1923,44 +1923,6 @@ export class ErroredServer {
       tools: regularTools,
     }
   }
-}
-
-function notFoundReferenceMessage(a: officeApi.ReferenceEntry[], ed: string, c: string, m?: string): string {
-  if (m !== undefined) {
-    const ce = officeApi.findEntry(a, c, ["class"])
-
-    if (ce) {
-      const p = `${ce.name}.`
-      const n: string[] = []
-
-      for (const e of a) {
-        if (e.kind === "method" && e.name.startsWith(p)) {
-          n.push(e.name.slice(p.length))
-        }
-      }
-
-      return `The ${ce.name} class of the ${ed} API has no ${m} method. Its methods are: ${n.join(", ")}.`
-    }
-  }
-
-  const l = c.toLowerCase()
-  const s: string[] = []
-
-  for (const e of a) {
-    if ((e.kind === "class" || e.kind === "enumeration") && e.name.toLowerCase().includes(l)) {
-      s.push(e.name)
-    }
-  }
-
-  let t = `The ${ed} API has no ${c} class or enumeration.`
-
-  if (s.length !== 0) {
-    t += ` Similar names: ${s.slice(0, 20).join(", ")}.`
-  } else {
-    t += " Call the tool without class for the list of classes, or with query to search."
-  }
-
-  return t
 }
 
 // Fields address nested values with dots, such as createdBy.displayName.

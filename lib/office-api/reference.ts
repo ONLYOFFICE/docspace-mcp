@@ -194,34 +194,145 @@ export function findEntry(a: ReferenceEntry[], n: string, k: ReferenceEntryKind[
 }
 
 /**
- * Finds the classes, methods and enumerations whose name and description hold
- * every word of the query, those that hold them in the name first.
+ * Finds the classes, methods and enumerations whose name or description hold
+ * every word of the query and ranks them. A word counts in a name only from
+ * the start of one of its words, so that "table" finds ApiTable but not
+ * IsEditable, and a whole word counts more than its beginning. The entries
+ * named by the query as a whole, such as ApiTable for "table" or SetValue for
+ * "set value", come first, then those that hold the words in the name, then
+ * those that hold them in the description only. Equal entries are ordered by
+ * the number of methods of their class, so that SetValue of ApiRange comes
+ * before SetValue of a rarely used class.
  */
 export function searchEntries(a: ReferenceEntry[], q: string): ReferenceEntry[] {
-  let w = q.toLowerCase().split(/\s+/).filter((s) => s !== "")
+  let w = q.toLowerCase().split(/[^a-z0-9]+/).filter((s) => s !== "")
   if (w.length === 0) {
     return []
   }
 
-  let x: ReferenceEntry[] = []
-  let y: ReferenceEntry[] = []
+  let j = w.join("")
+
+  let z = new Map<string, number>()
+
+  for (let e of a) {
+    if (e.kind === "method") {
+      let c = e.name.slice(0, e.name.indexOf("."))
+      z.set(c, (z.get(c) ?? 0) + 1)
+    }
+  }
+
+  let f: {e: ReferenceEntry, s: number, z: number}[] = []
 
   for (let e of a) {
     if (e.kind === "overview") {
       continue
     }
 
-    let n = e.name.toLowerCase()
-    let t = `${n} ${e.description.toLowerCase()}`
+    let i = e.name.indexOf(".")
+    let c = i === -1 ? e.name : e.name.slice(0, i)
+    let m = i === -1 ? "" : e.name.slice(i + 1)
 
-    if (w.every((s) => n.includes(s))) {
-      x.push(e)
-    } else if (w.every((s) => t.includes(s))) {
-      y.push(e)
+    let ct = splitWords(c)
+    let mt = splitWords(m)
+    let dt = splitWords(e.description)
+
+    let s = 0
+
+    for (let x of w) {
+      // A word found in the name of a method describes what the method does,
+      // while one found in the name of its class only says where it lives.
+      let v = Math.max(
+        matchWords(mt, x) * 3,
+        matchWords(ct, x) * (m === "" ? 3 : 2),
+        matchWords(dt, x),
+      )
+
+      if (v === 0) {
+        s = 0
+        break
+      }
+
+      s += v
+    }
+
+    if (s === 0) {
+      continue
+    }
+
+    let l = (m === "" ? c : m).toLowerCase()
+
+    if (l === j || l === `api${j}`) {
+      s += 100
+    }
+
+    if (e.kind !== "method") {
+      s += 1
+    }
+
+    f.push({e, s, z: z.get(c) ?? 0})
+  }
+
+  // Array.prototype.sort is stable, so equal entries keep the order of the
+  // index.
+  f.sort((x, y) => y.s - x.s || y.z - x.z || x.e.name.length - y.e.name.length)
+
+  return f.map((x) => x.e)
+}
+
+/**
+ * Splits a text into lowercase words, also at the humps of camel case, so
+ * that "ApiComboBoxForm.IsEditable" gives api, combo, box, form, is and
+ * editable.
+ */
+function splitWords(t: string): string[] {
+  return t.
+    replace(/([a-z0-9])([A-Z])/g, "$1 $2").
+    replace(/([A-Z])([A-Z][a-z])/g, "$1 $2").
+    toLowerCase().
+    split(/[^a-z0-9]+/).
+    filter((s) => s !== "")
+}
+
+/**
+ * Scores how well a query word matches a run of words: 1 for the word itself
+ * or its plural, 0.5 for a beginning of the run that does not end at a word
+ * boundary, such as "para" in paragraph or "textbox" in text box, and 0 for
+ * no match.
+ */
+function matchWords(a: string[], x: string): number {
+  let y = singular(x)
+  let b = 0
+
+  for (let i = 0; i < a.length; i += 1) {
+    if (singular(a[i]) === y) {
+      return 1
+    }
+
+    let t = a[i]
+    let k = i + 1
+
+    while (t.length < x.length && k < a.length) {
+      t += a[k]
+      k += 1
+    }
+
+    if (t === x) {
+      return 1
+    }
+
+    if (t.startsWith(x)) {
+      b = 0.5
     }
   }
 
-  return [...x, ...y]
+  return b
+}
+
+function singular(s: string): string {
+  if (s.length > 3 && s.endsWith("s") && !s.endsWith("ss")) {
+    return s.slice(0, -1)
+  }
+  return s
 }
 
 /**

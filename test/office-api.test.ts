@@ -67,7 +67,7 @@ void test.suite("office api reference", () => {
 
     let n = officeApi.searchEntries(a, "Paragraph").map((e) => e.name)
 
-    assert.deepEqual(n, ["Api.CreateParagraph", "ApiParagraph", "ApiParagraph.AddText", "ApiParagraph.SetJc"])
+    assert.deepEqual(n, ["ApiParagraph", "Api.CreateParagraph", "ApiParagraph.SetJc", "ApiParagraph.AddText"])
 
     n = officeApi.searchEntries(a, "add text").map((e) => e.name)
 
@@ -75,6 +75,57 @@ void test.suite("office api reference", () => {
 
     assert.deepEqual(officeApi.searchEntries(a, "document elements"), [])
     assert.deepEqual(officeApi.searchEntries(a, "  "), [])
+  })
+
+  void test("ranks entries named by the query first and matches names at word starts", () => {
+    let a = officeApi.parseIndex(`## ApiComboBoxForm
+
+- [ApiComboBoxForm.IsEditable](${base}document-api/ApiComboBoxForm/Methods/IsEditable.md): Checks if the combo box text can be edited.
+
+## ApiDocument
+
+- [ApiDocument.CreateTable](${base}document-api/ApiDocument/Methods/CreateTable.md): Creates a new table.
+- [ApiDocument.GetAllTables](${base}document-api/ApiDocument/Methods/GetAllTables.md): Returns all tables.
+
+## ApiPivotField
+
+- [ApiPivotField.SetValue](${base}document-api/ApiPivotField/Methods/SetValue.md): Sets a value representing the name of the field.
+
+## ApiRange
+
+- [ApiRange.GetValue](${base}document-api/ApiRange/Methods/GetValue.md): Returns a value of the range.
+- [ApiRange.SetFillColor](${base}document-api/ApiRange/Methods/SetFillColor.md): Sets the background color to the range.
+- [ApiRange.SetValue](${base}document-api/ApiRange/Methods/SetValue.md): Sets a value to the current cell or cell range.
+
+## ApiTable
+
+- [ApiTable](${base}document-api/ApiTable.md): Class representing a table.
+- [ApiTable.AddRow](${base}document-api/ApiTable/Methods/AddRow.md): Adds a new row to the current table.
+
+## ApiTableRow
+
+- [ApiTableRow](${base}document-api/ApiTableRow.md): Class representing a table row.
+`)
+
+    let n = officeApi.searchEntries(a, "table").map((e) => e.name)
+
+    assert.deepEqual(n, ["ApiTable", "ApiTableRow", "ApiDocument.CreateTable", "ApiDocument.GetAllTables", "ApiTable.AddRow"])
+
+    n = officeApi.searchEntries(a, "set value").map((e) => e.name)
+
+    assert.deepEqual(n, ["ApiRange.SetValue", "ApiPivotField.SetValue"])
+
+    n = officeApi.searchEntries(a, "tables").map((e) => e.name)
+
+    assert.deepEqual(n.slice(0, 2), ["ApiTable", "ApiTableRow"])
+
+    n = officeApi.searchEntries(a, "tablerow").map((e) => e.name)
+
+    assert.deepEqual(n, ["ApiTableRow"])
+
+    n = officeApi.searchEntries(a, "pivot fie").map((e) => e.name)
+
+    assert.deepEqual(n, ["ApiPivotField.SetValue"])
   })
 
   void test("reads pages listed in the index and caches them", async() => {

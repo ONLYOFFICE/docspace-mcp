@@ -4,7 +4,11 @@
 
 import assert from "node:assert/strict"
 import test from "node:test"
+import type * as types from "@modelcontextprotocol/sdk/types.js"
 import * as officeApi from "../lib/office-api.ts"
+import * as r from "../lib/util/result.ts"
+import type {SetupMcpOptions} from "./util.ts"
+import {setupMcp} from "./util.ts"
 
 const base = "https://api.onlyoffice.com/docs/office-api/usage-api/"
 
@@ -118,5 +122,110 @@ void test.suite("office api reference", () => {
 
     let mr = await rf.index("spreadsheet")
     assert.ok(mr.err)
+  })
+
+  void test("names the methods of the class when the method is missing", () => {
+    let a = officeApi.parseIndex(index)
+
+    let m = officeApi.notFoundMessage(a, "document", "apiparagraph", "AddTable")
+
+    assert.equal(m, "The ApiParagraph class of the document API has no AddTable method. Its methods are: AddText, SetJc.")
+  })
+
+  void test("names similar classes and enumerations when the class is missing", () => {
+    let a = officeApi.parseIndex(index)
+
+    let m = officeApi.notFoundMessage(a, "document", "Paragraph")
+
+    assert.equal(m, "The document API has no Paragraph class or enumeration. Similar names: ApiParagraph.")
+
+    m = officeApi.notFoundMessage(a, "document", "draw", "Get")
+
+    assert.equal(m, "The document API has no draw class or enumeration. Similar names: Drawing.")
+  })
+
+  void test("suggests listing or searching when nothing is similar", () => {
+    let a = officeApi.parseIndex(index)
+
+    let m = officeApi.notFoundMessage(a, "document", "ApiTable", "AddRow")
+
+    assert.equal(m, "The document API has no ApiTable class or enumeration. Call the tool without class for the list of classes, or with query to search.")
+  })
+
+  void test("reads the index again once it expires", async() => {
+    let n = 0
+
+    let fetch = (): Promise<Response> => {
+      n += 1
+      return Promise.resolve(new Response(index))
+    }
+
+    let rf = new officeApi.Reference({baseUrl: base, userAgent: "", ttl: 0, fetch})
+
+    let ir = await rf.index("document")
+    assert.ok(!ir.err)
+
+    ir = await rf.index("document")
+    assert.ok(!ir.err)
+
+    assert.equal(n, 2)
+  })
+
+  void test("does not cache a failed index", async() => {
+    let n = 0
+
+    let fetch = (): Promise<Response> => {
+      n += 1
+
+      if (n === 1) {
+        return Promise.resolve(new Response("", {status: 503}))
+      }
+
+      return Promise.resolve(new Response(index))
+    }
+
+    let rf = new officeApi.Reference({baseUrl: base, userAgent: "", ttl: 60000, fetch})
+
+    let ir = await rf.index("document")
+    assert.ok(ir.err)
+
+    ir = await rf.index("document")
+    assert.ok(!ir.err)
+
+    assert.equal(n, 2)
+  })
+})
+
+void test.suite("get_office_api_reference tool", () => {
+  void test("returns error when method is given without class", async(t) => {
+    // The input is checked before the reference is read, so the tool answers
+    // without reaching api.onlyoffice.com.
+    let so: SetupMcpOptions = {
+      transport: "stdio",
+      host: "",
+      port: 0,
+      env: {
+        DOCSPACE_BASE_URL: "http://localhost/",
+        DOCSPACE_API_KEY: "xxx",
+      },
+    }
+
+    let cl = await setupMcp(t, so)
+
+    let cp: types.CallToolRequest["params"] = {
+      name: "get_office_api_reference",
+      arguments: {
+        editor: "document",
+        method: "AddText",
+      },
+    }
+
+    let cr = await r.safeAsync(cl.callTool.bind(cl), cp)
+    assert.ok(cr.err === undefined)
+
+    assert.ok(cr.v.isError)
+
+    let c = cr.v.content as types.TextContent[]
+    assert.ok(c[0].text.includes("The method has to be given together with its class."), c[0].text)
   })
 })

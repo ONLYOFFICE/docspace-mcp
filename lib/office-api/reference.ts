@@ -101,12 +101,23 @@ export class Reference {
     }
 
     // The index is fetched over the network, so an address in it is not
-    // trusted to lead anywhere but the reference itself.
-    if (!en.url.startsWith(this.baseUrl)) {
+    // trusted to lead anywhere but the reference itself. Both addresses are
+    // compared once resolved, so that dot segments cannot step out of it.
+    let b = r.safeNew(URL, this.baseUrl)
+    if (b.err) {
+      return r.error(new Error("Parsing base URL.", {cause: b.err}))
+    }
+
+    let u = r.safeNew(URL, en.url)
+    if (u.err) {
+      return r.error(new Error("Parsing page URL.", {cause: u.err}))
+    }
+
+    if (!u.v.href.startsWith(b.v.href)) {
       return r.error(new Error(`Page ${en.url} is outside of the reference.`))
     }
 
-    let t = await this.get(en.url)
+    let t = await this.get(u.v.href)
     if (t.err) {
       return r.error(new Error("Getting page.", {cause: t.err}))
     }

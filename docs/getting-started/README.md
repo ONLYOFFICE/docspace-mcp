@@ -20,5 +20,5 @@ The ONLYOFFICE Apps MCP Server connects AI tools directly to ONLYOFFICE Apps. Th
 - **[Bulk document operations](../tutorials/doc-lifecycle-management.md)**: Create folders, upload documents, copy or move items in batches, rename or delete content, and check file or folder details.
 - **Compliance and audits**: [Control document access with precision](../tutorials/onboarding.md#step-4-define-who-has-access), especially for legal and finance teams with strict data regulations, by controlling access to confidential files and conducting audits to determine who accessed certain files and when.
 - **[Remote team collaboration](../tutorials/onboarding.md)**: Work with distributed teams by inviting or removing users, adjusting security settings, and reviewing current access rights for rooms and shared spaces.
-- **Content discovery**: Retrieve "My documents" or "Rooms" folders, get folder contents, download files as text, and monitor ongoing file operations.
+- **Content discovery**: Retrieve "Files" or "Rooms" folders, get folder contents, download files as text, and monitor ongoing file operations.
 - **People directory**: List all people in the workspace to streamline invitations and access management.

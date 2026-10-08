@@ -24,6 +24,9 @@ Changelog] format and adhering to [Semantic Versioning].
 - Rename the server key in client configuration examples from
   `onlyoffice-docspace` to `onlyoffice-apps`. Existing configurations with the
   previous key continue to work ([8204500]).
+- Refer to the "My documents" section as "Files" in the `get_my_folder` tool
+  descriptions, mentioning the former name, and in the documentation. The tool
+  name remains unchanged.
 
 ### Removed
 

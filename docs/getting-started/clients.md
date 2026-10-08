@@ -2,6 +2,7 @@
 
 The ONLYOFFICE Apps MCP server allows you to connect numerous MCP clients, offering flexibility to choose between interfaces when interacting with your ONLYOFFICE Apps. This guide demonstrates how to connect the ONLYOFFICE Apps MCP server to the following clients:
 
+- [ONLYOFFICE Apps](#connect-to-onlyoffice-apps)
 - [ONLYOFFICE Desktop Editors](#connect-to-onlyoffice-desktop-editors)
 - [Claude Desktop](#connect-to-claude-desktop)
 - [Claude Web](#connect-to-claude-web)
@@ -20,6 +21,42 @@ Take note of these environment variables used when configuring the ONLYOFFICE Ap
 **Ensure your API key is valid**.
 
 For local (command-based) connections, [Docker](https://www.docker.com/) must also be installed on your system.
+
+## Connect to ONLYOFFICE Apps
+
+Connect the ONLYOFFICE Apps MCP server to AI Chat in your ONLYOFFICE Apps workspace. The server connects via HTTP and authenticates with an API key.
+
+Only the workspace owner and Full admins can configure MCP servers.
+
+> **Note:** To use the MCP server tools in AI Chat, activate the AI features add-on in your workspace: click **Activate** in the banner at the top of the **AI settings** page or enable the add-on in **Billing** → **Add-ons**. AI usage is billed from your Wallet.
+
+1. In ONLYOFFICE Apps, navigate to **Settings** → **AI settings** and open the **MCP servers** tab.
+2. Click **Edit configuration**.
+3. Add the `onlyoffice-apps` record to the `mcpServers` section and replace the `X-Mcp-Base-Url` and `X-Mcp-Api-Key` values with your workspace URL and your personal API key generated in ONLYOFFICE Apps **Developer Tools** → **API keys**:
+
+```json
+{
+  "mcpServers": {
+    "onlyoffice-apps": {
+      "type": "http",
+      "url": "https://mcp.onlyoffice.com/mcp",
+      "headers": {
+        "X-Mcp-Base-Url": "https://your-instance.onlyoffice.com",
+        "X-Mcp-Api-Key": "your-api-key"
+      }
+    }
+  }
+}
+```
+
+4. Click **Save**. The server appears in the **Permissions** section.
+5. Make sure the **onlyoffice-apps** toggle is on. To enable or disable individual tools, use the toggles next to them.
+
+Once enabled, the server tools are available to workspace users in AI Chat, both in rooms and folders and in AI agents. In an AI agent, only the users with the **Agent manager** or **Content creator** role can use the chat.
+
+> **Note:** In AI Chat, the server tools work with the access rights of the current user. Users can access only the rooms and files available to them.
+
+If the server fails to connect, an error icon appears next to it in the **Permissions** section. Expand the server entry to see the connection log. The `HTTP 401 Unauthorized` error means that the `headers` block is missing or the API key is invalid.
 
 ## Connect to ONLYOFFICE Desktop Editors
 

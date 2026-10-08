@@ -30,8 +30,9 @@ The MCP server URL may be unreachable due to network restrictions, a VPN, or a t
 Sometimes OAuth authentication fails or the browser fails to open to authenticate the ONLYOFFICE Apps MCP server - MCP client connection. This may be due to any of these reasons:
 
 - **No default browser configured.** The client opens the OAuth page in the system default browser. Ensure a default browser is set in your OS settings.
-- **The MCP server URL is incorrect.** Verify that the URL entered in is correct with no trailing slash issues or typos.
-- **Pop-ups are blocked.** If the authentication page does not appear, check that your browser is not blocking pop-ups from `mcp.onlyoffice.com`.
+- **The MCP server URL is incorrect.** Verify that the URL you entered is correct with no trailing slash issues or typos.
+- **Pop-ups are blocked.** If the authentication page does not appear, check that your browser is not blocking pop-ups from `oauth.onlyoffice.com`.
+- **The browser did not return you to the client.** After you allow access, the browser asks to open your MCP client (for example, **Open Cursor**, **Open Visual Studio Code**, or **Open Claude**). Confirm this prompt. If you click **Cancel**, the authentication is not completed.
 - **Session expired or token revoked.** Delete the existing `onlyoffice-apps` entry, re-add it, and repeat the authentication process.
 - **Corporate firewall or proxy.** If your organization uses a proxy, make sure that `mcp.onlyoffice.com` is reachable. Contact your network administrator if needed.
 
@@ -49,7 +50,7 @@ Incorrect credentials or the ONLYOFFICE Apps account may not be activated. To fi
 
 - Double-check your email and password.
 - Ensure your ONLYOFFICE Apps account is active and you have access to your ONLYOFFICE Apps workspace.
-- If you have forgotten your password, use the **Forgot Password** option on the ONLYOFFICE Apps sign-in page.
+- If you have forgotten your password, use the **Forgot your password?** link on the ONLYOFFICE Apps sign-in page.
 
 ## "Access denied" error during OAuth
 
@@ -61,11 +62,7 @@ To fix this:
 
 ## "Connect" button is missing or grayed out
 
-This usually means the configuration file contains a JSON syntax error. Verify the `mcp_settings.json` file is valid JSON — check for missing commas, mismatched braces, or trailing commas after the last property. You can use an online JSON validator or run `json.tool` in the terminal:
-
-```bash
-python -m json.tool mcp_settings.json
-```
+This usually means the configuration file contains a JSON syntax error. Verify that your MCP client configuration file (`claude_desktop_config.json` for Claude Desktop, `mcp.json` for Cursor and VS Code, or `mcp_config.json` for Devin Desktop) is valid JSON — check for missing commas, mismatched braces, or trailing commas after the last property. Use a JSON validator (e.g., [jsonlint.com](https://jsonlint.com)) to check the syntax.
 
 ## "Connection refused" or "Unable to reach ONLYOFFICE Apps instance"
 
@@ -79,7 +76,7 @@ If you are using a self-hosted ONLYOFFICE Apps instance with a self-signed SSL c
 
 ## Connection drops after a period of inactivity
 
-Streamable-HTTP connections can time out due to network or firewall settings. Reconnect via **MCP Settings → Connect**. If the problem persists, consider switching to the Local MCP Server setup.
+Streamable-HTTP connections can time out due to network or firewall settings. Reconnect the server in your MCP client. If the problem persists, consider switching to the Local MCP Server setup.
 
 ## Connector appears as connected but client still can't access ONLYOFFICE Apps
 
@@ -93,19 +90,19 @@ The MCP server-client connection was successful but you can't access tools or in
 
 After installing the MCP bundle, the extension is not listed under **Extensions**. This may be due to the following:
 
-- **Unsupported Node.js version:** Verify that Node.js 18 or higher is installed by running `node --version` in a terminal. Install the required version from [nodejs.org](https://nodejs.org/).
-- **The bundle file is corrupted or from an outdated release:** Re-download the latest MCP bundle from [GitHub Releases](https://github.com/ONLYOFFICE/docspace-mcp/releases).
+- **Node.js settings:** Claude Desktop uses its built-in Node.js when the system Node.js is missing or outdated. Make sure **Use built-in Node.js for MCP** is turned on in **Settings** → **Extensions** → **Advanced settings**.
+- **The bundle file is corrupted or from an outdated release:** Re-download the latest MCP bundle from the [latest GitHub release](https://github.com/ONLYOFFICE/docspace-mcp/releases/latest).
 - **Claude Desktop needs to be restarted:** Fully quit Claude Desktop (not just close the window) and relaunch it after installation.
 
 ## Docker-based Local MCP server fails to start
 
-After editing the client `config.json` file, the client displays an error for the `onlyoffice-apps` server, or the server is not listed among the available connections.
+After editing the MCP client configuration file (`claude_desktop_config.json` for Claude Desktop, `mcp.json` for Cursor and VS Code, or `mcp_config.json` for Devin Desktop), the client displays an error for the `onlyoffice-apps` server, or the server is not listed among the available connections.
 
 - **Docker is not running:** Make sure Docker Desktop (or the Docker daemon on Linux) is started before launching the client.
 - **The Docker image is not pulled:** Run `docker pull onlyoffice/docspace-mcp` manually in a terminal to verify the image can be downloaded.
 - **Invalid JSON in the config file:** A single misplaced comma or brace will prevent the config from loading. Validate the file with a JSON linter (e.g., [jsonlint.com](https://jsonlint.com)) before saving.
-- **Incorrect environment variable values:** Double-check that `DOCSPACE_BASE_URL` includes the `https://` scheme and has no trailing slash, and that `DOCSPACE_API_KEY` is copied correctly from ONLYOFFICE Apps **Developer Tools** → **API keys** and update the `env` block in `mcp_settings.json`.
-- **The API key has been revoked or expired:** Generate a new API key in ONLYOFFICE Apps and update the config file, then restart Claude Desktop.
+- **Incorrect environment variable values:** Double-check that `DOCSPACE_BASE_URL` includes the `https://` scheme and has no trailing slash, and that `DOCSPACE_API_KEY` is copied correctly from ONLYOFFICE Apps **Developer Tools** → **API keys** and update the `env` block in the configuration file.
+- **The API key has been revoked or expired:** Create a new API key in ONLYOFFICE Apps **Developer Tools** → **API keys**, update the configuration file, and then restart the server in your MCP client.
 - **Port conflict.** If another local service occupies the default port, try restarting Docker or the conflicting service.
 
 ## The MCP server is configured but no tools appear in the MCP client

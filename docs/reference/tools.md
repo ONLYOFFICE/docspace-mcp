@@ -42,14 +42,14 @@ ONLYOFFICE Apps operation.
 
 ### Folders toolset
 
-| #   | Tool Name            | Tool Description               |
-| --- | -------------------- | ------------------------------ |
-| 8   | `create_folder`      | Create a folder.               |
-| 9   | `delete_folder`      | Delete a folder.               |
-| 10  | `get_folder_content` | Get content of a folder.       |
-| 11  | `get_folder_info`    | Get folder information.        |
-| 12  | `get_my_folder`      | Get the 'My Documents' folder. |
-| 13  | `rename_folder`      | Rename a folder.               |
+| #   | Tool Name            | Tool Description                                  |
+| --- | -------------------- | ------------------------------------------------- |
+| 8   | `create_folder`      | Create a folder.                                  |
+| 9   | `delete_folder`      | Delete a folder.                                  |
+| 10  | `get_folder_content` | Get content of a folder.                          |
+| 11  | `get_folder_info`    | Get folder information.                           |
+| 12  | `get_my_folder`      | Get the 'Files' folder (formerly 'My Documents'). |
+| 13  | `rename_folder`      | Rename a folder.                                  |
 
 ### People toolset
 

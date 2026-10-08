@@ -5,7 +5,11 @@ Changelog] format and adhering to [Semantic Versioning].
 
 ## [Unreleased]
 
-There are no notable changes in this release.
+### Changed
+
+- Refer to the "My documents" section as "Files" in the `get_my_folder` tool
+  descriptions, mentioning the former name, and in the documentation. The tool
+  name remains unchanged.
 
 ## [3.3.0] - 2026-10-09
 

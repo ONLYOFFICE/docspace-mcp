@@ -21,7 +21,10 @@ The server starts but immediately exits, or no tools appear in **AI Chat**. In *
   ```
 - Run the container manually to see the full error output:
   ```bash
-  docker run --interactive --rm \n    --env DOCSPACE_BASE_URL=https://your-instance.onlyoffice.com \n    --env DOCSPACE_API_KEY=your-api-key \n    onlyoffice/docspace-mcp
+  docker run --interactive --rm \
+    --env DOCSPACE_BASE_URL=https://your-instance.onlyoffice.com \
+    --env DOCSPACE_API_KEY=your-api-key \
+    onlyoffice/docspace-mcp
   ```
 - Verify that the `DOCSPACE_BASE_URL` value is a valid, reachable URL (including `https://`).
 

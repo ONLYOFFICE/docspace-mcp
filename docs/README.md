@@ -27,6 +27,6 @@ Welcome to the documentation for the ONLYOFFICE Apps MCP Server.
   - [ONLYOFFICE Desktop Editors](./troubleshooting/onlyoffice-troubleshooting.md)
   - [Claude](./troubleshooting/claude-troubleshooting.md)
   - [Cursor](./troubleshooting/cursor-troubleshooting.md)
-  - [Le Chat](./troubleshooting/le-chat-troubleshooting.md)
+  - [Mistral Vibe](./troubleshooting/le-chat-troubleshooting.md)
   - [VS Code](./troubleshooting/vs-code-troubleshooting.md)
-  - [Windsurf](./troubleshooting/windsurf-troubleshooting.md)
+  - [Devin Desktop](./troubleshooting/windsurf-troubleshooting.md)

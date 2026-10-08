@@ -7,6 +7,6 @@ This section helps you diagnose and resolve issues when configuring and interact
     - [ONLYOFFICE Desktop Editors](onlyoffice-troubleshooting.md),
     - [Claude](claude-troubleshooting.md),
     - [Cursor](cursor-troubleshooting.md),
-    - [Le Chat](le-chat-troubleshooting.md),
+    - [Mistral Vibe](le-chat-troubleshooting.md),
     - [VS Code](vs-code-troubleshooting.md), and
-    - [Windsurf](windsurf-troubleshooting.md).
+    - [Devin Desktop](windsurf-troubleshooting.md).

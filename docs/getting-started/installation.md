@@ -7,7 +7,7 @@ Before interacting with the ONLYOFFICE Apps MCP server, you need to install or c
 
 ## Before you start
 
-- Ensure you have an ONLYOFFICE Apps Instance. [Sign up to ONLYOFFICE Apps](https://www.onlyoffice.com/docspace-registration?utm_source=api&utm_medium=article&utm_campaign=mcpserver) to access your instance and get an API key.
+- Ensure you have an ONLYOFFICE Apps instance. [Sign up to ONLYOFFICE Apps](https://www.onlyoffice.com/docspace-registration?utm_source=api&utm_medium=article&utm_campaign=mcpserver) to access your instance and get an API key.
 - Choose your desired client. You can build a custom client or [choose from the different MCP clients](clients.md) available based on your integration, features, user interface, or security needs.
 
 ## Access via a local ONLYOFFICE Apps MCP server
@@ -20,14 +20,14 @@ You can configure your local machine to interact with the ONLYOFFICE Apps MCP se
 - [MCP bundle](#install-with-mcp-bundle)
 - [Node.js application](#install-via-nodejs-application)
 
-Before proceeding, ensure to set these environment variables:
+Before proceeding, make sure to set these environment variables:
 
 - `DOCSPACE_BASE_URL` - the URL of your ONLYOFFICE Apps instance (e.g. https://your-instance.onlyoffice.com).
-- `DOCSPACE_API_KEY` - your personal API key generated in ONLYOFFICE Apps settings → **Developer Tools** → **API keys**.
+- `DOCSPACE_API_KEY` - your personal API key generated in ONLYOFFICE Apps **Developer Tools** → **API keys** (open **Developer Tools** from the banner at the bottom of the left sidebar).
 
 ### Quick install
 
-Use the buttons below to add the ONLYOFFICE Apps MCP server to your client in one click. VS Code prompts for the environment variable values during installation; in Cursor, replace the placeholder values in the generated configuration.
+Use the buttons below to add the ONLYOFFICE Apps MCP server to your client in one click. When the browser asks to open the application, confirm it. In VS Code, click **Install** on the server page and enter the environment variable values when prompted. In Cursor, replace the placeholder values in the **Secrets** section of the **Install MCP server** dialog before clicking **Install**. If Cursor does not open, copy the configuration shown on the page and add it to `~/.cursor/mcp.json` manually.
 
 <!--generate quick-install-start-->
 
@@ -41,10 +41,10 @@ Use the buttons below to add the ONLYOFFICE Apps MCP server to your client in on
 
 ### Install with Docker image
 
-1. [Follow these steps](../distribution/distribution-combined.md#pull-from-docker-hub) to pull the latest ONLYOFFICE Apps MCP server from Docker Hub
+1. [Follow these steps](../distribution/distribution-combined.md#pull-from-docker-hub) to pull the latest ONLYOFFICE Apps MCP server from Docker Hub.
 2. Locate your MCP client `.json` config file. The location of this file depends on the specific client.
 
-3. Add the ONLYOFFICE Apps MCP Server entry
+3. Add the ONLYOFFICE Apps MCP server entry.
 
 Insert the following block into the `mcpServers` section of your `.json` configuration file:
 
@@ -78,6 +78,7 @@ Insert the following block into the `mcpServers` section of your `.json` configu
 |--------|-------------|
 | `docker` | The executable to run |
 | `run` | Command to create and start a container |
+| `--interactive` | Keep stdin open so the client can communicate with the server over stdio |
 | `--rm` | Automatically remove the container when it exits |
 | `--env` | Flag to pass environment variables |
 | `onlyoffice/docspace-mcp` | Docker image name to run |
@@ -154,18 +155,18 @@ configuration to your client's configuration file:
 
 Another way to use the ONLYOFFICE Apps MCP server is to access it via a public ONLYOFFICE Apps MCP Server instance hosted by ONLYOFFICE. This eliminates the need to run your own server infrastructure while providing access to ONLYOFFICE Apps functionality through your AI assistant. To do this, provide the ONLYOFFICE Apps MCP server public instance URL when [connecting to any of the MCP clients](clients.md). 
 
-## Public instance
+### Public instance
 
 The public instance is available at two endpoints:
 
 | **Endpoint**                   | **Transport**             | **Recommendation**                                                                                                         |
 |--------------------------------|---------------------------|----------------------------------------------------------------------------------------------------------------------------|
-| https://mcp.onlyoffice.com/mcp | HTTP                      | Preferred - Use this endpoint whenever your client supports it. Streamable HTTP offers better performance and reliability. |
-| https://mcp.onlyoffice.com/sse | Server-Sent Events (SSE) | Legacy - Use this endpoint only if your client does not support the modern Streamable HTTP transport.                      |
+| https://mcp.onlyoffice.com/mcp | HTTP                      | Preferred: use this endpoint whenever your client supports it. Streamable HTTP offers better performance and reliability. |
+| https://mcp.onlyoffice.com/sse | Server-Sent Events (SSE) | Legacy: use this endpoint only if your client does not support the modern Streamable HTTP transport.                      |
 
 The public instance provides access to all available tools by default. Tool selection can be customized using query parameters or custom headers. However, we recommend using the MCP client interface for tool configuration when supported.
 
-## Tool configuration
+### Tool configuration
 
 Tool selection can be customized using the following options:
 
@@ -173,19 +174,19 @@ Tool selection can be customized using the following options:
 
 - **Query Parameters or Custom Headers**: For clients without a tool configuration interface, you can [customize tool availability by passing parameters in the connection URL or via custom HTTP headers](../reference/request-configuration.md#enabled_tools).
 
-## Authenticating the remote MCP server-client connection
+### Authenticating the remote MCP server-client connection
 
 The public instance supports multiple authentication methods to meet different security requirements and client capabilities: OAuth, API key, Personal Access Token (PAT), username/password pair, or raw `Authorization` header.
 
 > **Note:** OAuth is the recommended method as it provides the strongest security model by allowing users to authorize specific permissions without sharing their credentials directly.
 
-| **Authentication method**      | **Definition**                                                                  | **Requirements**                         | **Recommendations**                                                                                                                   |
-|--------------------------------|---------------------------------------------------------------------------------|------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------|
-| OAuth (public app)             | Authenticates the connection without requiring custom credentials               | Connection URL                           | Simplest and most secure method, requiring no custom credentials or additional configuration                                          |
-| OAuth (custom app)             | Connects using a client ID and client secret after [creating a custom app](https://api.onlyoffice.com/docspace/api-backend/get-started/authentication/oauth2/creating-oauth-app/)    | Connection URL, Client ID, Client Secret | Offers more flexibility and full control over the OAuth configuration, including custom redirect URIs, specific scopes, and branding. |
-| API Key (Header)               | Connect using an API key and base URL configured via custom headers             | Connection URL, API key                  | Ideal when integrating with platforms that support custom HTTP headers but don't have built-in OAuth support                          |
-| API Key (Authorization header) | Connect using API key in `Authorization` header and base URL in query parameter | Connection URL, API key                  | Ideal when working with clients that support Bearer token authentication but don't allow custom headers                                          |
-| Username & password in URL     | Connect using URL-encoded credentials and base URL in query parameter           | Connection URL, username, password       | Ideal for quick setup, testing, or when using clients with limited authentication options                                             |
+| **Authentication method**      | **Definition**                                                                  | **Requirements**                         | **Example**                      | **Recommendations**                                                                                                                   |
+|--------------------------------|---------------------------------------------------------------------------------|------------------------------------------|----------------------------------|---------------------------------------------------------------------------------------------------------------------------------------|
+| OAuth (public app)             | Authenticates the connection without requiring custom credentials               | Connection URL                           | [See VS Code remote connection](clients.md#connect-to-vs-code) | Simplest and most secure method, requiring no custom credentials or additional configuration                                          |
+| OAuth (custom app)             | Connects using a client ID and client secret after [creating a custom app](https://api.onlyoffice.com/docspace/api-backend/get-started/authentication/oauth2/creating-oauth-app/)    | Connection URL, Client ID, Client Secret | [See Claude Desktop connection](clients.md#connect-to-claude-desktop)    | Offers more flexibility and full control over the OAuth configuration, including custom redirect URIs, specific scopes, and branding. |
+| API Key (Header)               | Connects using an API key and base URL configured via custom headers             | Connection URL, API key                  | [See ONLYOFFICE Apps connection](clients.md#connect-to-onlyoffice-apps), [See Devin Desktop connection](clients.md#connect-devin-desktop-to-remote-onlyoffice-apps-mcp-server-via-http)        | Ideal when integrating with platforms that support custom HTTP headers but don't have built-in OAuth support                          |
+| API Key (Authorization header) | Connects using an API key in the `Authorization` header and a base URL in a query parameter | Connection URL, API key                  | [See Mistral Vibe connection](clients.md#connect-to-mistral-vibe)       | Ideal when working with clients that support Bearer token authentication but don't allow custom headers                                          |
+| Username & password in URL     | Connects using URL-encoded credentials and a base URL in a query parameter           | Connection URL, username, password       | [See Claude web connection](clients.md#connect-to-claude-web)    | Ideal for quick setup, testing, or when using clients with limited authentication options                                             |
 
 ## After installation
 

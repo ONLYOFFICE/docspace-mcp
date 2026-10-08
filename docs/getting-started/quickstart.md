@@ -4,9 +4,9 @@ Connect the [ONLYOFFICE Apps MCP server](README.md) to Claude Desktop and start 
 
 ## Step 1: Connect to MCP client
 
-[MCP clients](clients.md) like Claude, VS Code, and Windsurf act as a bridge to the ONLYOFFICE Apps MCP server, enabling LLMs to access and use ONLYOFFICE Apps workspace and tools, thus improving the overall capabilities of ONLYOFFICE Apps. This guide uses the Claude Desktop client and connects to a local MCP server. You can also [access via a remote server](installation.md#access-via-the-remote-onlyoffice-apps-mcp-server).
+[MCP clients](clients.md) like Claude, VS Code, and Devin Desktop act as a bridge to the ONLYOFFICE Apps MCP server, enabling LLMs to access and use the ONLYOFFICE Apps workspace and tools, thus improving the overall capabilities of ONLYOFFICE Apps. This guide uses the Claude Desktop client and connects to a local MCP server. You can also [access via a remote server](installation.md#access-via-the-remote-onlyoffice-apps-mcp-server).
 
-> **Note:** Ensure Docker is installed on your system.
+> **Note:** Ensure [Docker](https://www.docker.com/) is installed on your system.
 
 To connect Claude Desktop to your local MCP server:
 
@@ -14,8 +14,8 @@ To connect Claude Desktop to your local MCP server:
 2. Navigate to **Settings**.
 3. Navigate to **Developer**.
 4. Click **Edit config**.
-5. Open the configuration file (`config.json`) in a text editor.
-6. Add a new record to the `mcpServers` section:
+5. Open the configuration file (`claude_desktop_config.json`) in a text editor.
+6. Add the `mcpServers` section from the example below to the top level of the file. If the file already contains other settings, copy the example without its outer braces and separate it from the existing settings with a comma:
    ```json
    {
      "mcpServers": {
@@ -42,11 +42,11 @@ To connect Claude Desktop to your local MCP server:
 
 Where:
 - `DOCSPACE_BASE_URL` - the URL of your ONLYOFFICE Apps instance (e.g. https://your-instance.onlyoffice.com).
-- `DOCSPACE_API_KEY` - your personal API key generated in ONLYOFFICE Apps **Settings** -> **Developer Tools** -> **API keys**.
+- `DOCSPACE_API_KEY` - your personal API key generated in ONLYOFFICE Apps **Developer Tools** → **API keys** (open **Developer Tools** from the banner at the bottom of the left sidebar).
 
 7. Save the file and quit Claude Desktop.
 
-> **Note:** It's important to quit and not just close the Claude Desktop window as quitting and restarting the app reloads the `config.json` configuration with the new `mcpServers` entry.
+> **Note:** It's important to quit and not just close the Claude Desktop window as quitting and restarting the app reloads the `claude_desktop_config.json` configuration with the new `mcpServers` entry. On Windows, right-click the Claude icon in the system tray and select **Exit**.
 
 ## Step 2: Confirm the connection
 

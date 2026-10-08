@@ -29,7 +29,7 @@ The ONLYOFFICE Apps MCP Server connects AI tools directly to ONLYOFFICE Apps. Th
 
 ## Connecting Clients to ONLYOFFICE Apps MCP Server
 
-You can connect to the ONLYOFFICE Apps MCP server using any MCP clients. We have covered some popular clients, such as Claude Desktop, Cursor, Windsurf, etc., and [here](/docs/getting-started/clients.md) you can read about it.
+You can connect to the ONLYOFFICE Apps MCP server using any MCP clients. We have covered some popular clients, such as Claude Desktop, Cursor, Devin Desktop, etc., and [here](/docs/getting-started/clients.md) you can read about it.
 
 ### Remote ONLYOFFICE Apps MCP Server
 
@@ -85,7 +85,7 @@ Insert the following block into the `mcpServers` section of your `.json` configu
 #### Step 3. Set environment values
 
 - `DOCSPACE_BASE_URL` - the URL of your ONLYOFFICE Apps instance (e.g. https://your-instance.onlyoffice.com).
-- `DOCSPACE_API_KEY` - your personal API key generated in ONLYOFFICE Apps settings -> Developer Tools -> API keys.
+- `DOCSPACE_API_KEY` - your personal API key generated in ONLYOFFICE Apps **Developer Tools** → **API keys** (open **Developer Tools** from the banner at the bottom of the left sidebar).
 
 All available parameters are listed [here](/docs/reference/global-configuration.md).
 

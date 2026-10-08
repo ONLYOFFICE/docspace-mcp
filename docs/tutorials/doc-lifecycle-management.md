@@ -21,7 +21,7 @@ This tutorial walks you through managing the entire document lifecycle, from fir
 
 - Make sure you [connect your ONLYOFFICE Apps MCP server to your MCP client of choice](../getting-started/clients.md).
 
-> **Note:** Every AI MCP client sends a confirmation message to deny or confirm every action after you issue a prompt. This confirmation message differs from client to client — Le Chat uses `Always allow`, `Decline` or `Continue`.
+> **Note:** Every AI MCP client sends a confirmation message to deny or confirm every action after you issue a prompt. This confirmation message differs from client to client — Mistral Vibe uses `Always allow`, `Decline` or `Continue`.
 
 ### Step 1: Upload your first draft
 

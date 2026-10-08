@@ -87,7 +87,7 @@ pnpm build-app
 4. Run the Node.js application:
 
 ```sh
-./bin/onlyoffice-docspace-mcp
+node bin/onlyoffice-docspace-mcp.js
 ```
 
 ### MCP bundle
@@ -213,17 +213,16 @@ This method is ideal for teams who want to have access without pulling from a re
 
 Use this format if your MCP client supports `.mcpb` bundle files natively (e.g., Claude Desktop Extensions).
 
-1. Download the latest release:
+1. Download the `onlyoffice-docspace-mcp-<version>.mcpb` file from the **Assets** section of the [latest GitHub release](https://github.com/ONLYOFFICE/docspace-mcp/releases/latest).
+
+   Alternatively, download it in the terminal:
 
    ```sh
-   VERSION=3.2.0 curl --location --output docspace-mcp.mcpb https://github.com/ONLYOFFICE/docspace-mcp/releases/download/v$VERSION/onlyoffice-docspace-mcp-$VERSION.mcpb
+   VERSION=3.2.0
+   curl --location --output docspace-mcp.mcpb https://github.com/ONLYOFFICE/docspace-mcp/releases/download/v$VERSION/onlyoffice-docspace-mcp-$VERSION.mcpb
    ```
 
-   To download a specific version:
-
-   ```sh
-   VERSION=<version> curl --location --output docspace-mcp.mcpb https://github.com/ONLYOFFICE/docspace-mcp/releases/download/v$VERSION/onlyoffice-docspace-mcp-$VERSION.mcpb
-   ```
+   To download a specific version, replace `3.2.0` with the required version number.
 
 2. Use the downloaded `.mcpb` file in an application that supports MCP bundles.
 
@@ -231,17 +230,16 @@ Use this format if your MCP client supports `.mcpb` bundle files natively (e.g.,
 
 Use this format if you prefer to run the server as a standard Node.js process.
 
-1. Download the latest release:
+1. Download the `onlyoffice-docspace-mcp-<version>.tgz` file from the **Assets** section of the [latest GitHub release](https://github.com/ONLYOFFICE/docspace-mcp/releases/latest).
+
+   Alternatively, download it in the terminal:
 
    ```sh
-   VERSION=3.2.0 curl --location --output docspace-mcp.tgz https://github.com/ONLYOFFICE/docspace-mcp/releases/download/v$VERSION/onlyoffice-docspace-mcp-$VERSION.tgz
+   VERSION=3.2.0
+   curl --location --output docspace-mcp.tgz https://github.com/ONLYOFFICE/docspace-mcp/releases/download/v$VERSION/onlyoffice-docspace-mcp-$VERSION.tgz
    ```
 
-   To download a specific version:
-
-   ```sh
-   VERSION=<version> curl --location --output docspace-mcp.tgz https://github.com/ONLYOFFICE/docspace-mcp/releases/download/v$VERSION/onlyoffice-docspace-mcp-$VERSION.tgz
-   ```
+   To download a specific version, replace `3.2.0` with the required version number.
 
 2. Extract the downloaded archive:
 
@@ -252,13 +250,13 @@ Use this format if you prefer to run the server as a standard Node.js process.
 3. Navigate to the extracted directory:
 
    ```sh
-   cd docspace-mcp
+   cd package
    ```
 
 4. Run the Node.js application:
 
    ```sh
-   ./bin/onlyoffice-docspace-mcp
+   node bin/onlyoffice-docspace-mcp.js
    ```
 
 ## After getting the server

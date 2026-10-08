@@ -18,7 +18,7 @@ A process that exposes capabilities (tools, resources, prompts) to an MCP client
 over a defined transport. For example, the ONLYOFFICE Apps MCP Server specifically exposes ONLYOFFICE Apps operations like creating rooms, uploading, or deleting files so that AI agents can perform these operations through natural language.
 
 ### MCP client
-Applications like Claude Desktop, Cursor, and Windsurf that connect to an MCP server and use its tools on behalf of an LLM. The client is responsible for passing tool calls from the LLM to the server and returning the
+Applications like Claude Desktop, Cursor, and Devin Desktop that connect to an MCP server and use its tools on behalf of an LLM. The client is responsible for passing tool calls from the LLM to the server and returning the
 results.
 
 ### MCP host

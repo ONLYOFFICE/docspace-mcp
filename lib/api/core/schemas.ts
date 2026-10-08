@@ -791,12 +791,18 @@ export const AuthenticationTokenDtoSchema = z.looseObject({
   expires: z.string().optional(),
 })
 
+// The security flags of every listed item take up most of the response, while
+// they are rarely needed, so they are excluded from the default list fields.
+const FolderContentDtoDefaultFields = zod.
+  unionValues<string>(FolderContentDtoFieldSchema).
+  filter((v) => v !== "files.security" && v !== "folders.security")
+
 export const GetFileInfoFiltersSchema = z.object({
-  fields: z.array(zod.unionToEnum(FileDtoFieldSchema, "The fields to include in the response.")),
+  fields: z.array(zod.unionToEnum(FileDtoFieldSchema, "The fields to include in the response.")).default(zod.unionValues(FileDtoFieldSchema)),
 })
 
 export const CreateFolderFiltersSchema = z.object({
-  fields: z.array(zod.unionToEnum(FolderDtoFieldSchema, "The fields to include in the response.")),
+  fields: z.array(zod.unionToEnum(FolderDtoFieldSchema, "The fields to include in the response.")).default(zod.unionValues(FolderDtoFieldSchema)),
 })
 
 /**
@@ -817,15 +823,15 @@ export const GetFolderFiltersSchema = z.object({
   sortBy: z.string().optional().describe("Specifies the property used for sorting the folder request results."),
   sortOrder: zod.unionToEnum(NumericSortOrderSchema, "The order in which the results are sorted.").optional(),
   filterValue: z.string().optional().describe("The text value used as a filter parameter for folder queries."),
-  fields: z.array(zod.unionToEnum(FolderContentDtoFieldSchema, "The fields to include in the response.")),
+  fields: z.array(zod.unionToEnum(FolderContentDtoFieldSchema, "The fields to include in the response.")).default(FolderContentDtoDefaultFields),
 })
 
 export const GetFolderInfoFiltersSchema = z.object({
-  fields: z.array(zod.unionToEnum(FolderDtoFieldSchema, "The fields to include in the response.")),
+  fields: z.array(zod.unionToEnum(FolderDtoFieldSchema, "The fields to include in the response.")).default(zod.unionValues(FolderDtoFieldSchema)),
 })
 
 export const RenameFolderFiltersSchema = z.object({
-  fields: z.array(zod.unionToEnum(FolderDtoFieldSchema, "The fields to include in the response.")),
+  fields: z.array(zod.unionToEnum(FolderDtoFieldSchema, "The fields to include in the response.")).default(zod.unionValues(FolderDtoFieldSchema)),
 })
 
 /**
@@ -840,23 +846,23 @@ export const GetMyFolderFiltersSchema = z.object({
   sortBy: z.string().optional().describe("The property used to specify the sorting criteria for folder contents."),
   sortOrder: zod.unionToEnum(NumericSortOrderSchema, "The order in which the results are sorted.").optional(),
   filterValue: z.string().optional().describe("The text used for filtering or searching folder contents."),
-  fields: z.array(zod.unionToEnum(FolderContentDtoFieldSchema, "The fields to include in the response.")),
+  fields: z.array(zod.unionToEnum(FolderContentDtoFieldSchema, "The fields to include in the response.")).default(FolderContentDtoDefaultFields),
 })
 
 export const CreateRoomFiltersSchema = z.object({
-  fields: z.array(zod.unionToEnum(FolderDtoFieldSchema, "The fields to include in the response.")),
+  fields: z.array(zod.unionToEnum(FolderDtoFieldSchema, "The fields to include in the response.")).default(zod.unionValues(FolderDtoFieldSchema)),
 })
 
 export const GetRoomInfoFiltersSchema = z.object({
-  fields: z.array(zod.unionToEnum(FolderDtoFieldSchema, "The fields to include in the response.")),
+  fields: z.array(zod.unionToEnum(FolderDtoFieldSchema, "The fields to include in the response.")).default(zod.unionValues(FolderDtoFieldSchema)),
 })
 
 export const UpdateRoomFiltersSchema = z.object({
-  fields: z.array(zod.unionToEnum(FolderDtoFieldSchema, "The fields to include in the response.")),
+  fields: z.array(zod.unionToEnum(FolderDtoFieldSchema, "The fields to include in the response.")).default(zod.unionValues(FolderDtoFieldSchema)),
 })
 
 export const SetRoomSecurityFiltersSchema = z.object({
-  fields: z.array(zod.unionToEnum(RoomSecurityDtoFieldSchema, "The fields to include in the response.")),
+  fields: z.array(zod.unionToEnum(RoomSecurityDtoFieldSchema, "The fields to include in the response.")).default(zod.unionValues(RoomSecurityDtoFieldSchema)),
 })
 
 /**
@@ -867,7 +873,7 @@ export const GetRoomSecurityFiltersSchema = z.object({
   count: z.number().min(1).max(50).default(30).describe("The number of items to be retrieved or processed."),
   startIndex: z.number().optional().describe("The starting index of the items to retrieve in a paginated request."),
   filterValue: z.string().optional().describe("The text filter value used for filtering room security information."),
-  fields: z.array(zod.unionToEnum(FileShareDtoFieldSchema, "The fields to include in the response.")),
+  fields: z.array(zod.unionToEnum(FileShareDtoFieldSchema, "The fields to include in the response.")).default(zod.unionValues(FileShareDtoFieldSchema)),
 })
 
 /**
@@ -900,7 +906,7 @@ export const GetRoomsFolderFiltersSchema = z.object({
   sortBy: zod.unionToEnum(GetRoomsFolderFiltersSortBySchema, "Specifies the field by which the room content should be sorted.").optional(),
   sortOrder: zod.unionToEnum(NumericSortOrderSchema, "The order in which the results are sorted.").optional(),
   filterValue: z.string().optional().describe("The text used for filtering or searching folder contents."),
-  fields: z.array(zod.unionToEnum(FolderContentDtoFieldSchema, "The fields to include in the response.")),
+  fields: z.array(zod.unionToEnum(FolderContentDtoFieldSchema, "The fields to include in the response.")).default(FolderContentDtoDefaultFields),
 })
 
 export const GetFullByFilterFiltersSchema = z.object({
@@ -910,5 +916,5 @@ export const GetFullByFilterFiltersSchema = z.object({
   sortOrder: zod.unionToEnum(NumericSortOrderSchema, "The order in which the results are sorted.").optional(),
   filterSeparator: z.string().optional().describe("Represents the separator used to split filter criteria in query parameters."),
   filterValue: z.string().optional().describe("The search text used to filter results based on user input."),
-  fields: z.array(zod.unionToEnum(EmployeeFullDtoFieldSchema, "The fields to include in the response.")),
+  fields: z.array(zod.unionToEnum(EmployeeFullDtoFieldSchema, "The fields to include in the response.")).default(zod.unionValues(EmployeeFullDtoFieldSchema)),
 })

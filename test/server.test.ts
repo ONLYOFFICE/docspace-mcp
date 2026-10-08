@@ -135,6 +135,65 @@ void test.suite("structured content", () => {
     assert.ok(hl.mock.callCount() === 1)
   })
 
+  void test("applies default filters when filters are omitted", async(t) => {
+    let [hs, ha] = await setupHttp(t)
+
+    let hl = test.mock.fn<AsyncRequestListener>(async(req, res) => {
+      assert.ok(req.method === "GET")
+      assert.ok(req.url)
+
+      let u = new URL(req.url, "http://localhost/")
+      assert.ok(u.pathname === "/api/2.0/files/@my")
+      assert.ok(u.searchParams.get("count") === "30")
+      let f = u.searchParams.getAll("fields")
+      assert.ok(f.includes("files.title"))
+      assert.ok(f.includes("current.security"))
+      assert.ok(!f.includes("files.security"))
+      assert.ok(!f.includes("folders.security"))
+
+      let s = await sendJson(res, 200, body)
+      assert.ok(s.err === undefined)
+    })
+
+    let hp = onRequest(t, hs, hl)
+
+    let tf = async(): Promise<void> => {
+      let so: SetupMcpOptions = {
+        transport: "stdio",
+        host: "",
+        port: 0,
+        env: {
+          DOCSPACE_BASE_URL: `http://[${ha.address}]:${ha.port}/`,
+          DOCSPACE_API_KEY: "xxx",
+        },
+      }
+
+      let cl = await setupMcp(t, so)
+
+      let lr = await r.safeAsync(cl.listTools.bind(cl))
+      assert.ok(lr.err === undefined)
+
+      let lt = lr.v.tools.find((t) => t.name === "get_my_folder")
+      assert.ok(lt)
+      assert.ok(!lt.inputSchema.required?.includes("filters"))
+
+      let cp: types.CallToolRequest["params"] = {
+        name: "get_my_folder",
+        arguments: {},
+      }
+
+      let cr = await r.safeAsync(cl.callTool.bind(cl), cp)
+      assert.ok(cr.err === undefined)
+
+      assert.ok(!cr.v.isError)
+      assert.deepEqual(cr.v.structuredContent, body)
+    }
+
+    await Promise.race([hp, tf()])
+
+    assert.ok(hl.mock.callCount() === 1)
+  })
+
   void test("omits structured content for tool without output schema", async(t) => {
     let so: SetupMcpOptions = {
       transport: "stdio",

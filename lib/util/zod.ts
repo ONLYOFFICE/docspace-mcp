@@ -27,6 +27,20 @@ export function wrapUnion<
   return z.union(a as unknown as A)
 }
 
+export function unionValues<T extends string | number>(
+  u: z.ZodUnion<readonly [z.ZodLiteral<T>, z.ZodLiteral<T>, ...z.ZodLiteral<T>[]]>,
+): T[] {
+  let a: T[] = []
+
+  for (let o of u.options) {
+    for (let v of o.values) {
+      a.push(v)
+    }
+  }
+
+  return a
+}
+
 export function unionToEnum<T extends string | number>(
   u: z.ZodUnion<readonly [z.ZodLiteral<T>, z.ZodLiteral<T>, ...z.ZodLiteral<T>[]]>,
   d: string,

@@ -29,4 +29,4 @@ Welcome to the documentation for the ONLYOFFICE Apps MCP Server.
   - [Cursor](./troubleshooting/cursor-troubleshooting.md)
   - [Mistral Vibe](./troubleshooting/le-chat-troubleshooting.md)
   - [VS Code](./troubleshooting/vs-code-troubleshooting.md)
-  - [Windsurf](./troubleshooting/windsurf-troubleshooting.md)
+  - [Devin Desktop](./troubleshooting/windsurf-troubleshooting.md)

@@ -4,7 +4,7 @@ Connect the [ONLYOFFICE Apps MCP server](README.md) to Claude Desktop and start 
 
 ## Step 1: Connect to MCP client
 
-[MCP clients](clients.md) like Claude, VS Code, and Windsurf act as a bridge to the ONLYOFFICE Apps MCP server, enabling LLMs to access and use the ONLYOFFICE Apps workspace and tools, thus improving the overall capabilities of ONLYOFFICE Apps. This guide uses the Claude Desktop client and connects to a local MCP server. You can also [access via a remote server](installation.md#access-via-the-remote-onlyoffice-apps-mcp-server).
+[MCP clients](clients.md) like Claude, VS Code, and Devin Desktop act as a bridge to the ONLYOFFICE Apps MCP server, enabling LLMs to access and use the ONLYOFFICE Apps workspace and tools, thus improving the overall capabilities of ONLYOFFICE Apps. This guide uses the Claude Desktop client and connects to a local MCP server. You can also [access via a remote server](installation.md#access-via-the-remote-onlyoffice-apps-mcp-server).
 
 > **Note:** Ensure [Docker](https://www.docker.com/) is installed on your system.
 

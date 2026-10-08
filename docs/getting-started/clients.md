@@ -8,7 +8,7 @@ The ONLYOFFICE Apps MCP server allows you to connect numerous MCP clients, offer
 - [Cursor](#connect-to-cursor)
 - [Mistral Vibe](#connect-to-mistral-vibe)
 - [VS Code](#connect-to-vs-code)
-- [Windsurf](#connect-to-windsurf)
+- [Devin Desktop](#connect-to-devin-desktop)
 
 ## Before you start
 
@@ -355,50 +355,65 @@ Connect to the locally running MCP server using stdio transport.
 
    The server status changes to **Running** and shows the number of available tools.
 
-## Connect to Windsurf
+## Connect to Devin Desktop
 
-Windsurf offers two ways to connect to the ONLYOFFICE Apps MCP server:
+> **Note:** In June 2026, Cognition renamed Windsurf to Devin Desktop.
 
-- [HTTP](#connect-windsurf-to-remote-onlyoffice-apps-mcp-server-via-http)
-- [Command](#connect-windsurf-to-local-onlyoffice-apps-mcp-server-via-command)
+Devin Desktop offers two ways to connect to the ONLYOFFICE Apps MCP server:
 
-### Connect Windsurf to remote ONLYOFFICE Apps MCP server via HTTP
+- [HTTP](#connect-devin-desktop-to-remote-onlyoffice-apps-mcp-server-via-http)
+- [Command](#connect-devin-desktop-to-local-onlyoffice-apps-mcp-server-via-command)
+
+### Connect Devin Desktop to remote ONLYOFFICE Apps MCP server via HTTP
 
 This is the recommended method and connects to the remote MCP server using Streamable-HTTP transport.
 
-1. Open Windsurf.
-2. Bring up Command Palette.
-3. Select **Open Windsurf User Settings**.
-4. Navigate to **Cascade**.
-5. Click **Open MCP Marketplace**.
-6. Click **Settings**.
-7. Add a new record to the `mcpServers` section:
-   ```json
-   {
-     "mcpServers": {
-       "onlyoffice-apps": {
-         "serverUrl": "https://mcp.onlyoffice.com/mcp"
-       }
-     }
-   }
-   ```
-8. Save the file.
-9. Complete the OAuth authentication process:
-    - Sign in to your ONLYOFFICE Apps account by entering your email and password and clicking **Sign In**.
-    - If you have more than one account associated with the entered email, choose one of them.
-    - Allow the MCP Remote Server to access the specified data in your ONLYOFFICE Apps account.
+1. Open Devin Desktop.
+2. Bring up Command Palette and select **Devin: Devin MCP Registry**. The **Devin Customizations** tab opens.
+3. Navigate to **MCPs** → **Available** and click **Add custom MCP**. Devin Desktop opens the `mcp_config.json` file.
+4. Add the `onlyoffice-apps` record to the `mcpServers` section based on your preferred authentication method:
+    - **OAuth**:
+      ```json
+      {
+        "mcpServers": {
+          "onlyoffice-apps": {
+            "serverUrl": "https://mcp.onlyoffice.com/mcp"
+          }
+        }
+      }
+      ```
+    - **API key**: Replace the `X-Mcp-Base-Url` and `X-Mcp-Api-Key` values with your ONLYOFFICE Apps URL and API key:
+      ```json
+      {
+        "mcpServers": {
+          "onlyoffice-apps": {
+            "serverUrl": "https://mcp.onlyoffice.com/mcp",
+            "headers": {
+              "X-Mcp-Base-Url": "https://your-instance.onlyoffice.com",
+              "X-Mcp-Api-Key": "your-api-key"
+            }
+          }
+        }
+      }
+      ```
+5. Save the file. The server appears in **MCPs** → **Installed**.
+6. Connect the server:
+    - **OAuth**: Click **Authenticate** next to **onlyoffice-apps** and complete the OAuth authentication process:
+        - Sign in to your ONLYOFFICE Apps account by entering your email and password and clicking **Sign In**.
+        - If you have more than one account associated with the entered email, choose one of them.
+        - Allow the MCP Remote Server to access the specified data in your ONLYOFFICE Apps account.
+    - **API key**: Click **onlyoffice-apps** to open the server page, and then click **Connect**.
 
-### Connect Windsurf to local ONLYOFFICE Apps MCP server via command
+   The server status changes to **Connected**, and the list of available tools is displayed.
+
+### Connect Devin Desktop to local ONLYOFFICE Apps MCP server via command
 
 This method uses stdio transport to connect to a locally running MCP server.
 
-1. Open Windsurf.
-2. Bring up Command Palette.
-3. Select **Open Windsurf User Settings**.
-4. Navigate to **Cascade**.
-5. Click **Open MCP Marketplace**.
-6. Click **Settings**.
-7. Add a new record to the `mcpServers` section:
+1. Open Devin Desktop.
+2. Bring up Command Palette and select **Devin: Devin MCP Registry**. The **Devin Customizations** tab opens.
+3. Navigate to **MCPs** → **Available** and click **Add custom MCP**. Devin Desktop opens the `mcp_config.json` file.
+4. Add the `onlyoffice-apps` record to the `mcpServers` section and replace the `DOCSPACE_BASE_URL` and `DOCSPACE_API_KEY` values with your own:
    ```json
    {
      "mcpServers": {
@@ -422,6 +437,9 @@ This method uses stdio transport to connect to a locally running MCP server.
      }
    }
    ```
-8. Save the file.
-9. Open **Cascade**. 
-10. Click **Actions(...)**. You'll find **onlyoffice-apps** under the MCP section if connection was successful. Toggle to enable the connection.
+5. Save the file. The server appears in **MCPs** → **Installed**.
+6. Click **onlyoffice-apps** to open the server page, and then click **Connect**.
+
+   The server status changes to **Connected**, and the list of available tools is displayed.
+
+When the agent calls an ONLYOFFICE Apps tool in a Devin Local session, click **Allow** in the **Permission required** prompt.

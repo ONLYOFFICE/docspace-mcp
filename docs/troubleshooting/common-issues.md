@@ -31,10 +31,10 @@ Sometimes OAuth authentication fails or the browser fails to open to authenticat
 
 - **No default browser configured.** The client opens the OAuth page in the system default browser. Ensure a default browser is set in your OS settings.
 - **The MCP server URL is incorrect.** Verify that the URL you entered is correct with no trailing slash issues or typos.
-- **Pop-ups are blocked.** If the authentication page does not appear, check that your browser is not blocking pop-ups from `oauth.onlyoffice.com`.
+- **Pop-ups are blocked.** If the authentication page does not appear, check that your browser is not blocking pop-ups. The sign-in window opens `mcp.onlyoffice.com` and then redirects to `oauth.onlyoffice.com`, so allow both domains.
 - **The browser did not return you to the client.** After you allow access, the browser asks to open your MCP client (for example, **Open Cursor**, **Open Visual Studio Code**, or **Open Claude**). Confirm this prompt. If you click **Cancel**, the authentication is not completed.
 - **Session expired or token revoked.** Delete the existing `onlyoffice-apps` entry, re-add it, and repeat the authentication process.
-- **Corporate firewall or proxy.** If your organization uses a proxy, make sure that `mcp.onlyoffice.com` is reachable. Contact your network administrator if needed.
+- **Corporate firewall or proxy.** If your organization uses a proxy, make sure that both `mcp.onlyoffice.com` and `oauth.onlyoffice.com` are reachable. Contact your network administrator if needed.
 
 ## The API key is invalid or authentication returns a 401 error (Local MCP Server)
 

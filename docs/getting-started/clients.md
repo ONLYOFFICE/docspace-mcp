@@ -54,6 +54,8 @@ Only the workspace owner and Full admins can configure MCP servers.
 
 Once enabled, the server tools are available to workspace users in AI Chat, both in rooms and folders and in AI agents. In an AI agent, only the users with the **Agent manager** or **Content creator** role can use the chat.
 
+When AI Chat calls an ONLYOFFICE Apps MCP server tool, the **Confirmation** dialog appears. Click **Allow** to run the tool. To stop asking for this tool, select **Always allow this tool to perform this action without asking again** before clicking **Allow**.
+
 > **Note:** In AI Chat, the server tools work with the access rights of the current user. Users can access only the rooms and files available to them.
 
 If the server fails to connect, an error icon appears next to it in the **Permissions** section. Expand the server entry to see the connection log. The `HTTP 401 Unauthorized` error means that the `headers` block is missing or the API key is invalid.

@@ -13,250 +13,249 @@ import {proxyError} from "./internal.ts"
 import type {ErrorResponse, IntrospectRequest, IntrospectResponse} from "./shared.ts"
 
 declare module "express-serve-static-core" {
-	// eslint-disable-next-line typescript/consistent-type-definitions
-	interface Request {
-		[oauthKey]?: Oauth
-	}
+  interface Request {
+    [oauthKey]?: Oauth
+  }
 }
 
 export const oauthKey = Symbol("oauth")
 
 export const handlerRequestHeaders: string[] = [
-	"Authorization",
+  "Authorization",
 ]
 
 export const handlerResponseHeaders: string[] = [
-	"Content-Type",
-	"WWW-Authenticate",
+  "Content-Type",
+  "WWW-Authenticate",
 ]
 
 export type Oauth = {
-	aud: string
-	token: string
+  aud: string
+  token: string
 }
 
 export type HandlerConfig = {
-	baseUrl: string
-	client: HandlerClient
-	authTokens: HandlerAuthTokens
+  baseUrl: string
+  client: HandlerClient
+  authTokens: HandlerAuthTokens
 }
 
 export type HandlerClient = {
-	introspect(o: IntrospectRequest): Promise<r.Result<[IntrospectResponse, ClientResponse], Error>>
+  introspect(o: IntrospectRequest): Promise<r.Result<[IntrospectResponse, ClientResponse], Error>>
 }
 
 export type HandlerAuthTokens = {
-	verify(t: string): r.Result<[string, AuthTokenPayload], Error>
-	encode(t: string): r.Result<[string, AuthTokenPayload], Error>
+  verify(t: string): r.Result<[string, AuthTokenPayload], Error>
+  encode(t: string): r.Result<[string, AuthTokenPayload], Error>
 }
 
 /**
  * {@link https://www.rfc-editor.org/rfc/rfc6750.html#section-3 | RFC 6750 Reference}
  */
 export function handler(config: HandlerConfig): r.Result<express.Handler, Error> {
-	let u = r.safeNew(URL, "/.well-known/oauth-protected-resource", config.baseUrl)
-	if (u.err) {
-		return r.error(new Error("Creating resource metadata URL", {cause: u.err}))
-	}
+  let u = r.safeNew(URL, "/.well-known/oauth-protected-resource", config.baseUrl)
+  if (u.err) {
+    return r.error(new Error("Creating resource metadata URL", {cause: u.err}))
+  }
 
-	let www = (e: ErrorResponse): string => {
-		let s = `Bearer error="${e.error}", `
+  let www = (e: ErrorResponse): string => {
+    let s = `Bearer error="${e.error}", `
 
-		if (e.error_description) {
-			s += `error_description=${JSON.stringify(e.error_description)}, `
-		}
+    if (e.error_description) {
+      s += `error_description=${JSON.stringify(e.error_description)}, `
+    }
 
-		if (e.error_uri) {
-			s += `error_uri="${e.error_uri}", `
-		}
+    if (e.error_uri) {
+      s += `error_uri="${e.error_uri}", `
+    }
 
-		s += `resource_metadata="${u.v}"`
+    s += `resource_metadata="${u.v}"`
 
-		return s
-	}
+    return s
+  }
 
-	let end = (res: express.Response, code: number, er: ErrorResponse): void => {
-		if (code === 401 || code === 403) {
-			res.set("WWW-Authenticate", www(er))
-		}
-		res.status(code)
-		res.json(er)
-	}
+  let end = (res: express.Response, code: number, er: ErrorResponse): void => {
+    if (code === 401 || code === 403) {
+      res.set("WWW-Authenticate", www(er))
+    }
+    res.status(code)
+    res.json(er)
+  }
 
-	let h: express.Handler = async(req, res, next) => {
-		let ih = parseBearer(req)
-		if (ih.err) {
-			let err = new Error("Parsing header", {cause: ih.err})
-			let er: ErrorResponse = {
-				error: "invalid_request",
-				error_description: errors.format(err),
-			}
-			end(res, 401, er)
-			return
-		}
+  let h: express.Handler = async(req, res, next) => {
+    let ih = parseBearer(req)
+    if (ih.err) {
+      let err = new Error("Parsing header", {cause: ih.err})
+      let er: ErrorResponse = {
+        error: "invalid_request",
+        error_description: errors.format(err),
+      }
+      end(res, 401, er)
+      return
+    }
 
-		let tu = config.authTokens.verify(ih.v)
-		if (tu.err) {
-			let err = new Error("Verifying token", {cause: tu.err})
+    let tu = config.authTokens.verify(ih.v)
+    if (tu.err) {
+      let err = new Error("Verifying token", {cause: tu.err})
 
-			let code: number | undefined
-			let error: string | undefined
+      let code: number | undefined
+      let error: string | undefined
 
-			if (errors.as(tu.err, InvalidAuthTokenError)) {
-				code = 401
-				error = "invalid_token"
-			} else {
-				code = 500
-				error = "server_error"
-			}
+      if (errors.as(tu.err, InvalidAuthTokenError)) {
+        code = 401
+        error = "invalid_token"
+      } else {
+        code = 500
+        error = "server_error"
+      }
 
-			let er: ErrorResponse = {
-				error,
-				error_description: errors.format(err),
-			}
+      let er: ErrorResponse = {
+        error,
+        error_description: errors.format(err),
+      }
 
-			end(res, code, er)
-			return
-		}
+      end(res, code, er)
+      return
+    }
 
-		let [tt] = tu.v
+    let [tt] = tu.v
 
-		let io: IntrospectRequest = {
-			token: tt,
-		}
+    let io: IntrospectRequest = {
+      token: tt,
+    }
 
-		let ci = await config.client.introspect(io)
-		if (ci.err) {
-			let err = new Error("Introspecting token", {cause: ci.err})
-			let [code, er] = proxyError(ci.err, err)
-			end(res, code, er)
-			return
-		}
+    let ci = await config.client.introspect(io)
+    if (ci.err) {
+      let err = new Error("Introspecting token", {cause: ci.err})
+      let [code, er] = proxyError(ci.err, err)
+      end(res, code, er)
+      return
+    }
 
-		let [id] = ci.v
+    let [id] = ci.v
 
-		if (!id.active) {
-			let err = new Error("Inactive token")
-			let er: ErrorResponse = {
-				error: "invalid_token",
-				error_description: errors.format(err),
-			}
-			end(res, 401, er)
-			return
-		}
+    if (!id.active) {
+      let err = new Error("Inactive token")
+      let er: ErrorResponse = {
+        error: "invalid_token",
+        error_description: errors.format(err),
+      }
+      end(res, 401, er)
+      return
+    }
 
-		if (!id.aud) {
-			let err = new Error("No audience")
-			let er: ErrorResponse = {
-				error: "invalid_token",
-				error_description: errors.format(err),
-			}
-			end(res, 401, er)
-			return
-		}
+    if (!id.aud) {
+      let err = new Error("No audience")
+      let er: ErrorResponse = {
+        error: "invalid_token",
+        error_description: errors.format(err),
+      }
+      end(res, 401, er)
+      return
+    }
 
-		let aud: string | undefined
+    let aud: string | undefined
 
-		if (Array.isArray(id.aud)) {
-			if (id.aud.length === 0) {
-				let err = new Error("No audience")
-				let er: ErrorResponse = {
-					error: "invalid_token",
-					error_description: errors.format(err),
-				}
-				end(res, 401, er)
-				return
-			}
+    if (Array.isArray(id.aud)) {
+      if (id.aud.length === 0) {
+        let err = new Error("No audience")
+        let er: ErrorResponse = {
+          error: "invalid_token",
+          error_description: errors.format(err),
+        }
+        end(res, 401, er)
+        return
+      }
 
-			if (id.aud.length > 1) {
-				let err = new Error("Multiple audience")
-				let er: ErrorResponse = {
-					error: "invalid_token",
-					error_description: errors.format(err),
-				}
-				end(res, 401, er)
-				return
-			}
+      if (id.aud.length > 1) {
+        let err = new Error("Multiple audience")
+        let er: ErrorResponse = {
+          error: "invalid_token",
+          error_description: errors.format(err),
+        }
+        end(res, 401, er)
+        return
+      }
 
-			aud = id.aud[0]
-		} else {
-			aud = id.aud
-		}
+      aud = id.aud[0]
+    } else {
+      aud = id.aud
+    }
 
-		let au = r.safeNew(URL, aud)
-		if (au.err) {
-			let err = new Error("Parsing audience")
-			let er: ErrorResponse = {
-				error: "invalid_token",
-				error_description: errors.format(err),
-			}
-			end(res, 401, er)
-			return
-		}
+    let au = r.safeNew(URL, aud)
+    if (au.err) {
+      let err = new Error("Parsing audience")
+      let er: ErrorResponse = {
+        error: "invalid_token",
+        error_description: errors.format(err),
+      }
+      end(res, 401, er)
+      return
+    }
 
-		if (!au.v.pathname.endsWith("/")) {
-			au.v.pathname += "/"
-		}
+    if (!au.v.pathname.endsWith("/")) {
+      au.v.pathname += "/"
+    }
 
-		if (!id.exp) {
-			let err = new Error("No expiration")
-			let er: ErrorResponse = {
-				error: "invalid_token",
-				error_description: errors.format(err),
-			}
-			end(res, 401, er)
-			return
-		}
+    if (!id.exp) {
+      let err = new Error("No expiration")
+      let er: ErrorResponse = {
+        error: "invalid_token",
+        error_description: errors.format(err),
+      }
+      end(res, 401, er)
+      return
+    }
 
-		if (id.exp < Math.floor(Date.now() / 1000)) {
-			let err = new Error("Expired token")
-			let er: ErrorResponse = {
-				error: "invalid_token",
-				error_description: errors.format(err),
-			}
-			end(res, 401, er)
-			return
-		}
+    if (id.exp < Math.floor(Date.now() / 1000)) {
+      let err = new Error("Expired token")
+      let er: ErrorResponse = {
+        error: "invalid_token",
+        error_description: errors.format(err),
+      }
+      end(res, 401, er)
+      return
+    }
 
-		req[oauthKey] = {
-			aud: au.v.href,
-			token: tt,
-		}
+    req[oauthKey] = {
+      aud: au.v.href,
+      token: tt,
+    }
 
-		next()
-	}
+    next()
+  }
 
-	return r.ok(h)
+  return r.ok(h)
 }
 
 function parseBearer(req: express.Request): r.Result<string, Error> {
-	let h = req.headers.authorization
+  let h = req.headers.authorization
 
-	if (!h) {
-		return r.error(new Error("No header"))
-	}
+  if (!h) {
+    return r.error(new Error("No header"))
+  }
 
-	let i = h.indexOf(" ")
+  let i = h.indexOf(" ")
 
-	if (i === -1) {
-		return r.error(new Error("Malformed header"))
-	}
+  if (i === -1) {
+    return r.error(new Error("Malformed header"))
+  }
 
-	let s = h.slice(0, i)
+  let s = h.slice(0, i)
 
-	if (!s) {
-		return r.error(new Error("No scheme"))
-	}
+  if (!s) {
+    return r.error(new Error("No scheme"))
+  }
 
-	if (s.toLowerCase() !== "bearer") {
-		return r.error(new Error("Invalid scheme"))
-	}
+  if (s.toLowerCase() !== "bearer") {
+    return r.error(new Error("Invalid scheme"))
+  }
 
-	let t = h.slice(i + 1)
+  let t = h.slice(i + 1)
 
-	if (!t) {
-		return r.error(new Error("No token"))
-	}
+  if (!t) {
+    return r.error(new Error("No token"))
+  }
 
-	return r.ok(t)
+  return r.ok(t)
 }

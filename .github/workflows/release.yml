@@ -3,7 +3,7 @@ name: Release
 on:
   push:
     tags:
-    - "v*"
+      - "v*"
 
 jobs:
   build:
@@ -13,92 +13,92 @@ jobs:
     outputs:
       version: ${{steps.version.outputs.version}}
     steps:
-    - name: Checkout Repository
-      uses: actions/checkout@v4
+      - name: Checkout Repository
+        uses: actions/checkout@v7
 
-    - name: Setup mise
-      uses: jdx/mise-action@v2
-      with:
-        # mise uses GITHUB_TOKEN to interact with the GitHub API when installing
-        # tools. This results in a 401 Unauthorized error if the action runs
-        # outside of GitHub's infrastructure. As a workaround, only provide
-        # GITHUB_TOKEN when running on github.com.
-        GITHUB_TOKEN: ${{github.server_url == 'https://github.com' && github.token || ''}}
+      - name: Setup mise
+        uses: jdx/mise-action@v2
+        with:
+          # mise uses GITHUB_TOKEN to interact with the GitHub API when installing
+          # tools. This results in a 401 Unauthorized error if the action runs
+          # outside of GitHub's infrastructure. As a workaround, only provide
+          # GITHUB_TOKEN when running on github.com.
+          GITHUB_TOKEN: ${{github.server_url == 'https://github.com' && github.token || ''}}
 
-    - name: Store Version
-      id: version
-      run: echo "version=$(jq --raw-output ".version" package.json)" >> "$GITHUB_OUTPUT"
+      - name: Store Version
+        id: version
+        run: echo "version=$(jq --raw-output ".version" package.json)" >> "$GITHUB_OUTPUT"
 
-    - name: Install Dependencies
-      run: pnpm install --frozen-lockfile
+      - name: Install Dependencies
+        run: pnpm install --frozen-lockfile
 
-    - name: Build Application
-      run: pnpm build-app
+      - name: Build Application
+        run: pnpm build-app
 
-    - name: Build MCP Bundle
-      run: pnpm build-mcpb
+      - name: Build MCP Bundle
+        run: pnpm build-mcpb
 
-    - name: Build Server Detail
-      run: pnpm build-detail
+      - name: Build Server Detail
+        run: pnpm build-detail
 
-    - name: Archive Package
-      run: pnpm pack
+      - name: Archive Package
+        run: pnpm pack
 
-    - name: Upload MCP Bundle
-      uses: actions/upload-artifact@v4
-      with:
-        name: mcp-bundle
-        path: "*.mcpb"
-        if-no-files-found: error
+      - name: Upload MCP Bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: mcp-bundle
+          path: "*.mcpb"
+          if-no-files-found: error
 
-    - name: Upload Server Detail
-      uses: actions/upload-artifact@v4
-      with:
-        name: server-detail
-        path: server.json
-        if-no-files-found: error
+      - name: Upload Server Detail
+        uses: actions/upload-artifact@v4
+        with:
+          name: server-detail
+          path: server.json
+          if-no-files-found: error
 
-    - name: Upload Package
-      uses: actions/upload-artifact@v4
-      with:
-        name: package
-        path: "*.tgz"
-        if-no-files-found: error
+      - name: Upload Package
+        uses: actions/upload-artifact@v4
+        with:
+          name: package
+          path: "*.tgz"
+          if-no-files-found: error
 
   npm:
     needs:
-    - build
+      - build
     runs-on: ubuntu-latest
     permissions:
       contents: read
       id-token: write
     steps:
-    - name: Checkout Repository
-      uses: actions/checkout@v4
+      - name: Checkout Repository
+        uses: actions/checkout@v7
 
-    - name: Setup mise
-      uses: jdx/mise-action@v2
-      with:
-        # mise uses GITHUB_TOKEN to interact with the GitHub API when installing
-        # tools. This results in a 401 Unauthorized error if the action runs
-        # outside of GitHub's infrastructure. As a workaround, only provide
-        # GITHUB_TOKEN when running on github.com.
-        GITHUB_TOKEN: ${{github.server_url == 'https://github.com' && github.token || ''}}
+      - name: Setup mise
+        uses: jdx/mise-action@v2
+        with:
+          # mise uses GITHUB_TOKEN to interact with the GitHub API when installing
+          # tools. This results in a 401 Unauthorized error if the action runs
+          # outside of GitHub's infrastructure. As a workaround, only provide
+          # GITHUB_TOKEN when running on github.com.
+          GITHUB_TOKEN: ${{github.server_url == 'https://github.com' && github.token || ''}}
 
-    - name: Download Package
-      uses: actions/download-artifact@v4
-      with:
-        name: package
+      - name: Download Package
+        uses: actions/download-artifact@v4
+        with:
+          name: package
 
-    - name: Configure Registry
-      run: pnpm config set registry https://registry.npmjs.org
+      - name: Configure Registry
+        run: pnpm config set registry https://registry.npmjs.org
 
-    - name: Publish Package
-      run: pnpm publish *.tgz --no-git-checks --provenance --access public
+      - name: Publish Package
+        run: pnpm publish *.tgz --no-git-checks --provenance --access public
 
   docker:
     needs:
-    - build
+      - build
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -106,122 +106,122 @@ jobs:
       DOCKERHUB_NAMESPACE: onlyoffice
       DOCKERHUB_REPOSITORY: docspace-mcp
     steps:
-    - name: Checkout Repository
-      uses: actions/checkout@v4
+      - name: Checkout Repository
+        uses: actions/checkout@v7
 
-    - name: Setup QEMU
-      uses: docker/setup-qemu-action@v3
+      - name: Setup QEMU
+        uses: docker/setup-qemu-action@v3
 
-    - name: Setup Docker Buildx
-      uses: docker/setup-buildx-action@v3
+      - name: Setup Docker Buildx
+        uses: docker/setup-buildx-action@v3
 
-    - name: Login to Docker Hub
-      uses: docker/login-action@v3
-      with:
-        username: ${{secrets.DOCKERHUB_USERNAME}}
-        password: ${{secrets.DOCKERHUB_TOKEN}}
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{secrets.DOCKERHUB_USERNAME}}
+          password: ${{secrets.DOCKERHUB_TOKEN}}
 
-    - name: Extract Labels
-      id: labels
-      run: |
-        labels=""
-        while IFS= read -r c; do
-          case "$c" in
-          LABEL*)
-            c=$(echo "$c" | sed "s/^LABEL[[:space:]]*//")
-            n=$(echo "$c" | cut --delimiter="=" --fields=1)
-            v=$(echo "$c" | cut --delimiter="=" --fields=2- | sed "s/\"//g")
-            labels="$labels$n=$v\n"
-            ;;
-          esac
-        done < Dockerfile
-        if [ -n "$labels" ]; then
-          labels=$(printf "%s" "$labels" | sed "s/\\\\n$//")
-        fi
-        printf "labels<<EOF\n%b\nEOF\n" "$labels" >> "$GITHUB_OUTPUT"
+      - name: Extract Labels
+        id: labels
+        run: |
+          labels=""
+          while IFS= read -r c; do
+            case "$c" in
+            LABEL*)
+              c=$(echo "$c" | sed "s/^LABEL[[:space:]]*//")
+              n=$(echo "$c" | cut --delimiter="=" --fields=1)
+              v=$(echo "$c" | cut --delimiter="=" --fields=2- | sed "s/\"//g")
+              labels="$labels$n=$v\n"
+              ;;
+            esac
+          done < Dockerfile
+          if [ -n "$labels" ]; then
+            labels=$(printf "%s" "$labels" | sed "s/\\\\n$//")
+          fi
+          printf "labels<<EOF\n%b\nEOF\n" "$labels" >> "$GITHUB_OUTPUT"
 
-    - name: Extract Metadata
-      id: metadata
-      uses: docker/metadata-action@v5
-      with:
-        images: index.docker.io/${{env.DOCKERHUB_NAMESPACE}}/${{env.DOCKERHUB_REPOSITORY}}
-        labels: ${{steps.labels.outputs.labels}}
-        tags: |
-          type=semver,pattern={{major}}
-          type=semver,pattern={{major}}.{{minor}}
-          type=semver,pattern={{major}}.{{minor}}.{{patch}}
-          type=sha,format=short
-          type=sha,format=long
+      - name: Extract Metadata
+        id: metadata
+        uses: docker/metadata-action@v5
+        with:
+          images: index.docker.io/${{env.DOCKERHUB_NAMESPACE}}/${{env.DOCKERHUB_REPOSITORY}}
+          labels: ${{steps.labels.outputs.labels}}
+          tags: |
+            type=semver,pattern={{major}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=semver,pattern={{major}}.{{minor}}.{{patch}}
+            type=sha,format=short
+            type=sha,format=long
 
-    - name: Publish Image
-      uses: docker/build-push-action@v6
-      env:
-        DOCKER_BUILD_RECORD_UPLOAD: false
-      with:
-        push: true
-        platforms: linux/amd64,linux/arm64
-        labels: ${{steps.metadata.outputs.labels}}
-        tags: ${{steps.metadata.outputs.tags}}
+      - name: Publish Image
+        uses: docker/build-push-action@v6
+        env:
+          DOCKER_BUILD_RECORD_UPLOAD: false
+        with:
+          push: true
+          platforms: linux/amd64,linux/arm64
+          labels: ${{steps.metadata.outputs.labels}}
+          tags: ${{steps.metadata.outputs.tags}}
 
-    - name: Update Docker Hub Description
-      uses: peter-evans/dockerhub-description@v4
-      # Skip errors, until action is not supported OAT auth
-      # https://github.com/peter-evans/dockerhub-description/issues/294
-      continue-on-error: true
-      with:
-        username: ${{secrets.DOCKERHUB_USERNAME}}
-        password: ${{secrets.DOCKERHUB_TOKEN}}
-        repository: ${{env.DOCKERHUB_NAMESPACE}}/${{env.DOCKERHUB_REPOSITORY}}
+      - name: Update Docker Hub Description
+        uses: peter-evans/dockerhub-description@v4
+        # Skip errors, until action is not supported OAT auth
+        # https://github.com/peter-evans/dockerhub-description/issues/294
+        continue-on-error: true
+        with:
+          username: ${{secrets.DOCKERHUB_USERNAME}}
+          password: ${{secrets.DOCKERHUB_TOKEN}}
+          repository: ${{env.DOCKERHUB_NAMESPACE}}/${{env.DOCKERHUB_REPOSITORY}}
 
   gh:
     needs:
-    - build
-    - npm
-    - docker
+      - build
+      - npm
+      - docker
     runs-on: ubuntu-latest
     permissions:
       contents: write
     env:
       GH_TOKEN: ${{github.token}}
     steps:
-    - name: Checkout Repository
-      uses: actions/checkout@v4
+      - name: Checkout Repository
+        uses: actions/checkout@v7
 
-    - name: Download Artifacts
-      uses: actions/download-artifact@v4
-      with:
-        pattern: "{mcp-bundle,package}"
-        merge-multiple: true
+      - name: Download Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: "{mcp-bundle,package}"
+          merge-multiple: true
 
-    - name: Create Release
-      run: |
-        gh release create "v${{needs.build.outputs.version}}" \
-          --title "v${{needs.build.outputs.version}}" \
-          --notes "See ${{github.server_url}}/${{github.repository}}/blob/main/CHANGELOG.md/"
+      - name: Create Release
+        run: |
+          gh release create "v${{needs.build.outputs.version}}" \
+            --title "v${{needs.build.outputs.version}}" \
+            --notes "See ${{github.server_url}}/${{github.repository}}/blob/main/CHANGELOG.md/"
 
-    - name: Upload MCP Bundle
-      run: gh release upload "v${{needs.build.outputs.version}}" *.mcpb
+      - name: Upload MCP Bundle
+        run: gh release upload "v${{needs.build.outputs.version}}" *.mcpb
 
-    - name: Upload Package
-      run: gh release upload "v${{needs.build.outputs.version}}" *.tgz
+      - name: Upload Package
+        run: gh release upload "v${{needs.build.outputs.version}}" *.tgz
 
   mcp:
     needs:
-    - gh
+      - gh
     runs-on: ubuntu-latest
     permissions:
       id-token: write
     steps:
-    - name: Download Server Detail
-      uses: actions/download-artifact@v4
-      with:
-        name: server-detail
+      - name: Download Server Detail
+        uses: actions/download-artifact@v4
+        with:
+          name: server-detail
 
-    - name: Install MCP Publisher
-      run: curl -L "https://github.com/modelcontextprotocol/registry/releases/download/v1.3.5/mcp-publisher_$(uname -s | tr '[:upper:]' '[:lower:]')_$(uname -m | sed 's/x86_64/amd64/;s/aarch64/arm64/').tar.gz" | tar xz mcp-publisher
+      - name: Install MCP Publisher
+        run: curl -L "https://github.com/modelcontextprotocol/registry/releases/download/v1.3.5/mcp-publisher_$(uname -s | tr '[:upper:]' '[:lower:]')_$(uname -m | sed 's/x86_64/amd64/;s/aarch64/arm64/').tar.gz" | tar xz mcp-publisher
 
-    - name: Login to MCP Registry
-      run: ./mcp-publisher login github-oidc
+      - name: Login to MCP Registry
+        run: ./mcp-publisher login github-oidc
 
-    - name: Publish to MCP Registry
-      run: ./mcp-publisher publish
+      - name: Publish to MCP Registry
+        run: ./mcp-publisher publish

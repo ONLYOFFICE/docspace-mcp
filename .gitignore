@@ -1,7 +1,7 @@
 .pnpm-store
 bin
+mcpb
 node_modules
-tmp
 .env
 server.json
 *.mcpb

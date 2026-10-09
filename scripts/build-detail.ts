@@ -1,238 +1,187 @@
 import crypto from "node:crypto"
 import fs from "node:fs/promises"
-import ajv from "ajv"
-import ajvFormats from "ajv-formats"
+import * as spec from "../lib/config/spec.ts"
+import * as config from "../lib/config.ts"
+import type * as dist from "../lib/dist.ts"
 import * as meta from "../lib/meta.ts"
-import * as config from "./config.ts"
-
-type Detail = {
-	$schema?: string
-	version?: string
-	packages?: Package[]
-	remotes?: Transport[]
-}
-
-type Package = {
-	registryType?: string
-	identifier?: string
-	version?: string
-	fileSha256?: string
-	transport?: Transport
-	environmentVariables?: Value[]
-}
-
-type Transport = {
-	type?: string
-	url?: string
-	headers?: Value[]
-}
-
-type Value = {
-	description?: string
-	isRequired?: boolean
-	format?: "string" | "number" | "boolean"
-	isSecret?: boolean
-	default?: string
-	choices?: string[]
-	name?: string
-}
 
 async function main(): Promise<void> {
-	let aa = new ajv.Ajv()
-	aa.addKeyword("example")
-	ajvFormats.default(aa)
+  let mc = await fs.readFile("./server.template.json", "utf8")
 
-	let mc = await fs.readFile("server.template.json", "utf8")
-	let mo = JSON.parse(mc) as Detail
+  let mo = JSON.parse(mc) as dist.Detail
 
-	if (!mo.$schema) {
-		throw new Error("Manifest schema is not defined")
-	}
+  mo.version = meta.version
 
-	if (!mo.packages) {
-		throw new Error("Manifest packages is not defined")
-	}
+  let envs: Record<spec.ItemDistribution, Record<spec.ItemTransport, dist.DetailValue[]>> = {
+    js: {
+      "stdio": [],
+      "sse": [],
+      "streamable-http": [],
+    },
+    mcpb: {
+      "stdio": [],
+      "sse": [],
+      "streamable-http": [],
+    },
+    oci: {
+      "stdio": [],
+      "sse": [],
+      "streamable-http": [],
+    },
+  }
 
-	let sc = await fetch(mo.$schema)
-	let so = await sc.json() as ajv.AnySchema
+  let headers: dist.DetailValue[] = []
 
-	let av = aa.compile(so)
+  for (let o of Object.values(spec)) {
+    let v: dist.DetailValue = {
+      description: o.description,
+      isRequired: false,
+      format: o.type,
+      isSecret: o.sensitive,
+      default: o.default.toString(),
+      choices: o.choices,
+      name: `${config.envPrefix}${o.env}`,
+    }
 
-	mo.version = meta.version
+    for (let d of o.distributions) {
+      for (let t of o.transports) {
+        envs[d][t].push(v)
+      }
+    }
 
-	let envs: Record<config.Distribution, Record<config.Transport, Value[]>> = {
-		js: {
-			"stdio": [],
-			"sse": [],
-			"streamable-http": [],
-		},
-		mcpb: {
-			"stdio": [],
-			"sse": [],
-			"streamable-http": [],
-		},
-		oci: {
-			"stdio": [],
-			"sse": [],
-			"streamable-http": [],
-		},
-	}
+    if (o.header) {
+      v = {...v}
 
-	let headers: Value[] = []
+      v.name = `${spec.requestHeaderPrefix.default}${o.header}`
 
-	for (let o of config.options) {
-		let v: Value = {
-			description: o.description,
-			isRequired: false,
-			format: o.type,
-			isSecret: o.sensitive,
-			default: o.default.toString(),
-			choices: o.choices,
-			name: o.env,
-		}
+      headers.push(v)
+    }
+  }
 
-		for (let d of o.distribution) {
-			for (let t of o.transports) {
-				envs[d][t].push(v)
-			}
-		}
+  let packages: dist.DetailPackage[] = []
 
-		if (o.header) {
-			v = {...v}
+  for (let p of mo.packages) {
+    if (!p.registryType) {
+      throw new Error("Package registry_type is not defined")
+    }
 
-			v.name = o.header
+    if (!p.identifier) {
+      throw new Error("Package identifier is not defined")
+    }
 
-			headers.push(v)
-		}
-	}
+    switch (p.registryType) {
+    case "mcpb": {
+      let a = await fs.readFile(`./onlyoffice-docspace-mcp-${meta.version}.mcpb`)
 
-	let packages: Package[] = []
+      p.identifier = p.identifier.replaceAll("{{version}}", meta.version)
+      p.version = meta.version
+      p.fileSha256 = crypto.createHash("sha256").update(a).digest("hex")
 
-	for (let p of mo.packages) {
-		if (!p.registryType) {
-			throw new Error("Package registry_type is not defined")
-		}
+      p.transport = {
+        type: "stdio",
+      }
 
-		if (!p.identifier) {
-			throw new Error("Package identifier is not defined")
-		}
+      p.environmentVariables = envs.mcpb.stdio
 
-		switch (p.registryType) {
-		case "mcpb":
-			let a = await fs.readFile("onlyoffice-docspace-mcp-3.2.0.mcpb")
+      packages.push(p)
 
-			p.identifier = p.identifier.replaceAll("{{version}}", meta.version)
-			p.version = meta.version
-			p.fileSha256 = crypto.createHash("sha256").update(a).digest("hex")
+      break
+    }
 
-			p.transport = {
-				type: "stdio",
-			}
+    case "npm":
+      p.version = meta.version
 
-			p.environmentVariables = envs.mcpb.stdio
+      p.transport = {
+        type: "stdio",
+      }
 
-			packages.push(p)
+      p.environmentVariables = envs.js.stdio
 
-			break
+      packages.push(p)
 
-		case "npm":
-			p.version = meta.version
+      p = {...p}
 
-			p.transport = {
-				type: "stdio",
-			}
+      p.transport = {
+        type: "sse",
+        url: "https://example.com/sse",
+        headers,
+      }
 
-			p.environmentVariables = envs.js.stdio
+      p.environmentVariables = envs.js.sse
 
-			packages.push(p)
+      packages.push(p)
 
-			p = {...p}
+      p = {...p}
 
-			p.transport = {
-				type: "sse",
-				url: "https://example.com/sse",
-				headers,
-			}
+      p.transport = {
+        type: "streamable-http",
+        url: "https://example.com/mcp",
+        headers,
+      }
 
-			p.environmentVariables = envs.js.sse
+      p.environmentVariables = envs.js["streamable-http"]
 
-			packages.push(p)
+      packages.push(p)
 
-			p = {...p}
+      break
 
-			p.transport = {
-				type: "streamable-http",
-				url: "https://example.com/mcp",
-				headers,
-			}
+    case "oci":
+      p.identifier = p.identifier.replaceAll("{{version}}", meta.version)
 
-			p.environmentVariables = envs.js["streamable-http"]
+      p.transport = {
+        type: "stdio",
+      }
 
-			packages.push(p)
+      p.environmentVariables = envs.oci.stdio
 
-			break
+      packages.push(p)
 
-		case "oci":
-			p.identifier = p.identifier.replaceAll("{{version}}", meta.version)
+      p = {...p}
 
-			p.transport = {
-				type: "stdio",
-			}
+      p.transport = {
+        type: "sse",
+        url: "https://example.com/mcp",
+        headers,
+      }
 
-			p.environmentVariables = envs.oci.stdio
+      p.environmentVariables = envs.oci.sse
 
-			packages.push(p)
+      packages.push(p)
 
-			p = {...p}
+      p = {...p}
 
-			p.transport = {
-				type: "sse",
-				url: "https://example.com/mcp",
-				headers,
-			}
+      p.transport = {
+        type: "streamable-http",
+        url: "https://example.com/mcp",
+        headers,
+      }
 
-			p.environmentVariables = envs.oci.sse
+      p.environmentVariables = envs.oci["streamable-http"]
 
-			packages.push(p)
+      packages.push(p)
 
-			p = {...p}
+      break
+    }
+  }
 
-			p.transport = {
-				type: "streamable-http",
-				url: "https://example.com/mcp",
-				headers,
-			}
+  mo.packages = packages
 
-			p.environmentVariables = envs.oci["streamable-http"]
+  mo.remotes = [
+    {
+      type: "sse",
+      url: "https://mcp.onlyoffice.com/sse",
+      headers,
+    },
+    {
+      type: "streamable-http",
+      url: "https://mcp.onlyoffice.com/mcp",
+      headers,
+    },
+  ]
 
-			packages.push(p)
+  mc = JSON.stringify(mo, null, 2)
 
-			break
-		}
-	}
-
-	mo.packages = packages
-
-	mo.remotes = [
-		{
-			type: "sse",
-			url: "https://mcp.onlyoffice.com/sse",
-			headers,
-		},
-		{
-			type: "streamable-http",
-			url: "https://mcp.onlyoffice.com/mcp",
-			headers,
-		},
-	]
-
-	if (!av(mo)) {
-		throw new Error("Validating manifest", {cause: av.errors})
-	}
-
-	mc = JSON.stringify(mo, null, 2)
-
-	await fs.writeFile("server.json", mc)
+  await fs.writeFile("./server.json", mc)
 }
 
 await main()

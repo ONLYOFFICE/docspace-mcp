@@ -26,7 +26,7 @@ body:
     id: proposal
     attributes:
       label: Proposed solution
-      placeholder: "Describe the feature briefly and how it should work."
+      placeholder: Describe the feature briefly and how it should work.
     validations:
       required: true
   - type: textarea

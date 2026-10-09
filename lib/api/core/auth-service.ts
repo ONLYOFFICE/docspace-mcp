@@ -15,70 +15,70 @@ export type AuthenticateMeOptions = z.input<typeof AuthRequestsDtoSchema>
 export type AuthenticateMeResponse = z.output<typeof AuthenticationTokenDtoSchema>
 
 /**
- * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/web/ASC.Web.Api/Api/AuthenticationController.cs/ | DocSpace Reference}
+ * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/web/ASC.Web.Api/Api/AuthenticationController.cs/ | ONLYOFFICE Apps Reference}
  */
 export class AuthService {
-	private c: Client
+  private c: Client
 
-	constructor(s: Client) {
-		this.c = s
-	}
+  constructor(s: Client) {
+    this.c = s
+  }
 
-	/**
-	 * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/web/ASC.Web.Api/Api/AuthenticationController.cs/#L88 | DocSpace Reference}
-	 */
-	async getIsAuthentificated(): Promise<Result<[boolean, Response], Error>> {
-		let u = this.c.createUrl("api/2.0/authentication")
-		if (u.err) {
-			return error(new Error("Creating URL.", {cause: u.err}))
-		}
+  /**
+   * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/web/ASC.Web.Api/Api/AuthenticationController.cs/#L88 | ONLYOFFICE Apps Reference}
+   */
+  async getIsAuthentificated(): Promise<Result<[boolean, Response], Error>> {
+    let u = this.c.createUrl("api/2.0/authentication")
+    if (u.err) {
+      return error(new Error("Creating URL.", {cause: u.err}))
+    }
 
-		let req = this.c.createRequest("GET", u.v)
-		if (req.err) {
-			return error(new Error("Creating request.", {cause: req.err}))
-		}
+    let req = this.c.createRequest("GET", u.v)
+    if (req.err) {
+      return error(new Error("Creating request.", {cause: req.err}))
+    }
 
-		let f = await this.c.fetch(req.v)
-		if (f.err) {
-			return error(new Error("Fetching request.", {cause: f.err}))
-		}
+    let f = await this.c.fetch(req.v)
+    if (f.err) {
+      return error(new Error("Fetching request.", {cause: f.err}))
+    }
 
-		let [p, res] = f.v
+    let [p, res] = f.v
 
-		let e = z.boolean().safeParse(p)
-		if (!e.success) {
-			return error(new Error("Parsing response.", {cause: e.error}))
-		}
+    let e = z.boolean().safeParse(p)
+    if (!e.success) {
+      return error(new Error("Parsing response.", {cause: e.error}))
+    }
 
-		return ok([e.data, res])
-	}
+    return ok([e.data, res])
+  }
 
-	/**
-	 * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/web/ASC.Web.Api/Api/AuthenticationController.cs/#L185 | DocSpace Reference}
-	 */
-	async authenticateMe(o: AuthenticateMeOptions): Promise<Result<[AuthenticateMeResponse, Response], Error>> {
-		let u = this.c.createUrl("api/2.0/authentication")
-		if (u.err) {
-			return error(new Error("Creating URL.", {cause: u.err}))
-		}
+  /**
+   * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/web/ASC.Web.Api/Api/AuthenticationController.cs/#L185 | ONLYOFFICE Apps Reference}
+   */
+  async authenticateMe(o: AuthenticateMeOptions): Promise<Result<[AuthenticateMeResponse, Response], Error>> {
+    let u = this.c.createUrl("api/2.0/authentication")
+    if (u.err) {
+      return error(new Error("Creating URL.", {cause: u.err}))
+    }
 
-		let req = this.c.createRequest("POST", u.v, o)
-		if (req.err) {
-			return error(new Error("Creating request.", {cause: req.err}))
-		}
+    let req = this.c.createRequest("POST", u.v, o)
+    if (req.err) {
+      return error(new Error("Creating request.", {cause: req.err}))
+    }
 
-		let f = await this.c.fetch(req.v)
-		if (f.err) {
-			return error(new Error("Fetching request.", {cause: f.err}))
-		}
+    let f = await this.c.fetch(req.v)
+    if (f.err) {
+      return error(new Error("Fetching request.", {cause: f.err}))
+    }
 
-		let [p, res] = f.v
+    let [p, res] = f.v
 
-		let e = AuthenticationTokenDtoSchema.safeParse(p)
-		if (!e.success) {
-			return error(new Error("Parsing response.", {cause: e.error}))
-		}
+    let e = AuthenticationTokenDtoSchema.safeParse(p)
+    if (!e.success) {
+      return error(new Error("Parsing response.", {cause: e.error}))
+    }
 
-		return ok([e.data, res])
-	}
+    return ok([e.data, res])
+  }
 }

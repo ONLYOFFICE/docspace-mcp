@@ -1,40 +1,40 @@
 {
-	"$schema": "https://static.modelcontextprotocol.io/schemas/2025-10-17/server.schema.json",
-	"name": "io.github.ONLYOFFICE/docspace",
-	"description": "A room-based collaborative platform",
-	"status": "active",
-	"repository": {
-		"url": "https://github.com/ONLYOFFICE/docspace-mcp",
-		"source": "github",
-		"id": "962498237"
-	},
-	"version": "",
-	"websiteUrl": "https://ONLYOFFICE.github.io/",
-	"packages": [
-		{
-			"registryType": "mcpb",
-			"identifier": "https://github.com/ONLYOFFICE/docspace-mcp/releases/download/v{{version}}/onlyoffice-docspace-mcp-{{version}}.mcpb",
-			"version": "",
-			"fileSha256": "",
-			"transport": {},
-			"environmentVariables": []
-		},
-		{
-			"registryType": "npm",
-			"registryBaseUrl": "https://registry.npmjs.org",
-			"identifier": "@onlyoffice/docspace-mcp",
-			"version": "",
-			"runtimeHint": "npx",
-			"transport": {},
-			"environmentVariables": []
-		},
-		{
-			"registryType": "oci",
-			"identifier": "docker.io/onlyoffice/docspace-mcp:{{version}}",
-			"runtimeHint": "docker",
-			"transport": {},
-			"environmentVariables": []
-		}
-	],
-	"remotes": []
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-10-17/server.schema.json",
+  "name": "io.github.ONLYOFFICE/docspace",
+  "description": "A room-based collaborative platform",
+  "status": "active",
+  "repository": {
+    "url": "https://github.com/ONLYOFFICE/docspace-mcp",
+    "source": "github",
+    "id": "962498237"
+  },
+  "version": "",
+  "websiteUrl": "https://ONLYOFFICE.github.io/",
+  "packages": [
+    {
+      "registryType": "mcpb",
+      "identifier": "https://github.com/ONLYOFFICE/docspace-mcp/releases/download/v{{version}}/onlyoffice-docspace-mcp-{{version}}.mcpb",
+      "version": "",
+      "fileSha256": "",
+      "transport": {},
+      "environmentVariables": []
+    },
+    {
+      "registryType": "npm",
+      "registryBaseUrl": "https://registry.npmjs.org",
+      "identifier": "@onlyoffice/docspace-mcp",
+      "version": "",
+      "runtimeHint": "npx",
+      "transport": {},
+      "environmentVariables": []
+    },
+    {
+      "registryType": "oci",
+      "identifier": "docker.io/onlyoffice/docspace-mcp:{{version}}",
+      "runtimeHint": "docker",
+      "transport": {},
+      "environmentVariables": []
+    }
+  ],
+  "remotes": []
 }

@@ -10,242 +10,241 @@ import type * as r from "../util/result.ts"
 import type {Credential} from "./credential.ts"
 
 declare module "express-serve-static-core" {
-	// eslint-disable-next-line typescript/consistent-type-definitions
-	interface Request {
-		[authKey]?: Auth
-	}
+  interface Request {
+    [authKey]?: Auth
+  }
 }
 
 export const authKey = Symbol("auth")
 
 export type ErrorResponse = {
-	message: string
+  message: string
 }
 
 export type Auth = {
-	baseUrl: string
-	auth: string
-	apiKey: string
-	pat: string
-	username: string
-	password: string
+  baseUrl: string
+  auth: string
+  apiKey: string
+  pat: string
+  username: string
+  password: string
 }
 
 export type AuthManagerConfig = {
-	defaultBaseUrl: string
-	defaultAuth: string
-	defaultApiKey: string
-	defaultPat: string
-	defaultUsername: string
-	defaultPassword: string
-	oauthEnabled: boolean
-	headerEnabled: boolean
-	oauthAuthTokens: AuthManagerOauthAuthTokens
-	oauthHandlerRequestHeaders: string[]
-	oauthHandlerResponseHeaders: string[]
-	oauthHandler: express.Handler
-	credentialParserRequestHeaders: string[]
-	credentialParser: AuthManagerCredentialParser
+  defaultBaseUrl: string
+  defaultAuth: string
+  defaultApiKey: string
+  defaultPat: string
+  defaultUsername: string
+  defaultPassword: string
+  oauthEnabled: boolean
+  headerEnabled: boolean
+  oauthAuthTokens: AuthManagerOauthAuthTokens
+  oauthHandlerRequestHeaders: string[]
+  oauthHandlerResponseHeaders: string[]
+  oauthHandler: express.Handler
+  credentialParserRequestHeaders: string[]
+  credentialParser: AuthManagerCredentialParser
 }
 
 export type AuthManagerOauthAuthTokens = {
-	decode(t: string): r.Result<[string, oauth.AuthTokenPayload], Error>
+  decode(t: string): r.Result<[string, oauth.AuthTokenPayload], Error>
 }
 
 export type AuthManagerCredentialParser = {
-	parse(req: express.Request): r.Result<Credential, Error>
+  parse(req: express.Request): r.Result<Credential, Error>
 }
 
 export class AuthManager {
-	private defaultBaseUrl: string
-	private defaultAuth: string
-	private defaultApiKey: string
-	private defaultPat: string
-	private defaultUsername: string
-	private defaultPassword: string
-	private oauthEnabled: boolean
-	private headerEnabled: boolean
-	private oauthAuthTokens: AuthManagerOauthAuthTokens
-	private oauthHandler: express.Handler
-	private credentialParser: AuthManagerCredentialParser
+  private defaultBaseUrl: string
+  private defaultAuth: string
+  private defaultApiKey: string
+  private defaultPat: string
+  private defaultUsername: string
+  private defaultPassword: string
+  private oauthEnabled: boolean
+  private headerEnabled: boolean
+  private oauthAuthTokens: AuthManagerOauthAuthTokens
+  private oauthHandler: express.Handler
+  private credentialParser: AuthManagerCredentialParser
 
-	requestHeaders: string[]
-	responseHeaders: string[]
+  requestHeaders: string[]
+  responseHeaders: string[]
 
-	constructor(config: AuthManagerConfig) {
-		this.defaultBaseUrl = config.defaultBaseUrl
-		this.defaultAuth = config.defaultAuth
-		this.defaultApiKey = config.defaultApiKey
-		this.defaultPat = config.defaultPat
-		this.defaultUsername = config.defaultUsername
-		this.defaultPassword = config.defaultPassword
-		this.oauthEnabled = config.oauthEnabled
-		this.headerEnabled = config.headerEnabled
-		this.oauthAuthTokens = config.oauthAuthTokens
-		this.oauthHandler = config.oauthHandler
-		this.credentialParser = config.credentialParser
+  constructor(config: AuthManagerConfig) {
+    this.defaultBaseUrl = config.defaultBaseUrl
+    this.defaultAuth = config.defaultAuth
+    this.defaultApiKey = config.defaultApiKey
+    this.defaultPat = config.defaultPat
+    this.defaultUsername = config.defaultUsername
+    this.defaultPassword = config.defaultPassword
+    this.oauthEnabled = config.oauthEnabled
+    this.headerEnabled = config.headerEnabled
+    this.oauthAuthTokens = config.oauthAuthTokens
+    this.oauthHandler = config.oauthHandler
+    this.credentialParser = config.credentialParser
 
-		let requestHeaders: string[] = []
-		let responseHeaders: string[] = []
+    let requestHeaders: string[] = []
+    let responseHeaders: string[] = []
 
-		if (config.oauthEnabled) {
-			requestHeaders.push(...config.oauthHandlerRequestHeaders)
-			responseHeaders.push(...config.oauthHandlerResponseHeaders)
-		}
+    if (config.oauthEnabled) {
+      requestHeaders.push(...config.oauthHandlerRequestHeaders)
+      responseHeaders.push(...config.oauthHandlerResponseHeaders)
+    }
 
-		requestHeaders.push(...config.credentialParserRequestHeaders)
+    requestHeaders.push(...config.credentialParserRequestHeaders)
 
-		if (config.oauthEnabled || config.headerEnabled) {
-			requestHeaders.push("Authorization")
-		}
+    if (config.oauthEnabled || config.headerEnabled) {
+      requestHeaders.push("Authorization")
+    }
 
-		responseHeaders.push("Content-Type")
+    responseHeaders.push("Content-Type")
 
-		this.requestHeaders = [...new Set(requestHeaders)].sort()
-		this.responseHeaders = [...new Set(responseHeaders)].sort()
-	}
+    this.requestHeaders = [...new Set(requestHeaders)].sort()
+    this.responseHeaders = [...new Set(responseHeaders)].sort()
+  }
 
-	handler(): express.Handler {
-		let end = (res: express.Response, code: number, err: Error): void => {
-			let er: ErrorResponse = {
-				message: errors.format(err),
-			}
-			res.status(code)
-			res.json(er)
-		}
+  handler(): express.Handler {
+    let end = (res: express.Response, code: number, err: Error): void => {
+      let er: ErrorResponse = {
+        message: errors.format(err),
+      }
+      res.status(code)
+      res.json(er)
+    }
 
-		return (req, res, next) => {
-			let h = req.headers.authorization
-			if (!h) {
-				h = ""
-			}
+    return (req, res, next) => {
+      let h = req.headers.authorization
+      if (!h) {
+        h = ""
+      }
 
-			let c = this.credentialParser.parse(req)
-			if (c.err) {
-				let err = new Error("Parsing credential", {cause: c.err})
-				end(res, 400, err)
-				return
-			}
+      let c = this.credentialParser.parse(req)
+      if (c.err) {
+        let err = new Error("Parsing credential", {cause: c.err})
+        end(res, 400, err)
+        return
+      }
 
-			if (this.oauthEnabled && h) {
-				let a = parseAuthHeader(h)
-				if (a.scheme === "bearer") {
-					let d = this.oauthAuthTokens.decode(a.params)
-					if (!d.err) {
-						if (
-							c.v.baseUrl === "" &&
-							c.v.apiKey === "" &&
-							c.v.pat === "" &&
-							c.v.username === "" &&
-							c.v.password === ""
-						) {
-							this.oauthHandler(req, res, next)
-							return
-						}
+      if (this.oauthEnabled && h) {
+        let a = parseAuthHeader(h)
+        if (a.scheme === "bearer") {
+          let d = this.oauthAuthTokens.decode(a.params)
+          if (!d.err) {
+            if (
+              c.v.baseUrl === "" &&
+              c.v.apiKey === "" &&
+              c.v.pat === "" &&
+              c.v.username === "" &&
+              c.v.password === ""
+            ) {
+              this.oauthHandler(req, res, next)
+              return
+            }
 
-						let err = new Error("OAuth token with credentials")
-						end(res, 400, err)
-						return
-					}
-				}
-			}
+            let err = new Error("OAuth token with credentials")
+            end(res, 400, err)
+            return
+          }
+        }
+      }
 
-			if (this.headerEnabled && h) {
-				if (
-					c.v.baseUrl !== "" &&
-					c.v.apiKey === "" &&
-					c.v.pat === "" &&
-					c.v.username === "" &&
-					c.v.password === ""
-				) {
-					req[authKey] = {
-						baseUrl: c.v.baseUrl,
-						auth: h,
-						apiKey: "",
-						pat: "",
-						username: "",
-						password: "",
-					}
-					next()
-					return
-				}
+      if (this.headerEnabled && h) {
+        if (
+          c.v.baseUrl !== "" &&
+          c.v.apiKey === "" &&
+          c.v.pat === "" &&
+          c.v.username === "" &&
+          c.v.password === ""
+        ) {
+          req[authKey] = {
+            baseUrl: c.v.baseUrl,
+            auth: h,
+            apiKey: "",
+            pat: "",
+            username: "",
+            password: "",
+          }
+          next()
+          return
+        }
 
-				let err = new Error("Authorization header with credentials")
-				end(res, 400, err)
-				return
-			}
+        let err = new Error("Authorization header with credentials")
+        end(res, 400, err)
+        return
+      }
 
-			if (c.v.baseUrl !== "") {
-				if (
-					c.v.apiKey !== "" ||
-					c.v.pat !== "" ||
-					c.v.username !== "" ||
-					c.v.password !== ""
-				) {
-					req[authKey] = {
-						baseUrl: c.v.baseUrl,
-						auth: "",
-						apiKey: c.v.apiKey,
-						pat: c.v.pat,
-						username: c.v.username,
-						password: c.v.password,
-					}
-					next()
-					return
-				}
+      if (c.v.baseUrl !== "") {
+        if (
+          c.v.apiKey !== "" ||
+          c.v.pat !== "" ||
+          c.v.username !== "" ||
+          c.v.password !== ""
+        ) {
+          req[authKey] = {
+            baseUrl: c.v.baseUrl,
+            auth: "",
+            apiKey: c.v.apiKey,
+            pat: c.v.pat,
+            username: c.v.username,
+            password: c.v.password,
+          }
+          next()
+          return
+        }
 
-				let err = new Error("Base URL without credentials")
-				end(res, 400, err)
-				return
-			}
+        let err = new Error("Base URL without credentials")
+        end(res, 400, err)
+        return
+      }
 
-			if (this.oauthEnabled) {
-				this.oauthHandler(req, res, next)
-				return
-			}
+      if (this.oauthEnabled) {
+        this.oauthHandler(req, res, next)
+        return
+      }
 
-			if (this.defaultBaseUrl !== "") {
-				req[authKey] = {
-					baseUrl: this.defaultBaseUrl,
-					auth: this.defaultAuth,
-					apiKey: this.defaultApiKey,
-					pat: this.defaultPat,
-					username: this.defaultUsername,
-					password: this.defaultPassword,
-				}
-				next()
-				return
-			}
+      if (this.defaultBaseUrl !== "") {
+        req[authKey] = {
+          baseUrl: this.defaultBaseUrl,
+          auth: this.defaultAuth,
+          apiKey: this.defaultApiKey,
+          pat: this.defaultPat,
+          username: this.defaultUsername,
+          password: this.defaultPassword,
+        }
+        next()
+        return
+      }
 
-			let err = new Error("Unauthorized")
-			end(res, 401, err)
-		}
-	}
+      let err = new Error("Unauthorized")
+      end(res, 401, err)
+    }
+  }
 }
 
 type AuthHeader = {
-	scheme: string
-	params: string
+  scheme: string
+  params: string
 }
 
 function parseAuthHeader(h: string): AuthHeader {
-	let i = h.indexOf(" ")
+  let i = h.indexOf(" ")
 
-	let s: string | undefined
-	let p: string | undefined
+  let s: string | undefined
+  let p: string | undefined
 
-	if (i === -1) {
-		s = ""
-		p = h
-	} else {
-		s = h.slice(0, i).toLowerCase()
-		p = h.slice(i + 1)
-	}
+  if (i === -1) {
+    s = ""
+    p = h
+  } else {
+    s = h.slice(0, i).toLowerCase()
+    p = h.slice(i + 1)
+  }
 
-	let a: AuthHeader = {
-		scheme: s.toLowerCase(),
-		params: p,
-	}
+  let a: AuthHeader = {
+    scheme: s.toLowerCase(),
+    params: p,
+  }
 
-	return a
+  return a
 }

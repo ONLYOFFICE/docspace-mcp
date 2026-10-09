@@ -7,6 +7,6 @@ import type * as types from "@modelcontextprotocol/sdk/types.js"
 import type {RequestHandlerMap} from "./request.ts"
 
 export type Router = {
-	capabilities: types.ServerCapabilities
-	handlers: Partial<RequestHandlerMap>
+  capabilities: types.ServerCapabilities
+  handlers: Partial<RequestHandlerMap>
 }

@@ -4,12 +4,12 @@ on:
   workflow_dispatch:
   pull_request:
     branches:
-    - main
-    - develop
+      - main
+      - develop
   push:
     branches:
-    - main
-    - develop
+      - main
+      - develop
 
 jobs:
   audit:
@@ -17,34 +17,40 @@ jobs:
     permissions:
       contents: read
     steps:
-    - name: Checkout Repository
-      uses: actions/checkout@v4
+      - name: Checkout Repository
+        uses: actions/checkout@v7
 
-    - name: Setup mise
-      uses: jdx/mise-action@v2
-      with:
-        # mise uses GITHUB_TOKEN to interact with the GitHub API when installing
-        # tools. This results in a 401 Unauthorized error if the action runs
-        # outside of GitHub's infrastructure. As a workaround, only provide
-        # GITHUB_TOKEN when running on github.com.
-        GITHUB_TOKEN: ${{github.server_url == 'https://github.com' && github.token || ''}}
+      - name: Setup mise
+        uses: jdx/mise-action@v2
+        with:
+          # mise uses GITHUB_TOKEN to interact with the GitHub API when installing
+          # tools. This results in a 401 Unauthorized error if the action runs
+          # outside of GitHub's infrastructure. As a workaround, only provide
+          # GITHUB_TOKEN when running on github.com.
+          GITHUB_TOKEN: ${{github.server_url == 'https://github.com' && github.token || ''}}
 
-    - name: Install Dependencies
-      run: pnpm install --frozen-lockfile
+      - name: Install Dependencies
+        run: pnpm install --frozen-lockfile
 
-    - name: Check Licenses
-      uses: onlyoffice/check-licenses@v1
-      with:
-        project_license: ${{github.event.repository.license.spdx_id || github.event.repository.licenses[0]}}
+      - name: Check Licenses
+        uses: onlyoffice/check-licenses@v1
+        with:
+          project_license: ${{github.event.repository.license.spdx_id || github.event.repository.licenses[0]}}
 
-    - name: Build Application
-      run: pnpm build-app
+      - name: Build Application
+        run: pnpm build-app
 
-    - name: Lint Types
-      run: pnpm lint-types
+      - name: Build MCP Bundle
+        run: pnpm build-mcpb
 
-    - name: Lint Code
-      run: pnpm lint-code
+      - name: Build Server Detail
+        run: pnpm build-detail
 
-    - name: Test Package
-      run: pnpm test
+      - name: Lint Types
+        run: pnpm lint-types
+
+      - name: Lint Code
+        run: pnpm lint-code
+
+      - name: Test Package
+        run: pnpm test

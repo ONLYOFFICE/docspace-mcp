@@ -7,6 +7,44 @@ Changelog] format and adhering to [Semantic Versioning].
 
 There are no notable changes in this release.
 
+## [3.3.0] - 2026-10-09
+
+### Changed
+
+- Add the `openWorldHint` annotation to all tools and mark the `archive_room`,
+  `copy_batch_items`, `move_batch_items` and `upload_file` tools as
+  non-destructive ([bac7e04]).
+- Update `@modelcontextprotocol/sdk` to v1.31.0 ([35af45a]).
+- Update `ajv` to v8.20.0 ([35af45a]).
+- Update `express-rate-limit` to v8.7.0 ([35af45a]).
+- Update `zod` to v4.6.5 ([35af45a]).
+- Rename the product from ONLYOFFICE DocSpace to ONLYOFFICE Apps in the
+  documentation, option descriptions, and distributed metadata files. The
+  package name, OCI image name, MCP registry name, extension name, and
+  `DOCSPACE_*` options remain unchanged, so existing configurations continue to
+  work ([084ab40]).
+- Add the `onlyoffice-apps` keyword to the package and extension metadata
+  ([a1cdc95]).
+- Rename the server key in client configuration examples from
+  `onlyoffice-docspace` to `onlyoffice-apps`. Existing configurations with the
+  previous key continue to work ([8204500]).
+
+### Removed
+
+- Remove choices from toolsets, enabled tools and disabled tools in distributed
+  metadata files ([cd38376]).
+
+### Fixed
+
+- Fix environment variable for proxy hops in distributed metadata files
+  ([cd38376]).
+- Add missing option for allowed headers in distributed metadata files
+  ([cd38376]).
+- Use the issuer identifier instead of the authorization endpoint in the
+  `authorization_servers` field of the protected resource metadata ([d0d74ce]).
+- Serve the authorization server and protected resource metadata only at their
+  exact paths, instead of at any of their nested paths ([7444a56]).
+
 ## [3.2.0] - 2026-03-18
 
 ### Added
@@ -305,7 +343,8 @@ There are no noticeable changes in version [3.0.1].
 [Keep a Changelog]: https://keepachangelog.com/en/1.1.0/
 [Semantic Versioning]: https://semver.org/spec/v2.0.0.html
 
-[Unreleased]: https://github.com/onlyoffice/docspace-mcp/compare/v3.2.0...HEAD/
+[Unreleased]: https://github.com/onlyoffice/docspace-mcp/compare/v3.3.0...HEAD/
+[3.3.0]: https://github.com/onlyoffice/docspace-mcp/compare/v3.2.0...v3.3.0/
 [3.2.0]: https://github.com/onlyoffice/docspace-mcp/compare/v3.1.0...v3.2.0/
 [3.1.0]: https://github.com/onlyoffice/docspace-mcp/compare/v3.0.1...v3.1.0/
 [3.0.1]: https://github.com/onlyoffice/docspace-mcp/compare/v3.0.0...v3.0.1/
@@ -322,6 +361,14 @@ There are no noticeable changes in version [3.0.1].
 [0.1.1]: https://github.com/onlyoffice/docspace-mcp/compare/v0.1.0...v0.1.1/
 [0.1.0]: https://github.com/onlyoffice/docspace-mcp/releases/tag/v0.1.0/
 
+[bac7e04]: https://github.com/onlyoffice/docspace-mcp/commit/bac7e04dd1fda09c8db7e23c3c36973511df5ea9/
+[35af45a]: https://github.com/onlyoffice/docspace-mcp/commit/35af45aaaf92a6e09e804bfea2831f9149eed164/
+[8204500]: https://github.com/onlyoffice/docspace-mcp/commit/8204500712da4785b5764a36e7b670df8832b8bd/
+[a1cdc95]: https://github.com/onlyoffice/docspace-mcp/commit/a1cdc957e4b82dcf2f38df38c7ff8e02e6bd1ca5/
+[084ab40]: https://github.com/onlyoffice/docspace-mcp/commit/084ab400bdd570002abb4dc6f03d1e33c6601ad9/
+[7444a56]: https://github.com/onlyoffice/docspace-mcp/commit/7444a56c8cc5b2d0693ab9f828425d731a71376a/
+[d0d74ce]: https://github.com/onlyoffice/docspace-mcp/commit/d0d74ce1bbf46be2850e6d41b049b7e53583f859/
+[cd38376]: https://github.com/onlyoffice/docspace-mcp/commit/cd3837673680c79bea998ec287cceee07729a91f/
 [f7be9cc]: https://github.com/onlyoffice/docspace-mcp/commit/f7be9ccc0cb7708948a2d281b9f780e8ebc7f224/
 [7f600ab]: https://github.com/onlyoffice/docspace-mcp/commit/7f600abf82016efaa2462bc610155509f12b001e/
 [fc3aedb]: https://github.com/onlyoffice/docspace-mcp/commit/fc3aedb08584cc07181bd32480ff7f7add6cd1e3/

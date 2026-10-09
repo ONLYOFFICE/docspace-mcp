@@ -14,41 +14,41 @@ export type GetFullByFilterFilters = z.input<typeof GetFullByFilterFiltersSchema
 export type GetFullByFilterResponseItem = z.output<typeof EmployeeFullDtoSchema>
 
 /**
- * {@link https://github.com/ONLYOFFICE/DocSpace-server/tree/v3.0.4-server/products/ASC.People/ | DocSpace Reference}
+ * {@link https://github.com/ONLYOFFICE/DocSpace-server/tree/v3.0.4-server/products/ASC.People/ | ONLYOFFICE Apps Reference}
  */
 export class PeopleService {
-	private c: Client
+  private c: Client
 
-	constructor(s: Client) {
-		this.c = s
-	}
+  constructor(s: Client) {
+    this.c = s
+  }
 
-	/**
-	 * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/products/ASC.People/Server/Api/UserController.cs/#L811 | DocSpace Reference}
-	 */
-	async getFullByFilter(filters?: GetFullByFilterFilters): Promise<Result<[GetFullByFilterResponseItem[], Response], Error>> {
-		let u = this.c.createUrl("api/2.0/people/filter", filters)
-		if (u.err) {
-			return error(new Error("Creating URL.", {cause: u.err}))
-		}
+  /**
+   * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/products/ASC.People/Server/Api/UserController.cs/#L811 | ONLYOFFICE Apps Reference}
+   */
+  async getFullByFilter(filters?: GetFullByFilterFilters): Promise<Result<[GetFullByFilterResponseItem[], Response], Error>> {
+    let u = this.c.createUrl("api/2.0/people/filter", filters)
+    if (u.err) {
+      return error(new Error("Creating URL.", {cause: u.err}))
+    }
 
-		let req = this.c.createRequest("GET", u.v)
-		if (req.err) {
-			return error(new Error("Creating request.", {cause: req.err}))
-		}
+    let req = this.c.createRequest("GET", u.v)
+    if (req.err) {
+      return error(new Error("Creating request.", {cause: req.err}))
+    }
 
-		let f = await this.c.fetch(req.v)
-		if (f.err) {
-			return error(new Error("Fetching request.", {cause: f.err}))
-		}
+    let f = await this.c.fetch(req.v)
+    if (f.err) {
+      return error(new Error("Fetching request.", {cause: f.err}))
+    }
 
-		let [p, res] = f.v
+    let [p, res] = f.v
 
-		let e = z.array(EmployeeFullDtoSchema).safeParse(p)
-		if (!e.success) {
-			return error(new Error("Parsing response.", {cause: e.error}))
-		}
+    let e = z.array(EmployeeFullDtoSchema).safeParse(p)
+    if (!e.success) {
+      return error(new Error("Parsing response.", {cause: e.error}))
+    }
 
-		return ok([e.data, res])
-	}
+    return ok([e.data, res])
+  }
 }

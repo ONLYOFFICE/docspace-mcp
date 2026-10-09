@@ -8,21 +8,21 @@ import type express from "express"
 export type AllowedMethodsCallback = (req: express.Request, res: express.Response) => void
 
 export function allowedMethods(methods: string[], cb: AllowedMethodsCallback): express.Handler {
-	let am = methods.join(", ")
+  let am = methods.join(", ")
 
-	return (req, res, next) => {
-		if (methods.includes(req.method)) {
-			next()
-			return
-		}
+  return (req, res, next) => {
+    if (methods.includes(req.method)) {
+      next()
+      return
+    }
 
-		res.status(405)
-		res.set("Allow", am)
+    res.status(405)
+    res.set("Allow", am)
 
-		cb(req, res)
+    cb(req, res)
 
-		if (!res.writableEnded) {
-			res.end()
-		}
-	}
+    if (!res.writableEnded) {
+      res.end()
+    }
+  }
 }

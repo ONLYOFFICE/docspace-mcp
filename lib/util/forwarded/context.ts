@@ -4,11 +4,10 @@
  */
 
 declare module "../context.ts" {
-	// eslint-disable-next-line typescript/consistent-type-definitions
-	interface Context {
-		[forwardedForKey]?: string
-		[realIpKey]?: string
-	}
+  interface Context {
+    [forwardedForKey]?: string
+    [realIpKey]?: string
+  }
 }
 
 export const forwardedForKey = Symbol("forwardedFor")

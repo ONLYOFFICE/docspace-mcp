@@ -6,13 +6,12 @@
 import type * as types from "@modelcontextprotocol/sdk/types.js"
 
 declare module "../context.ts" {
-	// eslint-disable-next-line typescript/consistent-type-definitions
-	interface Context {
-		[progressTokenKey]?: string | number
-		[requestIdKey]?: types.RequestId
-		[sessionIdKey]?: string
-		[taskIdKey]?: string
-	}
+  interface Context {
+    [progressTokenKey]?: string | number
+    [requestIdKey]?: types.RequestId
+    [sessionIdKey]?: string
+    [taskIdKey]?: string
+  }
 }
 
 export const progressTokenKey = Symbol("progressToken")

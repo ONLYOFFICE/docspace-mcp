@@ -1,23 +1,23 @@
-# ONLYOFFICE DocSpace MCP Server
+# ONLYOFFICE Apps MCP Server
 
 [Model Context Protocol] (MCP) is a standardized protocol for managing context
 between large language models (LLMs) and external systems. This repository
-provides an MCP server for [ONLYOFFICE DocSpace].
+provides an MCP server for [ONLYOFFICE Apps].
 
-The DocSpace MCP Server connects AI tools directly to ONLYOFFICE DocSpace. This gives AI agents, assistants, and chatbots the ability to manage rooms, collaborate on files, handle permissions, and automate document workflows - all through natural language interactions.
+The ONLYOFFICE Apps MCP Server connects AI tools directly to ONLYOFFICE Apps. This gives AI agents, assistants, and chatbots the ability to manage rooms, collaborate on files, handle permissions, and automate document workflows - all through natural language interactions.
 
 ## Features
 
-- **Tools with granular control** - Access to [tools](/docs/features/tools.md) organized into logical
+- **Tools with granular control** - Access to [tools](/docs/reference/tools.md) organized into logical
   toolsets with fine-grained enable/disable capabilities and meta tools.
 - **Multiple transport protocols** - Support for stdio, SSE, and Streamable HTTP
-  [transports](/docs/configuration/global-configuration.md#user-content-docspace_transport).
+  [transports](/docs/reference/global-configuration.md#docspace_transport).
 - **Different authentication methods** - Supports API keys, Personal Access
-  Tokens, Basic authentication, and OAuth 2.0 with dynamic client registration. See [examples](/docs/installation/remote-server.md#user-content-examples).
+  Tokens, Basic authentication, and OAuth 2.0 with dynamic client registration. See [examples](/docs/getting-started/installation.md#authenticating-the-remote-mcp-server-client-connection).
 - **Request-level configuration** - Configure authentication and tool selection
-  during session initialization using [custom HTTP headers](/docs/configuration/request-configuration.md#user-content-header-options).
-- **Various distribution formats** - Available as [Docker image](/docs/distribution/docker-hub.md#user-content-docker-image), [Docker MCP
-  Server](/docs/distribution/docker-mcp.md#user-content-docker-mcp-server), [MCP bundle](/docs/distribution/build-from-source.md#user-content-mcp-bundle), and [Node.js application](/docs/distribution/npm-registry.md#user-content-nodejs-application).
+  during session initialization using [custom HTTP headers](/docs/reference/request-configuration.md#header-options).
+- **Various distribution formats** - Available as [Docker image](/docs/distribution/distribution-combined.md#pull-from-docker-hub), [Docker MCP
+  Server](/docs/distribution/distribution-combined.md#build-with-docker-mcp-toolkit), [MCP bundle](/docs/distribution/distribution-combined.md#mcp-bundle), and [Node.js application](/docs/distribution/distribution-combined.md#build-with-npm-registry).
 
 ## Use Cases
 
@@ -25,28 +25,28 @@ The DocSpace MCP Server connects AI tools directly to ONLYOFFICE DocSpace. This 
 - **Folder & File Operations**: Create folders, upload documents, copy or move items in batches, rename or delete content, and check file or folder details.
 - **Collaboration & Permissions**: Invite or remove users, adjust security settings, and review current access rights for rooms and shared spaces.
 - **Content Access**: Retrieve "My documents" or "Rooms" folders, get folder contents, download files as text, and monitor ongoing file operations.
-- **People Directory**: List all people in the portal to streamline invitations and access management.
+- **People Directory**: List all people in the workspace to streamline invitations and access management.
 
-## Connecting Clients to DocSpace MCP Server
+## Connecting Clients to ONLYOFFICE Apps MCP Server
 
-You can connect to the DocSpace MCP server using any MCP clients. We have covered some popular clients, such as Claude Desktop, Cursor, Windsurf, etc., and [here](docs/clients/README.md) you can read about it.
+You can connect to the ONLYOFFICE Apps MCP server using any MCP clients. We have covered some popular clients, such as Claude Desktop, Cursor, Devin Desktop, etc., and [here](/docs/getting-started/clients.md) you can read about it.
 
-### Remote DocSpace MCP Server
+### Remote ONLYOFFICE Apps MCP Server
 
-The remote DocSpace MCP Server is hosted by ONLYOFFICE and provides the fastest way to start using DocSpace tools inside your AI agent. You can connect to it instantly without deploying or configuring anything on your machine.
+The remote ONLYOFFICE Apps MCP Server is hosted by ONLYOFFICE and provides the fastest way to start using ONLYOFFICE Apps tools inside your AI agent. You can connect to it instantly without deploying or configuring anything on your machine.
 
 The public instance is available at https://mcp.onlyoffice.com/mcp for clients
 that support modern Streamable HTTP transport and at
 https://mcp.onlyoffice.com/sse for clients that support only the legacy SSE
 transport. It is preferable to use the Streamable HTTP transport whenever possible.
 
-See all options for connecting clients to the Remote DocSpace MCP Server [here](/docs/installation/remote-server.md).
+See all options for connecting clients to the Remote ONLYOFFICE Apps MCP Server [here](/docs/getting-started/installation.md#access-via-the-remote-onlyoffice-apps-mcp-server).
 
-### Local DocSpace MCP Server
+### Local ONLYOFFICE Apps MCP Server
 
-If your MCP host does not support remote MCP servers, you can run the [local version](/docs/installation/local-server.md) of the DocSpace MCP Server instead.
+If your MCP host does not support remote MCP servers, you can run the [local version](/docs/getting-started/installation.md#access-via-a-local-onlyoffice-apps-mcp-server) of the ONLYOFFICE Apps MCP Server instead.
 
-Most clients that implement the MCP protocol have a common configuration file in the `JSON` format, inside which you can add the ONLYOFFICE DocSpace MCP Local Server.
+Most clients that implement the MCP protocol have a common configuration file in the `JSON` format, inside which you can add the ONLYOFFICE Apps MCP Local Server.
 
 **Note**: The common example below is applicable for Docker image, so Docker must be installed on your system.
 
@@ -54,53 +54,53 @@ Most clients that implement the MCP protocol have a common configuration file in
 
 Find your client `.json` configuration file.
 
-#### Step 2. Add the DocSpace MCP Server entry
+#### Step 2. Add the ONLYOFFICE Apps MCP Server entry
 
 Insert the following block into the `mcpServers` section of your `.json` configuration file:
 
 ```json
 {
-	"mcpServers": {
-		"onlyoffice-docspace": {
-			"command": "docker",
-			"args": [
-				"run",
-				"--interactive",
-				"--rm",
-				"--env",
-				"DOCSPACE_BASE_URL",
-				"--env",
-				"DOCSPACE_API_KEY",
-				"onlyoffice/docspace-mcp"
-			],
-			"env": {
-				"DOCSPACE_BASE_URL": "https://your-instance.onlyoffice.com",
-				"DOCSPACE_API_KEY": "your-api-key"
-			}
-		}
-	}
+  "mcpServers": {
+    "onlyoffice-apps": {
+      "command": "docker",
+      "args": [
+        "run",
+        "--interactive",
+        "--rm",
+        "--env",
+        "DOCSPACE_BASE_URL",
+        "--env",
+        "DOCSPACE_API_KEY",
+        "onlyoffice/docspace-mcp"
+      ],
+      "env": {
+        "DOCSPACE_BASE_URL": "https://your-instance.onlyoffice.com",
+        "DOCSPACE_API_KEY": "your-api-key"
+      }
+    }
+  }
 }
 ```
 
 #### Step 3. Set environment values
 
-- `DOCSPACE_BASE_URL` - the URL of your DocSpace instance (e.g. https://portal.onlyoffice.com).
-- `DOCSPACE_API_KEY` - your personal API key generated in DocSpace settings -> Developer Tools -> API keys.
+- `DOCSPACE_BASE_URL` - the URL of your ONLYOFFICE Apps instance (e.g. https://your-instance.onlyoffice.com).
+- `DOCSPACE_API_KEY` - your personal API key generated in ONLYOFFICE Apps **Developer Tools** → **API keys** (open **Developer Tools** from the banner at the bottom of the left sidebar).
 
-All available parameters are listed [here](/docs/configuration/global-configuration.md).
+All available parameters are listed [here](/docs/reference/global-configuration.md).
 
 #### Step 4. Restart the client
 
-Close and reopen your client. In most cases, the DocSpace MCP Server will start automatically, and you'll be able to issue natural language commands like:
+Close and reopen your client. In most cases, the ONLYOFFICE Apps MCP Server will start automatically, and you'll be able to issue natural language commands like:
 
 - Create a new project room and invite Anna with editor rights.
 - Upload this file to "My documents".
 
 ## Tools
 
-The DocSpace MCP server implements the Tools concept described in the [MCP specification].
+The ONLYOFFICE Apps MCP server implements the Tools concept described in the [MCP specification].
 
-All DocSpace MCP server tools are described [here](docs/features/tools.md).
+All ONLYOFFICE Apps MCP server tools are described [here](/docs/reference/tools.md).
 
 ## Documentation
 
@@ -108,7 +108,7 @@ The documentation is available in the [docs] directory.
 
 ## Samples
 
-The following [examples] show how to use ONLYOFFICE DocSpace MCP server.
+The following [examples] show how to use ONLYOFFICE Apps MCP server.
 
 ## Privacy Policy
 
@@ -116,7 +116,7 @@ The policies are available at [Legal Terms] and [Privacy Policy].
 
 ## License
 
-The DocSpace MCP server is distributed under the MIT license found in the
+The ONLYOFFICE Apps MCP server is distributed under the MIT license found in the
 [LICENSE] file.
 
 <!-- Footnotes -->
@@ -125,7 +125,7 @@ The DocSpace MCP server is distributed under the MIT license found in the
 [LICENSE]: https://github.com/ONLYOFFICE/docspace-mcp/blob/main/LICENSE
 
 [Model Context Protocol]: https://modelcontextprotocol.io/
-[ONLYOFFICE DocSpace]: https://www.onlyoffice.com/docspace.aspx
+[ONLYOFFICE Apps]: https://www.onlyoffice.com/docspace.aspx
 
 [Legal Terms]: https://www.onlyoffice.com/legalterms
 [Privacy Policy]: https://www.onlyoffice.com/privacy

@@ -10,10 +10,10 @@ import * as r from "../result.ts"
 export type SupportedMediaTypesCallback = (req: express.Request, res: express.Response) => void
 
 export function supportedMediaTypes(types: string[], cb: SupportedMediaTypesCallback): express.Handler {
-  let st = types.join(", ")
+  const st = types.join(", ")
 
   return (req, res, next) => {
-    let ct = r.safeSync(contentType.parse, req)
+    const ct = r.safeSync(contentType.parse, req)
     if (!ct.err && types.includes(ct.v.type)) {
       next()
       return

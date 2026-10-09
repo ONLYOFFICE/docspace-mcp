@@ -4,9 +4,9 @@ import * as env from "./env.ts"
 function main(): void {
   env.load()
 
-  let args: string[] = ["exec", "mcp-inspector"]
+  const args: string[] = ["exec", "mcp-inspector"]
 
-  for (let e of env.environ()) {
+  for (const e of env.environ()) {
     args.push("-e", e)
   }
 

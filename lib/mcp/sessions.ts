@@ -34,7 +34,7 @@ export class Sessions {
   }
 
   create(o: SessionsCreateOptions): result.Result<Session, Error> {
-    let createdAt = new Date()
+    const createdAt = new Date()
 
     let expiresAt: Date
 
@@ -64,9 +64,9 @@ export class Sessions {
       return result.error(new Error(`Session ${id} not found`))
     }
 
-    let a = new Date()
+    const a = new Date()
 
-    let b = s.expiresAt
+    const b = s.expiresAt
 
     if (b.getTime() !== 0 && a.getTime() >= b.getTime()) {
       return result.error(new Error(`Session ${s.id} has expired`))
@@ -84,29 +84,29 @@ export class Sessions {
   }
 
   async close(id: string): Promise<Error | undefined> {
-    let s = this.m.get(id)
+    const s = this.m.get(id)
     if (!s) {
       return new Error(`Session ${id} not found`)
     }
 
-    let r = await result.safeAsync(s.transport.close.bind(s.transport))
+    const r = await result.safeAsync(s.transport.close.bind(s.transport))
     if (r.err) {
       return new Error(`Closing transport for session ${s.id}`, {cause: r.err})
     }
   }
 
   async expire(id: string): Promise<Error | undefined> {
-    let s = this.m.get(id)
+    const s = this.m.get(id)
     if (!s) {
       return new Error(`Session ${id} not found`)
     }
 
-    let a = new Date()
+    const a = new Date()
     if (Number.isNaN(a.getTime())) {
       return new Error("Current date is invalid")
     }
 
-    let b = s.expiresAt
+    const b = s.expiresAt
     if (Number.isNaN(b.getTime())) {
       return new Error("Expiration date is invalid")
     }
@@ -115,17 +115,17 @@ export class Sessions {
       return
     }
 
-    let err = await this.close(id)
+    const err = await this.close(id)
     if (err) {
       return new Error(`Closing session ${s.id}`, {cause: err})
     }
   }
 
   async clear(): Promise<Error | undefined> {
-    let errs: Error[] = []
+    const errs: Error[] = []
 
-    for (let id of this.m.keys()) {
-      let err = await this.close(id)
+    for (const id of this.m.keys()) {
+      const err = await this.close(id)
       if (err) {
         errs.push(new Error(`Closing session ${id}`, {cause: err}))
       }
@@ -146,13 +146,13 @@ export class Sessions {
     }
 
     return await new Promise((res) => {
-      let t = setInterval(tick.bind(this), interval)
+      const t = setInterval(tick.bind(this), interval)
       sig.addEventListener("abort", abort)
 
       function tick(this: Sessions): void {
         void (async() => {
-          for (let id of this.m.keys()) {
-            let err = await this.expire(id)
+          for (const id of this.m.keys()) {
+            const err = await this.expire(id)
             if (err) {
               rej(new Error(`Expiring session ${id}`, {cause: err}))
             }

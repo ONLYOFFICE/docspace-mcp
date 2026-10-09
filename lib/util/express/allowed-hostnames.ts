@@ -13,7 +13,7 @@ export function allowedHostnames(hostnames: string[], cb: AllowedHostnamesCallba
     let err: Error | undefined
 
     if (req.headers.host) {
-      let u = r.safeNew(URL, `http://${req.headers.host}`)
+      const u = r.safeNew(URL, `http://${req.headers.host}`)
       if (u.err) {
         err = new Error("Parsing Host header", {cause: u.err})
       } else if (!hostnames.includes(u.v.hostname)) {

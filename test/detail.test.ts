@@ -15,19 +15,19 @@ import type {SetupMcpOptions} from "./util.ts"
 import {once, setupMcp} from "./util.ts"
 
 async function readDetail(): Promise<r.Result<dist.Detail, Error>> {
-  let rf: (p: string, e: "utf8") => Promise<string> = fs.readFile
+  const rf: (p: string, e: "utf8") => Promise<string> = fs.readFile
 
-  let f = await r.safeAsync(rf, "./server.json", "utf8")
+  const f = await r.safeAsync(rf, "./server.json", "utf8")
   if (f.err) {
     return r.error(new Error("Reading file", {cause: f.err}))
   }
 
-  let j = r.safeSync(JSON.parse, f.v)
+  const j = r.safeSync(JSON.parse, f.v)
   if (j.err) {
     return r.error(new Error("Parsing json", {cause: j.err}))
   }
 
-  let s = dist.DetailSchema.safeParse(j.v)
+  const s = dist.DetailSchema.safeParse(j.v)
   if (s.error) {
     return r.error(new Error("Parsing schema", {cause: s.error}))
   }
@@ -36,24 +36,24 @@ async function readDetail(): Promise<r.Result<dist.Detail, Error>> {
 }
 
 void test.suite("server detail", () => {
-  let readDetailOnce = once(readDetail)
+  const readDetailOnce = once(readDetail)
 
   void test.suite("general", () => {
     void test("validates against $schema", async() => {
-      let m = await readDetailOnce()
+      const m = await readDetailOnce()
       assert.ok(m.err === undefined)
 
-      let a = new ajv.Ajv()
+      const a = new ajv.Ajv()
       a.addKeyword("example")
       ajvFormats.default(a)
 
-      let s = await r.safeAsync(fetch, m.v.$schema)
+      const s = await r.safeAsync(fetch, m.v.$schema)
       assert.ok(s.err === undefined)
 
-      let o = await r.safeAsync(s.v.json.bind(s.v))
+      const o = await r.safeAsync(s.v.json.bind(s.v))
       assert.ok(o.err === undefined)
 
-      let v = r.safeSync(a.compile.bind(a), o.v)
+      const v = r.safeSync(a.compile.bind(a), o.v)
       assert.ok(v.err === undefined)
 
       assert.ok(v.v(m.v))
@@ -62,24 +62,24 @@ void test.suite("server detail", () => {
 
   void test.suite("packages", () => {
     void test("matches server metadata", async(t) => {
-      let m = await readDetailOnce()
+      const m = await readDetailOnce()
       assert.ok(m.err === undefined)
 
-      let o: SetupMcpOptions = {
+      const o: SetupMcpOptions = {
         transport: "stdio",
         host: "",
         port: 0,
         env: {},
       }
 
-      let c = await setupMcp(t, o)
+      const c = await setupMcp(t, o)
 
-      let i = c.getServerVersion()
+      const i = c.getServerVersion()
       assert.ok(i !== undefined)
 
       assert.ok(m.v.version === i.version)
 
-      for (let p of m.v.packages) {
+      for (const p of m.v.packages) {
         switch (p.registryType) {
         case "mcpb":
           assert.ok(p.version === i.version)
@@ -97,10 +97,10 @@ void test.suite("server detail", () => {
     })
 
     void test("declares all env variables", async() => {
-      let m = await readDetailOnce()
+      const m = await readDetailOnce()
       assert.ok(m.err === undefined)
 
-      for (let p of m.v.packages) {
+      for (const p of m.v.packages) {
         let d: spec.ItemDistribution | undefined
 
         switch (p.registryType) {
@@ -119,16 +119,16 @@ void test.suite("server detail", () => {
 
         let n = 0
 
-        for (let i of Object.values(spec)) {
+        for (const i of Object.values(spec)) {
           if (
             i.distributions.includes(d) &&
             i.transports.includes(p.transport.type)
           ) {
-            let k = `${config.envPrefix}${i.env}`
+            const k = `${config.envPrefix}${i.env}`
 
             let a: dist.DetailValue | undefined
 
-            for (let v of p.environmentVariables) {
+            for (const v of p.environmentVariables) {
               if (v.name === k) {
                 a = v
                 break
@@ -137,7 +137,7 @@ void test.suite("server detail", () => {
 
             assert.ok(a !== undefined)
 
-            let e: dist.DetailValue = {
+            const e: dist.DetailValue = {
               description: i.description,
               isRequired: false,
               format: i.type,
@@ -158,10 +158,10 @@ void test.suite("server detail", () => {
     })
 
     void test("declares all headers", async() => {
-      let m = await readDetailOnce()
+      const m = await readDetailOnce()
       assert.ok(m.err === undefined)
 
-      for (let p of m.v.packages) {
+      for (const p of m.v.packages) {
         if (p.transport.type === "stdio") {
           continue
         }
@@ -186,17 +186,17 @@ void test.suite("server detail", () => {
 
         let n = 0
 
-        for (let i of Object.values(spec)) {
+        for (const i of Object.values(spec)) {
           if (
             i.distributions.includes(d) &&
             i.transports.includes(p.transport.type) &&
             i.header
           ) {
-            let k = `${spec.requestHeaderPrefix.default}${i.header}`
+            const k = `${spec.requestHeaderPrefix.default}${i.header}`
 
             let a: dist.DetailValue | undefined
 
-            for (let v of p.transport.headers) {
+            for (const v of p.transport.headers) {
               if (v.name === k) {
                 a = v
                 break
@@ -205,7 +205,7 @@ void test.suite("server detail", () => {
 
             assert.ok(a !== undefined)
 
-            let e: dist.DetailValue = {
+            const e: dist.DetailValue = {
               description: i.description,
               isRequired: false,
               format: i.type,
@@ -228,10 +228,10 @@ void test.suite("server detail", () => {
 
   void test.suite("remotes", () => {
     void test("declares all headers", async() => {
-      let m = await readDetailOnce()
+      const m = await readDetailOnce()
       assert.ok(m.err === undefined)
 
-      for (let p of m.v.remotes) {
+      for (const p of m.v.remotes) {
         if (p.type === "stdio") {
           continue
         }
@@ -240,13 +240,13 @@ void test.suite("server detail", () => {
 
         let n = 0
 
-        for (let i of Object.values(spec)) {
+        for (const i of Object.values(spec)) {
           if (i.header) {
-            let k = `${spec.requestHeaderPrefix.default}${i.header}`
+            const k = `${spec.requestHeaderPrefix.default}${i.header}`
 
             let a: dist.DetailValue | undefined
 
-            for (let v of p.headers) {
+            for (const v of p.headers) {
               if (v.name === k) {
                 a = v
                 break
@@ -255,7 +255,7 @@ void test.suite("server detail", () => {
 
             assert.ok(a !== undefined)
 
-            let e: dist.DetailValue = {
+            const e: dist.DetailValue = {
               description: i.description,
               isRequired: false,
               format: i.type,

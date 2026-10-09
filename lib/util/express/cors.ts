@@ -15,7 +15,7 @@ export type CorsOptions = {
 }
 
 export function cors(o: CorsOptions): express.Handler {
-  let co: cors_.CorsOptions = {}
+  const co: cors_.CorsOptions = {}
 
   if (o.origin.length !== 0) {
     if (o.origin.includes("*")) {

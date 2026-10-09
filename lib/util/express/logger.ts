@@ -23,19 +23,19 @@ export type Logger = {
 
 export function logger(l: Logger): express.Handler {
   return (req, res, next) => {
-    let o: Payload = {
+    const o: Payload = {
       method: req.method,
       url: req.url,
     }
 
     l.info(incoming, o)
 
-    let now = Date.now()
+    const now = Date.now()
 
-    let onFinish = (): void => {
+    const onFinish = (): void => {
       o.status = res.statusCode
 
-      let d = Date.now() - now
+      const d = Date.now() - now
       if (d < 1000) {
         o.duration = `${d}ms`
       } else {

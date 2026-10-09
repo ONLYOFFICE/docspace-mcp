@@ -29,7 +29,7 @@ export class Deferred {
   }
 
   constructor() {
-    let e = (res: () => void, rej: (err: Error) => void): void => {
+    const e = (res: () => void, rej: (err: Error) => void): void => {
       this.res = res
       this.rej = rej
     }
@@ -46,13 +46,13 @@ export class Deferred {
   }
 
   withTimeout(t: number, m: string): void {
-    let f = (): void => {
+    const f = (): void => {
       this.rej(new DOMException(m, "AbortError"))
     }
 
-    let s = setTimeout(f, t)
+    const s = setTimeout(f, t)
 
-    let c = (): void => {
+    const c = (): void => {
       clearTimeout(s)
     }
 
@@ -60,7 +60,7 @@ export class Deferred {
   }
 
   clear(): void {
-    for (let c of this.ca) {
+    for (const c of this.ca) {
       c()
     }
   }
@@ -75,8 +75,8 @@ export function isUuid(s: string): boolean {
 }
 
 export async function onRequest(t: test.TestContext, s: http.Server, l: AsyncRequestListener): Promise<void> {
-  let e = (_: unknown, reject: (err: Error) => void): void => {
-    let onRequest: http.RequestListener = (req, res) => {
+  const e = (_: unknown, reject: (err: Error) => void): void => {
+    const onRequest: http.RequestListener = (req, res) => {
       void (async() => {
         try {
           await l(req, res)
@@ -91,7 +91,7 @@ export async function onRequest(t: test.TestContext, s: http.Server, l: AsyncReq
       })()
     }
 
-    let onAfter: test.TestContextHookFn = () => {
+    const onAfter: test.TestContextHookFn = () => {
       s.removeListener("request", onRequest)
     }
 
@@ -116,12 +116,12 @@ export function once<R>(fn: () => R): typeof fn {
 }
 
 export function parseFetchLocation(res: Response): r.Result<URL, Error> {
-  let s = res.headers.get("Location")
+  const s = res.headers.get("Location")
   if (!s) {
     return r.error(new Error("Location is missing"))
   }
 
-  let u = r.safeNew(URL, s)
+  const u = r.safeNew(URL, s)
   if (u.err) {
     return r.error(new Error("Parsing URL", {cause: u.err}))
   }
@@ -130,12 +130,12 @@ export function parseFetchLocation(res: Response): r.Result<URL, Error> {
 }
 
 export function powerSet<T>(arr: T[]): T[][] {
-  let x: T[][] = []
+  const x: T[][] = []
 
   for (let i = 0; i < Math.pow(2, arr.length); i += 1) {
-    let y: T[] = []
+    const y: T[] = []
 
-    for (let [j, e] of arr.entries()) {
+    for (const [j, e] of arr.entries()) {
       if (i >> j & 1) {
         y.push(e)
       }
@@ -148,14 +148,14 @@ export function powerSet<T>(arr: T[]): T[][] {
 }
 
 export async function randomAddress(): Promise<r.Result<net.AddressInfo, Error>> {
-  let s = new net.Server()
+  const s = new net.Server()
 
   let e = (res: (v: r.Result<void, Error>) => void): void => {
-    let onError = (err: Error): void => {
+    const onError = (err: Error): void => {
       res(r.error(err))
     }
 
-    let onListening = (): void => {
+    const onListening = (): void => {
       res(r.ok())
     }
 
@@ -163,11 +163,11 @@ export async function randomAddress(): Promise<r.Result<net.AddressInfo, Error>>
     s.once("listening", onListening)
   }
 
-  let p = new Promise(e)
+  const p = new Promise(e)
 
-  let listen: (port: number, host: string) => net.Server = s.listen.bind(s)
+  const listen: (port: number, host: string) => net.Server = s.listen.bind(s)
 
-  let l = r.safeSync(listen, 0, "::")
+  const l = r.safeSync(listen, 0, "::")
   if (l.err) {
     return r.error(new Error("Listening server", {cause: l.err}))
   }
@@ -177,14 +177,14 @@ export async function randomAddress(): Promise<r.Result<net.AddressInfo, Error>>
     return r.error(new Error("Waiting for server", {cause: w.err}))
   }
 
-  let a = s.address()
+  const a = s.address()
 
   if (!a || typeof a !== "object") {
     return r.error(new Error("Address is not object"))
   }
 
   e = (res) => {
-    let onClose = (err: Error | undefined): void => {
+    const onClose = (err: Error | undefined): void => {
       if (err) {
         res(r.error(err))
       } else {
@@ -204,7 +204,7 @@ export async function randomAddress(): Promise<r.Result<net.AddressInfo, Error>>
 }
 
 export async function readFetchJson(res: Response): Promise<r.Result<unknown, Error>> {
-  let t = res.headers.get("Content-Type")
+  const t = res.headers.get("Content-Type")
 
   if (!t) {
     return r.error(new Error("Content-Type is missing"))
@@ -214,32 +214,32 @@ export async function readFetchJson(res: Response): Promise<r.Result<unknown, Er
     return r.error(new Error(`Content-Type ${t} is not 'application/json; charset=utf-8'`))
   }
 
-  let l = res.headers.get("Content-Length")
+  const l = res.headers.get("Content-Length")
 
   if (!l) {
     return r.error(new Error("Content-Length is missing"))
   }
 
-  let n = Number.parseInt(l, 10)
+  const n = Number.parseInt(l, 10)
 
   if (Number.isNaN(n)) {
     return r.error(new Error(`Content-Length ${l} is invalid`))
   }
 
-  let b = await r.safeAsync(res.text.bind(res))
+  const b = await r.safeAsync(res.text.bind(res))
   if (b.err) {
     return r.error(new Error("Reading text", {cause: b.err}))
   }
 
-  let e = new TextEncoder()
+  const e = new TextEncoder()
 
-  let x = e.encode(b.v)
+  const x = e.encode(b.v)
 
   if (x.length !== n) {
     return r.error(new Error("Content-Length mismatch"))
   }
 
-  let j = r.safeSync(JSON.parse, b.v)
+  const j = r.safeSync(JSON.parse, b.v)
   if (j.err) {
     return r.error(new Error("Parsing JSON", {cause: j.err}))
   }
@@ -248,7 +248,7 @@ export async function readFetchJson(res: Response): Promise<r.Result<unknown, Er
 }
 
 export async function readFetchText(res: Response): Promise<r.Result<string, Error>> {
-  let t = res.headers.get("Content-Type")
+  const t = res.headers.get("Content-Type")
 
   if (!t) {
     return r.error(new Error("Content-Type is missing"))
@@ -258,26 +258,26 @@ export async function readFetchText(res: Response): Promise<r.Result<string, Err
     return r.error(new Error(`Content-Type ${t} is not 'text/plain; charset=utf-8'`))
   }
 
-  let l = res.headers.get("Content-Length")
+  const l = res.headers.get("Content-Length")
 
   if (!l) {
     return r.error(new Error("Content-Length is missing"))
   }
 
-  let n = Number.parseInt(l, 10)
+  const n = Number.parseInt(l, 10)
 
   if (Number.isNaN(n)) {
     return r.error(new Error(`Content-Length ${l} is invalid`))
   }
 
-  let b = await r.safeAsync(res.text.bind(res))
+  const b = await r.safeAsync(res.text.bind(res))
   if (b.err) {
     return r.error(new Error("Reading text", {cause: b.err}))
   }
 
-  let e = new TextEncoder()
+  const e = new TextEncoder()
 
-  let x = e.encode(b.v)
+  const x = e.encode(b.v)
 
   if (x.length !== n) {
     return r.error(new Error("Content-Length mismatch"))
@@ -291,22 +291,22 @@ export async function readHttpData(req: http.IncomingMessage): Promise<r.Result<
     return r.error(new Error("Request is not readable"))
   }
 
-  let e = (res: (v: r.Result<Uint8Array[], Error>) => void): void => {
-    let b: Uint8Array[] = []
+  const e = (res: (v: r.Result<Uint8Array[], Error>) => void): void => {
+    const b: Uint8Array[] = []
 
-    let onError = (err: Error): void => {
+    const onError = (err: Error): void => {
       close(r.error(new Error("Request error", {cause: err})))
     }
 
-    let onClose = (): void => {
+    const onClose = (): void => {
       close(r.error(new Error("Request closed")))
     }
 
-    let onData = (c: Uint8Array): void => {
+    const onData = (c: Uint8Array): void => {
       b.push(c)
     }
 
-    let onEnd = (): void => {
+    const onEnd = (): void => {
       if (req.complete) {
         close(r.ok(b))
       } else {
@@ -314,7 +314,7 @@ export async function readHttpData(req: http.IncomingMessage): Promise<r.Result<
       }
     }
 
-    let close = (r: r.Result<Uint8Array[], Error>): void => {
+    const close = (r: r.Result<Uint8Array[], Error>): void => {
       req.removeListener("error", onError)
       req.removeListener("close", onClose)
       req.removeListener("data", onData)
@@ -328,7 +328,7 @@ export async function readHttpData(req: http.IncomingMessage): Promise<r.Result<
     req.addListener("end", onEnd)
   }
 
-  let w = await new Promise(e)
+  const w = await new Promise(e)
   if (w.err) {
     return r.error(new Error("Reading request", {cause: w.err}))
   }
@@ -337,7 +337,7 @@ export async function readHttpData(req: http.IncomingMessage): Promise<r.Result<
 }
 
 export async function readHttpForm(req: http.IncomingMessage): Promise<r.Result<Record<string, string | string[] | undefined>, Error>> {
-  let t = req.headers["content-type"]
+  const t = req.headers["content-type"]
 
   if (!t) {
     return r.error(new Error("Content-Type is missing"))
@@ -347,42 +347,42 @@ export async function readHttpForm(req: http.IncomingMessage): Promise<r.Result<
     return r.error(new Error(`Content-Type ${t} is not 'application/x-www-form-urlencoded'`))
   }
 
-  let l = req.headers["content-length"]
+  const l = req.headers["content-length"]
 
   if (!l) {
     return r.error(new Error("Content-Length is missing"))
   }
 
-  let n = Number.parseInt(l, 10)
+  const n = Number.parseInt(l, 10)
 
   if (Number.isNaN(n)) {
     return r.error(new Error(`Content-Length ${l} is invalid`))
   }
 
-  let d = await readHttpData(req)
+  const d = await readHttpData(req)
   if (d.err) {
     return r.error(new Error("Reading data", {cause: d.err}))
   }
 
-  let b = r.safeSync(Buffer.concat.bind(Buffer), d.v)
+  const b = r.safeSync(Buffer.concat.bind(Buffer), d.v)
   if (b.err) {
     return r.error(new Error("Concatenating data", {cause: b.err}))
   }
 
-  let s = r.safeSync(b.v.toString.bind(b.v), "utf8")
+  const s = r.safeSync(b.v.toString.bind(b.v), "utf8")
   if (s.err) {
     return r.error(new Error("Converting data", {cause: s.err}))
   }
 
-  let e = new TextEncoder()
+  const e = new TextEncoder()
 
-  let x = e.encode(s.v)
+  const x = e.encode(s.v)
 
   if (x.length !== n) {
     return r.error(new Error("Content-Length mismatch"))
   }
 
-  let q = r.safeSync(querystring.parse, s.v)
+  const q = r.safeSync(querystring.parse, s.v)
   if (q.err) {
     return r.error(new Error("Parsing data", {cause: q.err}))
   }
@@ -391,7 +391,7 @@ export async function readHttpForm(req: http.IncomingMessage): Promise<r.Result<
 }
 
 export async function readHttpJson(req: http.IncomingMessage): Promise<r.Result<unknown, Error>> {
-  let t = req.headers["content-type"]
+  const t = req.headers["content-type"]
 
   if (!t) {
     return r.error(new Error("Content-Type is missing"))
@@ -401,42 +401,42 @@ export async function readHttpJson(req: http.IncomingMessage): Promise<r.Result<
     return r.error(new Error(`Content-Type ${t} is not 'application/json; charset=utf-8'`))
   }
 
-  let l = req.headers["content-length"]
+  const l = req.headers["content-length"]
 
   if (!l) {
     return r.error(new Error("Content-Length is missing"))
   }
 
-  let n = Number.parseInt(l, 10)
+  const n = Number.parseInt(l, 10)
 
   if (Number.isNaN(n)) {
     return r.error(new Error(`Content-Length ${l} is invalid`))
   }
 
-  let d = await readHttpData(req)
+  const d = await readHttpData(req)
   if (d.err) {
     return r.error(new Error("Reading data", {cause: d.err}))
   }
 
-  let b = r.safeSync(Buffer.concat.bind(Buffer), d.v)
+  const b = r.safeSync(Buffer.concat.bind(Buffer), d.v)
   if (b.err) {
     return r.error(new Error("Concatenating data", {cause: b.err}))
   }
 
-  let s = r.safeSync(b.v.toString.bind(b.v), "utf8")
+  const s = r.safeSync(b.v.toString.bind(b.v), "utf8")
   if (s.err) {
     return r.error(new Error("Converting data", {cause: s.err}))
   }
 
-  let e = new TextEncoder()
+  const e = new TextEncoder()
 
-  let x = e.encode(s.v)
+  const x = e.encode(s.v)
 
   if (x.length !== n) {
     return r.error(new Error("Content-Length mismatch"))
   }
 
-  let j = r.safeSync(JSON.parse, s.v)
+  const j = r.safeSync(JSON.parse, s.v)
   if (j.err) {
     return r.error(new Error("Parsing data", {cause: j.err}))
   }
@@ -449,7 +449,7 @@ export async function sendJson(res: http.ServerResponse, statusCode: number, bod
     return r.error(new Error("Response is not writable"))
   }
 
-  let s = r.safeSync(JSON.stringify, body, null, 2)
+  const s = r.safeSync(JSON.stringify, body, null, 2)
   if (s.err) {
     return r.error(new Error("Stringifying body", {cause: s.err}))
   }
@@ -458,17 +458,17 @@ export async function sendJson(res: http.ServerResponse, statusCode: number, bod
     res.setHeader("Content-Type", "application/json")
   }
 
-  let h = r.safeSync(res.writeHead.bind(res), statusCode)
+  const h = r.safeSync(res.writeHead.bind(res), statusCode)
   if (h.err) {
     return r.error(new Error("Writing head", {cause: h.err}))
   }
 
-  let e = (resolve: (v: r.Result<void, Error>) => void): void => {
-    let onError = (err: Error): void => {
+  const e = (resolve: (v: r.Result<void, Error>) => void): void => {
+    const onError = (err: Error): void => {
       close(new Error("Response error", {cause: err}))
     }
 
-    let close = (err?: Error): void => {
+    const close = (err?: Error): void => {
       if (err) {
         resolve(r.error(err))
       } else {
@@ -480,7 +480,7 @@ export async function sendJson(res: http.ServerResponse, statusCode: number, bod
     res.end(s.v, close)
   }
 
-  let w = await new Promise(e)
+  const w = await new Promise(e)
   if (w.err) {
     return r.error(new Error("Sending response", {cause: w.err}))
   }
@@ -495,35 +495,35 @@ export type SetupBinOptions = {
 }
 
 export async function setupBin(t: test.TestContext, o: SetupBinOptions): Promise<void> {
-  let so: childProcess.SpawnOptions = {
+  const so: childProcess.SpawnOptions = {
     env: {
       ...process.env,
       ...o.env,
     },
   }
 
-  let cp = childProcess.spawn(
+  const cp = childProcess.spawn(
     "node",
     ["./bin/onlyoffice-docspace-mcp.js"],
     so,
   )
 
-  let onAfter: test.TestContextHookFn = () => {
+  const onAfter: test.TestContextHookFn = () => {
     cp.kill()
   }
 
   t.after(onAfter)
 
-  let wp = await waitForPort(o.port, o.host)
+  const wp = await waitForPort(o.port, o.host)
   assert.ok(wp.err === undefined)
 }
 
 export async function setupHttp(t: test.TestContext): Promise<[http.Server, net.AddressInfo]> {
-  let s = new http.Server()
+  const s = new http.Server()
 
-  let onAfter: test.TestContextHookFn = async() => {
-    let e = (res: (v: r.Result<void, Error>) => void): void => {
-      let onClose = (err: Error | undefined): void => {
+  const onAfter: test.TestContextHookFn = async() => {
+    const e = (res: (v: r.Result<void, Error>) => void): void => {
+      const onClose = (err: Error | undefined): void => {
         if (err) {
           res(r.error(err))
         } else {
@@ -534,18 +534,18 @@ export async function setupHttp(t: test.TestContext): Promise<[http.Server, net.
       s.close(onClose)
     }
 
-    let w = await new Promise(e)
+    const w = await new Promise(e)
     assert.ok(w.err === undefined)
   }
 
   t.after(onAfter)
 
-  let e = (res: (v: r.Result<void, Error>) => void): void => {
-    let onError = (err: Error): void => {
+  const e = (res: (v: r.Result<void, Error>) => void): void => {
+    const onError = (err: Error): void => {
       res(r.error(err))
     }
 
-    let onListening = (): void => {
+    const onListening = (): void => {
       res(r.ok())
     }
 
@@ -553,17 +553,17 @@ export async function setupHttp(t: test.TestContext): Promise<[http.Server, net.
     s.once("listening", onListening)
   }
 
-  let p = new Promise(e)
+  const p = new Promise(e)
 
-  let listen: (port: number, host: string) => net.Server = s.listen.bind(s)
+  const listen: (port: number, host: string) => net.Server = s.listen.bind(s)
 
-  let l = r.safeSync(listen, 0, "::")
+  const l = r.safeSync(listen, 0, "::")
   assert.ok(l.err === undefined)
 
-  let w = await p
+  const w = await p
   assert.ok(w.err === undefined)
 
-  let a = s.address()
+  const a = s.address()
   assert.ok(a && typeof a === "object")
 
   return [s, a]
@@ -577,12 +577,12 @@ export type SetupMcpOptions = {
 }
 
 export async function setupMcp(t: test.TestContext, o: SetupMcpOptions): Promise<client.Client> {
-  let co: types.Implementation = {
+  const co: types.Implementation = {
     name: "test",
     version: "0.0.0",
   }
 
-  let cl = new client.Client(co)
+  const cl = new client.Client(co)
 
   let onAfter: test.TestContextHookFn = async() => {
     await cl.close()
@@ -593,7 +593,7 @@ export async function setupMcp(t: test.TestContext, o: SetupMcpOptions): Promise
   let tr: transport.Transport | undefined
 
   if (o.transport === "stdio") {
-    let to: stdio.StdioServerParameters = {
+    const to: stdio.StdioServerParameters = {
       command: "node",
       args: ["./bin/onlyoffice-docspace-mcp.js"],
       env: o.env,
@@ -601,7 +601,7 @@ export async function setupMcp(t: test.TestContext, o: SetupMcpOptions): Promise
 
     tr = new stdio.StdioClientTransport(to)
   } else {
-    let so: childProcess.SpawnOptions = {
+    const so: childProcess.SpawnOptions = {
       env: {
         ...process.env,
         ...o.env,
@@ -609,7 +609,7 @@ export async function setupMcp(t: test.TestContext, o: SetupMcpOptions): Promise
       shell: true,
     }
 
-    let cp = childProcess.spawn(
+    const cp = childProcess.spawn(
       "node",
       ["./bin/onlyoffice-docspace-mcp.js"],
       so,
@@ -621,10 +621,10 @@ export async function setupMcp(t: test.TestContext, o: SetupMcpOptions): Promise
 
     t.after(onAfter)
 
-    let w = await waitForPort(o.port, o.host)
+    const w = await waitForPort(o.port, o.host)
     assert.ok(w.err === undefined)
 
-    let b = `http://[${o.host}]:${o.port}/`
+    const b = `http://[${o.host}]:${o.port}/`
 
     let e: string | undefined
 
@@ -634,7 +634,7 @@ export async function setupMcp(t: test.TestContext, o: SetupMcpOptions): Promise
       e = "mcp"
     }
 
-    let u = r.safeNew(URL, e, b)
+    const u = r.safeNew(URL, e, b)
     assert.ok(u.err === undefined)
 
     if (o.transport === "sse") {
@@ -644,34 +644,34 @@ export async function setupMcp(t: test.TestContext, o: SetupMcpOptions): Promise
     }
   }
 
-  let cr = await r.safeAsync(cl.connect.bind(cl), tr)
+  const cr = await r.safeAsync(cl.connect.bind(cl), tr)
   assert.ok(cr.err === undefined)
 
   return cl
 }
 
 export async function waitForPort(p: number, h: string): Promise<r.Result<void, Error>> {
-  let timeout = 30000
-  let interval = 100
+  const timeout = 30000
+  const interval = 100
 
-  let now = Date.now()
+  const now = Date.now()
 
   while (Date.now() - now < timeout) {
-    let pe = (res: (v: unknown) => void): void => {
+    const pe = (res: (v: unknown) => void): void => {
       setTimeout(res, interval)
     }
 
     await new Promise(pe)
 
-    let fe = (res: (v: boolean) => void): void => {
-      let s = new net.Socket()
+    const fe = (res: (v: boolean) => void): void => {
+      const s = new net.Socket()
 
-      let onError = (): void => {
+      const onError = (): void => {
         s.destroy()
         res(false)
       }
 
-      let onConnect = (): void => {
+      const onConnect = (): void => {
         s.destroy()
         res(true)
       }
@@ -682,7 +682,7 @@ export async function waitForPort(p: number, h: string): Promise<r.Result<void, 
       s.connect(p, h)
     }
 
-    let f = await new Promise(fe)
+    const f = await new Promise(fe)
     if (f) {
       return r.ok()
     }

@@ -29,15 +29,15 @@ export class Elicitation {
   }
 
   async form(m: string, s: ElicitationFormRequestedSchema): Promise<r.Result<types.ElicitResult, Error>> {
-    let ctx = context.get()
+    const ctx = context.get()
 
-    let cc = this.protocol.getClientCapabilities()
+    const cc = this.protocol.getClientCapabilities()
 
     if (!cc.elicitation || !cc.elicitation.form) {
       return r.error(new Error("Client does not support form elicitation"))
     }
 
-    let er: types.ElicitRequest = {
+    const er: types.ElicitRequest = {
       method: "elicitation/create",
       params: {
         mode: "form",
@@ -46,7 +46,7 @@ export class Elicitation {
       },
     }
 
-    let ro: protocol.RequestOptions = {}
+    const ro: protocol.RequestOptions = {}
 
     if (ctx[abort.signalKey]) {
       ro.signal = ctx[abort.signalKey]
@@ -60,7 +60,7 @@ export class Elicitation {
       ro.relatedTask = {taskId: ctx[taskIdKey]}
     }
 
-    let rw = await r.safeAsync(
+    const rw = await r.safeAsync(
       this.protocol.request.bind(this.protocol),
       er,
       types.ElicitResultSchema,

@@ -8,14 +8,14 @@ import {signalKey} from "./context.ts"
 
 export function wrapFetch(fetch: typeof globalThis.fetch): typeof globalThis.fetch {
   return async(input, init) => {
-    let ctx = context.get()
+    const ctx = context.get()
 
     if (ctx && ctx[signalKey]) {
       if (!(input instanceof Request)) {
         throw new Error("Input is not a Request instance")
       }
 
-      let ri: RequestInit = {
+      const ri: RequestInit = {
         signal: ctx[signalKey],
       }
 

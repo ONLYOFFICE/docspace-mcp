@@ -68,39 +68,39 @@ export class Protocol extends protocol.Protocol<types.Request, types.Notificatio
   }
 
   registerRouter(router: Router): r.Result<void, Error> {
-    let errs: Error[] = []
+    const errs: Error[] = []
 
-    let im = "initialize" as const
-    let ih = router.handlers[im]
+    const im = "initialize" as const
+    const ih = router.handlers[im]
     if (ih) {
-      let a = r.safeSync(this.assertCanSetRequestHandler.bind(this, im))
+      const a = r.safeSync(this.assertCanSetRequestHandler.bind(this, im))
       if (a.err) {
         errs.push(new Error("Setting initialize handler", {cause: a.err}))
       }
     }
 
-    let lsm = "logging/setLevel" as const
-    let lsh = router.handlers[lsm]
+    const lsm = "logging/setLevel" as const
+    const lsh = router.handlers[lsm]
     if (lsh) {
-      let a = r.safeSync(this.assertCanSetRequestHandler.bind(this, lsm))
+      const a = r.safeSync(this.assertCanSetRequestHandler.bind(this, lsm))
       if (a.err) {
         errs.push(new Error("Setting logging/setLevel handler", {cause: a.err}))
       }
     }
 
-    let tcm = "tools/call" as const
-    let tch = router.handlers[tcm]
+    const tcm = "tools/call" as const
+    const tch = router.handlers[tcm]
     if (tch) {
-      let a = r.safeSync(this.assertCanSetRequestHandler.bind(this, tcm))
+      const a = r.safeSync(this.assertCanSetRequestHandler.bind(this, tcm))
       if (a.err) {
         errs.push(new Error("Setting tools/call handler", {cause: a.err}))
       }
     }
 
-    let tlm = "tools/list" as const
-    let tlh = router.handlers[tlm]
+    const tlm = "tools/list" as const
+    const tlh = router.handlers[tlm]
     if (tlh) {
-      let a = r.safeSync(this.assertCanSetRequestHandler.bind(this, tlm))
+      const a = r.safeSync(this.assertCanSetRequestHandler.bind(this, tlm))
       if (a.err) {
         errs.push(new Error("Setting tools/list handler", {cause: a.err}))
       }
@@ -141,7 +141,7 @@ export class Protocol extends protocol.Protocol<types.Request, types.Notificatio
 
     handler = ((handler) => {
       return async(req, extra) => {
-        let ctx: context.Context = {}
+        const ctx: context.Context = {}
 
         if (extra._meta && extra._meta.progressToken !== undefined) {
           ctx[progressTokenKey] = extra._meta.progressToken
@@ -153,8 +153,8 @@ export class Protocol extends protocol.Protocol<types.Request, types.Notificatio
           ctx[taskIdKey] = extra.taskId
         }
 
-        let ex = (res: (v: Awaited<ReturnType<typeof handler>>) => void, rej: (err: unknown) => void): void => {
-          let cb = (): void => {
+        const ex = (res: (v: Awaited<ReturnType<typeof handler>>) => void, rej: (err: unknown) => void): void => {
+          const cb = (): void => {
             void (async() => {
               try {
                 res(await handler(req, extra))

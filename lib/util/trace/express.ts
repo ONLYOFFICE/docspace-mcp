@@ -19,7 +19,7 @@ export function expressHandler(): express.Handler {
 
     res.setHeader("X-Request-ID", id)
 
-    let ctx: context.Context = {
+    const ctx: context.Context = {
       [requestIdKey]: id,
     }
 

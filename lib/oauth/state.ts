@@ -63,12 +63,12 @@ export class StateTokens {
       alg = "none"
     }
 
-    let vo: jwt.VerifyOptions = {
+    const vo: jwt.VerifyOptions = {
       algorithms: [alg],
       complete: true,
     }
 
-    let jw = r.safeSync(jwt.verify, t, this.secretKey, vo)
+    const jw = r.safeSync(jwt.verify, t, this.secretKey, vo)
     if (jw.err) {
       return r.error(new InvalidStateTokenError("Verifying token", {cause: jw.err}))
     }
@@ -81,12 +81,12 @@ export class StateTokens {
       return r.error(new InvalidStateTokenError("Invalid payload"))
     }
 
-    let tp = StateTokenPayloadSchema.safeParse(jw.v.payload)
+    const tp = StateTokenPayloadSchema.safeParse(jw.v.payload)
     if (!tp.success) {
       return r.error(new InvalidStateTokenError("Parsing payload", {cause: tp.error}))
     }
 
-    let st: State = {
+    const st: State = {
       redirect_uri: tp.data.redirect_uri,
     }
 
@@ -98,7 +98,7 @@ export class StateTokens {
   }
 
   encode(s: State): r.Result<string, Error> {
-    let iat = Math.floor(Date.now() / 1000)
+    const iat = Math.floor(Date.now() / 1000)
 
     let exp: number | undefined
 
@@ -108,7 +108,7 @@ export class StateTokens {
       exp = 0
     }
 
-    let tp: StateTokenPayload = {
+    const tp: StateTokenPayload = {
       exp,
       nbf: iat,
       iat,
@@ -131,11 +131,11 @@ export class StateTokens {
       alg = "none"
     }
 
-    let so: jwt.SignOptions = {
+    const so: jwt.SignOptions = {
       algorithm: alg,
     }
 
-    let tt = r.safeSync(jwt.sign, tp, this.secretKey, so)
+    const tt = r.safeSync(jwt.sign, tp, this.secretKey, so)
     if (tt.err) {
       return r.error(new Error("Signing token", {cause: tt.err}))
     }

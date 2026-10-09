@@ -7,17 +7,17 @@
 import * as mcp from "../mcp.ts"
 
 export const availableToolsets: string[] = (() => {
-  let a: string[] = ["all"]
-  for (let s of mcp.regularToolsets) {
+  const a: string[] = ["all"]
+  for (const s of mcp.regularToolsets) {
     a.push(s.name)
   }
   return a
 })()
 
 export const availableTools: string[] = (() => {
-  let a: string[] = []
-  for (let s of mcp.regularToolsets) {
-    for (let t of s.tools) {
+  const a: string[] = []
+  for (const s of mcp.regularToolsets) {
+    for (const t of s.tools) {
       a.push(t.name)
     }
   }
@@ -39,20 +39,20 @@ export type ResolveToolsResult = {
 export function resolveTools(o: ResolveToolsOptions): ResolveToolsResult {
   let t = o.toolsets
 
-  let i = t.indexOf("all")
+  const i = t.indexOf("all")
   if (i !== -1) {
     t = availableToolsets
   }
 
-  let x: string[] = []
-  let y: string[] = []
+  const x: string[] = []
+  const y: string[] = []
 
-  for (let n of t) {
+  for (const n of t) {
     x.push(n)
 
-    for (let s of mcp.regularToolsets) {
+    for (const s of mcp.regularToolsets) {
       if (s.name === n) {
-        for (let t of s.tools) {
+        for (const t of s.tools) {
           y.push(t.name)
         }
         break
@@ -60,10 +60,10 @@ export function resolveTools(o: ResolveToolsOptions): ResolveToolsResult {
     }
   }
 
-  for (let n of o.enabledTools) {
-    for (let s of mcp.regularToolsets) {
+  for (const n of o.enabledTools) {
+    for (const s of mcp.regularToolsets) {
       let h = false
-      for (let t of s.tools) {
+      for (const t of s.tools) {
         if (t.name === n) {
           h = true
           break
@@ -83,20 +83,20 @@ export function resolveTools(o: ResolveToolsOptions): ResolveToolsResult {
     }
   }
 
-  for (let n of o.disabledTools) {
-    let i = y.indexOf(n)
+  for (const n of o.disabledTools) {
+    const i = y.indexOf(n)
     if (i !== -1) {
       y.splice(i, 1)
     }
   }
 
-  for (let sn of x) {
-    for (let s of mcp.regularToolsets) {
+  for (const sn of x) {
+    for (const s of mcp.regularToolsets) {
       if (s.name === sn) {
         let h = false
 
-        for (let tn of y) {
-          for (let t of s.tools) {
+        for (const tn of y) {
+          for (const t of s.tools) {
             if (t.name === tn) {
               h = true
               break
@@ -109,7 +109,7 @@ export function resolveTools(o: ResolveToolsOptions): ResolveToolsResult {
         }
 
         if (!h) {
-          let i = x.indexOf(sn)
+          const i = x.indexOf(sn)
           if (i !== -1) {
             x.splice(i, 1)
           }
@@ -120,7 +120,7 @@ export function resolveTools(o: ResolveToolsOptions): ResolveToolsResult {
     }
   }
 
-  let r: ResolveToolsResult = {
+  const r: ResolveToolsResult = {
     toolsets: x,
     tools: y,
   }

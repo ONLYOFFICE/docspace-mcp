@@ -60,12 +60,12 @@ export class AuthTokens {
       alg = "none"
     }
 
-    let vo: jwt.VerifyOptions = {
+    const vo: jwt.VerifyOptions = {
       algorithms: [alg],
       complete: true,
     }
 
-    let jw = r.safeSync(jwt.verify, t, this.secretKey, vo)
+    const jw = r.safeSync(jwt.verify, t, this.secretKey, vo)
     if (jw.err) {
       return r.error(new InvalidAuthTokenError("Verifying token", {cause: jw.err}))
     }
@@ -78,23 +78,23 @@ export class AuthTokens {
       return r.error(new InvalidAuthTokenError("Invalid payload"))
     }
 
-    let tp = AuthTokenPayloadSchema.safeParse(jw.v.payload)
+    const tp = AuthTokenPayloadSchema.safeParse(jw.v.payload)
     if (!tp.success) {
       return r.error(new InvalidAuthTokenError("Parsing payload", {cause: tp.error}))
     }
 
     // Use objects directly from the payload to preserve field order.
-    let tt = `${base64url(jw.v.payload.hdr)}.${base64url(jw.v.payload.pld)}.${jw.v.payload.sgn}`
+    const tt = `${base64url(jw.v.payload.hdr)}.${base64url(jw.v.payload.pld)}.${jw.v.payload.sgn}`
 
     return r.ok([tt, tp.data])
   }
 
   decode(t: string): r.Result<[string, AuthTokenPayload], Error> {
-    let co: jwt.DecodeOptions = {
+    const co: jwt.DecodeOptions = {
       complete: true,
     }
 
-    let jw = jwt.decode(t, co)
+    const jw = jwt.decode(t, co)
     if (!jw) {
       return r.error(new InvalidAuthTokenError("Invalid token"))
     }
@@ -107,23 +107,23 @@ export class AuthTokens {
       return r.error(new InvalidAuthTokenError("Invalid payload"))
     }
 
-    let tp = AuthTokenPayloadSchema.safeParse(jw.payload)
+    const tp = AuthTokenPayloadSchema.safeParse(jw.payload)
     if (!tp.success) {
       return r.error(new InvalidAuthTokenError("Parsing payload", {cause: tp.error}))
     }
 
     // Use objects directly from the payload to preserve field order.
-    let tt = `${base64url(jw.payload.hdr)}.${base64url(jw.payload.pld)}.${jw.payload.sgn}`
+    const tt = `${base64url(jw.payload.hdr)}.${base64url(jw.payload.pld)}.${jw.payload.sgn}`
 
     return r.ok([tt, tp.data])
   }
 
   encode(t: string): r.Result<[string, AuthTokenPayload], Error> {
-    let co: jwt.DecodeOptions = {
+    const co: jwt.DecodeOptions = {
       complete: true,
     }
 
-    let jw = jwt.decode(t, co)
+    const jw = jwt.decode(t, co)
     if (!jw) {
       return r.error(new InvalidAuthTokenError("Invalid token"))
     }
@@ -136,7 +136,7 @@ export class AuthTokens {
       return r.error(new InvalidAuthTokenError("Invalid payload"))
     }
 
-    let iat = Math.floor(Date.now() / 1000)
+    const iat = Math.floor(Date.now() / 1000)
 
     let exp: number | undefined
 
@@ -164,7 +164,7 @@ export class AuthTokens {
       nbf = iat
     }
 
-    let tp: AuthTokenPayload = {
+    const tp: AuthTokenPayload = {
       exp,
       nbf,
       iat,
@@ -185,11 +185,11 @@ export class AuthTokens {
       alg = "none"
     }
 
-    let so: jwt.SignOptions = {
+    const so: jwt.SignOptions = {
       algorithm: alg,
     }
 
-    let tt = r.safeSync(jwt.sign, tp, this.secretKey, so)
+    const tt = r.safeSync(jwt.sign, tp, this.secretKey, so)
     if (tt.err) {
       return r.error(new Error("Signing token", {cause: tt.err}))
     }

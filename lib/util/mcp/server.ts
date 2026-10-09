@@ -34,7 +34,7 @@ export class Server {
     this.protocol.registerClientCapabilities(req.params.capabilities)
     this.protocol.lockClientCapabilities()
 
-    let ir: types.InitializeResult = {
+    const ir: types.InitializeResult = {
       protocolVersion: "",
       capabilities: this.protocol.getServerCapabilities(),
       serverInfo: this.implementation,

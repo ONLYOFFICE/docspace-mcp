@@ -67,11 +67,11 @@ export class StreamableServer {
     // todo: add allowedMethods middleware
     // todo: add supportedMediaTypes middleware
 
-    let allowedHostnames = (r: express.Router): void => {
+    const allowedHostnames = (r: express.Router): void => {
       if (this.allowedHostnames.length !== 0) {
         r.use(utilExpress.allowedHostnames(this.allowedHostnames, (_, res, err) => {
           // todo: use proper type
-          let er: object = {
+          const er: object = {
             jsonrpc: "2.0",
             error: {
               code: -32000,
@@ -85,9 +85,9 @@ export class StreamableServer {
       }
     }
 
-    let cors = (r: express.Router): void => {
+    const cors = (r: express.Router): void => {
       if (this.corsOrigin.length !== 0) {
-        let co: utilExpress.CorsOptions = {
+        const co: utilExpress.CorsOptions = {
           origin: this.corsOrigin,
           maxAge: this.corsMaxAge,
           methods: ["GET", "POST", "DELETE"],
@@ -110,16 +110,16 @@ export class StreamableServer {
       }
     }
 
-    let guard = (r: express.Router): void => {
+    const guard = (r: express.Router): void => {
       if (this.rateLimitCapacity && this.rateLimitWindow) {
-        let er = new errors.
+        const er = new errors.
           JsonrpcError(
             -32000,
             "Too many requests, please try again later",
           ).
           toObject()
 
-        let ro: utilExpress.RateLimitOptions = {
+        const ro: utilExpress.RateLimitOptions = {
           capacity: this.rateLimitCapacity,
           window: this.rateLimitWindow,
         }
@@ -130,10 +130,10 @@ export class StreamableServer {
       }
     }
 
-    let r = express.Router()
+    const r = express.Router()
 
     r.use("/mcp", (() => {
-      let r = express.Router()
+      const r = express.Router()
 
       r.use(express.json())
 
@@ -156,15 +156,15 @@ export class StreamableServer {
 
   private async handlePost(req: express.Request, res: express.Response): Promise<void> {
     try {
-      let id = req.headers["mcp-session-id"]
+      const id = req.headers["mcp-session-id"]
       let t: streamableHttp.StreamableHTTPServerTransport | undefined
 
       if (id === undefined || id === "") {
         if (types.isInitializeRequest(req.body)) {
-          let s = this.protocols.create(req)
+          const s = this.protocols.create(req)
           if (s.err) {
             // It is most likely 400, rather than 500.
-            let err = new errors.JsonrpcError(
+            const err = new errors.JsonrpcError(
               -32000,
               "Creating protocol",
               {cause: s.err},
@@ -176,9 +176,9 @@ export class StreamableServer {
 
           t = this.transports.create()
 
-          let c = await result.safeAsync(s.v.connect.bind(s.v), t)
+          const c = await result.safeAsync(s.v.connect.bind(s.v), t)
           if (c.err) {
-            let err = new errors.JsonrpcError(
+            const err = new errors.JsonrpcError(
               -32603,
               "Attaching server",
               {cause: c.err},
@@ -189,7 +189,7 @@ export class StreamableServer {
           }
         } else {
           // https://github.com/modelcontextprotocol/typescript-sdk/blob/1.15.1/src/server/streamableHttp.ts#L587
-          let err = new errors.JsonrpcError(
+          const err = new errors.JsonrpcError(
             -32000,
             "Bad Request: Mcp-Session-Id header is required",
           )
@@ -199,7 +199,7 @@ export class StreamableServer {
         }
       } else if (Array.isArray(id)) {
         // https://github.com/modelcontextprotocol/typescript-sdk/blob/1.15.1/src/server/streamableHttp.ts#L597
-        let err = new errors.JsonrpcError(
+        const err = new errors.JsonrpcError(
           -32000,
           "Bad Request: Mcp-Session-Id header must be a single value",
         )
@@ -207,9 +207,9 @@ export class StreamableServer {
         res.json(err.toObject())
         return
       } else {
-        let r = this.transports.retrieve(id)
+        const r = this.transports.retrieve(id)
         if (r.err) {
-          let err = new errors.JsonrpcError(
+          const err = new errors.JsonrpcError(
             -32001,
             "Retrieving transport",
             {cause: r.err},
@@ -222,7 +222,7 @@ export class StreamableServer {
         t = r.v
       }
 
-      let h = await result.safeAsync(t.handleRequest.bind(t), req, res, req.body)
+      const h = await result.safeAsync(t.handleRequest.bind(t), req, res, req.body)
       if (h.err) {
         // The handleRequest will most likely populate the response itself;
         // however, if it does not, we will do it ourselves.
@@ -231,7 +231,7 @@ export class StreamableServer {
             res.end()
           }
         } else {
-          let err = new errors.JsonrpcError(
+          const err = new errors.JsonrpcError(
             -32603,
             "Handling request",
             {cause: h.err},
@@ -247,7 +247,7 @@ export class StreamableServer {
           res.end()
         }
       } else {
-        let err = new errors.JsonrpcError(
+        const err = new errors.JsonrpcError(
           -32603,
           "Internal Server Error",
           {cause: err_},
@@ -260,11 +260,11 @@ export class StreamableServer {
 
   private async handleGetDelete(req: express.Request, res: express.Response): Promise<void> {
     try {
-      let id = req.headers["mcp-session-id"]
+      const id = req.headers["mcp-session-id"]
 
       if (id === undefined || id === "") {
         // https://github.com/modelcontextprotocol/typescript-sdk/blob/1.15.1/src/server/streamableHttp.ts#L587
-        let err = new errors.JsonrpcError(
+        const err = new errors.JsonrpcError(
           -32000,
           "Bad Request: Mcp-Session-Id header is required",
         )
@@ -275,7 +275,7 @@ export class StreamableServer {
 
       if (Array.isArray(id)) {
         // https://github.com/modelcontextprotocol/typescript-sdk/blob/1.15.1/src/server/streamableHttp.ts#L597
-        let err = new errors.JsonrpcError(
+        const err = new errors.JsonrpcError(
           -32000,
           "Bad Request: Mcp-Session-Id header must be a single value",
         )
@@ -284,9 +284,9 @@ export class StreamableServer {
         return
       }
 
-      let r = this.transports.retrieve(id)
+      const r = this.transports.retrieve(id)
       if (r.err) {
-        let err = new errors.JsonrpcError(
+        const err = new errors.JsonrpcError(
           -32001,
           "Retrieving transport",
           {cause: r.err},
@@ -296,7 +296,7 @@ export class StreamableServer {
         return
       }
 
-      let h = await result.safeAsync(r.v.handleRequest.bind(r.v), req, res)
+      const h = await result.safeAsync(r.v.handleRequest.bind(r.v), req, res)
       if (h.err) {
         // The handleRequest will most likely populate the response itself;
         // however, if it does not, we will do it ourselves.
@@ -305,7 +305,7 @@ export class StreamableServer {
             res.end()
           }
         } else {
-          let err = new errors.JsonrpcError(
+          const err = new errors.JsonrpcError(
             -32603,
             "Handling request",
             {cause: h.err},
@@ -321,7 +321,7 @@ export class StreamableServer {
           res.end()
         }
       } else {
-        let err = new errors.JsonrpcError(
+        const err = new errors.JsonrpcError(
           -32603,
           "Internal Server Error",
           {cause: err_},

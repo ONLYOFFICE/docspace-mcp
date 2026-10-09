@@ -218,11 +218,11 @@ Use this format if your MCP client supports `.mcpb` bundle files natively (e.g.,
    Alternatively, download it in the terminal:
 
    ```sh
-   VERSION=3.2.0
+   VERSION=3.3.0
    curl --location --output docspace-mcp.mcpb https://github.com/ONLYOFFICE/docspace-mcp/releases/download/v$VERSION/onlyoffice-docspace-mcp-$VERSION.mcpb
    ```
 
-   To download a specific version, replace `3.2.0` with the required version number.
+   To download a specific version, replace `3.3.0` with the required version number.
 
 2. Use the downloaded `.mcpb` file in an application that supports MCP bundles.
 
@@ -235,11 +235,11 @@ Use this format if you prefer to run the server as a standard Node.js process.
    Alternatively, download it in the terminal:
 
    ```sh
-   VERSION=3.2.0
+   VERSION=3.3.0
    curl --location --output docspace-mcp.tgz https://github.com/ONLYOFFICE/docspace-mcp/releases/download/v$VERSION/onlyoffice-docspace-mcp-$VERSION.tgz
    ```
 
-   To download a specific version, replace `3.2.0` with the required version number.
+   To download a specific version, replace `3.3.0` with the required version number.
 
 2. Extract the downloaded archive:
 

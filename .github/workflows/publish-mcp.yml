@@ -1,0 +1,35 @@
+# Temporary workflow to republish server.json to the MCP Registry using the
+# server-detail artifact of an existing Release run. Remove after use.
+
+name: Publish MCP
+
+on:
+  workflow_dispatch:
+    inputs:
+      run-id:
+        description: ID of the Release run that produced the server-detail artifact
+        required: true
+        type: string
+
+jobs:
+  mcp:
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      id-token: write
+    steps:
+      - name: Download Server Detail
+        uses: actions/download-artifact@v4
+        with:
+          name: server-detail
+          run-id: ${{inputs.run-id}}
+          github-token: ${{github.token}}
+
+      - name: Install MCP Publisher
+        run: curl -fsSL "https://github.com/modelcontextprotocol/registry/releases/latest/download/mcp-publisher_$(uname -s | tr '[:upper:]' '[:lower:]')_$(uname -m | sed 's/x86_64/amd64/;s/aarch64/arm64/').tar.gz" | tar xz mcp-publisher
+
+      - name: Login to MCP Registry
+        run: ./mcp-publisher login github-oidc
+
+      - name: Publish to MCP Registry
+        run: ./mcp-publisher publish

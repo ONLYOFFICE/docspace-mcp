@@ -5,7 +5,10 @@ Changelog] format and adhering to [Semantic Versioning].
 
 ## [Unreleased]
 
-There are no notable changes in this release.
+### Changed
+
+- Add the `offset` and `limit` parameters to the `download_file_as_text` tool
+  and truncate large text, so the response does not exceed client size limits.
 
 ## [3.3.0] - 2026-10-09
 

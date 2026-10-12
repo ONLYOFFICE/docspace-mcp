@@ -9,7 +9,7 @@ import * as r from "../lib/util/result.ts"
 import type {AsyncRequestListener, SetupMcpOptions} from "./util.ts"
 import {onRequest, sendJson, setupHttp, setupMcp} from "./util.ts"
 
-let body = {
+const body = {
   response: {
     files: [],
     folders: [],
@@ -35,21 +35,21 @@ function listener(): AsyncRequestListener {
     assert.ok(req.method === "GET")
     assert.ok(req.url && req.url.startsWith("/api/2.0/files/@my"))
 
-    let s = await sendJson(res, 200, body)
+    const s = await sendJson(res, 200, body)
     assert.ok(s.err === undefined)
   }
 }
 
 void test.suite("structured content", () => {
   void test("returns response data that conforms to output schema", async(t) => {
-    let [hs, ha] = await setupHttp(t)
+    const [hs, ha] = await setupHttp(t)
 
-    let hl = test.mock.fn(listener())
+    const hl = test.mock.fn(listener())
 
-    let hp = onRequest(t, hs, hl)
+    const hp = onRequest(t, hs, hl)
 
-    let tf = async(): Promise<void> => {
-      let so: SetupMcpOptions = {
+    const tf = async(): Promise<void> => {
+      const so: SetupMcpOptions = {
         transport: "stdio",
         host: "",
         port: 0,
@@ -59,14 +59,14 @@ void test.suite("structured content", () => {
         },
       }
 
-      let cl = await setupMcp(t, so)
+      const cl = await setupMcp(t, so)
 
       // The client caches output schemas on listing tools and then validates
       // structured content against them on calling tools.
-      let lr = await r.safeAsync(cl.listTools.bind(cl))
+      const lr = await r.safeAsync(cl.listTools.bind(cl))
       assert.ok(lr.err === undefined)
 
-      let cp: types.CallToolRequest["params"] = {
+      const cp: types.CallToolRequest["params"] = {
         name: "get_my_folder",
         arguments: {
           filters: {
@@ -75,7 +75,7 @@ void test.suite("structured content", () => {
         },
       }
 
-      let cr = await r.safeAsync(cl.callTool.bind(cl), cp)
+      const cr = await r.safeAsync(cl.callTool.bind(cl), cp)
       assert.ok(cr.err === undefined)
 
       assert.ok(!cr.v.isError)
@@ -88,14 +88,14 @@ void test.suite("structured content", () => {
   })
 
   void test("returns response data through call_tool meta tool", async(t) => {
-    let [hs, ha] = await setupHttp(t)
+    const [hs, ha] = await setupHttp(t)
 
-    let hl = test.mock.fn(listener())
+    const hl = test.mock.fn(listener())
 
-    let hp = onRequest(t, hs, hl)
+    const hp = onRequest(t, hs, hl)
 
-    let tf = async(): Promise<void> => {
-      let so: SetupMcpOptions = {
+    const tf = async(): Promise<void> => {
+      const so: SetupMcpOptions = {
         transport: "stdio",
         host: "",
         port: 0,
@@ -106,9 +106,9 @@ void test.suite("structured content", () => {
         },
       }
 
-      let cl = await setupMcp(t, so)
+      const cl = await setupMcp(t, so)
 
-      let req: types.CallToolRequest = {
+      const req: types.CallToolRequest = {
         method: "tools/call",
         params: {
           name: "call_tool",
@@ -123,7 +123,7 @@ void test.suite("structured content", () => {
         },
       }
 
-      let cr = await r.safeAsync(cl.request.bind(cl), req, types.CallToolResultSchema)
+      const cr = await r.safeAsync(cl.request.bind(cl), req, types.CallToolResultSchema)
       assert.ok(cr.err === undefined)
 
       assert.ok(!cr.v.isError)
@@ -136,7 +136,7 @@ void test.suite("structured content", () => {
   })
 
   void test("omits structured content for tool without output schema", async(t) => {
-    let so: SetupMcpOptions = {
+    const so: SetupMcpOptions = {
       transport: "stdio",
       host: "",
       port: 0,
@@ -146,16 +146,16 @@ void test.suite("structured content", () => {
       },
     }
 
-    let cl = await setupMcp(t, so)
+    const cl = await setupMcp(t, so)
 
-    let req: types.CallToolRequest = {
+    const req: types.CallToolRequest = {
       method: "tools/call",
       params: {
         name: "get_room_types",
       },
     }
 
-    let cr = await r.safeAsync(cl.request.bind(cl), req, types.CallToolResultSchema)
+    const cr = await r.safeAsync(cl.request.bind(cl), req, types.CallToolResultSchema)
     assert.ok(cr.err === undefined)
 
     assert.ok(!cr.v.isError)

@@ -21,25 +21,25 @@ const CallToolInputSchema = z.object({
   input: z.looseObject({}).optional().describe("The value that corresponds to the input schema of the tool."),
 })
 
-const CallToolInputJsonSchema = z.toJSONSchema(CallToolInputSchema)
+const CallToolInputJsonSchema = z.toJSONSchema(CallToolInputSchema, {io: "input"})
 
 const GetToolInputSchemaInputSchema = z.object({
   tool: z.string().describe("The name of the tool to get input schema for."),
 })
 
-const GetToolInputSchemaInputJsonSchema = z.toJSONSchema(GetToolInputSchemaInputSchema)
+const GetToolInputSchemaInputJsonSchema = z.toJSONSchema(GetToolInputSchemaInputSchema, {io: "input"})
 
 const GetToolOutputSchemaInputSchema = z.object({
   tool: z.string().describe("The name of the tool to get output schema for."),
 })
 
-const GetToolOutputSchemaInputJsonSchema = z.toJSONSchema(GetToolOutputSchemaInputSchema)
+const GetToolOutputSchemaInputJsonSchema = z.toJSONSchema(GetToolOutputSchemaInputSchema, {io: "input"})
 
 const ListToolsInputSchema = z.object({
   toolset: z.string().describe("The name of the toolset to list tools from."),
 })
 
-const ListToolsInputJsonSchema = z.toJSONSchema(ListToolsInputSchema)
+const ListToolsInputJsonSchema = z.toJSONSchema(ListToolsInputSchema, {io: "input"})
 
 const RoomInvitationAccessSchema = z.union([
   z.literal(0).describe("None. No access to the room."),
@@ -91,7 +91,7 @@ const ArchiveRoomInputSchema = z.object({
   roomId: z.number().describe("The ID of the room to archive."),
 })
 
-const ArchiveRoomInputJsonSchema = z.toJSONSchema(ArchiveRoomInputSchema)
+const ArchiveRoomInputJsonSchema = z.toJSONSchema(ArchiveRoomInputSchema, {io: "input"})
 
 const CopyBatchItemsInputSchema = z.object({
   folderIds: z.
@@ -114,7 +114,7 @@ const CopyBatchItemsInputSchema = z.object({
     describe("The ID of the destination folder to copy the items to."),
 })
 
-const CopyBatchItemsInputJsonSchema = z.toJSONSchema(CopyBatchItemsInputSchema)
+const CopyBatchItemsInputJsonSchema = z.toJSONSchema(CopyBatchItemsInputSchema, {io: "input"})
 
 const CreateFolderInputSchema = z.object({
   parentId: z.number().describe("The ID of the room or folder to create the folder in."),
@@ -122,7 +122,7 @@ const CreateFolderInputSchema = z.object({
   filters: core.CreateFolderFiltersSchema.describe("The filters to apply to the folder creation. Use them to reduce the size of the response."),
 })
 
-const CreateFolderInputJsonSchema = z.toJSONSchema(CreateFolderInputSchema)
+const CreateFolderInputJsonSchema = z.toJSONSchema(CreateFolderInputSchema, {io: "input"})
 
 const CreateFolderOutputSchema = core.SuccessApiResponseSchema.extend({
   response: core.FolderDtoSchema.describe("The created folder information."),
@@ -136,7 +136,7 @@ const CreateRoomInputSchema = z.object({
   filters: core.CreateRoomFiltersSchema.describe("The filters to apply to the room creation."),
 })
 
-const CreateRoomInputJsonSchema = z.toJSONSchema(CreateRoomInputSchema)
+const CreateRoomInputJsonSchema = z.toJSONSchema(CreateRoomInputSchema, {io: "input"})
 
 const CreateRoomOutputSchema = core.SuccessApiResponseSchema.extend({
   response: core.FolderContentDtoSchema.describe("The contents of the created room."),
@@ -148,25 +148,25 @@ const DeleteFileInputSchema = z.object({
   fileId: z.number().describe("The ID of the file to delete."),
 })
 
-const DeleteFileInputJsonSchema = z.toJSONSchema(DeleteFileInputSchema)
+const DeleteFileInputJsonSchema = z.toJSONSchema(DeleteFileInputSchema, {io: "input"})
 
 const DeleteFolderInputSchema = z.object({
   folderId: z.number().describe("The ID of the folder to delete."),
 })
 
-const DeleteFolderInputJsonSchema = z.toJSONSchema(DeleteFolderInputSchema)
+const DeleteFolderInputJsonSchema = z.toJSONSchema(DeleteFolderInputSchema, {io: "input"})
 
 const DownloadFileAsTextInputSchema = z.object({
   fileId: z.number().describe("The ID of the file to download as text."),
 })
 
-const DownloadFileAsTextInputJsonSchema = z.toJSONSchema(DownloadFileAsTextInputSchema)
+const DownloadFileAsTextInputJsonSchema = z.toJSONSchema(DownloadFileAsTextInputSchema, {io: "input"})
 
 const GetAllPeopleInputSchema = z.object({
   filters: core.GetFullByFilterFiltersSchema.describe("The filters to apply to the list of people. Use them to reduce the size of the response."),
 })
 
-const GetAllPeopleInputJsonSchema = z.toJSONSchema(GetAllPeopleInputSchema)
+const GetAllPeopleInputJsonSchema = z.toJSONSchema(GetAllPeopleInputSchema, {io: "input"})
 
 const GetAllPeopleOutputSchema = core.SuccessApiResponseSchema.extend({
   response: z.array(core.EmployeeDtoSchema),
@@ -179,7 +179,7 @@ const GetFileInfoInputSchema = z.object({
   filters: core.GetFileInfoFiltersSchema.describe("The filters to apply to the file info. Use them to reduce the size of the response."),
 })
 
-const GetFileInfoInputJsonSchema = z.toJSONSchema(GetFileInfoInputSchema)
+const GetFileInfoInputJsonSchema = z.toJSONSchema(GetFileInfoInputSchema, {io: "input"})
 
 const GetFileInfoOutputSchema = core.SuccessApiResponseSchema.extend({
   response: core.FileDtoSchema.describe("The file information."),
@@ -192,7 +192,7 @@ const GetFolderContentInputSchema = z.object({
   filters: core.GetFolderFiltersSchema.describe("The filters to apply to the contents of the folder. Use them to reduce the size of the response."),
 })
 
-const GetFolderContentInputJsonSchema = z.toJSONSchema(GetFolderContentInputSchema)
+const GetFolderContentInputJsonSchema = z.toJSONSchema(GetFolderContentInputSchema, {io: "input"})
 
 const GetFolderContentOutputSchema = core.SuccessApiResponseSchema.extend({
   response: core.FolderContentDtoSchema.describe("The contents of the folder."),
@@ -205,7 +205,7 @@ const GetFolderInfoInputSchema = z.object({
   filters: core.GetFolderInfoFiltersSchema.describe("The filters to apply to the folder info. Use them to reduce the size of the response."),
 })
 
-const GetFolderInfoInputJsonSchema = z.toJSONSchema(GetFolderInfoInputSchema)
+const GetFolderInfoInputJsonSchema = z.toJSONSchema(GetFolderInfoInputSchema, {io: "input"})
 
 const GetFolderInfoOutputSchema = core.SuccessApiResponseSchema.extend({
   response: core.FolderDtoSchema.describe("The folder information."),
@@ -217,7 +217,7 @@ const GetMyFolderInputSchema = z.object({
   filters: core.GetMyFolderFiltersSchema.describe("The filters to apply to the 'Files' folder (formerly 'My Documents'). Use them to reduce the size of the response."),
 })
 
-const GetMyFolderInputJsonSchema = z.toJSONSchema(GetMyFolderInputSchema)
+const GetMyFolderInputJsonSchema = z.toJSONSchema(GetMyFolderInputSchema, {io: "input"})
 
 const GetMyFolderOutputSchema = core.SuccessApiResponseSchema.extend({
   response: core.FolderContentDtoSchema.describe("The contents of the 'Files' folder (formerly 'My Documents')."),
@@ -229,14 +229,14 @@ const GetRoomAccessLevelsInputSchema = z.object({
   roomId: z.number().describe("The ID of the room to get the invitation access for."),
 })
 
-const GetRoomAccessLevelsInputJsonSchema = z.toJSONSchema(GetRoomAccessLevelsInputSchema)
+const GetRoomAccessLevelsInputJsonSchema = z.toJSONSchema(GetRoomAccessLevelsInputSchema, {io: "input"})
 
 const GetRoomInfoInputSchema = z.object({
   roomId: z.number().describe("The ID of the room to get info for."),
   filters: core.GetRoomInfoFiltersSchema.describe("The filters to apply to the room info."),
 })
 
-const GetRoomInfoInputJsonSchema = z.toJSONSchema(GetRoomInfoInputSchema)
+const GetRoomInfoInputJsonSchema = z.toJSONSchema(GetRoomInfoInputSchema, {io: "input"})
 
 const GetRoomInfoOutputSchema = core.SuccessApiResponseSchema.extend({
   response: core.FolderDtoSchema.describe("The room information."),
@@ -249,7 +249,7 @@ const GetRoomSecurityInfoInputSchema = z.object({
   filters: core.GetRoomSecurityFiltersSchema.describe("The filters to apply to the room security info."),
 })
 
-const GetRoomSecurityInfoInputJsonSchema = z.toJSONSchema(GetRoomSecurityInfoInputSchema)
+const GetRoomSecurityInfoInputJsonSchema = z.toJSONSchema(GetRoomSecurityInfoInputSchema, {io: "input"})
 
 const GetRoomSecurityInfoOutputSchema = core.SuccessApiResponseSchema.extend({
   response: z.array(core.FileShareDtoSchema).describe("The room security information."),
@@ -261,7 +261,7 @@ const GetRoomsFolderInputSchema = z.object({
   filters: core.GetRoomsFolderFiltersSchema.describe("The filters to apply to the rooms folder."),
 })
 
-const GetRoomsFolderInputJsonSchema = z.toJSONSchema(GetRoomsFolderInputSchema)
+const GetRoomsFolderInputJsonSchema = z.toJSONSchema(GetRoomsFolderInputSchema, {io: "input"})
 
 const GetRoomsFolderOutputSchema = core.SuccessApiResponseSchema.extend({
   response: core.FolderContentDtoSchema.describe("The contents of the rooms folder."),
@@ -290,7 +290,7 @@ const MoveBatchItemsInputSchema = z.object({
     describe("The ID of the destination folder to move the items to."),
 })
 
-const MoveBatchItemsInputJsonSchema = z.toJSONSchema(MoveBatchItemsInputSchema)
+const MoveBatchItemsInputJsonSchema = z.toJSONSchema(MoveBatchItemsInputSchema, {io: "input"})
 
 const RenameFolderInputSchema = z.object({
   folderId: z.number().describe("The ID of the folder to rename."),
@@ -298,7 +298,7 @@ const RenameFolderInputSchema = z.object({
   filters: core.RenameFolderFiltersSchema.describe("The filters to apply to the folder renaming. Use them to reduce the size of the response."),
 })
 
-const RenameFolderInputJsonSchema = z.toJSONSchema(RenameFolderInputSchema)
+const RenameFolderInputJsonSchema = z.toJSONSchema(RenameFolderInputSchema, {io: "input"})
 
 const RenameFolderOutputSchema = core.SuccessApiResponseSchema.extend({
   response: core.FolderDtoSchema.describe("The renamed folder information."),
@@ -350,7 +350,7 @@ const SetRoomSecurityInputSchema = z.object({
   filters: core.SetRoomSecurityFiltersSchema.describe("The filters to apply to the room security info."),
 })
 
-const SetRoomSecurityInputJsonSchema = z.toJSONSchema(SetRoomSecurityInputSchema)
+const SetRoomSecurityInputJsonSchema = z.toJSONSchema(SetRoomSecurityInputSchema, {io: "input"})
 
 const SetRoomSecurityOutputSchema = core.SuccessApiResponseSchema.extend({
   response: core.RoomSecurityDtoSchema.describe("The room security information after the operation."),
@@ -363,7 +363,7 @@ const UpdateFileInputSchema = z.object({
   title: z.string().describe("The new title of the file to set."),
 })
 
-const UpdateFileInputJsonSchema = z.toJSONSchema(UpdateFileInputSchema)
+const UpdateFileInputJsonSchema = z.toJSONSchema(UpdateFileInputSchema, {io: "input"})
 
 const UpdateFileOutputSchema = core.SuccessApiResponseSchema.extend({
   response: core.FileDtoSchema.describe("The updated file information."),
@@ -377,7 +377,7 @@ const UpdateRoomInputSchema = z.object({
   filters: core.UpdateRoomFiltersSchema.describe("The filters to apply to the room update."),
 })
 
-const UpdateRoomInputJsonSchema = z.toJSONSchema(UpdateRoomInputSchema)
+const UpdateRoomInputJsonSchema = z.toJSONSchema(UpdateRoomInputSchema, {io: "input"})
 
 const UpdateRoomOutputSchema = core.SuccessApiResponseSchema.extend({
   response: core.FolderDtoSchema.describe("The updated room information."),
@@ -391,7 +391,7 @@ const UploadFileInputSchema = z.object({
   content: z.string().describe("The content of the file to upload."),
 })
 
-const UploadFileInputJsonSchema = z.toJSONSchema(UploadFileInputSchema)
+const UploadFileInputJsonSchema = z.toJSONSchema(UploadFileInputSchema, {io: "input"})
 
 // todo: remove export
 export const metaTools = [

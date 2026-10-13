@@ -14,6 +14,12 @@ Changelog] format and adhering to [Semantic Versioning].
   models look for the `get_my_folder` tool there rather than in the `files`
   toolset ([19d74f0]).
 
+### Fixed
+
+- Do not mark tool input options with default values, such as `roomType` of
+  the `create_room` tool and `count` of the listing filters, as required in
+  the published input schemas.
+
 ## [3.3.0] - 2026-10-09
 
 ### Changed

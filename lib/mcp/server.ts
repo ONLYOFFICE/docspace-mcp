@@ -219,13 +219,13 @@ const GetFolderInfoOutputSchema = core.SuccessApiResponseSchema.extend({
 const GetFolderInfoOutputJsonSchema = z.toJSONSchema(GetFolderInfoOutputSchema)
 
 const GetMyFolderInputSchema = z.object({
-  filters: core.GetMyFolderFiltersSchema.describe("The filters to apply to the My Documents folder. Use them to reduce the size of the response."),
+  filters: core.GetMyFolderFiltersSchema.describe("The filters to apply to the 'Files' folder (formerly 'My Documents'). Use them to reduce the size of the response."),
 })
 
 const GetMyFolderInputJsonSchema = z.toJSONSchema(GetMyFolderInputSchema)
 
 const GetMyFolderOutputSchema = core.SuccessApiResponseSchema.extend({
-  response: core.FolderContentDtoSchema.describe("The contents of the My Documents folder."),
+  response: core.FolderContentDtoSchema.describe("The contents of the 'Files' folder (formerly 'My Documents')."),
 })
 
 const GetMyFolderOutputJsonSchema = z.toJSONSchema(GetMyFolderOutputSchema)
@@ -534,7 +534,7 @@ export const regularToolsets = [
   },
   {
     name: "folders",
-    description: "Operations for working with folders.",
+    description: "Operations for working with folders, including the 'Files' section (formerly 'My Documents').",
     tools: [
       {
         name: "create_folder",
@@ -592,7 +592,7 @@ export const regularToolsets = [
       },
       {
         name: "get_my_folder",
-        description: "Get the 'My Documents' folder.",
+        description: "Get the 'Files' folder (formerly 'My Documents').",
         inputSchema: GetMyFolderInputJsonSchema,
         outputSchema: GetMyFolderOutputJsonSchema,
         annotations: {

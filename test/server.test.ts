@@ -203,6 +203,9 @@ function collectRequiredDefaults(a: string[], p: string, s: unknown): void {
     properties?: Record<string, unknown>
     required?: string[]
     items?: unknown
+    anyOf?: unknown[]
+    oneOf?: unknown[]
+    allOf?: unknown[]
   }
 
   if (o.properties) {
@@ -220,5 +223,11 @@ function collectRequiredDefaults(a: string[], p: string, s: unknown): void {
 
   if (o.items) {
     collectRequiredDefaults(a, `${p}[]`, o.items)
+  }
+
+  for (const [k, l] of [["anyOf", o.anyOf], ["oneOf", o.oneOf], ["allOf", o.allOf]] as const) {
+    for (const [i, v] of (l ?? []).entries()) {
+      collectRequiredDefaults(a, `${p}|${k}[${i}]`, v)
+    }
   }
 }

@@ -19,6 +19,9 @@ Changelog] format and adhering to [Semantic Versioning].
 - Do not mark tool input options with default values, such as `roomType` of
   the `create_room` tool and `count` of the listing filters, as required in
   the published input schemas ([5edb220]).
+- Do not forbid additional properties in the published tool input schemas.
+  Unknown arguments were always ignored rather than rejected, so declaring
+  `additionalProperties: false` did not match the actual behavior.
 
 ## [3.3.0] - 2026-10-09
 

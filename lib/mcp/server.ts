@@ -398,7 +398,7 @@ export const metaTools = [
   {
     name: "list_toolsets",
     description: "This is a meta tool for listing available toolsets. Toolset is a set of available tools.",
-    inputSchema: z.toJSONSchema(z.object({})),
+    inputSchema: z.toJSONSchema(z.object({}), {io: "input"}),
     annotations: {
       readOnlyHint: true,
       destructiveHint: false,
@@ -681,7 +681,7 @@ export const regularToolsets = [
       {
         name: "get_room_types",
         description: "Get a list of available room types.",
-        inputSchema: z.toJSONSchema(z.object({})),
+        inputSchema: z.toJSONSchema(z.object({}), {io: "input"}),
         annotations: {
           readOnlyHint: true,
           destructiveHint: false,

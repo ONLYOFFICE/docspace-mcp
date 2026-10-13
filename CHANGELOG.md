@@ -18,7 +18,7 @@ Changelog] format and adhering to [Semantic Versioning].
 
 - Do not mark tool input options with default values, such as `roomType` of
   the `create_room` tool and `count` of the listing filters, as required in
-  the published input schemas.
+  the published input schemas ([5edb220]).
 
 ## [3.3.0] - 2026-10-09
 
@@ -374,6 +374,7 @@ There are no noticeable changes in version [3.0.1].
 [0.1.1]: https://github.com/onlyoffice/docspace-mcp/compare/v0.1.0...v0.1.1/
 [0.1.0]: https://github.com/onlyoffice/docspace-mcp/releases/tag/v0.1.0/
 
+[5edb220]: https://github.com/onlyoffice/docspace-mcp/commit/5edb2208b5d48620d5674f227422e0806536ce5c/
 [19d74f0]: https://github.com/onlyoffice/docspace-mcp/commit/19d74f00f521210e01155cf310a35ab9ea6fb6ea/
 [932fe9e]: https://github.com/onlyoffice/docspace-mcp/commit/932fe9e55c296c9adbcfb6280279c7a5edf20d90/
 [bac7e04]: https://github.com/onlyoffice/docspace-mcp/commit/bac7e04dd1fda09c8db7e23c3c36973511df5ea9/

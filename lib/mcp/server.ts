@@ -529,7 +529,7 @@ export const regularToolsets = [
   },
   {
     name: "folders",
-    description: "Operations for working with folders.",
+    description: "Operations for working with folders, including the 'Files' section (formerly 'My Documents').",
     tools: [
       {
         name: "create_folder",

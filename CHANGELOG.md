@@ -10,6 +10,9 @@ Changelog] format and adhering to [Semantic Versioning].
 - Refer to the "My documents" section as "Files" in the `get_my_folder` tool
   descriptions, mentioning the former name, and in the documentation. The tool
   name remains unchanged ([932fe9e]).
+- Mention the "Files" section in the `folders` toolset description, so that
+  models look for the `get_my_folder` tool there rather than in the `files`
+  toolset.
 
 ## [3.3.0] - 2026-10-09
 

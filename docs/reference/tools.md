@@ -10,12 +10,12 @@ ONLYOFFICE Apps functionality into manageable categories.
 
 <!--generate toolsets-start-->
 
-| #   | Toolset Name | Toolset Description                  |
-| --- | ------------ | ------------------------------------ |
-| 1   | `files`      | Operations for working with files.   |
-| 2   | `folders`    | Operations for working with folders. |
-| 3   | `people`     | Operations for working with users.   |
-| 4   | `rooms`      | Operations for working with rooms.   |
+| #   | Toolset Name | Toolset Description                                                                           |
+| --- | ------------ | --------------------------------------------------------------------------------------------- |
+| 1   | `files`      | Operations for working with files.                                                            |
+| 2   | `folders`    | Operations for working with folders, including the 'Files' section (formerly 'My Documents'). |
+| 3   | `people`     | Operations for working with users.                                                            |
+| 4   | `rooms`      | Operations for working with rooms.                                                            |
 
 <!--generate toolsets-end-->
 

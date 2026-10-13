@@ -13,6 +13,9 @@ Changelog] format and adhering to [Semantic Versioning].
 - Mention the "Files" section in the `folders` toolset description, so that
   models look for the `get_my_folder` tool there rather than in the `files`
   toolset ([19d74f0]).
+- Add the `offset` and `limit` parameters to the `download_file_as_text` tool
+  and truncate large text, so the response does not exceed client size limits
+  ([69cd570]).
 
 ## [3.3.0] - 2026-10-09
 
@@ -370,6 +373,7 @@ There are no noticeable changes in version [3.0.1].
 
 [19d74f0]: https://github.com/onlyoffice/docspace-mcp/commit/19d74f00f521210e01155cf310a35ab9ea6fb6ea/
 [932fe9e]: https://github.com/onlyoffice/docspace-mcp/commit/932fe9e55c296c9adbcfb6280279c7a5edf20d90/
+[69cd570]: https://github.com/onlyoffice/docspace-mcp/commit/69cd570f555d9e74843a946489852e4b8e46b99d/
 [bac7e04]: https://github.com/onlyoffice/docspace-mcp/commit/bac7e04dd1fda09c8db7e23c3c36973511df5ea9/
 [35af45a]: https://github.com/onlyoffice/docspace-mcp/commit/35af45aaaf92a6e09e804bfea2831f9149eed164/
 [8204500]: https://github.com/onlyoffice/docspace-mcp/commit/8204500712da4785b5764a36e7b670df8832b8bd/

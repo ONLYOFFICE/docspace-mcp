@@ -156,8 +156,13 @@ const DeleteFolderInputSchema = z.object({
 
 const DeleteFolderInputJsonSchema = z.toJSONSchema(DeleteFolderInputSchema)
 
+const downloadTextDefaultLimit = 100_000
+const downloadTextMaxLimit = 500_000
+
 const DownloadFileAsTextInputSchema = z.object({
   fileId: z.number().describe("The ID of the file to download as text."),
+  offset: z.number().int().min(0).optional().describe("The character offset to start reading from. Defaults to 0."),
+  limit: z.number().int().min(1).max(downloadTextMaxLimit).optional().describe(`The maximum number of characters to return. Defaults to ${downloadTextDefaultLimit}. If the text is truncated, the response ends with a note on how to read the rest.`),
 })
 
 const DownloadFileAsTextInputJsonSchema = z.toJSONSchema(DownloadFileAsTextInputSchema)
@@ -1310,7 +1315,25 @@ export class Server {
       return fromError(new Error("Converting response to text.", {cause: tt.err}))
     }
 
-    return fromString(tt.v)
+    const of = pr.data.offset ?? 0
+    const li = pr.data.limit ?? downloadTextDefaultLimit
+    const en = of + li
+
+    if (of === 0 && tt.v.length <= li) {
+      return fromString(tt.v)
+    }
+
+    if (of >= tt.v.length) {
+      return fromError(new Error(`Offset ${of} is out of range, the text has ${tt.v.length} characters.`))
+    }
+
+    const ch = tt.v.slice(of, en)
+
+    if (en >= tt.v.length) {
+      return fromString(ch)
+    }
+
+    return fromString(`${ch}\n\n[Truncated: showing ${ch.length} characters starting at offset ${of} of ${tt.v.length} in total. To read the rest, call this tool again with offset=${en}.]`)
   }
 
   private async handleGetAllPeople(req: types.CallToolRequest): Promise<types.CallToolResult> {

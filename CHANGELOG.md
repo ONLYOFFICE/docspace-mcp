@@ -22,6 +22,10 @@ Changelog] format and adhering to [Semantic Versioning].
 - Do not forbid additional properties in the published tool input schemas.
   Unknown arguments were always ignored rather than rejected, so declaring
   `additionalProperties: false` did not match the actual behavior ([050e932]).
+- List the allowed values as `enum` in the published tool input schemas, such
+  as `fields` of the listing filters, instead of only in the descriptions.
+  Output schemas still omit `enum`, so that clients do not reject values added
+  to the API later.
 
 ## [3.3.0] - 2026-10-09
 

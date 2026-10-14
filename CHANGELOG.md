@@ -25,6 +25,10 @@ Changelog] format and adhering to [Semantic Versioning].
 - Do not forbid additional properties in the published tool input schemas.
   Unknown arguments were always ignored rather than rejected, so declaring
   `additionalProperties: false` did not match the actual behavior ([050e932]).
+- List the allowed values as `enum` in the published tool input schemas, such
+  as `fields` of the listing filters, instead of only in the descriptions.
+  Output schemas still omit `enum`, so that clients do not reject values added
+  to the API later ([41ea974]).
 
 ## [3.3.0] - 2026-10-09
 
@@ -380,6 +384,7 @@ There are no noticeable changes in version [3.0.1].
 [0.1.1]: https://github.com/onlyoffice/docspace-mcp/compare/v0.1.0...v0.1.1/
 [0.1.0]: https://github.com/onlyoffice/docspace-mcp/releases/tag/v0.1.0/
 
+[41ea974]: https://github.com/onlyoffice/docspace-mcp/commit/41ea974dac25f184ac8cd3e7cd79da126f384dac/
 [050e932]: https://github.com/onlyoffice/docspace-mcp/commit/050e932c620bfa957781bd964ddde392ecd4d457/
 [5edb220]: https://github.com/onlyoffice/docspace-mcp/commit/5edb2208b5d48620d5674f227422e0806536ce5c/
 [19d74f0]: https://github.com/onlyoffice/docspace-mcp/commit/19d74f00f521210e01155cf310a35ab9ea6fb6ea/

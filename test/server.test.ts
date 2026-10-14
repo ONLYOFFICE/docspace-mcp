@@ -162,3 +162,132 @@ void test.suite("structured content", () => {
     assert.ok(cr.v.structuredContent === undefined)
   })
 })
+
+void test.suite("input schema", () => {
+  for (const dynamic of ["false", "true"]) {
+    void test(`does not require properties with defaults when dynamic is ${dynamic}`, async(t) => {
+      const so: SetupMcpOptions = {
+        transport: "stdio",
+        host: "",
+        port: 0,
+        env: {
+          DOCSPACE_BASE_URL: "http://localhost/",
+          DOCSPACE_API_KEY: "xxx",
+          DOCSPACE_DYNAMIC: dynamic,
+        },
+      }
+
+      const cl = await setupMcp(t, so)
+
+      const lr = await r.safeAsync(cl.listTools.bind(cl))
+      assert.ok(lr.err === undefined)
+      assert.ok(lr.v.tools.length !== 0)
+
+      const a: string[] = []
+
+      for (const t of lr.v.tools) {
+        collectRequiredDefaults(a, t.name, t.inputSchema)
+      }
+
+      assert.deepEqual(a, [])
+    })
+
+    void test(`does not forbid additional properties when dynamic is ${dynamic}`, async(t) => {
+      const so: SetupMcpOptions = {
+        transport: "stdio",
+        host: "",
+        port: 0,
+        env: {
+          DOCSPACE_BASE_URL: "http://localhost/",
+          DOCSPACE_API_KEY: "xxx",
+          DOCSPACE_DYNAMIC: dynamic,
+        },
+      }
+
+      const cl = await setupMcp(t, so)
+
+      const lr = await r.safeAsync(cl.listTools.bind(cl))
+      assert.ok(lr.err === undefined)
+      assert.ok(lr.v.tools.length !== 0)
+
+      const a: string[] = []
+
+      for (const t of lr.v.tools) {
+        collectClosedObjects(a, t.name, t.inputSchema)
+      }
+
+      assert.deepEqual(a, [])
+    })
+  }
+})
+
+function collectClosedObjects(a: string[], p: string, s: unknown): void {
+  if (typeof s !== "object" || s === null) {
+    return
+  }
+
+  const o = s as {
+    properties?: Record<string, unknown>
+    additionalProperties?: unknown
+    items?: unknown
+    anyOf?: unknown[]
+    oneOf?: unknown[]
+    allOf?: unknown[]
+  }
+
+  if (o.additionalProperties === false) {
+    a.push(p)
+  }
+
+  for (const [k, v] of Object.entries(o.properties ?? {})) {
+    collectClosedObjects(a, `${p}.${k}`, v)
+  }
+
+  if (o.items) {
+    collectClosedObjects(a, `${p}[]`, o.items)
+  }
+
+  for (const [k, l] of [["anyOf", o.anyOf], ["oneOf", o.oneOf], ["allOf", o.allOf]] as const) {
+    for (const [i, v] of (l ?? []).entries()) {
+      collectClosedObjects(a, `${p}|${k}[${i}]`, v)
+    }
+  }
+}
+
+function collectRequiredDefaults(a: string[], p: string, s: unknown): void {
+  if (typeof s !== "object" || s === null) {
+    return
+  }
+
+  const o = s as {
+    properties?: Record<string, unknown>
+    required?: string[]
+    items?: unknown
+    anyOf?: unknown[]
+    oneOf?: unknown[]
+    allOf?: unknown[]
+  }
+
+  if (o.properties) {
+    for (const k of o.required ?? []) {
+      const v = o.properties[k]
+      if (typeof v === "object" && v !== null && "default" in v) {
+        a.push(`${p}.${k}`)
+      }
+    }
+
+    for (const [k, v] of Object.entries(o.properties)) {
+      collectRequiredDefaults(a, `${p}.${k}`, v)
+    }
+  }
+
+  if (o.items) {
+    collectRequiredDefaults(a, `${p}[]`, o.items)
+  }
+
+  for (const [k, l] of [["anyOf", o.anyOf], ["oneOf", o.oneOf], ["allOf", o.allOf]] as const) {
+    for (const [i, v] of (l ?? []).entries()) {
+      collectRequiredDefaults(a, `${p}|${k}[${i}]`, v)
+    }
+  }
+}

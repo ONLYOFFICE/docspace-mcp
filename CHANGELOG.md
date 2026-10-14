@@ -17,6 +17,15 @@ Changelog] format and adhering to [Semantic Versioning].
   and truncate large text, so the response does not exceed client size limits
   ([69cd570]).
 
+### Fixed
+
+- Do not mark tool input options with default values, such as `roomType` of
+  the `create_room` tool and `count` of the listing filters, as required in
+  the published input schemas ([5edb220]).
+- Do not forbid additional properties in the published tool input schemas.
+  Unknown arguments were always ignored rather than rejected, so declaring
+  `additionalProperties: false` did not match the actual behavior ([050e932]).
+
 ## [3.3.0] - 2026-10-09
 
 ### Changed
@@ -371,6 +380,8 @@ There are no noticeable changes in version [3.0.1].
 [0.1.1]: https://github.com/onlyoffice/docspace-mcp/compare/v0.1.0...v0.1.1/
 [0.1.0]: https://github.com/onlyoffice/docspace-mcp/releases/tag/v0.1.0/
 
+[050e932]: https://github.com/onlyoffice/docspace-mcp/commit/050e932c620bfa957781bd964ddde392ecd4d457/
+[5edb220]: https://github.com/onlyoffice/docspace-mcp/commit/5edb2208b5d48620d5674f227422e0806536ce5c/
 [19d74f0]: https://github.com/onlyoffice/docspace-mcp/commit/19d74f00f521210e01155cf310a35ab9ea6fb6ea/
 [932fe9e]: https://github.com/onlyoffice/docspace-mcp/commit/932fe9e55c296c9adbcfb6280279c7a5edf20d90/
 [69cd570]: https://github.com/onlyoffice/docspace-mcp/commit/69cd570f555d9e74843a946489852e4b8e46b99d/

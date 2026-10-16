@@ -39,6 +39,61 @@
         ],
         "composerIcon": "./assets/icon.png",
         "logo": "./assets/icon.png"
+      },
+      "review": {
+        "commerce": false,
+        "commerce_description": "",
+        "test_cases": {
+          "positive": [
+            {
+              "description": "Create a room and invite a user",
+              "prompt": "Create a collaboration room called \"Q4 Marketing\" and invite reviewer.guest@example.com to it as an editor.",
+              "tools_triggered": "get_room_types, create_room, get_room_access_levels, set_room_security",
+              "expected_behavior": "Creates a collaboration room titled \"Q4 Marketing\", invites reviewer.guest@example.com with the editor access level, and confirms the room title and the invited user."
+            },
+            {
+              "description": "Upload a Markdown file to a room",
+              "prompt": "In the \"Projects\" room, create a file named kickoff-agenda.md with a short agenda for a project kickoff meeting.",
+              "tools_triggered": "get_rooms_folder, get_folder_content, upload_file",
+              "expected_behavior": "Finds the \"Projects\" room, uploads kickoff-agenda.md with a Markdown agenda to it, and reports the created file name."
+            },
+            {
+              "description": "Summarize a document",
+              "prompt": "Summarize the \"Project Plan\" document from the \"Projects\" room in five bullet points.",
+              "tools_triggered": "get_rooms_folder, get_folder_content, download_file_as_text",
+              "expected_behavior": "Finds the \"Project Plan\" document in the \"Projects\" room, reads it as text, and returns a five-bullet summary based on its content without modifying the file."
+            },
+            {
+              "description": "Organize files in My Documents",
+              "prompt": "In My Documents, create a folder called \"Archive 2025\" and move all files that have 2025 in their name into it.",
+              "tools_triggered": "get_my_folder, get_folder_content, create_folder, move_batch_items",
+              "expected_behavior": "Creates the \"Archive 2025\" folder in My Documents, moves only the files whose names contain 2025 into it, and lists the moved files."
+            },
+            {
+              "description": "Review room access",
+              "prompt": "Who has access to the \"Projects\" room and what access level does each person have?",
+              "tools_triggered": "get_rooms_folder, get_folder_content, get_room_security_info",
+              "expected_behavior": "Finds the \"Projects\" room and lists its members with their access levels without changing any permissions."
+            }
+          ],
+          "negative": [
+            {
+              "description": "Unrelated request: the plugin should not be called and the assistant should answer without ONLYOFFICE Apps tools",
+              "prompt": "What's a good recipe for a quick vegetarian dinner?"
+            },
+            {
+              "description": "Unsupported action: there is no email tool, so the assistant should explain it cannot send emails instead of calling ONLYOFFICE Apps tools",
+              "prompt": "Send an email to everyone in my company announcing the new Q4 Marketing room."
+            },
+            {
+              "description": "Ambiguous destructive request: the assistant should ask which items to delete and confirm instead of deleting anything",
+              "prompt": "Delete everything."
+            }
+          ]
+        }
+      },
+      "publication": {
+        "release_notes": "Initial release of the ONLYOFFICE Apps plugin."
       }
     }
   }

@@ -25,8 +25,34 @@ export const PluginInterfaceSchema = z.looseObject({
   logo: path,
 })
 
+export const PluginPositiveCaseSchema = z.looseObject({
+  description: z.string().min(1),
+  prompt: z.string().min(1),
+  tools_triggered: z.string().min(1),
+  expected_behavior: z.string().min(1),
+})
+
+export const PluginNegativeCaseSchema = z.looseObject({
+  description: z.string().min(1),
+  prompt: z.string().min(1),
+})
+
+export const PluginReviewSchema = z.looseObject({
+  commerce: z.boolean(),
+  test_cases: z.looseObject({
+    positive: z.array(PluginPositiveCaseSchema).length(5),
+    negative: z.array(PluginNegativeCaseSchema).length(3),
+  }),
+})
+
+export const PluginPublicationSchema = z.looseObject({
+  release_notes: z.string().min(1),
+})
+
 export const PluginOpenaiSchema = z.looseObject({
   interface: PluginInterfaceSchema,
+  review: PluginReviewSchema,
+  publication: PluginPublicationSchema,
 })
 
 export const PluginSchema = z.looseObject({
@@ -62,6 +88,14 @@ export const PluginMcpSchema = z.looseObject({
 })
 
 export type PluginInterface = z.infer<typeof PluginInterfaceSchema>
+
+export type PluginPositiveCase = z.infer<typeof PluginPositiveCaseSchema>
+
+export type PluginNegativeCase = z.infer<typeof PluginNegativeCaseSchema>
+
+export type PluginReview = z.infer<typeof PluginReviewSchema>
+
+export type PluginPublication = z.infer<typeof PluginPublicationSchema>
 
 export type PluginOpenai = z.infer<typeof PluginOpenaiSchema>
 

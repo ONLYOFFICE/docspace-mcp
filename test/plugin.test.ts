@@ -8,6 +8,7 @@ import path from "node:path"
 import test from "node:test"
 import type * as z from "zod"
 import * as dist from "../lib/dist.ts"
+import * as mcp from "../lib/mcp.ts"
 import * as r from "../lib/util/result.ts"
 import type {SetupMcpOptions} from "./util.ts"
 import {once, setupMcp} from "./util.ts"
@@ -85,6 +86,25 @@ void test.suite("openai plugin", () => {
       let s = await r.safeAsync(fs.stat, path.join("./plugin/", f))
       assert.ok(s.err === undefined, f)
       assert.ok(s.v.size <= 5 * 1024 * 1024, f)
+    }
+  })
+
+  void test("triggers existing tools in test cases", async() => {
+    let p = await readPluginOnce()
+    assert.ok(p.err === undefined)
+
+    let n: string[] = []
+
+    for (let s of mcp.regularToolsets) {
+      for (let t of s.tools) {
+        n.push(t.name)
+      }
+    }
+
+    for (let c of p.v.extensions["com.openai"].review.test_cases.positive) {
+      for (let t of c.tools_triggered.split(",")) {
+        assert.ok(n.includes(t.trim()), t)
+      }
     }
   })
 

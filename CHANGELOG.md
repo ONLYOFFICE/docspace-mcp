@@ -5,6 +5,12 @@ Changelog] format and adhering to [Semantic Versioning].
 
 ## [Unreleased]
 
+### Added
+
+- Add the `DOCSPACE_SERVER_OPENAI_APPS_CHALLENGE` option that serves the OpenAI
+  domain verification token at the `/.well-known/openai-apps-challenge`
+  endpoint.
+
 ### Changed
 
 - Add the `title` annotation to all tools ([cba703e]).

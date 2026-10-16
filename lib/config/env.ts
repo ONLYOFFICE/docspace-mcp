@@ -150,6 +150,10 @@ export const EnvSchema = z.
       string().
       prefault(prefault(spec.serverAllowedHostnames.default)).
       transform(zod.envHostnameList()),
+    [`${envPrefix}${spec.serverOpenaiAppsChallenge.env}`]: z.
+      string().
+      trim().
+      prefault(prefault(spec.serverOpenaiAppsChallenge.default)),
     [`${envPrefix}${spec.serverCorsMcpOrigin.env}`]: z.
       string().
       prefault(prefault(spec.serverCorsMcpOrigin.default)).
@@ -326,6 +330,7 @@ export const EnvSchema = z.
       host: o[`${envPrefix}${spec.host.env}`] as string,
       port: o[`${envPrefix}${spec.port.env}`] as number,
       allowedHostnames: o[`${envPrefix}${spec.serverAllowedHostnames.env}`] as string[],
+      openaiAppsChallenge: o[`${envPrefix}${spec.serverOpenaiAppsChallenge.env}`] as string,
       cors: {
         mcp: {
           origin: o[`${envPrefix}${spec.serverCorsMcpOrigin.env}`] as string[],
@@ -436,6 +441,7 @@ export const EnvSchema = z.
           host: o.server.host,
           port: o.server.port,
           allowedHostnames: [],
+          openaiAppsChallenge: "",
           cors: {
             mcp: {
               origin: [],

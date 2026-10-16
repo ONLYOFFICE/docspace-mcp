@@ -24,6 +24,9 @@ Changelog] format and adhering to [Semantic Versioning].
   classes, methods and enumerations of the Office JavaScript API that
   `run_builder_script` scripts are written against, reading the reference from
   api.onlyoffice.com and caching it in memory ([8f42745]).
+- Add the `DOCSPACE_SERVER_OPENAI_APPS_CHALLENGE` option that serves the OpenAI
+  domain verification token at the `/.well-known/openai-apps-challenge`
+  endpoint.
 
 ### Changed
 

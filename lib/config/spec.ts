@@ -451,6 +451,20 @@ export const serverAllowedHostnames: Item = {
   header: "",
 }
 
+export const serverOpenaiAppsChallenge: Item = {
+  title: "Server OpenAI Apps Challenge",
+  description: "The domain verification token to serve at the /.well-known/openai-apps-challenge endpoint.",
+  distributions: ["js", "oci"],
+  transports: ["sse", "streamable-http"],
+  type: "string",
+  choices: [],
+  default: "",
+  sensitive: false,
+  env: "SERVER_OPENAI_APPS_CHALLENGE",
+  query: "",
+  header: "",
+}
+
 export const serverCorsMcpOrigin: Item = {
   title: "Server CORS MCP Origin",
   description: "The list of allowed origins to include in the Access-Control-Allow-Origin header for CORS requests to MCP endpoints.",

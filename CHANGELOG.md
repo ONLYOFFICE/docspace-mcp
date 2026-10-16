@@ -8,7 +8,10 @@ Changelog] format and adhering to [Semantic Versioning].
 ### Added
 
 - Add the `build-plugin` script that packages the hosted server as an OpenAI
-  plugin ZIP for submission to the OpenAI plugin directory.
+  plugin ZIP for submission to the OpenAI plugin directory ([d9ccd97]).
+- Add the `DOCSPACE_SERVER_OPENAI_APPS_CHALLENGE` option that serves the OpenAI
+  domain verification token at the `/.well-known/openai-apps-challenge`
+  endpoint.
 
 ## [3.3.0] - 2026-10-09
 
@@ -364,6 +367,7 @@ There are no noticeable changes in version [3.0.1].
 [0.1.1]: https://github.com/onlyoffice/docspace-mcp/compare/v0.1.0...v0.1.1/
 [0.1.0]: https://github.com/onlyoffice/docspace-mcp/releases/tag/v0.1.0/
 
+[d9ccd97]: https://github.com/onlyoffice/docspace-mcp/commit/d9ccd97a39149d8941c19f0ba722c5d1f1fc323b/
 [bac7e04]: https://github.com/onlyoffice/docspace-mcp/commit/bac7e04dd1fda09c8db7e23c3c36973511df5ea9/
 [35af45a]: https://github.com/onlyoffice/docspace-mcp/commit/35af45aaaf92a6e09e804bfea2831f9149eed164/
 [8204500]: https://github.com/onlyoffice/docspace-mcp/commit/8204500712da4785b5764a36e7b670df8832b8bd/

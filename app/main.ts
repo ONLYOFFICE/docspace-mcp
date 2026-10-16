@@ -676,6 +676,14 @@ function startHttp(env: config.Env, logger: utilLogger.Logger): r.Result<Start, 
     e.use(streamableRouter)
   }
 
+  if (env.server.openaiAppsChallenge) {
+    e.get("/.well-known/openai-apps-challenge", (_, res) => {
+      res.status(200)
+      res.type("text/plain")
+      res.send(env.server.openaiAppsChallenge)
+    })
+  }
+
   e.use("/health", (_, res) => {
     res.status(200)
     res.end()

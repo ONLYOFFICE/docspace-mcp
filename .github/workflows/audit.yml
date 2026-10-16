@@ -43,6 +43,9 @@ jobs:
       - name: Build MCP Bundle
         run: pnpm build-mcpb
 
+      - name: Build OpenAI Plugin
+        run: pnpm build-plugin
+
       - name: Build Server Detail
         run: pnpm build-detail
 

@@ -5,7 +5,10 @@ Changelog] format and adhering to [Semantic Versioning].
 
 ## [Unreleased]
 
-There are no notable changes in this release.
+### Added
+
+- Add the `build-plugin` script that packages the hosted server as an OpenAI
+  plugin ZIP for submission to the OpenAI plugin directory.
 
 ## [3.3.0] - 2026-10-09
 

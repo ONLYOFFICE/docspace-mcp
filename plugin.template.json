@@ -1,0 +1,45 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "onlyoffice-docspace",
+  "version": "",
+  "description": "Manage rooms, folders, files, and people in ONLYOFFICE Apps.",
+  "author": {
+    "name": "Ascensio System SIA",
+    "email": "integration@onlyoffice.com",
+    "url": "https://onlyoffice.com/"
+  },
+  "homepage": "https://github.com/onlyoffice/docspace-mcp/",
+  "repository": "https://github.com/onlyoffice/docspace-mcp/",
+  "license": "MIT",
+  "keywords": [
+    "onlyoffice",
+    "docspace",
+    "onlyoffice-apps"
+  ],
+  "extensions": {
+    "com.openai": {
+      "interface": {
+        "displayName": "ONLYOFFICE Apps",
+        "shortDescription": "Manage rooms, files and docs",
+        "longDescription": "Connect ONLYOFFICE Apps, a room-based collaborative platform, to work with your portal in conversation.\n\nWhat you can do:\n- Create, update, and archive rooms, and invite or remove people with the right access levels.\n- Browse the Rooms and My Documents sections, create, rename, and delete folders.\n- Upload text and Markdown files, read documents as text, update, copy, move, and delete files.\n- Look up people on the portal.\n\nWho it is for: teams and individuals who keep their documents in ONLYOFFICE Apps and want to organize rooms and files without leaving the chat.\n\nLimitations: uploading supports only txt and md files. Documents are read as plain text, so formatting, images, and embedded objects are not available. All actions are performed with the permissions of the signed-in ONLYOFFICE Apps user.",
+        "developerName": "Ascensio System SIA",
+        "category": "Productivity",
+        "capabilities": [
+          "Read",
+          "Write"
+        ],
+        "websiteURL": "https://www.onlyoffice.com/",
+        "supportURL": "https://github.com/onlyoffice/docspace-mcp/issues/",
+        "privacyPolicyURL": "https://www.onlyoffice.com/privacy",
+        "termsOfServiceURL": "https://www.onlyoffice.com/legalterms",
+        "defaultPrompt": [
+          "Create a room for the marketing team and invite Anna as an editor",
+          "Show what's inside My Documents",
+          "Summarize the latest report in the Projects room"
+        ],
+        "composerIcon": "./assets/icon.png",
+        "logo": "./assets/icon.png"
+      }
+    }
+  }
+}

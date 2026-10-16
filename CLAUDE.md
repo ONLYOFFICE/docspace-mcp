@@ -13,6 +13,7 @@ pnpm install --frozen-lockfile
 pnpm build-app      # esbuild bundle app/main.ts -> bin/onlyoffice-docspace-mcp.js
 pnpm build-mcpb     # MCP bundle (manifest.template.json -> mcpb)
 pnpm build-detail   # server.json for the MCP registry (from server.template.json)
+pnpm build-plugin   # OpenAI plugin ZIP (plugin.template.json -> plugin/, onlyoffice-docspace-plugin-<version>.zip)
 pnpm build-docs     # regenerate generated sections of tool docs
 pnpm lint-types     # tsc (noEmit)
 pnpm lint-code      # eslint

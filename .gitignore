@@ -1,8 +1,10 @@
 .pnpm-store
 bin
 mcpb
+plugin
 node_modules
 .env
 server.json
 *.mcpb
+*.zip
 *.tgz

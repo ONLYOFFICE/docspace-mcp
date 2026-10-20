@@ -234,6 +234,45 @@ void test.suite("run builder script", () => {
     await Promise.race([hp, tf()])
   })
 
+  void test("refuses outputs entries without exactly one of fileId and folderId", async(t) => {
+    const cases = [
+      [{fileId: 10, folderId: 5}, "Exactly one of fileId and folderId"],
+      [{}, "Exactly one of fileId and folderId"],
+      [{title: "Copy.docx"}, "Exactly one of fileId and folderId"],
+      [{fileId: 10, title: "Copy.docx"}, "Title can only be provided with folderId"],
+    ] as const
+
+    const bodies: unknown[] = []
+
+    const [cl, hp] = await setup(t, [file], bodies)
+
+    const tf = async(): Promise<void> => {
+      for (const [o, m] of cases) {
+        const cp: types.CallToolRequest["params"] = {
+          name: "run_builder_script",
+          arguments: {
+            script: "builder.OpenFile(\"10\")\nbuilder.SaveFile(\"docx\", \"Report.docx\")\nbuilder.CloseFile()",
+            outputs: {
+              "Report.docx": o,
+            },
+          },
+        }
+
+        const cr = await r.safeAsync(cl.callTool.bind(cl), cp)
+        assert.ok(cr.err === undefined)
+
+        assert.ok(cr.v.isError)
+
+        const c = cr.v.content as types.TextContent[]
+        assert.ok(c[0].text.includes(m), c[0].text)
+      }
+
+      assert.deepEqual(bodies, [])
+    }
+
+    await Promise.race([hp, tf()])
+  })
+
   void test("returns error when the operation saves no files", async(t) => {
     const bodies: unknown[] = []
 

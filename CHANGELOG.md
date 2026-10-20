@@ -12,7 +12,8 @@ Changelog] format and adhering to [Semantic Versioning].
   waits for the operation to finish. It returns only the saved files, each with
   its `id`, `title`, `version`, `webUrl` and `folderId` unless `filters.fields`
   asks for other fields. When the script fails, it explains the Document
-  Builder error code that the portal reports and what to do about it.
+  Builder error code that the portal reports and what to do about it
+  ([cca18f4]).
 - Add the `get_office_api_reference` tool to the `files` toolset. It looks up
   classes, methods and enumerations of the Office JavaScript API that
   `run_builder_script` scripts are written against, reading the reference from
@@ -26,6 +27,22 @@ Changelog] format and adhering to [Semantic Versioning].
 - Mention the "Files" section in the `folders` toolset description, so that
   models look for the `get_my_folder` tool there rather than in the `files`
   toolset ([19d74f0]).
+- Add the `offset` and `limit` parameters to the `download_file_as_text` tool
+  and truncate large text, so the response does not exceed client size limits
+  ([69cd570]).
+
+### Fixed
+
+- Do not mark tool input options with default values, such as `roomType` of
+  the `create_room` tool and `count` of the listing filters, as required in
+  the published input schemas ([5edb220]).
+- Do not forbid additional properties in the published tool input schemas.
+  Unknown arguments were always ignored rather than rejected, so declaring
+  `additionalProperties: false` did not match the actual behavior ([050e932]).
+- List the allowed values as `enum` in the published tool input schemas, such
+  as `fields` of the listing filters, instead of only in the descriptions.
+  Output schemas still omit `enum`, so that clients do not reject values added
+  to the API later ([41ea974]).
 
 ## [3.3.0] - 2026-10-09
 
@@ -381,8 +398,13 @@ There are no noticeable changes in version [3.0.1].
 [0.1.1]: https://github.com/onlyoffice/docspace-mcp/compare/v0.1.0...v0.1.1/
 [0.1.0]: https://github.com/onlyoffice/docspace-mcp/releases/tag/v0.1.0/
 
+[cca18f4]: https://github.com/onlyoffice/docspace-mcp/commit/cca18f404ca34909a9af6a2a393607f2e5ee24e6/
+[41ea974]: https://github.com/onlyoffice/docspace-mcp/commit/41ea974dac25f184ac8cd3e7cd79da126f384dac/
+[050e932]: https://github.com/onlyoffice/docspace-mcp/commit/050e932c620bfa957781bd964ddde392ecd4d457/
+[5edb220]: https://github.com/onlyoffice/docspace-mcp/commit/5edb2208b5d48620d5674f227422e0806536ce5c/
 [19d74f0]: https://github.com/onlyoffice/docspace-mcp/commit/19d74f00f521210e01155cf310a35ab9ea6fb6ea/
 [932fe9e]: https://github.com/onlyoffice/docspace-mcp/commit/932fe9e55c296c9adbcfb6280279c7a5edf20d90/
+[69cd570]: https://github.com/onlyoffice/docspace-mcp/commit/69cd570f555d9e74843a946489852e4b8e46b99d/
 [bac7e04]: https://github.com/onlyoffice/docspace-mcp/commit/bac7e04dd1fda09c8db7e23c3c36973511df5ea9/
 [35af45a]: https://github.com/onlyoffice/docspace-mcp/commit/35af45aaaf92a6e09e804bfea2831f9149eed164/
 [8204500]: https://github.com/onlyoffice/docspace-mcp/commit/8204500712da4785b5764a36e7b670df8832b8bd/

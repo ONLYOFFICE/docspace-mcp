@@ -1,4 +1,4 @@
-FROM node:24.11.1-alpine3.22 AS build
+FROM --platform=$BUILDPLATFORM node:24.11.1-alpine3.22 AS build
 WORKDIR /srv/onlyoffice-docspace-mcp
 COPY app app
 COPY lib lib

@@ -9,6 +9,7 @@ import * as z from "zod"
 import type * as apiCore from "../api/core.ts"
 import * as core from "../api/core.ts"
 import type * as apiExtra from "../api/extra.ts"
+import * as officeApi from "../office-api.ts"
 import * as errors from "../util/errors.ts"
 import type * as mcp from "../util/mcp.ts"
 import * as r from "../util/result.ts"
@@ -230,6 +231,15 @@ const GetMyFolderOutputSchema = core.SuccessApiResponseSchema.extend({
 
 const GetMyFolderOutputJsonSchema = z.toJSONSchema(GetMyFolderOutputSchema)
 
+const GetOfficeApiReferenceInputSchema = z.object({
+  editor: z.enum(officeApi.editors).describe("The editor whose API to look up: document, spreadsheet, presentation, form for the form fields of a document or a PDF form, or pdf."),
+  query: z.string().optional().describe("Words to look for in the names and descriptions of classes, methods and enumerations, such as \"watermark\" or \"table border\". Use it to find out what to get with class and method."),
+  class: z.string().optional().describe("The name of a class or an enumeration to get, such as ApiParagraph or Drawing. Without method, returns the description of the class and the list of its methods."),
+  method: z.string().optional().describe("The name of a method of the class to get, such as AddText. Returns its syntax, parameters, return value and an example."),
+})
+
+const GetOfficeApiReferenceInputJsonSchema = z.toJSONSchema(GetOfficeApiReferenceInputSchema, {io: "input"})
+
 const GetRoomAccessLevelsInputSchema = z.object({
   roomId: z.number().describe("The ID of the room to get the invitation access for."),
 })
@@ -329,6 +339,7 @@ const RunBuilderScriptInputSchema = z.object({
     "Save each result with builder.SaveFile(\"<format>\", \"<name with extension>\") and finish with builder.CloseFile().",
     "Every builder.* call has to be on its own line; a script that puts them on one line saves nothing.",
     "OpenFile and SaveFile may be called at most 20 times each.",
+    "Take the signatures of the methods it calls from the get_office_api_reference tool, not from memory: parameters change between versions, and an error raised by the script is reported without details.",
   ].join(" ")),
   folderId: z.number().optional().describe("The ID of the folder to save the produced files that are not listed in outputs to. Required when the script creates a file instead of opening one; otherwise the files are saved to the folder of the opened file."),
   outputs: z.
@@ -605,8 +616,18 @@ export const regularToolsets = [
         },
       },
       {
+        name: "get_office_api_reference",
+        description: "Look up the Office JavaScript API that run_builder_script scripts are written against. Use it before every run_builder_script call to check the methods the script uses, since the API changes between versions and remembered signatures may be outdated. Without class and query, returns an overview of the editor API with the list of its classes and enumerations; with query, finds classes, methods and enumerations; with class, returns the methods of a class or the values of an enumeration; with class and method, returns the syntax, parameters and an example of a method. The reference is read from api.onlyoffice.com.",
+        inputSchema: GetOfficeApiReferenceInputJsonSchema,
+        annotations: {
+          readOnlyHint: true,
+          destructiveHint: false,
+          openWorldHint: true,
+        },
+      },
+      {
         name: "run_builder_script",
-        description: "Run an ONLYOFFICE Document Builder script to create or edit documents, spreadsheets, presentations or PDFs, and wait for it to finish. Returns the saved files in the files field; a file may get a different title than the name passed to builder.SaveFile when the folder already has a file with that name.",
+        description: "Run an ONLYOFFICE Document Builder script to create or edit documents, spreadsheets, presentations or PDFs, and wait for it to finish. The Office JavaScript API changes between versions (since 9.4.0, for example, Api.CreateTable takes rows before columns), so do not write the script from memory: look up every class and method it uses with the get_office_api_reference tool first. Returns the saved files in the files field; a file may get a different title than the name passed to builder.SaveFile when the folder already has a file with that name.",
         inputSchema: RunBuilderScriptInputJsonSchema,
         outputSchema: RunBuilderScriptOutputJsonSchema,
         annotations: {
@@ -828,6 +849,7 @@ export type ServerConfig = {
   resolver: apiExtra.Resolver
   uploader: apiExtra.Uploader
   fileOperationCaller: apiExtra.FileOperationCaller
+  officeApiReference: officeApi.Reference
 }
 
 export type ServerElicitation = {
@@ -864,6 +886,7 @@ export class Server {
     get_folder_content: this.handleGetFolderContent.bind(this),
     get_folder_info: this.handleGetFolderInfo.bind(this),
     get_my_folder: this.handleGetMyFolder.bind(this),
+    get_office_api_reference: this.handleGetOfficeApiReference.bind(this),
     get_room_access_levels: this.handleGetRoomAccessLevels.bind(this),
     get_room_info: this.handleGetRoomInfo.bind(this),
     get_room_security_info: this.handleGetRoomSecurityInfo.bind(this),
@@ -887,6 +910,7 @@ export class Server {
   private resolver: apiExtra.Resolver
   private uploader: apiExtra.Uploader
   private fileOperationCaller: apiExtra.FileOperationCaller
+  private officeApiReference: officeApi.Reference
 
   constructor(config: ServerConfig) {
     this.dynamic = config.dynamic
@@ -933,6 +957,7 @@ export class Server {
     this.resolver = config.resolver
     this.uploader = config.uploader
     this.fileOperationCaller = config.fileOperationCaller
+    this.officeApiReference = config.officeApiReference
   }
 
   router(): mcp.Router {
@@ -1502,6 +1527,104 @@ export class Server {
     return await fromResponse(res, GetMyFolderOutputJsonSchema)
   }
 
+  private async handleGetOfficeApiReference(req: types.CallToolRequest): Promise<types.CallToolResult> {
+    const pr = GetOfficeApiReferenceInputSchema.safeParse(req.params.arguments)
+    if (!pr.success) {
+      return fromError(new Error("Parsing input.", {cause: pr.error}))
+    }
+
+    if (pr.data.method !== undefined && pr.data.class === undefined) {
+      return fromError(new Error("The method has to be given together with its class."))
+    }
+
+    const ir = await this.officeApiReference.index(pr.data.editor)
+    if (ir.err) {
+      return fromError(new Error("Getting reference index.", {cause: ir.err}))
+    }
+
+    const a = ir.v
+
+    if (pr.data.class !== undefined) {
+      let n = pr.data.class
+      let k: officeApi.ReferenceEntryKind[] = ["class", "enumeration"]
+
+      if (pr.data.method !== undefined) {
+        n = `${pr.data.class}.${pr.data.method}`
+        k = ["method"]
+      }
+
+      const en = officeApi.findEntry(a, n, k)
+
+      if (!en) {
+        return fromError(new Error(officeApi.notFoundMessage(a, pr.data.editor, pr.data.class, pr.data.method)))
+      }
+
+      const pg = await this.officeApiReference.page(en)
+      if (pg.err) {
+        return fromError(new Error("Getting reference page.", {cause: pg.err}))
+      }
+
+      return fromString(pg.v)
+    }
+
+    if (pr.data.query !== undefined) {
+      const f = officeApi.searchEntries(a, pr.data.query)
+
+      if (f.length === 0) {
+        return fromString(`Nothing in the ${pr.data.editor} API matches "${pr.data.query}". Try other words, or call the tool without query for the list of classes.`)
+      }
+
+      const m = 50
+      let t = ""
+
+      for (const e of f.slice(0, m)) {
+        t += `- ${e.name} (${e.kind}): ${e.description}\n`
+      }
+
+      if (f.length > m) {
+        t += `\n${f.length - m} more matches are not shown; add words to the query to narrow it.\n`
+      }
+
+      return fromString(t.trim())
+    }
+
+    const ov = a.find((e) => e.kind === "overview")
+
+    let t = ""
+
+    if (ov) {
+      const pg = await this.officeApiReference.page(ov)
+      if (pg.err) {
+        return fromError(new Error("Getting reference overview.", {cause: pg.err}))
+      }
+
+      t += `${pg.v}\n\n`
+    }
+
+    t += "## Classes\n\n"
+
+    for (const e of a) {
+      if (e.kind === "class") {
+        t += `- ${e.name}: ${e.description}\n`
+      }
+    }
+
+    t += "\n## Enumerations\n\n"
+
+    const en: string[] = []
+
+    for (const e of a) {
+      if (e.kind === "enumeration") {
+        en.push(e.name)
+      }
+    }
+
+    t += `${en.join(", ")}\n\n`
+    t += "Pass class to get the methods of a class or the values of an enumeration, class and method to get a method, and query to search."
+
+    return fromString(t)
+  }
+
   private async handleGetRoomAccessLevels(req: types.CallToolRequest): Promise<types.CallToolResult> {
     const pr = GetRoomAccessLevelsInputSchema.safeParse(req.params.arguments)
     if (!pr.success) {
@@ -1881,7 +2004,7 @@ function pickFields(v: unknown, fields: string[]): unknown {
 const builderErrorHints: Record<string, string> = {
   "-1": "Document Builder error -1 (unknown error): the script failed for a reason Document Builder does not report.",
   "-2": "Document Builder error -2 (generation timeout): the script ran too long. Make it do less, or split the work across several scripts.",
-  "-3": "Document Builder error -3 (document generation error): the script threw. Document Builder reports neither the message nor the line, so the cause is one of: a syntax error, a call to a method that does not exist in this version of the Office JavaScript API, wrong arguments, or an explicit throw. Check every class and method the script uses against the Office JavaScript API reference, fix the script and run it again; if the cause is still unclear, run a shorter part of the script to find the failing line.",
+  "-3": "Document Builder error -3 (document generation error): the script threw. Document Builder reports neither the message nor the line, so the cause is one of: a syntax error, a call to a method that does not exist in this version of the Office JavaScript API, wrong arguments, or an explicit throw. Check every class and method the script uses with get_office_api_reference, fix the script and run it again; if the cause is still unclear, run a shorter part of the script to find the failing line.",
   "-4": "Document Builder error -4 (download error): the document opened with builder.OpenFile could not be downloaded. Check that the file ID is right and the file is accessible.",
   "-6": "Document Builder error -6 (result database error): a server-side failure unrelated to the script. Try again later.",
   "-8": "Document Builder error -8 (invalid token): the portal and ONLYOFFICE Docs are misconfigured, which no change to the script fixes. Tell the user to contact the portal administrator.",

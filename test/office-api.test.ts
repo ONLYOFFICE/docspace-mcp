@@ -1,0 +1,311 @@
+/**
+ * @module test
+ */
+
+import assert from "node:assert/strict"
+import test from "node:test"
+import type * as types from "@modelcontextprotocol/sdk/types.js"
+import * as officeApi from "../lib/office-api.ts"
+import * as r from "../lib/util/result.ts"
+import type {SetupMcpOptions} from "./util.ts"
+import {setupMcp} from "./util.ts"
+
+const base = "https://api.onlyoffice.com/docs/office-api/usage-api/"
+
+const index = `# ONLYOFFICE Docs: Office API — Document API
+
+> Although a document consists of various elements.
+
+## Overview
+
+- [Document API](${base}document-api.md): Although a document consists of various elements.
+
+## Api
+
+- [Api](${base}document-api/Api.md): The main class of the Document API.
+- [Api.CreateParagraph](${base}document-api/Api/Methods/CreateParagraph.md): Creates a new paragraph.
+
+## ApiParagraph
+
+- [ApiParagraph](${base}document-api/ApiParagraph.md): Class representing a paragraph.
+- [ApiParagraph.AddText](${base}document-api/ApiParagraph/Methods/AddText.md): Adds some text to the current paragraph.
+- [ApiParagraph.SetJc](${base}document-api/ApiParagraph/Methods/SetJc.md): Sets the paragraph contents justification.
+
+## Enumeration
+
+- [Drawing](${base}document-api/Enumeration/Drawing.md): Any valid drawing element.
+`
+
+void test.suite("office api reference", () => {
+  void test("parses entries of an index", () => {
+    const a = officeApi.parseIndex(index)
+
+    const x: officeApi.ReferenceEntry[] = [
+      {kind: "overview", name: "Document API", description: "Although a document consists of various elements.", url: `${base}document-api.md`},
+      {kind: "class", name: "Api", description: "The main class of the Document API.", url: `${base}document-api/Api.md`},
+      {kind: "method", name: "Api.CreateParagraph", description: "Creates a new paragraph.", url: `${base}document-api/Api/Methods/CreateParagraph.md`},
+      {kind: "class", name: "ApiParagraph", description: "Class representing a paragraph.", url: `${base}document-api/ApiParagraph.md`},
+      {kind: "method", name: "ApiParagraph.AddText", description: "Adds some text to the current paragraph.", url: `${base}document-api/ApiParagraph/Methods/AddText.md`},
+      {kind: "method", name: "ApiParagraph.SetJc", description: "Sets the paragraph contents justification.", url: `${base}document-api/ApiParagraph/Methods/SetJc.md`},
+      {kind: "enumeration", name: "Drawing", description: "Any valid drawing element.", url: `${base}document-api/Enumeration/Drawing.md`},
+    ]
+
+    assert.deepEqual(a, x)
+  })
+
+  void test("finds an entry by its exact name before one that differs in case", () => {
+    const a = officeApi.parseIndex(index)
+
+    assert.equal(officeApi.findEntry(a, "ApiParagraph", ["class"])?.name, "ApiParagraph")
+    assert.equal(officeApi.findEntry(a, "apiparagraph.addtext", ["method"])?.name, "ApiParagraph.AddText")
+    assert.equal(officeApi.findEntry(a, "Drawing", ["class"]), undefined)
+    assert.equal(officeApi.findEntry(a, "Drawing", ["class", "enumeration"])?.kind, "enumeration")
+  })
+
+  void test("searches names before descriptions and skips the overview", () => {
+    const a = officeApi.parseIndex(index)
+
+    let n = officeApi.searchEntries(a, "Paragraph").map((e) => e.name)
+
+    assert.deepEqual(n, ["ApiParagraph", "Api.CreateParagraph", "ApiParagraph.SetJc", "ApiParagraph.AddText"])
+
+    n = officeApi.searchEntries(a, "add text").map((e) => e.name)
+
+    assert.deepEqual(n, ["ApiParagraph.AddText"])
+
+    assert.deepEqual(officeApi.searchEntries(a, "document elements"), [])
+    assert.deepEqual(officeApi.searchEntries(a, "  "), [])
+  })
+
+  void test("ranks entries named by the query first and matches names at word starts", () => {
+    const a = officeApi.parseIndex(`## ApiComboBoxForm
+
+- [ApiComboBoxForm.IsEditable](${base}document-api/ApiComboBoxForm/Methods/IsEditable.md): Checks if the combo box text can be edited.
+
+## ApiDocument
+
+- [ApiDocument.CreateTable](${base}document-api/ApiDocument/Methods/CreateTable.md): Creates a new table.
+- [ApiDocument.GetAllTables](${base}document-api/ApiDocument/Methods/GetAllTables.md): Returns all tables.
+
+## ApiPivotField
+
+- [ApiPivotField.SetValue](${base}document-api/ApiPivotField/Methods/SetValue.md): Sets a value representing the name of the field.
+
+## ApiRange
+
+- [ApiRange.GetValue](${base}document-api/ApiRange/Methods/GetValue.md): Returns a value of the range.
+- [ApiRange.SetFillColor](${base}document-api/ApiRange/Methods/SetFillColor.md): Sets the background color to the range.
+- [ApiRange.SetValue](${base}document-api/ApiRange/Methods/SetValue.md): Sets a value to the current cell or cell range.
+
+## ApiTable
+
+- [ApiTable](${base}document-api/ApiTable.md): Class representing a table.
+- [ApiTable.AddRow](${base}document-api/ApiTable/Methods/AddRow.md): Adds a new row to the current table.
+
+## ApiTableRow
+
+- [ApiTableRow](${base}document-api/ApiTableRow.md): Class representing a table row.
+`)
+
+    let n = officeApi.searchEntries(a, "table").map((e) => e.name)
+
+    assert.deepEqual(n, ["ApiTable", "ApiTableRow", "ApiDocument.CreateTable", "ApiDocument.GetAllTables", "ApiTable.AddRow"])
+
+    n = officeApi.searchEntries(a, "set value").map((e) => e.name)
+
+    assert.deepEqual(n, ["ApiRange.SetValue", "ApiPivotField.SetValue"])
+
+    n = officeApi.searchEntries(a, "tables").map((e) => e.name)
+
+    assert.deepEqual(n.slice(0, 2), ["ApiTable", "ApiTableRow"])
+
+    n = officeApi.searchEntries(a, "tablerow").map((e) => e.name)
+
+    assert.deepEqual(n, ["ApiTableRow"])
+
+    n = officeApi.searchEntries(a, "pivot fie").map((e) => e.name)
+
+    assert.deepEqual(n, ["ApiPivotField.SetValue"])
+  })
+
+  void test("reads pages listed in the index and caches them", async() => {
+    const c: string[] = []
+
+    const fetch = (input: unknown): Promise<Response> => {
+      const u = input instanceof Request ? input.url : String(input)
+      c.push(u)
+
+      if (u === `${base}document-api/llms.txt`) {
+        return Promise.resolve(new Response(index))
+      }
+
+      if (u === `${base}document-api/ApiParagraph/Methods/AddText.md`) {
+        return Promise.resolve(new Response(`---\nsidebar_position: 1\n---\n\n# AddText\n\nReturns [ApiRun](${base}document-api/ApiRun.md).\n`))
+      }
+
+      return Promise.resolve(new Response("", {status: 404}))
+    }
+
+    const rf = new officeApi.Reference({baseUrl: base, userAgent: "", ttl: 60000, fetch})
+
+    let ir = await rf.index("document")
+    assert.ok(!ir.err)
+
+    ir = await rf.index("document")
+    assert.ok(!ir.err)
+
+    const en = officeApi.findEntry(ir.v, "ApiParagraph.AddText", ["method"])
+    assert.ok(en)
+
+    let pr = await rf.page(en)
+    assert.ok(!pr.err)
+    assert.equal(pr.v, "# AddText\n\nReturns ApiRun.")
+
+    pr = await rf.page(en)
+    assert.ok(!pr.err)
+
+    assert.deepEqual(c, [`${base}document-api/llms.txt`, `${base}document-api/ApiParagraph/Methods/AddText.md`])
+
+    const e: officeApi.ReferenceEntry = {kind: "method", name: "X.Y", description: "", url: "https://example.com/x.md"}
+
+    const er = await rf.page(e)
+    assert.ok(er.err)
+
+    const mr = await rf.index("spreadsheet")
+    assert.ok(mr.err)
+  })
+
+  void test("refuses pages that step out of the reference with dot segments", async() => {
+    const c: string[] = []
+
+    const fetch = (input: unknown): Promise<Response> => {
+      const u = input instanceof Request ? input.url : String(input)
+      c.push(u)
+      return Promise.resolve(new Response("# Api"))
+    }
+
+    const rf = new officeApi.Reference({baseUrl: base, userAgent: "", ttl: 60000, fetch})
+
+    const a = [
+      `${base}document-api/../../../../evil.md`,
+      `${base}%2e%2e/evil.md`,
+    ]
+
+    for (const u of a) {
+      const pr = await rf.page({kind: "class", name: "Api", description: "", url: u})
+      assert.ok(pr.err, u)
+    }
+
+    assert.deepEqual(c, [])
+
+    const pr = await rf.page({kind: "class", name: "Api", description: "", url: `${base}document-api/./Api.md`})
+    assert.ok(!pr.err)
+
+    assert.deepEqual(c, [`${base}document-api/Api.md`])
+  })
+
+  void test("names the methods of the class when the method is missing", () => {
+    const a = officeApi.parseIndex(index)
+
+    const m = officeApi.notFoundMessage(a, "document", "apiparagraph", "AddTable")
+
+    assert.equal(m, "The ApiParagraph class of the document API has no AddTable method. Its methods are: AddText, SetJc.")
+  })
+
+  void test("names similar classes and enumerations when the class is missing", () => {
+    const a = officeApi.parseIndex(index)
+
+    let m = officeApi.notFoundMessage(a, "document", "Paragraph")
+
+    assert.equal(m, "The document API has no Paragraph class or enumeration. Similar names: ApiParagraph.")
+
+    m = officeApi.notFoundMessage(a, "document", "draw", "Get")
+
+    assert.equal(m, "The document API has no draw class or enumeration. Similar names: Drawing.")
+  })
+
+  void test("suggests listing or searching when nothing is similar", () => {
+    const a = officeApi.parseIndex(index)
+
+    const m = officeApi.notFoundMessage(a, "document", "ApiTable", "AddRow")
+
+    assert.equal(m, "The document API has no ApiTable class or enumeration. Call the tool without class for the list of classes, or with query to search.")
+  })
+
+  void test("reads the index again once it expires", async() => {
+    let n = 0
+
+    const fetch = (): Promise<Response> => {
+      n += 1
+      return Promise.resolve(new Response(index))
+    }
+
+    const rf = new officeApi.Reference({baseUrl: base, userAgent: "", ttl: 0, fetch})
+
+    let ir = await rf.index("document")
+    assert.ok(!ir.err)
+
+    ir = await rf.index("document")
+    assert.ok(!ir.err)
+
+    assert.equal(n, 2)
+  })
+
+  void test("does not cache a failed index", async() => {
+    let n = 0
+
+    const fetch = (): Promise<Response> => {
+      n += 1
+
+      if (n === 1) {
+        return Promise.resolve(new Response("", {status: 503}))
+      }
+
+      return Promise.resolve(new Response(index))
+    }
+
+    const rf = new officeApi.Reference({baseUrl: base, userAgent: "", ttl: 60000, fetch})
+
+    let ir = await rf.index("document")
+    assert.ok(ir.err)
+
+    ir = await rf.index("document")
+    assert.ok(!ir.err)
+
+    assert.equal(n, 2)
+  })
+})
+
+void test.suite("get_office_api_reference tool", () => {
+  void test("returns error when method is given without class", async(t) => {
+    // The input is checked before the reference is read, so the tool answers
+    // without reaching api.onlyoffice.com.
+    const so: SetupMcpOptions = {
+      transport: "stdio",
+      host: "",
+      port: 0,
+      env: {
+        DOCSPACE_BASE_URL: "http://localhost/",
+        DOCSPACE_API_KEY: "xxx",
+      },
+    }
+
+    const cl = await setupMcp(t, so)
+
+    const cp: types.CallToolRequest["params"] = {
+      name: "get_office_api_reference",
+      arguments: {
+        editor: "document",
+        method: "AddText",
+      },
+    }
+
+    const cr = await r.safeAsync(cl.callTool.bind(cl), cp)
+    assert.ok(cr.err === undefined)
+
+    assert.ok(cr.v.isError)
+
+    const c = cr.v.content as types.TextContent[]
+    assert.ok(c[0].text.includes("The method has to be given together with its class."), c[0].text)
+  })
+})

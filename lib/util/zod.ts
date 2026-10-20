@@ -97,28 +97,24 @@ export function unionToEnum<T extends string | number>(
     c = d
   }
 
-  let e = z.enum(r)
+  let e: z.ZodType = z.enum(r)
 
   if (c !== "") {
     e = e.describe(c)
   }
 
-  t = t.superRefine((v, ctx) => {
-    const p = e.safeParse(v)
-    if (!p.success) {
-      for (const i of p.error.issues) {
-        ctx.addIssue(i as z.core.$ZodSuperRefineIssue)
-      }
-    }
-  })
-
   if (c !== "") {
     t = t.describe(c)
   }
 
+  // The input JSON Schema lists the allowed values, while the output JSON
+  // Schema does not, so that clients do not reject values added to the API
+  // later.
+  const p = e.pipe(t)
+
   // It is hard to write the return type without using any.
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return t as any
+  return p as any
 }
 
 export function envOptionalBoolean(): (v: string | undefined, c: z.RefinementCtx) => boolean | undefined | never {

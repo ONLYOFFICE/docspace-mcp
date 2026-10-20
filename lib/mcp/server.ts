@@ -355,7 +355,7 @@ const RunBuilderScriptInputSchema = z.object({
     describe("The filters to apply to the saved files. Without them, each file has only its id, title, version, webUrl and folderId."),
 })
 
-const RunBuilderScriptInputJsonSchema = z.toJSONSchema(RunBuilderScriptInputSchema)
+const RunBuilderScriptInputJsonSchema = z.toJSONSchema(RunBuilderScriptInputSchema, {io: "input"})
 
 const RunBuilderScriptOutputSchema = z.object({
   files: z.

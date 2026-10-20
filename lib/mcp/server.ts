@@ -9,6 +9,7 @@ import * as z from "zod"
 import type * as apiCore from "../api/core.ts"
 import * as core from "../api/core.ts"
 import type * as apiExtra from "../api/extra.ts"
+import * as officeApi from "../office-api.ts"
 import * as errors from "../util/errors.ts"
 import type * as mcp from "../util/mcp.ts"
 import * as r from "../util/result.ts"
@@ -230,6 +231,15 @@ const GetMyFolderOutputSchema = core.SuccessApiResponseSchema.extend({
 
 const GetMyFolderOutputJsonSchema = z.toJSONSchema(GetMyFolderOutputSchema)
 
+const GetOfficeApiReferenceInputSchema = z.object({
+  editor: z.enum(officeApi.editors).describe("The editor whose API to look up: document, spreadsheet, presentation, form for the form fields of a document or a PDF form, or pdf."),
+  query: z.string().optional().describe("Words to look for in the names and descriptions of classes, methods and enumerations, such as \"watermark\" or \"table border\". Use it to find out what to get with class and method."),
+  class: z.string().optional().describe("The name of a class or an enumeration to get, such as ApiParagraph or Drawing. Without method, returns the description of the class and the list of its methods."),
+  method: z.string().optional().describe("The name of a method of the class to get, such as AddText. Returns its syntax, parameters, return value and an example."),
+})
+
+const GetOfficeApiReferenceInputJsonSchema = z.toJSONSchema(GetOfficeApiReferenceInputSchema, {io: "input"})
+
 const GetRoomAccessLevelsInputSchema = z.object({
   roomId: z.number().describe("The ID of the room to get the invitation access for."),
 })
@@ -310,6 +320,81 @@ const RenameFolderOutputSchema = core.SuccessApiResponseSchema.extend({
 })
 
 const RenameFolderOutputJsonSchema = z.toJSONSchema(RenameFolderOutputSchema)
+
+// The saved files come from the operation status, which the shared poller
+// requests for all operations at once, so the fields are picked here instead
+// of being passed to the server.
+const RunBuilderScriptFileFieldSchema = z.union([
+  ...core.FileDtoFieldSchema.options,
+  z.literal("version").describe("The file version."),
+  z.literal("webUrl").describe("The Web URL link to the file."),
+  z.literal("viewUrl").describe("The URL link to download the file."),
+  z.literal("contentLength").describe("The content length of the file."),
+])
+
+const RunBuilderScriptInputSchema = z.object({
+  script: z.string().describe([
+    "The ONLYOFFICE Document Builder script to run, written in JavaScript against the Office JavaScript API (Api.GetDocument(), Api.CreateParagraph() and so on).",
+    "Start it with builder.CreateFile(\"docx\") to make a new document (or \"xlsx\", \"pptx\", \"pdf\"), or with builder.OpenFile(\"<file ID>\") to open a portal file by its ID; addresses and http or https URLs are refused.",
+    "Save each result with builder.SaveFile(\"<format>\", \"<name with extension>\") and finish with builder.CloseFile().",
+    "Every builder.* call has to be on its own line; a script that puts them on one line saves nothing.",
+    "OpenFile and SaveFile may be called at most 20 times each.",
+    "Take the signatures of the methods it calls from the get_office_api_reference tool, not from memory: parameters change between versions, and an error raised by the script is reported without details.",
+  ].join(" ")),
+  folderId: z.number().optional().describe("The ID of the folder to save the produced files that are not listed in outputs to. Required when the script creates a file instead of opening one; otherwise the files are saved to the folder of the opened file."),
+  outputs: z.
+    record(
+      z.string(),
+      z.object({
+        fileId: z.number().optional().describe("The ID of the file to store the result in as a new version. The result has to be in the format of that file. Do not combine with folderId and title."),
+        folderId: z.number().optional().describe("The ID of the folder to save the result to as a new file."),
+        title: z.string().optional().describe("The title of the new file, when it has to differ from the name passed to SaveFile. Only with folderId."),
+      }).
+        refine(
+          (o) => (o.fileId === undefined) !== (o.folderId === undefined),
+          {
+            message: "Exactly one of fileId and folderId must be provided.",
+          },
+        ).
+        refine(
+          (o) => o.title === undefined || o.folderId !== undefined,
+          {
+            message: "Title can only be provided with folderId.",
+            path: ["title"],
+          },
+        ),
+    ).
+    optional().
+    describe("Destinations of the produced files, keyed by the name passed to builder.SaveFile. Each entry names exactly one of fileId and folderId."),
+  argument: z.
+    record(z.string(), z.unknown()).
+    optional().
+    describe("Values the script reads through the global Argument object, such as Argument.title. Must not contain http or https URLs."),
+  filters: z.
+    object({
+      fields: z.array(unionToEnum(RunBuilderScriptFileFieldSchema, "The fields of the saved files to include in the response.")),
+    }).
+    optional().
+    default({fields: ["id", "title", "version", "webUrl", "folderId"]}).
+    describe("The filters to apply to the saved files. Without them, each file has only its id, title, version, webUrl and folderId."),
+})
+
+const RunBuilderScriptInputJsonSchema = z.toJSONSchema(RunBuilderScriptInputSchema, {io: "input"})
+
+const RunBuilderScriptOutputSchema = z.object({
+  files: z.
+    array(
+      core.FileDtoSchema.extend({
+        version: z.number().optional().describe("The file version."),
+        webUrl: z.string().optional().describe("The Web URL link to the file."),
+        viewUrl: z.string().optional().describe("The URL link to download the file."),
+        contentLength: z.string().optional().describe("The content length of the file."),
+      }),
+    ).
+    describe("The files saved by the script, with only the fields asked for in filters."),
+})
+
+const RunBuilderScriptOutputJsonSchema = z.toJSONSchema(RunBuilderScriptOutputSchema)
 
 const SetRoomSecurityInputSchema = z.object({
   roomId: z.
@@ -530,6 +615,27 @@ export const regularToolsets = [
           openWorldHint: false,
         },
       },
+      {
+        name: "get_office_api_reference",
+        description: "Look up the Office JavaScript API that run_builder_script scripts are written against. Use it before every run_builder_script call to check the methods the script uses, since the API changes between versions and remembered signatures may be outdated. Without class and query, returns an overview of the editor API with the list of its classes and enumerations; with query, finds classes, methods and enumerations; with class, returns the methods of a class or the values of an enumeration; with class and method, returns the syntax, parameters and an example of a method. The reference is read from api.onlyoffice.com.",
+        inputSchema: GetOfficeApiReferenceInputJsonSchema,
+        annotations: {
+          readOnlyHint: true,
+          destructiveHint: false,
+          openWorldHint: true,
+        },
+      },
+      {
+        name: "run_builder_script",
+        description: "Run an ONLYOFFICE Document Builder script to create or edit documents, spreadsheets, presentations or PDFs, and wait for it to finish. The Office JavaScript API changes between versions (since 9.4.0, for example, Api.CreateTable takes rows before columns), so do not write the script from memory: look up every class and method it uses with the get_office_api_reference tool first. Returns the saved files in the files field; a file may get a different title than the name passed to builder.SaveFile when the folder already has a file with that name.",
+        inputSchema: RunBuilderScriptInputJsonSchema,
+        outputSchema: RunBuilderScriptOutputJsonSchema,
+        annotations: {
+          readOnlyHint: false,
+          destructiveHint: true,
+          openWorldHint: false,
+        },
+      },
     ],
   },
   {
@@ -743,6 +849,7 @@ export type ServerConfig = {
   resolver: apiExtra.Resolver
   uploader: apiExtra.Uploader
   fileOperationCaller: apiExtra.FileOperationCaller
+  officeApiReference: officeApi.Reference
 }
 
 export type ServerElicitation = {
@@ -779,6 +886,7 @@ export class Server {
     get_folder_content: this.handleGetFolderContent.bind(this),
     get_folder_info: this.handleGetFolderInfo.bind(this),
     get_my_folder: this.handleGetMyFolder.bind(this),
+    get_office_api_reference: this.handleGetOfficeApiReference.bind(this),
     get_room_access_levels: this.handleGetRoomAccessLevels.bind(this),
     get_room_info: this.handleGetRoomInfo.bind(this),
     get_room_security_info: this.handleGetRoomSecurityInfo.bind(this),
@@ -786,6 +894,7 @@ export class Server {
     get_rooms_folder: this.handleGetRoomsFolder.bind(this),
     move_batch_items: this.handleMoveBatchItems.bind(this),
     rename_folder: this.handleRenameFolder.bind(this),
+    run_builder_script: this.handleRunBuilderScript.bind(this),
     set_room_security: this.handleSetRoomSecurity.bind(this),
     update_file: this.handleUpdateFile.bind(this),
     update_room: this.handleUpdateRoom.bind(this),
@@ -801,6 +910,7 @@ export class Server {
   private resolver: apiExtra.Resolver
   private uploader: apiExtra.Uploader
   private fileOperationCaller: apiExtra.FileOperationCaller
+  private officeApiReference: officeApi.Reference
 
   constructor(config: ServerConfig) {
     this.dynamic = config.dynamic
@@ -847,6 +957,7 @@ export class Server {
     this.resolver = config.resolver
     this.uploader = config.uploader
     this.fileOperationCaller = config.fileOperationCaller
+    this.officeApiReference = config.officeApiReference
   }
 
   router(): mcp.Router {
@@ -1416,6 +1527,104 @@ export class Server {
     return await fromResponse(res, GetMyFolderOutputJsonSchema)
   }
 
+  private async handleGetOfficeApiReference(req: types.CallToolRequest): Promise<types.CallToolResult> {
+    const pr = GetOfficeApiReferenceInputSchema.safeParse(req.params.arguments)
+    if (!pr.success) {
+      return fromError(new Error("Parsing input.", {cause: pr.error}))
+    }
+
+    if (pr.data.method !== undefined && pr.data.class === undefined) {
+      return fromError(new Error("The method has to be given together with its class."))
+    }
+
+    const ir = await this.officeApiReference.index(pr.data.editor)
+    if (ir.err) {
+      return fromError(new Error("Getting reference index.", {cause: ir.err}))
+    }
+
+    const a = ir.v
+
+    if (pr.data.class !== undefined) {
+      let n = pr.data.class
+      let k: officeApi.ReferenceEntryKind[] = ["class", "enumeration"]
+
+      if (pr.data.method !== undefined) {
+        n = `${pr.data.class}.${pr.data.method}`
+        k = ["method"]
+      }
+
+      const en = officeApi.findEntry(a, n, k)
+
+      if (!en) {
+        return fromError(new Error(officeApi.notFoundMessage(a, pr.data.editor, pr.data.class, pr.data.method)))
+      }
+
+      const pg = await this.officeApiReference.page(en)
+      if (pg.err) {
+        return fromError(new Error("Getting reference page.", {cause: pg.err}))
+      }
+
+      return fromString(pg.v)
+    }
+
+    if (pr.data.query !== undefined) {
+      const f = officeApi.searchEntries(a, pr.data.query)
+
+      if (f.length === 0) {
+        return fromString(`Nothing in the ${pr.data.editor} API matches "${pr.data.query}". Try other words, or call the tool without query for the list of classes.`)
+      }
+
+      const m = 50
+      let t = ""
+
+      for (const e of f.slice(0, m)) {
+        t += `- ${e.name} (${e.kind}): ${e.description}\n`
+      }
+
+      if (f.length > m) {
+        t += `\n${f.length - m} more matches are not shown; add words to the query to narrow it.\n`
+      }
+
+      return fromString(t.trim())
+    }
+
+    const ov = a.find((e) => e.kind === "overview")
+
+    let t = ""
+
+    if (ov) {
+      const pg = await this.officeApiReference.page(ov)
+      if (pg.err) {
+        return fromError(new Error("Getting reference overview.", {cause: pg.err}))
+      }
+
+      t += `${pg.v}\n\n`
+    }
+
+    t += "## Classes\n\n"
+
+    for (const e of a) {
+      if (e.kind === "class") {
+        t += `- ${e.name}: ${e.description}\n`
+      }
+    }
+
+    t += "\n## Enumerations\n\n"
+
+    const en: string[] = []
+
+    for (const e of a) {
+      if (e.kind === "enumeration") {
+        en.push(e.name)
+      }
+    }
+
+    t += `${en.join(", ")}\n\n`
+    t += "Pass class to get the methods of a class or the values of an enumeration, class and method to get a method, and query to search."
+
+    return fromString(t)
+  }
+
   private async handleGetRoomAccessLevels(req: types.CallToolRequest): Promise<types.CallToolResult> {
     const pr = GetRoomAccessLevelsInputSchema.safeParse(req.params.arguments)
     if (!pr.success) {
@@ -1563,6 +1772,50 @@ export class Server {
     return await fromResponse(res, RenameFolderOutputJsonSchema)
   }
 
+  private async handleRunBuilderScript(req: types.CallToolRequest): Promise<types.CallToolResult> {
+    const pr = RunBuilderScriptInputSchema.safeParse(req.params.arguments)
+    if (!pr.success) {
+      return fromError(new Error("Parsing input.", {cause: pr.error}))
+    }
+
+    const ro: core.RunBuilderScriptOptions = {
+      script: pr.data.script,
+      folderId: pr.data.folderId,
+      outputs: pr.data.outputs,
+      argument: pr.data.argument,
+    }
+
+    const it = await this.fileOperationCaller.call(() => this.client.files.runBuilderScript(ro))
+
+    for await (const _ of it) {
+      // Wait for the operation to finish.
+    }
+
+    const rr = it.result()
+    if (rr.err) {
+      const h = builderErrorHint(rr.err)
+      if (h) {
+        return fromError(new Error("Running builder script.", {cause: new AggregateError([rr.err, new Error(h)])}))
+      }
+      return fromError(new Error("Running builder script.", {cause: rr.err}))
+    }
+
+    // The operation may end without a single status having been received.
+    if (!rr.v) {
+      return fromError(new Error("Builder script operation has no result."))
+    }
+
+    const files: unknown[] = []
+
+    if (Array.isArray(rr.v.files)) {
+      for (const f of rr.v.files) {
+        files.push(pickFields(f, pr.data.filters.fields))
+      }
+    }
+
+    return fromObject({files}, RunBuilderScriptOutputJsonSchema)
+  }
+
   private async handleSetRoomSecurity(req: types.CallToolRequest): Promise<types.CallToolResult> {
     const pr = SetRoomSecurityInputSchema.safeParse(req.params.arguments)
     if (!pr.success) {
@@ -1706,6 +1959,86 @@ export class ErroredServer {
       tools: regularTools,
     }
   }
+}
+
+// Fields address nested values with dots, such as createdBy.displayName.
+function pickFields(v: unknown, fields: string[]): unknown {
+  if (typeof v !== "object" || v === null) {
+    return v
+  }
+
+  const o: Record<string, unknown> = {}
+
+  for (const f of fields) {
+    const k = f.split(".")
+
+    // Resolves the value before writing anything, so that a missing leaf does
+    // not leave empty intermediate objects behind.
+    let s: unknown = v
+    let ok = true
+
+    for (const p of k) {
+      if (typeof s !== "object" || s === null || !(p in s)) {
+        ok = false
+        break
+      }
+
+      s = (s as Record<string, unknown>)[p]
+    }
+
+    if (!ok) {
+      continue
+    }
+
+    let d = o
+
+    for (const p of k.slice(0, -1)) {
+      if (typeof d[p] !== "object" || d[p] === null) {
+        d[p] = {}
+      }
+
+      d = d[p] as Record<string, unknown>
+    }
+
+    d[k[k.length - 1]] = s
+  }
+
+  return o
+}
+
+// Document Builder reports no details on a failed script, only one of the
+// codes from
+// https://api.onlyoffice.com/docs/docs-api/additional-api/document-builder-api#possible-error-codes-and-their-description,
+// which the portal puts at the end of the operation error as "error -3".
+const builderErrorHints: Record<string, string> = {
+  "-1": "Document Builder error -1 (unknown error): the script failed for a reason Document Builder does not report.",
+  "-2": "Document Builder error -2 (generation timeout): the script ran too long. Make it do less, or split the work across several scripts.",
+  "-3": "Document Builder error -3 (document generation error): the script threw. Document Builder reports neither the message nor the line, so the cause is one of: a syntax error, a call to a method that does not exist in this version of the Office JavaScript API, wrong arguments, or an explicit throw. Check every class and method the script uses with get_office_api_reference, fix the script and run it again; if the cause is still unclear, run a shorter part of the script to find the failing line.",
+  "-4": "Document Builder error -4 (download error): the document opened with builder.OpenFile could not be downloaded. Check that the file ID is right and the file is accessible.",
+  "-6": "Document Builder error -6 (result database error): a server-side failure unrelated to the script. Try again later.",
+  "-8": "Document Builder error -8 (invalid token): the portal and ONLYOFFICE Docs are misconfigured, which no change to the script fixes. Tell the user to contact the portal administrator.",
+}
+
+function builderErrorHint(err: unknown): string | undefined {
+  if (err instanceof AggregateError) {
+    for (const e of err.errors) {
+      const h = builderErrorHint(e)
+      if (h) {
+        return h
+      }
+    }
+  }
+
+  if (err instanceof Error) {
+    const m = /\berror (-\d+)\)\s*$/.exec(err.message)
+    if (m && Object.hasOwn(builderErrorHints, m[1])) {
+      return builderErrorHints[m[1]]
+    }
+
+    return builderErrorHint(err.cause)
+  }
+
+  return
 }
 
 function fromError(err: Error): types.CallToolResult {

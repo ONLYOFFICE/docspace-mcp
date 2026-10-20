@@ -19,7 +19,7 @@ Changelog] format and adhering to [Semantic Versioning].
   files and does not keep the portal from running the next script. It also
   terminates an operation that the portal starts after the call has been
   abandoned, and when the portal fails to terminate the operation, it warns
-  that the script may still run and save files.
+  that the script may still run and save files ([e4b1fd9]).
 - Add the `get_office_api_reference` tool to the `files` toolset. It looks up
   classes, methods and enumerations of the Office JavaScript API that
   `run_builder_script` scripts are written against, reading the reference from
@@ -404,6 +404,7 @@ There are no noticeable changes in version [3.0.1].
 [0.1.1]: https://github.com/onlyoffice/docspace-mcp/compare/v0.1.0...v0.1.1/
 [0.1.0]: https://github.com/onlyoffice/docspace-mcp/releases/tag/v0.1.0/
 
+[e4b1fd9]: https://github.com/onlyoffice/docspace-mcp/commit/e4b1fd9e4c287bff61a0e03bac75392c1b2cfe07/
 [8f42745]: https://github.com/onlyoffice/docspace-mcp/commit/8f42745b20805e9913727e5e492098367012d19f/
 [cca18f4]: https://github.com/onlyoffice/docspace-mcp/commit/cca18f404ca34909a9af6a2a393607f2e5ee24e6/
 [41ea974]: https://github.com/onlyoffice/docspace-mcp/commit/41ea974dac25f184ac8cd3e7cd79da126f384dac/

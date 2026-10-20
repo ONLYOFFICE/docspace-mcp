@@ -183,6 +183,46 @@ void test.suite("run builder script", () => {
     await Promise.race([hp, tf()])
   })
 
+  void test("omits a nested field whose leaf is missing", async(t) => {
+    const bodies: unknown[] = []
+
+    const f = {...file, createdBy: {id: "00000000-0000-0000-0000-000000000001"}}
+
+    const [cl, hp] = await setup(t, [f], bodies)
+
+    const tf = async(): Promise<void> => {
+      const cp: types.CallToolRequest["params"] = {
+        name: "run_builder_script",
+        arguments: {
+          script: "builder.CreateFile(\"docx\")\nbuilder.SaveFile(\"docx\", \"Report.docx\")\nbuilder.CloseFile()",
+          folderId: 5,
+          filters: {
+            fields: ["id", "createdBy.displayName"],
+          },
+        },
+      }
+
+      const cr = await r.safeAsync(cl.callTool.bind(cl), cp)
+      assert.ok(cr.err === undefined)
+
+      assert.ok(!cr.v.isError, JSON.stringify(cr.v.content))
+
+      // The creator has no displayName field, so the response has no empty
+      // createdBy object either.
+      const x = {
+        files: [
+          {
+            id: 10,
+          },
+        ],
+      }
+
+      assert.deepEqual(cr.v.structuredContent, x)
+    }
+
+    await Promise.race([hp, tf()])
+  })
+
   void test("sends the script without the filters", async(t) => {
     const bodies: unknown[] = []
 

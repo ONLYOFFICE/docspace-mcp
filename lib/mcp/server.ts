@@ -1970,28 +1970,37 @@ function pickFields(v: unknown, fields: string[]): unknown {
   const o: Record<string, unknown> = {}
 
   for (const f of fields) {
-    let s: unknown = v
-    let d = o
     const k = f.split(".")
 
-    for (const [i, p] of k.entries()) {
+    // Resolves the value before writing anything, so that a missing leaf does
+    // not leave empty intermediate objects behind.
+    let s: unknown = v
+    let ok = true
+
+    for (const p of k) {
       if (typeof s !== "object" || s === null || !(p in s)) {
+        ok = false
         break
       }
 
       s = (s as Record<string, unknown>)[p]
+    }
 
-      if (i === k.length - 1) {
-        d[p] = s
-        break
-      }
+    if (!ok) {
+      continue
+    }
 
+    let d = o
+
+    for (const p of k.slice(0, -1)) {
       if (typeof d[p] !== "object" || d[p] === null) {
         d[p] = {}
       }
 
       d = d[p] as Record<string, unknown>
     }
+
+    d[k[k.length - 1]] = s
   }
 
   return o

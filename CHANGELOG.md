@@ -12,7 +12,8 @@ Changelog] format and adhering to [Semantic Versioning].
   waits for the operation to finish. It returns only the saved files, each with
   its `id`, `title`, `version`, `webUrl` and `folderId` unless `filters.fields`
   asks for other fields. When the script fails, it explains the Document
-  Builder error code that the portal reports and what to do about it.
+  Builder error code that the portal reports and what to do about it
+  ([cca18f4]).
 
 ### Changed
 
@@ -393,6 +394,7 @@ There are no noticeable changes in version [3.0.1].
 [0.1.1]: https://github.com/onlyoffice/docspace-mcp/compare/v0.1.0...v0.1.1/
 [0.1.0]: https://github.com/onlyoffice/docspace-mcp/releases/tag/v0.1.0/
 
+[cca18f4]: https://github.com/onlyoffice/docspace-mcp/commit/cca18f404ca34909a9af6a2a393607f2e5ee24e6/
 [41ea974]: https://github.com/onlyoffice/docspace-mcp/commit/41ea974dac25f184ac8cd3e7cd79da126f384dac/
 [050e932]: https://github.com/onlyoffice/docspace-mcp/commit/050e932c620bfa957781bd964ddde392ecd4d457/
 [5edb220]: https://github.com/onlyoffice/docspace-mcp/commit/5edb2208b5d48620d5674f227422e0806536ce5c/

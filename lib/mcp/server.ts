@@ -2006,6 +2006,10 @@ function pickFields(v: unknown, fields: string[]): unknown {
   return o
 }
 
+const builderTimeoutHint = "The script did not finish within the time the server waits for a file operation, so the server stopped waiting and terminated it; a terminated script saves no files. Make the script do less, or split the work across several scripts, then run it again."
+
+const builderTerminateHint = "The server stopped waiting for the script but could not terminate it, so the script may still be running, may save files later and may keep the portal from running the next script until it ends. Wait a while and check the target folder for the saved files before running the script again."
+
 // Document Builder reports no details on a failed script, only one of the
 // codes from
 // https://api.onlyoffice.com/docs/docs-api/additional-api/document-builder-api#possible-error-codes-and-their-description,
@@ -2020,7 +2024,19 @@ const builderErrorHints: Record<string, string> = {
 }
 
 function builderErrorHint(err: unknown): string | undefined {
+  if (err instanceof DOMException && err.name === "TimeoutError") {
+    return builderTimeoutHint
+  }
+
   if (err instanceof AggregateError) {
+    // A failed termination outweighs the reason the script was abandoned, whose
+    // hint would claim the script saves nothing.
+    for (const e of err.errors) {
+      if (e instanceof Error && e.message === "Terminating operation") {
+        return builderTerminateHint
+      }
+    }
+
     for (const e of err.errors) {
       const h = builderErrorHint(e)
       if (h) {

@@ -7,6 +7,7 @@ import type events from "node:events"
 import timers from "node:timers"
 import type * as z from "zod"
 import * as abort from "../../util/abort.ts"
+import * as context from "../../util/context.ts"
 import * as r from "../../util/result.ts"
 import type * as core from "../core.ts"
 
@@ -124,7 +125,11 @@ export class FileOperationPoller {
 
       c.signal.addEventListener("abort", onAbort)
 
-      t = timers.setTimeout(onTick, this.interval)
+      // The poll serves every caller, so it must not follow the signal of the
+      // request whose listener happened to start it.
+      context.run({[abort.signalKey]: undefined}, () => {
+        t = timers.setTimeout(onTick, this.interval)
+      })
 
       this.controller = c
     }
@@ -193,23 +198,52 @@ export type FileOperationFn = () => PromiseLike<r.Result<[FileOperationDto, core
 export type FileOperationCallerConfig = {
   timeout: number
   bus: FileOperationBus
+  client: FileOperationCallerClient
 }
+
+export type FileOperationCallerClient = {
+  files: FileOperationCallerClientFileService
+}
+
+export type FileOperationCallerClientFileService = {
+  terminateOperation(id: string): Promise<r.Result<[FileOperationDto[], core.Response], Error>>
+}
+
+// The time to wait for the portal to terminate an abandoned operation.
+const terminateTimeout = 10000
 
 export class FileOperationCaller {
   private timeout: number
   private bus: FileOperationBus
+  private client: FileOperationCallerClient
 
   constructor(config: FileOperationCallerConfig) {
     this.timeout = config.timeout
     this.bus = config.bus
+    this.client = config.client
   }
 
+  // Waits for the operation until it ends, the timeout passes or the signal of
+  // the request aborts. An operation that is no longer waited for is
+  // terminated, so that it neither saves results nobody receives nor blocks
+  // the next operations of the user.
   async call(fn: FileOperationFn): Promise<FileOperationIter> {
     let fid = ""
+    let stopped = false
     let closed = false
     const buf: FileOperationDto[] = []
     let wake = (): void => {}
     const re = r.ok() as unknown as r.Result<FileOperationDto, Error>
+
+    // Resolves with the ID of the operation once the call that starts it ends,
+    // or with an empty string when the call fails.
+    let started = (_: string): void => {}
+
+    const se = (res: (id: string) => void): void => {
+      started = res
+    }
+
+    const sp = new Promise<string>(se)
 
     const it: FileOperationIter = {
       [Symbol.asyncIterator]() {
@@ -263,14 +297,21 @@ export class FileOperationCaller {
 
     const ac = new abort.Controller()
 
+    const s = context.get()[abort.signalKey]
+    if (s) {
+      ac.withSignal(s)
+    }
+
     if (this.timeout) {
-      ac.withTimeout(this.timeout)
+      ac.withSignal(AbortSignal.timeout(this.timeout))
     }
 
     const onAbort = (): void => {
-      close(ac.signal.reason)
+      abandon(ac.signal.reason as Error)
     }
 
+    // A failed poll says nothing about the operation itself and is reported to
+    // every caller of the session, so the operation is left running.
     const onErr = (id: string, err: Error): void => {
       if (fid && id === fid || !id) {
         close(err)
@@ -291,15 +332,7 @@ export class FileOperationCaller {
       }
     }
 
-    const close = (err?: Error): void => {
-      if (closed) {
-        return
-      }
-
-      if (err) {
-        re.err = err
-      }
-
+    const stop = (): void => {
       ac.signal.removeEventListener("abort", onAbort)
 
       this.bus.removeListener("error", onErr)
@@ -308,9 +341,55 @@ export class FileOperationCaller {
 
       ac.clear()
 
+      stopped = true
+    }
+
+    const close = (err?: Error): void => {
+      if (stopped) {
+        return
+      }
+
+      stop()
+
+      if (err) {
+        re.err = err
+      }
+
       closed = true
 
       wake()
+    }
+
+    // The iterator stays open until the termination ends, so that the error
+    // of the termination reaches the result as well. An operation abandoned
+    // while the call that starts it is still in flight may start anyway, so
+    // the termination waits for its ID.
+    const abandon = (err: Error): void => {
+      if (stopped) {
+        return
+      }
+
+      stop()
+
+      void (async() => {
+        re.err = err
+
+        let id = fid
+        if (!id) {
+          id = await sp
+        }
+
+        if (id) {
+          const tr = await this.terminate(id)
+          if (tr.err) {
+            re.err = new AggregateError([err, new Error("Terminating operation", {cause: tr.err})])
+          }
+        }
+
+        closed = true
+
+        wake()
+      })()
     }
 
     ac.signal.addEventListener("abort", onAbort)
@@ -318,6 +397,12 @@ export class FileOperationCaller {
     this.bus.addListener("error", onErr)
     this.bus.addListener("data", onData)
     this.bus.addListener("end", onEnd)
+
+    if (ac.signal.aborted) {
+      started("")
+      close(ac.signal.reason as Error)
+      return it
+    }
 
     let err: Error | undefined
 
@@ -333,10 +418,26 @@ export class FileOperationCaller {
       }
     }
 
+    started(fid)
+
     if (err) {
       close(err)
     }
 
     return it
+  }
+
+  private async terminate(id: string): Promise<r.Result<[FileOperationDto[], core.Response], Error>> {
+    // The signal of the request may have aborted by now, so the termination
+    // follows a signal of its own.
+    const ex = (res: (v: r.Result<[FileOperationDto[], core.Response], Error>) => void): void => {
+      const cb = (): void => {
+        void this.client.files.terminateOperation(id).then(res)
+      }
+
+      context.run({[abort.signalKey]: AbortSignal.timeout(terminateTimeout)}, cb)
+    }
+
+    return await new Promise(ex)
   }
 }

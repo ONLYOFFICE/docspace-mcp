@@ -13,7 +13,13 @@ Changelog] format and adhering to [Semantic Versioning].
   its `id`, `title`, `version`, `webUrl` and `folderId` unless `filters.fields`
   asks for other fields. When the script fails, it explains the Document
   Builder error code that the portal reports and what to do about it
-  ([cca18f4]).
+  ([cca18f4]). When the client cancels the call or drops the connection, or
+  the file operation timeout passes, it terminates the operation through
+  `PUT api/2.0/files/fileops/terminate/{id}`, so the abandoned script saves no
+  files and does not keep the portal from running the next script. It also
+  terminates an operation that the portal starts after the call has been
+  abandoned, and when the portal fails to terminate the operation, it warns
+  that the script may still run and save files.
 - Add the `get_office_api_reference` tool to the `files` toolset. It looks up
   classes, methods and enumerations of the Office JavaScript API that
   `run_builder_script` scripts are written against, reading the reference from

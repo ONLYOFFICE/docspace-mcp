@@ -17,7 +17,7 @@ Changelog] format and adhering to [Semantic Versioning].
 - Add the `get_office_api_reference` tool to the `files` toolset. It looks up
   classes, methods and enumerations of the Office JavaScript API that
   `run_builder_script` scripts are written against, reading the reference from
-  api.onlyoffice.com and caching it in memory.
+  api.onlyoffice.com and caching it in memory ([8f42745]).
 
 ### Changed
 
@@ -398,6 +398,7 @@ There are no noticeable changes in version [3.0.1].
 [0.1.1]: https://github.com/onlyoffice/docspace-mcp/compare/v0.1.0...v0.1.1/
 [0.1.0]: https://github.com/onlyoffice/docspace-mcp/releases/tag/v0.1.0/
 
+[8f42745]: https://github.com/onlyoffice/docspace-mcp/commit/8f42745b20805e9913727e5e492098367012d19f/
 [cca18f4]: https://github.com/onlyoffice/docspace-mcp/commit/cca18f404ca34909a9af6a2a393607f2e5ee24e6/
 [41ea974]: https://github.com/onlyoffice/docspace-mcp/commit/41ea974dac25f184ac8cd3e7cd79da126f384dac/
 [050e932]: https://github.com/onlyoffice/docspace-mcp/commit/050e932c620bfa957781bd964ddde392ecd4d457/

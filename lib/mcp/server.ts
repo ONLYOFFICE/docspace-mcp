@@ -338,7 +338,20 @@ const RunBuilderScriptInputSchema = z.object({
         fileId: z.number().optional().describe("The ID of the file to store the result in as a new version. The result has to be in the format of that file. Do not combine with folderId and title."),
         folderId: z.number().optional().describe("The ID of the folder to save the result to as a new file."),
         title: z.string().optional().describe("The title of the new file, when it has to differ from the name passed to SaveFile. Only with folderId."),
-      }),
+      }).
+        refine(
+          (o) => (o.fileId === undefined) !== (o.folderId === undefined),
+          {
+            message: "Exactly one of fileId and folderId must be provided.",
+          },
+        ).
+        refine(
+          (o) => o.title === undefined || o.folderId !== undefined,
+          {
+            message: "Title can only be provided with folderId.",
+            path: ["title"],
+          },
+        ),
     ).
     optional().
     describe("Destinations of the produced files, keyed by the name passed to builder.SaveFile. Each entry names exactly one of fileId and folderId."),

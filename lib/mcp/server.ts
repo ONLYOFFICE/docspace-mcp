@@ -238,7 +238,7 @@ const GetOfficeApiReferenceInputSchema = z.object({
   method: z.string().optional().describe("The name of a method of the class to get, such as AddText. Returns its syntax, parameters, return value and an example."),
 })
 
-const GetOfficeApiReferenceInputJsonSchema = z.toJSONSchema(GetOfficeApiReferenceInputSchema)
+const GetOfficeApiReferenceInputJsonSchema = z.toJSONSchema(GetOfficeApiReferenceInputSchema, {io: "input"})
 
 const GetRoomAccessLevelsInputSchema = z.object({
   roomId: z.number().describe("The ID of the room to get the invitation access for."),

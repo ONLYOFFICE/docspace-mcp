@@ -34,7 +34,8 @@ Changelog] format and adhering to [Semantic Versioning].
   of the words of the query, those with more of them first, when no entry holds
   them all. Fold the methods that share a name into one line that names their
   classes, and name the methods of `Api` among the matches that do not fit, so
-  that a broad query such as "color" shows factories like `Api.RGB`.
+  that a broad query such as "color" shows factories like `Api.RGB`
+  ([91557f0]).
 
 ### Fixed
 
@@ -403,6 +404,7 @@ There are no noticeable changes in version [3.0.1].
 [0.1.1]: https://github.com/onlyoffice/docspace-mcp/compare/v0.1.0...v0.1.1/
 [0.1.0]: https://github.com/onlyoffice/docspace-mcp/releases/tag/v0.1.0/
 
+[91557f0]: https://github.com/onlyoffice/docspace-mcp/commit/91557f0b8a8ffcb2436d39d6548c197bd3df4540/
 [8f42745]: https://github.com/onlyoffice/docspace-mcp/commit/8f42745b20805e9913727e5e492098367012d19f/
 [cca18f4]: https://github.com/onlyoffice/docspace-mcp/commit/cca18f404ca34909a9af6a2a393607f2e5ee24e6/
 [41ea974]: https://github.com/onlyoffice/docspace-mcp/commit/41ea974dac25f184ac8cd3e7cd79da126f384dac/

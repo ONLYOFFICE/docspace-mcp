@@ -1568,21 +1568,56 @@ export class Server {
     }
 
     if (pr.data.query !== undefined) {
-      const f = officeApi.searchEntries(a, pr.data.query)
-
-      if (f.length === 0) {
-        return fromString(`Nothing in the ${pr.data.editor} API matches "${pr.data.query}". Try other words, or call the tool without query for the list of classes.`)
-      }
-
-      const m = 50
+      let f = officeApi.searchEntries(a, pr.data.query)
       let t = ""
 
-      for (const e of f.slice(0, m)) {
-        t += `- ${e.name} (${e.kind}): ${e.description}\n`
+      if (f.length === 0) {
+        f = officeApi.searchEntries(a, pr.data.query, "some")
+
+        if (f.length === 0) {
+          return fromString(`Nothing in the ${pr.data.editor} API matches "${pr.data.query}". Try other words, or call the tool without query for the list of classes.`)
+        }
+
+        t += `Nothing in the ${pr.data.editor} API matches every word of "${pr.data.query}"; these entries match some of them, those that match more come first.\n\n`
       }
 
-      if (f.length > m) {
-        t += `\n${f.length - m} more matches are not shown; add words to the query to narrow it.\n`
+      const g = officeApi.groupEntries(f)
+      const m = 50
+
+      for (const x of g.slice(0, m)) {
+        t += `- ${x.entry.name} (${x.entry.kind}): ${x.entry.description}`
+        if (x.classes.length !== 0) {
+          t += ` A method of the same name is also in ${x.classes.join(", ")}.`
+        }
+        t += "\n"
+      }
+
+      // The methods of Api create the objects of the other classes, and the
+      // query often names only the object, such as "color" for Api.RGB, so
+      // they are named even when they do not fit.
+      let n = 0
+      const h: string[] = []
+
+      for (const x of g.slice(m)) {
+        n += 1 + x.classes.length
+
+        const i = x.entry.name.indexOf(".")
+
+        if (x.entry.kind === "method" && (x.entry.name.slice(0, i) === "Api" || x.classes.includes("Api"))) {
+          h.push(`Api.${x.entry.name.slice(i + 1)}`)
+        }
+      }
+
+      if (n !== 0) {
+        t += `\n${n} more matches are not shown; add words to the query to narrow it.`
+        if (h.length !== 0) {
+          t += ` They include these methods of Api: ${h.slice(0, 20).join(", ")}`
+          if (h.length > 20) {
+            t += ` and ${h.length - 20} more`
+          }
+          t += "."
+        }
+        t += "\n"
       }
 
       return fromString(t.trim())

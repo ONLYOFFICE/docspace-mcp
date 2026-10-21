@@ -30,6 +30,11 @@ Changelog] format and adhering to [Semantic Versioning].
 - Add the `offset` and `limit` parameters to the `download_file_as_text` tool
   and truncate large text, so the response does not exceed client size limits
   ([69cd570]).
+- Make the `get_office_api_reference` search list the entries that hold some
+  of the words of the query, those with more of them first, when no entry holds
+  them all. Fold the methods that share a name into one line that names their
+  classes, and name the methods of `Api` among the matches that do not fit, so
+  that a broad query such as "color" shows factories like `Api.RGB`.
 
 ### Fixed
 

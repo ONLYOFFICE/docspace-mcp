@@ -128,6 +128,56 @@ void test.suite("office api reference", () => {
     assert.deepEqual(n, ["ApiPivotField.SetValue"])
   })
 
+  void test("finds entries with some of the words, those with more of them first", () => {
+    const a = officeApi.parseIndex(`## Api
+
+- [Api.HexColor](${base}document-api/Api/Methods/HexColor.md): Creates a color from a HEX string.
+- [Api.RGB](${base}document-api/Api/Methods/RGB.md): Creates an RGB color from red, green and blue components.
+
+## ApiRun
+
+- [ApiRun.SetColor](${base}document-api/ApiRun/Methods/SetColor.md): Sets the text color to the current text run.
+- [ApiRun.SetBold](${base}document-api/ApiRun/Methods/SetBold.md): Sets the bold property to the text character.
+`)
+
+    assert.deepEqual(officeApi.searchEntries(a, "rgb color hexcolor"), [])
+
+    let n = officeApi.searchEntries(a, "rgb color hexcolor", "some").map((e) => e.name)
+
+    assert.deepEqual(n, ["Api.HexColor", "Api.RGB", "ApiRun.SetColor"])
+
+    n = officeApi.searchEntries(a, "color", "some").map((e) => e.name)
+
+    assert.deepEqual(n, officeApi.searchEntries(a, "color").map((e) => e.name))
+
+    assert.deepEqual(officeApi.searchEntries(a, "watermark", "some"), [])
+  })
+
+  void test("folds methods of the same name into the first of them", () => {
+    const a = officeApi.parseIndex(`## ApiTextForm
+
+- [ApiTextForm](${base}document-api/ApiTextForm.md): Class representing a text form.
+- [ApiTextForm.SetBorderColor](${base}document-api/ApiTextForm/Methods/SetBorderColor.md): Sets the border color to the current form.
+
+## ApiTable
+
+- [ApiTable.SetBackgroundColor](${base}document-api/ApiTable/Methods/SetBackgroundColor.md): Sets the background color to all cells in the current table.
+
+## ApiCheckBoxForm
+
+- [ApiCheckBoxForm.SetBorderColor](${base}document-api/ApiCheckBoxForm/Methods/SetBorderColor.md): Sets the border color to the current form.
+- [ApiCheckBoxForm.SetBackgroundColor](${base}document-api/ApiCheckBoxForm/Methods/SetBackgroundColor.md): Sets the background color to the current form.
+`)
+
+    const g = officeApi.groupEntries(a).map((x) => [x.entry.name, x.classes])
+
+    assert.deepEqual(g, [
+      ["ApiTextForm", []],
+      ["ApiTextForm.SetBorderColor", ["ApiCheckBoxForm"]],
+      ["ApiTable.SetBackgroundColor", ["ApiCheckBoxForm"]],
+    ])
+  })
+
   void test("reads pages listed in the index and caches them", async() => {
     const c: string[] = []
 

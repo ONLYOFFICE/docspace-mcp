@@ -22,6 +22,13 @@ export type ReferenceEntry = {
   url: string
 }
 
+export type SearchMode = "every" | "some"
+
+export type ReferenceMatch = {
+  entry: ReferenceEntry
+  classes: string[]
+}
+
 export type ReferenceConfig = {
   baseUrl: string
   userAgent: string
@@ -203,8 +210,12 @@ export function findEntry(a: ReferenceEntry[], n: string, k: ReferenceEntryKind[
  * those that hold them in the description only. Equal entries are ordered by
  * the number of methods of their class, so that SetValue of ApiRange comes
  * before SetValue of a rarely used class.
+ *
+ * In the "some" mode an entry has to hold only some of the words, and those
+ * that hold more of them come first. It suits a query that finds nothing in
+ * the "every" mode because one of its words is missing from the reference.
  */
-export function searchEntries(a: ReferenceEntry[], q: string): ReferenceEntry[] {
+export function searchEntries(a: ReferenceEntry[], q: string, md: SearchMode = "every"): ReferenceEntry[] {
   const w = q.toLowerCase().split(/[^a-z0-9]+/).filter((s) => s !== "")
   if (w.length === 0) {
     return []
@@ -221,7 +232,7 @@ export function searchEntries(a: ReferenceEntry[], q: string): ReferenceEntry[] 
     }
   }
 
-  const f: {e: ReferenceEntry, s: number, z: number}[] = []
+  const f: {e: ReferenceEntry, s: number, n: number, z: number}[] = []
 
   for (const e of a) {
     if (e.kind === "overview") {
@@ -237,6 +248,7 @@ export function searchEntries(a: ReferenceEntry[], q: string): ReferenceEntry[] 
     const dt = splitWords(e.description)
 
     let s = 0
+    let n = 0
 
     for (const x of w) {
       // A word found in the name of a method describes what the method does,
@@ -248,14 +260,18 @@ export function searchEntries(a: ReferenceEntry[], q: string): ReferenceEntry[] 
       )
 
       if (v === 0) {
-        s = 0
+        if (md === "some") {
+          continue
+        }
+        n = 0
         break
       }
 
       s += v
+      n += 1
     }
 
-    if (s === 0) {
+    if (n === 0) {
       continue
     }
 
@@ -269,14 +285,47 @@ export function searchEntries(a: ReferenceEntry[], q: string): ReferenceEntry[] 
       s += 1
     }
 
-    f.push({e, s, z: z.get(c) ?? 0})
+    f.push({e, s, n, z: z.get(c) ?? 0})
   }
 
   // Array.prototype.sort is stable, so equal entries keep the order of the
-  // index.
-  f.sort((x, y) => y.s - x.s || y.z - x.z || x.e.name.length - y.e.name.length)
+  // index. In the "every" mode all entries hold the same number of words.
+  f.sort((x, y) => y.n - x.n || y.s - x.s || y.z - x.z || x.e.name.length - y.e.name.length)
 
   return f.map((x) => x.e)
+}
+
+/**
+ * Folds the methods that share a name, such as SetBorderColor of every kind of
+ * form, into the first of them, which keeps its place, and lists the classes
+ * of the rest. A list of found entries then names more distinct methods in the
+ * same number of lines.
+ */
+export function groupEntries(a: ReferenceEntry[]): ReferenceMatch[] {
+  const g: ReferenceMatch[] = []
+  const h = new Map<string, ReferenceMatch>()
+
+  for (const e of a) {
+    if (e.kind !== "method") {
+      g.push({entry: e, classes: []})
+      continue
+    }
+
+    const i = e.name.indexOf(".")
+    const m = e.name.slice(i + 1)
+
+    const x = h.get(m)
+    if (x) {
+      x.classes.push(e.name.slice(0, i))
+      continue
+    }
+
+    const y = {entry: e, classes: []}
+    h.set(m, y)
+    g.push(y)
+  }
+
+  return g
 }
 
 /**

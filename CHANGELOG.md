@@ -49,6 +49,10 @@ Changelog] format and adhering to [Semantic Versioning].
   as `fields` of the listing filters, instead of only in the descriptions.
   Output schemas still omit `enum`, so that clients do not reject values added
   to the API later ([41ea974]).
+- Do not run a tool call that the client cancels before its handler starts.
+  A request signal that had already aborted was not passed on, so the call
+  still reached the portal, and `run_builder_script` could start a script that
+  nobody waited for.
 
 ## [3.3.0] - 2026-10-09
 

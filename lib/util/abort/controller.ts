@@ -27,6 +27,12 @@ export class Controller {
   }
 
   withSignal(s: AbortSignal): void {
+    // An aborted signal never dispatches the abort event again.
+    if (s.aborted) {
+      this.ac.abort(s.reason)
+      return
+    }
+
     const l = (): void => {
       this.ac.abort(s.reason)
     }

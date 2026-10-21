@@ -257,6 +257,63 @@ void test.suite("file operation caller", () => {
     assert.deepEqual(terminated, ["op"])
   })
 
+  void test("does not start the operation when the signal of the request has already aborted", async() => {
+    const res = new core.Response(new Request("http://localhost/api/2.0/files/fileops"), new Response())
+
+    const terminated: string[] = []
+
+    const c: apiExtra.FileOperationCallerClient = {
+      files: {
+        terminateOperation(id) {
+          terminated.push(id)
+          return Promise.resolve(r.ok([[], res]))
+        },
+      },
+    }
+
+    const bus = new events.EventEmitter<apiExtra.FileOperationBusEventMap>()
+
+    const fc: apiExtra.FileOperationCallerConfig = {
+      timeout: 0,
+      bus,
+      client: c,
+    }
+
+    const cr = new apiExtra.FileOperationCaller(fc)
+
+    let started = false
+
+    const fn: apiExtra.FileOperationFn = () => {
+      started = true
+      return Promise.resolve(r.ok([{id: "op"}, res]))
+    }
+
+    const ac = new AbortController()
+    ac.abort(new DOMException("Request cancelled", "AbortError"))
+
+    const e = (resolve: (v: apiExtra.FileOperationIter) => void): void => {
+      const cb = (): void => {
+        void cr.call(fn).then(resolve)
+      }
+
+      context.run({[abort.signalKey]: ac.signal}, cb)
+    }
+
+    const it = await new Promise(e)
+
+    for await (const _ of it) {
+      // Wait for the operation to finish.
+    }
+
+    const rr = it.result()
+
+    assert.ok(rr.err instanceof DOMException)
+    assert.equal(rr.err.message, "Request cancelled")
+    assert.equal(started, false)
+    assert.deepEqual(terminated, [])
+    assert.equal(bus.listenerCount("data"), 0)
+  })
+
   void test("does not terminate the operations of the session when polling fails", async() => {
     const bus = new events.EventEmitter<apiExtra.FileOperationBusEventMap>()
     const terminated: string[] = []

@@ -30,7 +30,11 @@ export function wrapUnion<
 export function unionToEnum<T extends string | number>(
   u: z.ZodUnion<readonly [z.ZodLiteral<T>, z.ZodLiteral<T>, ...z.ZodLiteral<T>[]]>,
   d: string,
-): T extends string ? z.ZodString : T extends number ? z.ZodNumber : never {
+): T extends string ?
+  z.ZodPipe<z.ZodType<string, string>, z.ZodString> :
+  T extends number ?
+    z.ZodPipe<z.ZodType<number, number>, z.ZodNumber> :
+    never {
   let t: z.ZodString | z.ZodNumber | undefined
   const r: Record<string, T> = {}
   let c = ""

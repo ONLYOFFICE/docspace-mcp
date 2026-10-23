@@ -189,6 +189,7 @@ function startStdio(env: z.ZodSafeParseResult<config.Env>): r.Result<Start, Erro
       const fcc: apiExtra.FileOperationCallerConfig = {
         timeout: env.data.fileOperation.timeout,
         bus: fb,
+        client: c,
       }
 
       const fc = new apiExtra.FileOperationCaller(fcc)
@@ -555,6 +556,7 @@ function startHttp(env: config.Env, logger: utilLogger.Logger): r.Result<Start, 
     const fcc: apiExtra.FileOperationCallerConfig = {
       timeout: env.fileOperation.timeout,
       bus: fb,
+      client: c,
     }
 
     const fc = new apiExtra.FileOperationCaller(fcc)

@@ -78,6 +78,42 @@ function listener(files: unknown[], bodies: unknown[], error: string): AsyncRequ
   }
 }
 
+// Answers the builder request with an operation that keeps running on every
+// status request, and calls back when the script starts and when it is
+// terminated. With fail, the portal fails to terminate the script.
+function runningListener(started: () => void, terminated: () => void, fail = false): AsyncRequestListener {
+  return async(req, res) => {
+    if (req.method === "POST" && req.url && req.url.startsWith("/api/2.0/docs/builder")) {
+      const s = await sendJson(res, 200, wrap({id: "op", progress: 0, finished: false}))
+      assert.ok(s.err === undefined)
+      started()
+      return
+    }
+
+    if (req.method === "GET" && req.url && req.url.startsWith("/api/2.0/files/fileops")) {
+      const s = await sendJson(res, 200, wrap([{id: "op", status: 1, processed: "0", progress: 0, finished: false}]))
+      assert.ok(s.err === undefined)
+      return
+    }
+
+    if (req.method === "PUT" && req.url === "/api/2.0/files/fileops/terminate/op") {
+      terminated()
+
+      if (fail) {
+        const s = await sendJson(res, 500, {error: {message: "Internal error"}, status: 1, statusCode: 500})
+        assert.ok(s.err === undefined)
+        return
+      }
+
+      const s = await sendJson(res, 200, wrap([]))
+      assert.ok(s.err === undefined)
+      return
+    }
+
+    assert.fail(`Unexpected request: ${req.method} ${req.url}`)
+  }
+}
+
 async function setup(t: test.TestContext, files: unknown[], bodies: unknown[], error = ""): Promise<[client.Client, Promise<void>]> {
   const [hs, ha] = await setupHttp(t)
 
@@ -392,6 +428,161 @@ void test.suite("run builder script", () => {
       assert.ok(c[0].text.includes("Error occurred in the Documents Service (convertation)"), c[0].text)
       assert.ok(!c[0].text.includes("Document Builder error"), c[0].text)
       assert.ok(!c[0].text.includes("No items processed"), c[0].text)
+    }
+
+    await Promise.race([hp, tf()])
+  })
+
+  void test("terminates the script when the client cancels the call", {timeout: 10000}, async(t) => {
+    const [hs, ha] = await setupHttp(t)
+
+    let started = (): void => {}
+    let terminated = (): void => {}
+
+    const sp = new Promise<void>((resolve) => {
+      started = resolve
+    })
+
+    const tp = new Promise<void>((resolve) => {
+      terminated = resolve
+    })
+
+    const hp = onRequest(t, hs, runningListener(started, terminated))
+
+    const so: SetupMcpOptions = {
+      transport: "stdio",
+      host: "",
+      port: 0,
+      env: {
+        DOCSPACE_BASE_URL: `http://[${ha.address}]:${ha.port}/`,
+        DOCSPACE_API_KEY: "xxx",
+        DOCSPACE_FILE_OPERATION_INTERVAL: "10",
+      },
+    }
+
+    const cl = await setupMcp(t, so)
+
+    const tf = async(): Promise<void> => {
+      const ac = new AbortController()
+
+      const cp: types.CallToolRequest["params"] = {
+        name: "run_builder_script",
+        arguments: {
+          script: "builder.CreateFile(\"docx\")\nwhile (true) {}",
+          folderId: 5,
+        },
+      }
+
+      const cr = r.safeAsync(cl.callTool.bind(cl), cp, undefined, {signal: ac.signal})
+
+      await sp
+
+      ac.abort()
+
+      const ce = await cr
+      assert.ok(ce.err !== undefined)
+
+      await tp
+    }
+
+    await Promise.race([hp, tf()])
+  })
+
+  void test("terminates the script that runs out of time and explains why", {timeout: 10000}, async(t) => {
+    const [hs, ha] = await setupHttp(t)
+
+    let terminated = false
+
+    const onTerminated = (): void => {
+      terminated = true
+    }
+
+    const hp = onRequest(t, hs, runningListener(() => {}, onTerminated))
+
+    // The timeout of file operations is short, so the call runs out of time
+    // quickly.
+    const so: SetupMcpOptions = {
+      transport: "stdio",
+      host: "",
+      port: 0,
+      env: {
+        DOCSPACE_BASE_URL: `http://[${ha.address}]:${ha.port}/`,
+        DOCSPACE_API_KEY: "xxx",
+        DOCSPACE_FILE_OPERATION_INTERVAL: "10",
+        DOCSPACE_FILE_OPERATION_TIMEOUT: "200",
+      },
+    }
+
+    const cl = await setupMcp(t, so)
+
+    const tf = async(): Promise<void> => {
+      const cp: types.CallToolRequest["params"] = {
+        name: "run_builder_script",
+        arguments: {
+          script: "builder.CreateFile(\"docx\")\nwhile (true) {}",
+          folderId: 5,
+        },
+      }
+
+      const cr = await r.safeAsync(cl.callTool.bind(cl), cp)
+      assert.ok(cr.err === undefined)
+
+      assert.ok(cr.v.isError)
+
+      const c = cr.v.content as types.TextContent[]
+      assert.ok(c[0].text.includes("did not finish within the time the server waits for a file operation"), c[0].text)
+
+      // The response comes only after the termination ends.
+      assert.ok(terminated)
+    }
+
+    await Promise.race([hp, tf()])
+  })
+
+  void test("warns that the script may still run when the termination fails", {timeout: 10000}, async(t) => {
+    const [hs, ha] = await setupHttp(t)
+
+    let terminated = false
+
+    const onTerminated = (): void => {
+      terminated = true
+    }
+
+    const hp = onRequest(t, hs, runningListener(() => {}, onTerminated, true))
+
+    const so: SetupMcpOptions = {
+      transport: "stdio",
+      host: "",
+      port: 0,
+      env: {
+        DOCSPACE_BASE_URL: `http://[${ha.address}]:${ha.port}/`,
+        DOCSPACE_API_KEY: "xxx",
+        DOCSPACE_FILE_OPERATION_INTERVAL: "10",
+        DOCSPACE_FILE_OPERATION_TIMEOUT: "200",
+      },
+    }
+
+    const cl = await setupMcp(t, so)
+
+    const tf = async(): Promise<void> => {
+      const cp: types.CallToolRequest["params"] = {
+        name: "run_builder_script",
+        arguments: {
+          script: "builder.CreateFile(\"docx\")\nwhile (true) {}",
+          folderId: 5,
+        },
+      }
+
+      const cr = await r.safeAsync(cl.callTool.bind(cl), cp)
+      assert.ok(cr.err === undefined)
+
+      assert.ok(cr.v.isError)
+
+      const c = cr.v.content as types.TextContent[]
+      assert.ok(c[0].text.includes("could not terminate it"), c[0].text)
+      assert.ok(!c[0].text.includes("a terminated script saves no files"), c[0].text)
+
+      assert.ok(terminated)
     }
 
     await Promise.race([hp, tf()])

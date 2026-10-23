@@ -13,7 +13,13 @@ Changelog] format and adhering to [Semantic Versioning].
   its `id`, `title`, `version`, `webUrl` and `folderId` unless `filters.fields`
   asks for other fields. When the script fails, it explains the Document
   Builder error code that the portal reports and what to do about it
-  ([cca18f4]).
+  ([cca18f4]). When the client cancels the call or drops the connection, or
+  the file operation timeout passes, it terminates the operation through
+  `PUT api/2.0/files/fileops/terminate/{id}`, so the abandoned script saves no
+  files and does not keep the portal from running the next script. It also
+  terminates an operation that the portal starts after the call has been
+  abandoned, and when the portal fails to terminate the operation, it warns
+  that the script may still run and save files ([e4b1fd9]).
 - Add the `get_office_api_reference` tool to the `files` toolset. It looks up
   classes, methods and enumerations of the Office JavaScript API that
   `run_builder_script` scripts are written against, reading the reference from
@@ -43,6 +49,10 @@ Changelog] format and adhering to [Semantic Versioning].
   as `fields` of the listing filters, instead of only in the descriptions.
   Output schemas still omit `enum`, so that clients do not reject values added
   to the API later ([41ea974]).
+- Do not run a tool call that the client cancels before its handler starts.
+  A request signal that had already aborted was not passed on, so the call
+  still reached the portal, and `run_builder_script` could start a script that
+  nobody waited for ([5daa233]).
 
 ## [3.3.0] - 2026-10-09
 
@@ -398,6 +408,8 @@ There are no noticeable changes in version [3.0.1].
 [0.1.1]: https://github.com/onlyoffice/docspace-mcp/compare/v0.1.0...v0.1.1/
 [0.1.0]: https://github.com/onlyoffice/docspace-mcp/releases/tag/v0.1.0/
 
+[5daa233]: https://github.com/onlyoffice/docspace-mcp/commit/5daa233e91eed96575829148e3e1de141381dad2/
+[e4b1fd9]: https://github.com/onlyoffice/docspace-mcp/commit/e4b1fd9e4c287bff61a0e03bac75392c1b2cfe07/
 [8f42745]: https://github.com/onlyoffice/docspace-mcp/commit/8f42745b20805e9913727e5e492098367012d19f/
 [cca18f4]: https://github.com/onlyoffice/docspace-mcp/commit/cca18f404ca34909a9af6a2a393607f2e5ee24e6/
 [41ea974]: https://github.com/onlyoffice/docspace-mcp/commit/41ea974dac25f184ac8cd3e7cd79da126f384dac/

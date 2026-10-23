@@ -92,6 +92,7 @@ export type BulkDownloadResponseItem = z.output<typeof FileOperationDtoSchema>
 export type CopyBatchItemsResponseItem = z.output<typeof FileOperationDtoSchema>
 export type GetOperationStatusesResponseItem = z.output<typeof FileOperationDtoSchema>
 export type MoveBatchItemsResponseItem = z.output<typeof FileOperationDtoSchema>
+export type TerminateOperationResponseItem = z.output<typeof FileOperationDtoSchema>
 
 // SettingsController: Responses
 export type GetFilesSettingsResponse = z.output<typeof FilesSettingsDtoSchema>
@@ -567,6 +568,35 @@ export class FilesService {
     }
 
     const req = this.c.createRequest("PUT", u.v, o)
+    if (req.err) {
+      return error(new Error("Creating request.", {cause: req.err}))
+    }
+
+    const f = await this.c.fetch(req.v)
+    if (f.err) {
+      return error(new Error("Fetching request.", {cause: f.err}))
+    }
+
+    const [p, res] = f.v
+
+    const e = z.array(FileOperationDtoSchema).safeParse(p)
+    if (!e.success) {
+      return error(new Error("Parsing response.", {cause: e.error}))
+    }
+
+    return ok([e.data, res])
+  }
+
+  /**
+   * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v4.0.0-server/products/ASC.Files/Server/Api/OperationController.cs/#L514 |ONLYOFFICE Apps Reference}
+   */
+  async terminateOperation(id: string): Promise<Result<[TerminateOperationResponseItem[], Response], Error>> {
+    const u = this.c.createUrl(`api/2.0/files/fileops/terminate/${id}`)
+    if (u.err) {
+      return error(new Error("Creating URL.", {cause: u.err}))
+    }
+
+    const req = this.c.createRequest("PUT", u.v)
     if (req.err) {
       return error(new Error("Creating request.", {cause: req.err}))
     }

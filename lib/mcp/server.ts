@@ -721,7 +721,7 @@ export const regularToolsets = [
         annotations: {
           readOnlyHint: false,
           destructiveHint: true,
-          openWorldHint: false,
+          openWorldHint: true,
         },
       },
       {
@@ -752,7 +752,7 @@ export const regularToolsets = [
         inputSchema: ArchiveRoomInputJsonSchema,
         annotations: {
           readOnlyHint: false,
-          destructiveHint: false,
+          destructiveHint: true,
           openWorldHint: false,
         },
       },

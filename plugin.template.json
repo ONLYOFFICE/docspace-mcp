@@ -48,13 +48,13 @@
             {
               "description": "Create a room and invite a user",
               "prompt": "Create a collaboration room in ONLYOFFICE Apps called \"Q4 Marketing\" and invite reviewer.guest@example.com to it as an editor.",
-              "tools_triggered": "get_room_types, create_room, get_room_access_levels, set_room_security",
-              "expected_behavior": "Creates a collaboration room titled \"Q4 Marketing\", invites reviewer.guest@example.com with the editor access level, and confirms the room title and the invited user."
+              "tools_triggered": "create_room, set_room_security",
+              "expected_behavior": "Creates a collaboration room titled \"Q4 Marketing\", invites reviewer.guest@example.com (an existing guest on the test portal) with the Editor access level, and confirms the room title and the invited user."
             },
             {
               "description": "Upload a Markdown file to a room",
               "prompt": "In the \"Projects\" room in ONLYOFFICE Apps, create a file named kickoff-agenda.md with a short agenda for a project kickoff meeting.",
-              "tools_triggered": "get_rooms_folder, get_folder_content, upload_file",
+              "tools_triggered": "get_rooms_folder, upload_file",
               "expected_behavior": "Finds the \"Projects\" room, uploads kickoff-agenda.md with a Markdown agenda to it, and reports the created file name."
             },
             {
@@ -66,28 +66,28 @@
             {
               "description": "Organize personal files",
               "prompt": "In my personal files in ONLYOFFICE Apps, create a folder called \"Archive 2025\" and move all files that have 2025 in their name into it.",
-              "tools_triggered": "get_my_folder, get_folder_content, create_folder, move_batch_items",
-              "expected_behavior": "Creates the \"Archive 2025\" folder in the user's personal files, moves only the files whose names contain 2025 into it, and lists the moved files."
+              "tools_triggered": "get_my_folder, create_folder, move_batch_items",
+              "expected_behavior": "Creates the \"Archive 2025\" folder in the user's personal files, moves only the files whose names contain 2025 (Report 2025.docx and Budget 2025.xlsx on the test portal) into it, leaves other files such as Notes 2024.docx in place, and lists the moved files."
             },
             {
               "description": "Review room access",
               "prompt": "Who has access to the \"Projects\" room in ONLYOFFICE Apps and what access level does each person have?",
-              "tools_triggered": "get_rooms_folder, get_folder_content, get_room_security_info",
-              "expected_behavior": "Finds the \"Projects\" room and lists its members with their access levels without changing any permissions."
+              "tools_triggered": "get_rooms_folder, get_room_security_info",
+              "expected_behavior": "Finds the \"Projects\" room and lists its members with their access levels (on the test portal, the room owner is the only member) without changing any permissions."
             }
           ],
           "negative": [
             {
-              "description": "Unrelated request: the plugin should not be called and the assistant should answer without ONLYOFFICE Apps tools",
-              "prompt": "What's a good recipe for a quick vegetarian dinner?"
+              "description": "Unsupported action: the ONLYOFFICE Apps tools cannot send email, so the assistant should explain this instead of pretending the message was sent",
+              "prompt": "Send an email from ONLYOFFICE Apps to everyone in the \"Projects\" room announcing the kickoff meeting."
             },
             {
-              "description": "Unsupported action: there is no email tool, so the assistant should explain it cannot send emails instead of calling ONLYOFFICE Apps tools",
-              "prompt": "Send an email to everyone in my company announcing the new Q4 Marketing room."
+              "description": "Ambiguous destructive request: it is unclear which files are old, so the assistant should not delete anything and should ask the user which files to delete",
+              "prompt": "Delete the old files in ONLYOFFICE Apps."
             },
             {
-              "description": "Ambiguous destructive request: the assistant should ask which items to delete and confirm instead of deleting anything",
-              "prompt": "Delete everything."
+              "description": "Unsupported capability: the tools read documents only as plain text and cannot insert images, so the assistant should explain this and must not rename, overwrite, or upload a replacement for the document",
+              "prompt": "Add our company logo to the \"Project Plan\" document in the \"Projects\" room in ONLYOFFICE Apps."
             }
           ]
         }

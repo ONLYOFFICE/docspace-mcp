@@ -33,8 +33,8 @@
         "privacyPolicyURL": "https://www.onlyoffice.com/privacy",
         "termsOfServiceURL": "https://www.onlyoffice.com/legalterms",
         "defaultPrompt": [
-          "Create a room for the marketing team and invite Anna as an editor",
-          "Show what's inside My Documents",
+          "Create a room for the marketing team and invite John Smith as an editor",
+          "Write meeting notes from my bullet points and save them to the Team room",
           "Summarize the latest report in the Projects room"
         ],
         "composerIcon": "./assets/icon.png",

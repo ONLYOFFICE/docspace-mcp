@@ -64,10 +64,10 @@
               "expected_behavior": "Finds the \"Project Plan\" document in the \"Projects\" room, reads it as text, and returns a five-bullet summary based on its content without modifying the file."
             },
             {
-              "description": "Organize files in My Documents",
-              "prompt": "In My Documents in ONLYOFFICE Apps, create a folder called \"Archive 2025\" and move all files that have 2025 in their name into it.",
+              "description": "Organize personal files",
+              "prompt": "In my personal files in ONLYOFFICE Apps, create a folder called \"Archive 2025\" and move all files that have 2025 in their name into it.",
               "tools_triggered": "get_my_folder, get_folder_content, create_folder, move_batch_items",
-              "expected_behavior": "Creates the \"Archive 2025\" folder in My Documents, moves only the files whose names contain 2025 into it, and lists the moved files."
+              "expected_behavior": "Creates the \"Archive 2025\" folder in the user's personal files, moves only the files whose names contain 2025 into it, and lists the moved files."
             },
             {
               "description": "Review room access",

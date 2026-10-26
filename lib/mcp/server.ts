@@ -629,7 +629,7 @@ export const regularToolsets = [
           title: "Create Room",
           readOnlyHint: false,
           destructiveHint: true,
-          openWorldHint: false,
+          openWorldHint: true,
         },
       },
       {
@@ -663,7 +663,7 @@ export const regularToolsets = [
         annotations: {
           title: "Archive Room",
           readOnlyHint: false,
-          destructiveHint: false,
+          destructiveHint: true,
           openWorldHint: false,
         },
       },

@@ -8,6 +8,9 @@ Changelog] format and adhering to [Semantic Versioning].
 ### Changed
 
 - Add the `title` annotation to all tools ([cba703e]).
+- Mark the `create_room` tool as open-world, since it creates a public room by
+  default, and mark the `archive_room` tool as destructive, since this server
+  cannot unarchive a room.
 
 ## [3.3.0] - 2026-10-09
 

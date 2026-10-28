@@ -556,7 +556,12 @@ export const FileShareDtoSchema = z.looseObject({
  */
 export const FileShareDtoFieldSchema = z.union([
   z.literal("access").describe("The access rights type."),
-  z.literal("sharedTo").describe("The user who has the access to the specified file."),
+  // ONLYOFFICE Apps 4.0 fails with HTTP 500 when the fields filter selects a
+  // whole user object, so only its nested fields are requested.
+  ...zod.wrapUnion(EmployeeFullDtoFieldSchema, "sharedTo").options,
+  z.literal("sharedTo.name").describe("The group name."),
+  z.literal("sharedTo.title").describe("The sharing link title."),
+  z.literal("sharedTo.shareLink").describe("The sharing link URL."),
   z.literal("isLocked").describe("Specifies if the access right is locked or not."),
   z.literal("isOwner").describe("Specifies if the user is an owner of the specified file or not."),
   z.literal("canEditAccess").describe("Specifies if the user can edit the access to the specified file or not."),

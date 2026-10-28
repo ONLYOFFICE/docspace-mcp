@@ -53,6 +53,11 @@ Changelog] format and adhering to [Semantic Versioning].
   A request signal that had already aborted was not passed on, so the call
   still reached the portal, and `run_builder_script` could start a script that
   nobody waited for ([5daa233]).
+- Request the nested fields of `sharedTo`, such as `sharedTo.id` and
+  `sharedTo.displayName`, instead of the whole object in the
+  `get_room_security_info` and `set_room_security` tools. ONLYOFFICE Apps 4.0
+  fails with HTTP 500 when the `fields` filter selects a whole user object, so
+  `get_room_security_info` always failed.
 
 ## [3.3.0] - 2026-10-09
 

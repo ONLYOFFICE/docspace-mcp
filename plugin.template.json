@@ -70,10 +70,10 @@
               "expected_behavior": "Creates the \"Archive 2025\" folder in the user's personal files, moves only the files whose names contain 2025 (Report 2025.docx and Budget 2025.xlsx on the test portal) into it, leaves other files such as Notes 2024.docx in place, and lists the moved files."
             },
             {
-              "description": "Review room access",
-              "prompt": "Who has access to the \"Projects\" room in ONLYOFFICE Apps and what access level does each person have?",
-              "tools_triggered": "get_rooms_folder, get_room_security_info",
-              "expected_behavior": "Finds the \"Projects\" room and lists its members with their access levels (on the test portal, the room owner is the only member) without changing any permissions."
+              "description": "Copy a document from a room to personal files",
+              "prompt": "Copy the \"Project Plan\" document from the \"Projects\" room in ONLYOFFICE Apps to my personal files.",
+              "tools_triggered": "get_rooms_folder, get_folder_content, get_my_folder, copy_batch_items",
+              "expected_behavior": "Finds the \"Project Plan\" document in the \"Projects\" room, copies it to the user's personal files, leaves the original in the \"Projects\" room unchanged, and confirms where the copy was placed."
             }
           ],
           "negative": [

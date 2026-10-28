@@ -5,7 +5,9 @@ Changelog] format and adhering to [Semantic Versioning].
 
 ## [Unreleased]
 
-There are no notable changes in this release.
+### Changed
+
+- Add the `title` annotation to all tools.
 
 ## [3.3.0] - 2026-10-09
 

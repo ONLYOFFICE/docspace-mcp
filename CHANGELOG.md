@@ -57,7 +57,7 @@ Changelog] format and adhering to [Semantic Versioning].
   `sharedTo.displayName`, instead of the whole object in the
   `get_room_security_info` and `set_room_security` tools. ONLYOFFICE Apps 4.0
   fails with HTTP 500 when the `fields` filter selects a whole user object, so
-  `get_room_security_info` always failed.
+  `get_room_security_info` always failed ([bb2aae1]).
 
 ## [3.3.0] - 2026-10-09
 
@@ -413,6 +413,7 @@ There are no noticeable changes in version [3.0.1].
 [0.1.1]: https://github.com/onlyoffice/docspace-mcp/compare/v0.1.0...v0.1.1/
 [0.1.0]: https://github.com/onlyoffice/docspace-mcp/releases/tag/v0.1.0/
 
+[bb2aae1]: https://github.com/onlyoffice/docspace-mcp/commit/bb2aae10565e902dbe13f3f73f9cbd4bdaf62cb5/
 [5daa233]: https://github.com/onlyoffice/docspace-mcp/commit/5daa233e91eed96575829148e3e1de141381dad2/
 [e4b1fd9]: https://github.com/onlyoffice/docspace-mcp/commit/e4b1fd9e4c287bff61a0e03bac75392c1b2cfe07/
 [8f42745]: https://github.com/onlyoffice/docspace-mcp/commit/8f42745b20805e9913727e5e492098367012d19f/

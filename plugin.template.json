@@ -46,10 +46,10 @@
         "test_cases": {
           "positive": [
             {
-              "description": "Create a room and invite a user",
-              "prompt": "Create a collaboration room in ONLYOFFICE Apps called \"Q4 Marketing\" and invite reviewer.guest@example.com to it as an editor.",
-              "tools_triggered": "create_room, set_room_security",
-              "expected_behavior": "Creates a collaboration room titled \"Q4 Marketing\", invites reviewer.guest@example.com (an existing guest on the test portal) with the Editor access level, and confirms the room title and the invited user."
+              "description": "Create a room with folders",
+              "prompt": "Create a collaboration room in ONLYOFFICE Apps called \"Q4 Marketing\" and add two folders to it: \"Briefs\" and \"Assets\".",
+              "tools_triggered": "create_room, create_folder",
+              "expected_behavior": "Creates a collaboration room titled \"Q4 Marketing\", creates the \"Briefs\" and \"Assets\" folders inside it, and confirms the room title and the created folders."
             },
             {
               "description": "Upload a Markdown file to a room",

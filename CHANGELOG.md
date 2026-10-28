@@ -36,6 +36,7 @@ Changelog] format and adhering to [Semantic Versioning].
 - Add the `offset` and `limit` parameters to the `download_file_as_text` tool
   and truncate large text, so the response does not exceed client size limits
   ([69cd570]).
+- Add the `title` annotation to all tools.
 
 ### Fixed
 

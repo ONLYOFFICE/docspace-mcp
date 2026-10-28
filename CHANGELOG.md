@@ -36,7 +36,7 @@ Changelog] format and adhering to [Semantic Versioning].
 - Add the `offset` and `limit` parameters to the `download_file_as_text` tool
   and truncate large text, so the response does not exceed client size limits
   ([69cd570]).
-- Add the `title` annotation to all tools.
+- Add the `title` annotation to all tools ([86bf18a]).
 
 ### Fixed
 
@@ -409,6 +409,7 @@ There are no noticeable changes in version [3.0.1].
 [0.1.1]: https://github.com/onlyoffice/docspace-mcp/compare/v0.1.0...v0.1.1/
 [0.1.0]: https://github.com/onlyoffice/docspace-mcp/releases/tag/v0.1.0/
 
+[86bf18a]: https://github.com/onlyoffice/docspace-mcp/commit/86bf18ad820234f19e396a082ee7e464b63c6d9d/
 [5daa233]: https://github.com/onlyoffice/docspace-mcp/commit/5daa233e91eed96575829148e3e1de141381dad2/
 [e4b1fd9]: https://github.com/onlyoffice/docspace-mcp/commit/e4b1fd9e4c287bff61a0e03bac75392c1b2cfe07/
 [8f42745]: https://github.com/onlyoffice/docspace-mcp/commit/8f42745b20805e9913727e5e492098367012d19f/

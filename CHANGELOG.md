@@ -38,7 +38,7 @@ Changelog] format and adhering to [Semantic Versioning].
   ([69cd570]).
 - Mark the `create_room` tool as open-world, since it creates a public room by
   default, and mark the `archive_room` tool as destructive, since this server
-  cannot unarchive a room.
+  cannot unarchive a room ([764e1ca]).
 
 ### Fixed
 
@@ -411,6 +411,7 @@ There are no noticeable changes in version [3.0.1].
 [0.1.1]: https://github.com/onlyoffice/docspace-mcp/compare/v0.1.0...v0.1.1/
 [0.1.0]: https://github.com/onlyoffice/docspace-mcp/releases/tag/v0.1.0/
 
+[764e1ca]: https://github.com/onlyoffice/docspace-mcp/commit/764e1ca25faa3eb6fedb4617784ec5996f12ec69/
 [5daa233]: https://github.com/onlyoffice/docspace-mcp/commit/5daa233e91eed96575829148e3e1de141381dad2/
 [e4b1fd9]: https://github.com/onlyoffice/docspace-mcp/commit/e4b1fd9e4c287bff61a0e03bac75392c1b2cfe07/
 [8f42745]: https://github.com/onlyoffice/docspace-mcp/commit/8f42745b20805e9913727e5e492098367012d19f/

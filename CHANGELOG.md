@@ -8,6 +8,9 @@ Changelog] format and adhering to [Semantic Versioning].
 ### Changed
 
 - Add the `title` annotation to all tools ([cba703e]).
+- Mark the `create_room` tool as open-world, since it creates a public room by
+  default, and mark the `archive_room` tool as destructive, since this server
+  cannot unarchive a room ([02a41d7]).
 
 ## [3.3.0] - 2026-10-09
 
@@ -363,6 +366,7 @@ There are no noticeable changes in version [3.0.1].
 [0.1.1]: https://github.com/onlyoffice/docspace-mcp/compare/v0.1.0...v0.1.1/
 [0.1.0]: https://github.com/onlyoffice/docspace-mcp/releases/tag/v0.1.0/
 
+[02a41d7]: https://github.com/onlyoffice/docspace-mcp/commit/02a41d7e286fe4760f758c453bbd50d297af47a5/
 [cba703e]: https://github.com/onlyoffice/docspace-mcp/commit/cba703e4f0261c5c54d965cde4b601628af7727f/
 [bac7e04]: https://github.com/onlyoffice/docspace-mcp/commit/bac7e04dd1fda09c8db7e23c3c36973511df5ea9/
 [35af45a]: https://github.com/onlyoffice/docspace-mcp/commit/35af45aaaf92a6e09e804bfea2831f9149eed164/

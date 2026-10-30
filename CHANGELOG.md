@@ -7,6 +7,14 @@ Changelog] format and adhering to [Semantic Versioning].
 
 There are no notable changes in this release.
 
+## [3.3.1] - 2026-10-30
+
+### Security
+
+- Update Node.js to v24.22.2 in the toolchain and OCI image to address the
+  Brotli decoder out-of-bounds write in Node.js, CVE-2026-111497, also known as
+  Node2Shell ([b9551bb]).
+
 ## [3.3.0] - 2026-10-09
 
 ### Changed
@@ -343,7 +351,8 @@ There are no noticeable changes in version [3.0.1].
 [Keep a Changelog]: https://keepachangelog.com/en/1.1.0/
 [Semantic Versioning]: https://semver.org/spec/v2.0.0.html
 
-[Unreleased]: https://github.com/onlyoffice/docspace-mcp/compare/v3.3.0...HEAD/
+[Unreleased]: https://github.com/onlyoffice/docspace-mcp/compare/v3.3.1...HEAD/
+[3.3.1]: https://github.com/onlyoffice/docspace-mcp/compare/v3.3.0...v3.3.1/
 [3.3.0]: https://github.com/onlyoffice/docspace-mcp/compare/v3.2.0...v3.3.0/
 [3.2.0]: https://github.com/onlyoffice/docspace-mcp/compare/v3.1.0...v3.2.0/
 [3.1.0]: https://github.com/onlyoffice/docspace-mcp/compare/v3.0.1...v3.1.0/
@@ -367,6 +376,7 @@ There are no noticeable changes in version [3.0.1].
 [a1cdc95]: https://github.com/onlyoffice/docspace-mcp/commit/a1cdc957e4b82dcf2f38df38c7ff8e02e6bd1ca5/
 [084ab40]: https://github.com/onlyoffice/docspace-mcp/commit/084ab400bdd570002abb4dc6f03d1e33c6601ad9/
 [7444a56]: https://github.com/onlyoffice/docspace-mcp/commit/7444a56c8cc5b2d0693ab9f828425d731a71376a/
+[b9551bb]: https://github.com/onlyoffice/docspace-mcp/commit/b9551bb7a3c8597178d260c5db2905b21fcce7c3/
 [d0d74ce]: https://github.com/onlyoffice/docspace-mcp/commit/d0d74ce1bbf46be2850e6d41b049b7e53583f859/
 [cd38376]: https://github.com/onlyoffice/docspace-mcp/commit/cd3837673680c79bea998ec287cceee07729a91f/
 [f7be9cc]: https://github.com/onlyoffice/docspace-mcp/commit/f7be9ccc0cb7708948a2d281b9f780e8ebc7f224/

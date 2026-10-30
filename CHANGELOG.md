@@ -5,6 +5,12 @@ Changelog] format and adhering to [Semantic Versioning].
 
 ## [Unreleased]
 
+### Added
+
+- Add the `DOCSPACE_SERVER_OPENAI_APPS_CHALLENGE` option that serves the OpenAI
+  domain verification token at the `/.well-known/openai-apps-challenge`
+  endpoint ([f8f48ee]).
+
 ### Changed
 
 - Add the `title` annotation to all tools ([cba703e]).
@@ -366,6 +372,7 @@ There are no noticeable changes in version [3.0.1].
 [0.1.1]: https://github.com/onlyoffice/docspace-mcp/compare/v0.1.0...v0.1.1/
 [0.1.0]: https://github.com/onlyoffice/docspace-mcp/releases/tag/v0.1.0/
 
+[f8f48ee]: https://github.com/onlyoffice/docspace-mcp/commit/f8f48ee08ff4c0a31c7c4856aec5f2db6d1985fa/
 [02a41d7]: https://github.com/onlyoffice/docspace-mcp/commit/02a41d7e286fe4760f758c453bbd50d297af47a5/
 [cba703e]: https://github.com/onlyoffice/docspace-mcp/commit/cba703e4f0261c5c54d965cde4b601628af7727f/
 [bac7e04]: https://github.com/onlyoffice/docspace-mcp/commit/bac7e04dd1fda09c8db7e23c3c36973511df5ea9/

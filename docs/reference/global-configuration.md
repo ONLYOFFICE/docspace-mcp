@@ -402,6 +402,21 @@ The `0` is a special value that indicates no proxy servers are used.
 | **Default** | `0` |
 | **Transports** | `sse`, `streamable-http`, `http` |
 
+### DOCSPACE_SERVER_OPENAI_APPS_CHALLENGE
+
+The domain verification token to serve at the
+`/.well-known/openai-apps-challenge` endpoint.
+
+OpenAI requires this token to verify the domain of the MCP server when
+submitting a plugin to the OpenAI plugin directory. The endpoint responds with
+the token as plain text. If the token is not set, the endpoint is disabled.
+
+| | |
+|---|---|
+| **Type** | string |
+| **Attributes** | trimmable |
+| **Transports** | `sse`, `streamable-http`, `http` |
+
 ### DOCSPACE_SERVER_CORS_MCP_ORIGIN
 
 The list of allowed origins to include in the `Access-Control-Allow-Origin`

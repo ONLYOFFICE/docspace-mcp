@@ -237,5 +237,13 @@ jobs:
       - name: Login to MCP Registry
         run: ./mcp-publisher login github-oidc
 
+      # The MCP Registry validates the package against npm, which can take a
+      # while to serve a just-published version. Retry to ride out the delay.
       - name: Publish to MCP Registry
-        run: ./mcp-publisher publish
+        run: |
+          for i in 1 2 3 4 5 6; do
+            ./mcp-publisher publish && exit 0
+            echo "Attempt $i failed, retrying in 30s..."
+            sleep 30
+          done
+          exit 1

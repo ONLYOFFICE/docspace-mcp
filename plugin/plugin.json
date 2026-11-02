@@ -1,7 +1,7 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "onlyoffice-apps",
-  "version": "3.3.0",
+  "version": "3.3.1",
   "description": "Manage rooms, folders, files, and people in ONLYOFFICE Apps.",
   "author": {
     "name": "Ascensio System SIA",

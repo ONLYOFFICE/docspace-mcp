@@ -44,6 +44,10 @@ jobs:
       - name: Archive Package
         run: pnpm pack
 
+      - name: Archive Plugin
+        working-directory: plugin
+        run: zip --recurse-paths "../onlyoffice-apps-plugin-${{steps.version.outputs.version}}.zip" .
+
       - name: Upload MCP Bundle
         uses: actions/upload-artifact@v4
         with:
@@ -63,6 +67,13 @@ jobs:
         with:
           name: package
           path: "*.tgz"
+          if-no-files-found: error
+
+      - name: Upload Plugin
+        uses: actions/upload-artifact@v4
+        with:
+          name: plugin
+          path: "*.zip"
           if-no-files-found: error
 
   npm:
@@ -190,7 +201,7 @@ jobs:
       - name: Download Artifacts
         uses: actions/download-artifact@v4
         with:
-          pattern: "{mcp-bundle,package}"
+          pattern: "{mcp-bundle,package,plugin}"
           merge-multiple: true
 
       - name: Create Release
@@ -204,6 +215,9 @@ jobs:
 
       - name: Upload Package
         run: gh release upload "v${{needs.build.outputs.version}}" *.tgz
+
+      - name: Upload Plugin
+        run: gh release upload "v${{needs.build.outputs.version}}" *.zip
 
   mcp:
     needs:

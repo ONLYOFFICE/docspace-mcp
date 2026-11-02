@@ -103,7 +103,7 @@ User agent sent in the `User-Agent` header for API requests.
 | | |
 |---|---|
 | **Type** | string |
-| **Default** | `@onlyoffice/docspace-mcp v3.3.0` |
+| **Default** | `@onlyoffice/docspace-mcp v3.3.1` |
 | **Attributes** | trimmable |
 | **Transports** | all |
 

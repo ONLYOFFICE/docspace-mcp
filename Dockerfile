@@ -1,4 +1,4 @@
-FROM node:24.11.1-alpine3.22 AS build
+FROM node:24.22.2-alpine3.23 AS build
 WORKDIR /srv/onlyoffice-docspace-mcp
 COPY app app
 COPY lib lib
@@ -11,12 +11,12 @@ RUN \
   pnpm install --frozen-lockfile && \
   pnpm build-app
 
-FROM node:24.11.1-alpine3.22
+FROM node:24.22.2-alpine3.23
 LABEL org.opencontainers.image.authors="Ascensio System SIA <integration@onlyoffice.com>"
 LABEL org.opencontainers.image.url="https://github.com/onlyoffice/docspace-mcp/"
-LABEL org.opencontainers.image.documentation="https://github.com/onlyoffice/docspace-mcp/blob/v3.3.0/README.md"
+LABEL org.opencontainers.image.documentation="https://github.com/onlyoffice/docspace-mcp/blob/v3.3.1/README.md"
 LABEL org.opencontainers.image.source="https://github.com/onlyoffice/docspace-mcp/"
-LABEL org.opencontainers.image.version="3.3.0"
+LABEL org.opencontainers.image.version="3.3.1"
 LABEL org.opencontainers.image.licenses="MIT"
 LABEL org.opencontainers.image.title="ONLYOFFICE Apps MCP Server"
 LABEL org.opencontainers.image.description="ONLYOFFICE Apps Model Context Protocol Server"

@@ -10,6 +10,7 @@ export type Toolset = ToolSummary & {
 }
 
 export type Tool = ToolSummary & {
+  title?: string
   inputSchema: ToolInputSchema
   outputSchema?: ToolOutputSchema
   annotations?: ToolAnnotations

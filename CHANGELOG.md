@@ -14,6 +14,8 @@ Changelog] format and adhering to [Semantic Versioning].
 ### Changed
 
 - Add the `title` annotation to all tools ([cba703e]).
+- Add the top-level `title` field to all tools, alongside the `title`
+  annotation, for clients that read the display name from MCP 2025-06-18.
 - Mark the `create_room` tool as open-world, since it creates a public room by
   default, and mark the `archive_room` tool as destructive, since this server
   cannot unarchive a room ([02a41d7]).

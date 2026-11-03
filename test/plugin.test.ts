@@ -79,6 +79,17 @@ void test.suite("agent plugin", () => {
     assert.ok(Object.keys(m.v.mcpServers).length === 1)
   })
 
+  void test("uses only server fields that the ChatGPT desktop app accepts", async() => {
+    let m = await readMcpOnce()
+    assert.ok(m.err === undefined)
+
+    for (let s of Object.values(m.v.mcpServers)) {
+      for (let k of Object.keys(s)) {
+        assert.ok(["type", "url", "headers"].includes(k), k)
+      }
+    }
+  })
+
   void test("matches server metadata", async(t) => {
     let p = await readPluginOnce()
     assert.ok(p.err === undefined)

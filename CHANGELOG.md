@@ -10,6 +10,9 @@ Changelog] format and adhering to [Semantic Versioning].
 - Add the `DOCSPACE_SERVER_OPENAI_APPS_CHALLENGE` option that serves the OpenAI
   domain verification token at the `/.well-known/openai-apps-challenge`
   endpoint ([f8f48ee]).
+- Add the `onlyoffice-apps` plugin in the `plugin/` directory, which connects
+  this server to Claude Code, Codex, and other clients that support Agent
+  Plugins ([2957e91]).
 
 ### Changed
 
@@ -386,6 +389,7 @@ There are no noticeable changes in version [3.0.1].
 [0.1.0]: https://github.com/onlyoffice/docspace-mcp/releases/tag/v0.1.0/
 
 [b85f489]: https://github.com/onlyoffice/docspace-mcp/commit/b85f489d4c57751046816c5d43e430a5a2146542/
+[2957e91]: https://github.com/onlyoffice/docspace-mcp/commit/2957e91658789c52b04f60eee0de04feeaa9e69d/
 [f8f48ee]: https://github.com/onlyoffice/docspace-mcp/commit/f8f48ee08ff4c0a31c7c4856aec5f2db6d1985fa/
 [02a41d7]: https://github.com/onlyoffice/docspace-mcp/commit/02a41d7e286fe4760f758c453bbd50d297af47a5/
 [cba703e]: https://github.com/onlyoffice/docspace-mcp/commit/cba703e4f0261c5c54d965cde4b601628af7727f/

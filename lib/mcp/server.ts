@@ -641,6 +641,7 @@ export const regularToolsets = [
       },
       {
         name: "get_office_api_reference",
+        title: "Get Office API Reference",
         description: "Look up the Office JavaScript API that run_builder_script scripts are written against. Use it before every run_builder_script call to check the methods the script uses, since the API changes between versions and remembered signatures may be outdated. Without class and query, returns an overview of the editor API with the list of its classes and enumerations; with query, finds classes, methods and enumerations; with class, returns the methods of a class or the values of an enumeration; with class and method, returns the syntax, parameters and an example of a method. The reference is read from api.onlyoffice.com.",
         inputSchema: GetOfficeApiReferenceInputJsonSchema,
         annotations: {
@@ -652,6 +653,7 @@ export const regularToolsets = [
       },
       {
         name: "run_builder_script",
+        title: "Run Builder Script",
         description: "Run an ONLYOFFICE Document Builder script to create or edit documents, spreadsheets, presentations or PDFs, and wait for it to finish. The Office JavaScript API changes between versions (since 9.4.0, for example, Api.CreateTable takes rows before columns), so do not write the script from memory: look up every class and method it uses with the get_office_api_reference tool first. Returns the saved files in the files field; a file may get a different title than the name passed to builder.SaveFile when the folder already has a file with that name.",
         inputSchema: RunBuilderScriptInputJsonSchema,
         outputSchema: RunBuilderScriptOutputJsonSchema,

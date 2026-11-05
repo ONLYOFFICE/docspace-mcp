@@ -397,9 +397,11 @@ const UploadFileInputJsonSchema = z.toJSONSchema(UploadFileInputSchema)
 export const metaTools = [
   {
     name: "list_toolsets",
+    title: "List Toolsets",
     description: "This is a meta tool for listing available toolsets. Toolset is a set of available tools.",
     inputSchema: z.toJSONSchema(z.object({})),
     annotations: {
+      title: "List Toolsets",
       readOnlyHint: true,
       destructiveHint: false,
       openWorldHint: false,
@@ -407,9 +409,11 @@ export const metaTools = [
   },
   {
     name: "list_tools",
+    title: "List Tools",
     description: "This is a meta tool for listing available tools of a specific toolset. The list of available toolsets can be obtained using the list_toolsets meta tool.",
     inputSchema: ListToolsInputJsonSchema,
     annotations: {
+      title: "List Tools",
       readOnlyHint: true,
       destructiveHint: false,
       openWorldHint: false,
@@ -417,9 +421,11 @@ export const metaTools = [
   },
   {
     name: "get_tool_input_schema",
+    title: "Get Tool Input Schema",
     description: "This is a meta tool for getting an input schema for a specific tool. The list of available tools can be obtained using the list_tools meta tool.",
     inputSchema: GetToolInputSchemaInputJsonSchema,
     annotations: {
+      title: "Get Tool Input Schema",
       readOnlyHint: true,
       destructiveHint: false,
       openWorldHint: false,
@@ -427,9 +433,11 @@ export const metaTools = [
   },
   {
     name: "get_tool_output_schema",
+    title: "Get Tool Output Schema",
     description: "This is a meta tool for getting an output schema for a specific tool. The list of available tools can be obtained using the list_tools meta tool.",
     inputSchema: GetToolOutputSchemaInputJsonSchema,
     annotations: {
+      title: "Get Tool Output Schema",
       readOnlyHint: true,
       destructiveHint: false,
       openWorldHint: false,
@@ -437,9 +445,11 @@ export const metaTools = [
   },
   {
     name: "call_tool",
+    title: "Call Tool",
     description: "This is a meta tool for calling a tool. The list of available tools can be obtained using the list_tools meta tool. The input schema can be obtained using the get_tool_input_schema meta tool.",
     inputSchema: CallToolInputJsonSchema,
     annotations: {
+      title: "Call Tool",
       readOnlyHint: false,
       destructiveHint: true,
       openWorldHint: true,
@@ -455,9 +465,11 @@ export const regularToolsets = [
     tools: [
       {
         name: "delete_file",
+        title: "Delete File",
         description: "Delete a file.",
         inputSchema: DeleteFileInputJsonSchema,
         annotations: {
+          title: "Delete File",
           readOnlyHint: false,
           destructiveHint: true,
           openWorldHint: false,
@@ -465,10 +477,12 @@ export const regularToolsets = [
       },
       {
         name: "get_file_info",
+        title: "Get File Info",
         description: "Get file information.",
         inputSchema: GetFileInfoInputJsonSchema,
         outputSchema: GetFileInfoOutputJsonSchema,
         annotations: {
+          title: "Get File Info",
           readOnlyHint: true,
           destructiveHint: false,
           openWorldHint: false,
@@ -476,10 +490,12 @@ export const regularToolsets = [
       },
       {
         name: "update_file",
+        title: "Update File",
         description: "Update a file.",
         inputSchema: UpdateFileInputJsonSchema,
         outputSchema: UpdateFileOutputJsonSchema,
         annotations: {
+          title: "Update File",
           readOnlyHint: false,
           destructiveHint: true,
           openWorldHint: false,
@@ -487,9 +503,11 @@ export const regularToolsets = [
       },
       {
         name: "copy_batch_items",
+        title: "Copy Items",
         description: "Copy to a folder.",
         inputSchema: CopyBatchItemsInputJsonSchema,
         annotations: {
+          title: "Copy Items",
           readOnlyHint: false,
           destructiveHint: false,
           openWorldHint: false,
@@ -497,9 +515,11 @@ export const regularToolsets = [
       },
       {
         name: "move_batch_items",
+        title: "Move Items",
         description: "Move to a folder.",
         inputSchema: MoveBatchItemsInputJsonSchema,
         annotations: {
+          title: "Move Items",
           readOnlyHint: false,
           destructiveHint: false,
           openWorldHint: false,
@@ -507,9 +527,11 @@ export const regularToolsets = [
       },
       {
         name: "download_file_as_text",
+        title: "Download File as Text",
         description: "Download a file as text.",
         inputSchema: DownloadFileAsTextInputJsonSchema,
         annotations: {
+          title: "Download File as Text",
           readOnlyHint: true,
           destructiveHint: false,
           openWorldHint: false,
@@ -517,9 +539,11 @@ export const regularToolsets = [
       },
       {
         name: "upload_file",
+        title: "Upload File",
         description: "Upload a file.",
         inputSchema: UploadFileInputJsonSchema,
         annotations: {
+          title: "Upload File",
           readOnlyHint: false,
           destructiveHint: false,
           openWorldHint: false,
@@ -533,10 +557,12 @@ export const regularToolsets = [
     tools: [
       {
         name: "create_folder",
+        title: "Create Folder",
         description: "Create a folder.",
         inputSchema: CreateFolderInputJsonSchema,
         outputSchema: CreateFolderOutputJsonSchema,
         annotations: {
+          title: "Create Folder",
           readOnlyHint: false,
           destructiveHint: true,
           openWorldHint: false,
@@ -544,9 +570,11 @@ export const regularToolsets = [
       },
       {
         name: "delete_folder",
+        title: "Delete Folder",
         description: "Delete a folder.",
         inputSchema: DeleteFolderInputJsonSchema,
         annotations: {
+          title: "Delete Folder",
           readOnlyHint: false,
           destructiveHint: true,
           openWorldHint: false,
@@ -554,10 +582,12 @@ export const regularToolsets = [
       },
       {
         name: "get_folder_content",
+        title: "Get Folder Content",
         description: "Get content of a folder.",
         inputSchema: GetFolderContentInputJsonSchema,
         outputSchema: GetFolderContentOutputJsonSchema,
         annotations: {
+          title: "Get Folder Content",
           readOnlyHint: true,
           destructiveHint: false,
           openWorldHint: false,
@@ -565,10 +595,12 @@ export const regularToolsets = [
       },
       {
         name: "get_folder_info",
+        title: "Get Folder Info",
         description: "Get folder information.",
         inputSchema: GetFolderInfoInputJsonSchema,
         outputSchema: GetFolderInfoOutputJsonSchema,
         annotations: {
+          title: "Get Folder Info",
           readOnlyHint: true,
           destructiveHint: false,
           openWorldHint: false,
@@ -576,10 +608,12 @@ export const regularToolsets = [
       },
       {
         name: "rename_folder",
+        title: "Rename Folder",
         description: "Rename a folder.",
         inputSchema: RenameFolderInputJsonSchema,
         outputSchema: RenameFolderOutputJsonSchema,
         annotations: {
+          title: "Rename Folder",
           readOnlyHint: false,
           destructiveHint: true,
           openWorldHint: false,
@@ -587,10 +621,12 @@ export const regularToolsets = [
       },
       {
         name: "get_my_folder",
+        title: "Get Files Folder",
         description: "Get the 'My Documents' folder.",
         inputSchema: GetMyFolderInputJsonSchema,
         outputSchema: GetMyFolderOutputJsonSchema,
         annotations: {
+          title: "Get Files Folder",
           readOnlyHint: true,
           destructiveHint: false,
           openWorldHint: false,
@@ -604,21 +640,25 @@ export const regularToolsets = [
     tools: [
       {
         name: "create_room",
+        title: "Create Room",
         description: "Create a room.",
         inputSchema: CreateRoomInputJsonSchema,
         outputSchema: CreateRoomOutputJsonSchema,
         annotations: {
+          title: "Create Room",
           readOnlyHint: false,
           destructiveHint: true,
-          openWorldHint: false,
+          openWorldHint: true,
         },
       },
       {
         name: "get_room_info",
+        title: "Get Room Info",
         description: "Get room information.",
         inputSchema: GetRoomInfoInputJsonSchema,
         outputSchema: GetRoomInfoOutputJsonSchema,
         annotations: {
+          title: "Get Room Info",
           readOnlyHint: true,
           destructiveHint: false,
           openWorldHint: false,
@@ -626,10 +666,12 @@ export const regularToolsets = [
       },
       {
         name: "update_room",
+        title: "Update Room",
         description: "Update a room.",
         inputSchema: UpdateRoomInputJsonSchema,
         outputSchema: UpdateRoomOutputJsonSchema,
         annotations: {
+          title: "Update Room",
           readOnlyHint: false,
           destructiveHint: true,
           openWorldHint: false,
@@ -637,20 +679,24 @@ export const regularToolsets = [
       },
       {
         name: "archive_room",
+        title: "Archive Room",
         description: "Archive a room.",
         inputSchema: ArchiveRoomInputJsonSchema,
         annotations: {
+          title: "Archive Room",
           readOnlyHint: false,
-          destructiveHint: false,
+          destructiveHint: true,
           openWorldHint: false,
         },
       },
       {
         name: "set_room_security",
+        title: "Set Room Access",
         description: "Invite or remove users from a room.",
         inputSchema: SetRoomSecurityInputJsonSchema,
         outputSchema: SetRoomSecurityOutputJsonSchema,
         annotations: {
+          title: "Set Room Access",
           readOnlyHint: false,
           destructiveHint: true,
           openWorldHint: true,
@@ -658,10 +704,12 @@ export const regularToolsets = [
       },
       {
         name: "get_room_security_info",
+        title: "Get Room Access Info",
         description: "Get a list of users with their access levels to a room.",
         inputSchema: GetRoomSecurityInfoInputJsonSchema,
         outputSchema: GetRoomSecurityInfoOutputJsonSchema,
         annotations: {
+          title: "Get Room Access Info",
           readOnlyHint: true,
           destructiveHint: false,
           openWorldHint: false,
@@ -669,10 +717,12 @@ export const regularToolsets = [
       },
       {
         name: "get_rooms_folder",
+        title: "Get Rooms Folder",
         description: "Get the 'Rooms' folder.",
         inputSchema: GetRoomsFolderInputJsonSchema,
         outputSchema: GetRoomsFolderOutputJsonSchema,
         annotations: {
+          title: "Get Rooms Folder",
           readOnlyHint: true,
           destructiveHint: false,
           openWorldHint: false,
@@ -680,9 +730,11 @@ export const regularToolsets = [
       },
       {
         name: "get_room_types",
+        title: "Get Room Types",
         description: "Get a list of available room types.",
         inputSchema: z.toJSONSchema(z.object({})),
         annotations: {
+          title: "Get Room Types",
           readOnlyHint: true,
           destructiveHint: false,
           openWorldHint: false,
@@ -690,9 +742,11 @@ export const regularToolsets = [
       },
       {
         name: "get_room_access_levels",
+        title: "Get Room Access Levels",
         description: "Get a list of available room invitation access levels.",
         inputSchema: GetRoomAccessLevelsInputJsonSchema,
         annotations: {
+          title: "Get Room Access Levels",
           readOnlyHint: true,
           destructiveHint: false,
           openWorldHint: false,
@@ -706,10 +760,12 @@ export const regularToolsets = [
     tools: [
       {
         name: "get_all_people",
+        title: "Get All People",
         description: "Get all people.",
         inputSchema: GetAllPeopleInputJsonSchema,
         outputSchema: GetAllPeopleOutputJsonSchema,
         annotations: {
+          title: "Get All People",
           readOnlyHint: true,
           destructiveHint: false,
           openWorldHint: false,

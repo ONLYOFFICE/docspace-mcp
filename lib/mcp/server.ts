@@ -487,6 +487,7 @@ const UploadFileInputJsonSchema = z.toJSONSchema(UploadFileInputSchema, {io: "in
 export const metaTools = [
   {
     name: "list_toolsets",
+    title: "List Toolsets",
     description: "This is a meta tool for listing available toolsets. Toolset is a set of available tools.",
     inputSchema: z.toJSONSchema(z.object({}), {io: "input"}),
     annotations: {
@@ -498,6 +499,7 @@ export const metaTools = [
   },
   {
     name: "list_tools",
+    title: "List Tools",
     description: "This is a meta tool for listing available tools of a specific toolset. The list of available toolsets can be obtained using the list_toolsets meta tool.",
     inputSchema: ListToolsInputJsonSchema,
     annotations: {
@@ -509,6 +511,7 @@ export const metaTools = [
   },
   {
     name: "get_tool_input_schema",
+    title: "Get Tool Input Schema",
     description: "This is a meta tool for getting an input schema for a specific tool. The list of available tools can be obtained using the list_tools meta tool.",
     inputSchema: GetToolInputSchemaInputJsonSchema,
     annotations: {
@@ -520,6 +523,7 @@ export const metaTools = [
   },
   {
     name: "get_tool_output_schema",
+    title: "Get Tool Output Schema",
     description: "This is a meta tool for getting an output schema for a specific tool. The list of available tools can be obtained using the list_tools meta tool.",
     inputSchema: GetToolOutputSchemaInputJsonSchema,
     annotations: {
@@ -531,6 +535,7 @@ export const metaTools = [
   },
   {
     name: "call_tool",
+    title: "Call Tool",
     description: "This is a meta tool for calling a tool. The list of available tools can be obtained using the list_tools meta tool. The input schema can be obtained using the get_tool_input_schema meta tool.",
     inputSchema: CallToolInputJsonSchema,
     annotations: {
@@ -550,6 +555,7 @@ export const regularToolsets = [
     tools: [
       {
         name: "delete_file",
+        title: "Delete File",
         description: "Delete a file.",
         inputSchema: DeleteFileInputJsonSchema,
         annotations: {
@@ -561,6 +567,7 @@ export const regularToolsets = [
       },
       {
         name: "get_file_info",
+        title: "Get File Info",
         description: "Get file information.",
         inputSchema: GetFileInfoInputJsonSchema,
         outputSchema: GetFileInfoOutputJsonSchema,
@@ -573,6 +580,7 @@ export const regularToolsets = [
       },
       {
         name: "update_file",
+        title: "Update File",
         description: "Update a file.",
         inputSchema: UpdateFileInputJsonSchema,
         outputSchema: UpdateFileOutputJsonSchema,
@@ -585,6 +593,7 @@ export const regularToolsets = [
       },
       {
         name: "copy_batch_items",
+        title: "Copy Items",
         description: "Copy to a folder.",
         inputSchema: CopyBatchItemsInputJsonSchema,
         annotations: {
@@ -596,6 +605,7 @@ export const regularToolsets = [
       },
       {
         name: "move_batch_items",
+        title: "Move Items",
         description: "Move to a folder.",
         inputSchema: MoveBatchItemsInputJsonSchema,
         annotations: {
@@ -607,6 +617,7 @@ export const regularToolsets = [
       },
       {
         name: "download_file_as_text",
+        title: "Download File as Text",
         description: "Download a file as text.",
         inputSchema: DownloadFileAsTextInputJsonSchema,
         annotations: {
@@ -618,6 +629,7 @@ export const regularToolsets = [
       },
       {
         name: "upload_file",
+        title: "Upload File",
         description: "Upload a file.",
         inputSchema: UploadFileInputJsonSchema,
         annotations: {
@@ -658,6 +670,7 @@ export const regularToolsets = [
     tools: [
       {
         name: "create_folder",
+        title: "Create Folder",
         description: "Create a folder.",
         inputSchema: CreateFolderInputJsonSchema,
         outputSchema: CreateFolderOutputJsonSchema,
@@ -670,6 +683,7 @@ export const regularToolsets = [
       },
       {
         name: "delete_folder",
+        title: "Delete Folder",
         description: "Delete a folder.",
         inputSchema: DeleteFolderInputJsonSchema,
         annotations: {
@@ -681,6 +695,7 @@ export const regularToolsets = [
       },
       {
         name: "get_folder_content",
+        title: "Get Folder Content",
         description: "Get content of a folder.",
         inputSchema: GetFolderContentInputJsonSchema,
         outputSchema: GetFolderContentOutputJsonSchema,
@@ -693,6 +708,7 @@ export const regularToolsets = [
       },
       {
         name: "get_folder_info",
+        title: "Get Folder Info",
         description: "Get folder information.",
         inputSchema: GetFolderInfoInputJsonSchema,
         outputSchema: GetFolderInfoOutputJsonSchema,
@@ -705,6 +721,7 @@ export const regularToolsets = [
       },
       {
         name: "rename_folder",
+        title: "Rename Folder",
         description: "Rename a folder.",
         inputSchema: RenameFolderInputJsonSchema,
         outputSchema: RenameFolderOutputJsonSchema,
@@ -717,6 +734,7 @@ export const regularToolsets = [
       },
       {
         name: "get_my_folder",
+        title: "Get Files Folder",
         description: "Get the 'Files' folder (formerly 'My Documents').",
         inputSchema: GetMyFolderInputJsonSchema,
         outputSchema: GetMyFolderOutputJsonSchema,
@@ -735,6 +753,7 @@ export const regularToolsets = [
     tools: [
       {
         name: "create_room",
+        title: "Create Room",
         description: "Create a room.",
         inputSchema: CreateRoomInputJsonSchema,
         outputSchema: CreateRoomOutputJsonSchema,
@@ -742,11 +761,12 @@ export const regularToolsets = [
           title: "Create Room",
           readOnlyHint: false,
           destructiveHint: true,
-          openWorldHint: false,
+          openWorldHint: true,
         },
       },
       {
         name: "get_room_info",
+        title: "Get Room Info",
         description: "Get room information.",
         inputSchema: GetRoomInfoInputJsonSchema,
         outputSchema: GetRoomInfoOutputJsonSchema,
@@ -759,6 +779,7 @@ export const regularToolsets = [
       },
       {
         name: "update_room",
+        title: "Update Room",
         description: "Update a room.",
         inputSchema: UpdateRoomInputJsonSchema,
         outputSchema: UpdateRoomOutputJsonSchema,
@@ -771,17 +792,19 @@ export const regularToolsets = [
       },
       {
         name: "archive_room",
+        title: "Archive Room",
         description: "Archive a room.",
         inputSchema: ArchiveRoomInputJsonSchema,
         annotations: {
           title: "Archive Room",
           readOnlyHint: false,
-          destructiveHint: false,
+          destructiveHint: true,
           openWorldHint: false,
         },
       },
       {
         name: "set_room_security",
+        title: "Set Room Access",
         description: "Invite or remove users from a room.",
         inputSchema: SetRoomSecurityInputJsonSchema,
         outputSchema: SetRoomSecurityOutputJsonSchema,
@@ -794,6 +817,7 @@ export const regularToolsets = [
       },
       {
         name: "get_room_security_info",
+        title: "Get Room Access Info",
         description: "Get a list of users with their access levels to a room.",
         inputSchema: GetRoomSecurityInfoInputJsonSchema,
         outputSchema: GetRoomSecurityInfoOutputJsonSchema,
@@ -806,6 +830,7 @@ export const regularToolsets = [
       },
       {
         name: "get_rooms_folder",
+        title: "Get Rooms Folder",
         description: "Get the 'Rooms' folder.",
         inputSchema: GetRoomsFolderInputJsonSchema,
         outputSchema: GetRoomsFolderOutputJsonSchema,
@@ -818,6 +843,7 @@ export const regularToolsets = [
       },
       {
         name: "get_room_types",
+        title: "Get Room Types",
         description: "Get a list of available room types.",
         inputSchema: z.toJSONSchema(z.object({}), {io: "input"}),
         annotations: {
@@ -829,6 +855,7 @@ export const regularToolsets = [
       },
       {
         name: "get_room_access_levels",
+        title: "Get Room Access Levels",
         description: "Get a list of available room invitation access levels.",
         inputSchema: GetRoomAccessLevelsInputJsonSchema,
         annotations: {
@@ -846,6 +873,7 @@ export const regularToolsets = [
     tools: [
       {
         name: "get_all_people",
+        title: "Get All People",
         description: "Get all people.",
         inputSchema: GetAllPeopleInputJsonSchema,
         outputSchema: GetAllPeopleOutputJsonSchema,

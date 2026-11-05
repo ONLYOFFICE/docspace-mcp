@@ -44,6 +44,10 @@ jobs:
       - name: Archive Package
         run: pnpm pack
 
+      - name: Archive Plugin
+        working-directory: plugin
+        run: zip --recurse-paths "../onlyoffice-apps-plugin-${{steps.version.outputs.version}}.zip" .
+
       - name: Upload MCP Bundle
         uses: actions/upload-artifact@v4
         with:
@@ -63,6 +67,13 @@ jobs:
         with:
           name: package
           path: "*.tgz"
+          if-no-files-found: error
+
+      - name: Upload Plugin
+        uses: actions/upload-artifact@v4
+        with:
+          name: plugin
+          path: "*.zip"
           if-no-files-found: error
 
   npm:
@@ -190,7 +201,7 @@ jobs:
       - name: Download Artifacts
         uses: actions/download-artifact@v4
         with:
-          pattern: "{mcp-bundle,package}"
+          pattern: "{mcp-bundle,package,plugin}"
           merge-multiple: true
 
       - name: Create Release
@@ -204,6 +215,9 @@ jobs:
 
       - name: Upload Package
         run: gh release upload "v${{needs.build.outputs.version}}" *.tgz
+
+      - name: Upload Plugin
+        run: gh release upload "v${{needs.build.outputs.version}}" *.zip
 
   mcp:
     needs:
@@ -223,5 +237,13 @@ jobs:
       - name: Login to MCP Registry
         run: ./mcp-publisher login github-oidc
 
+      # The MCP Registry validates the package against npm, which can take a
+      # while to serve a just-published version. Retry to ride out the delay.
       - name: Publish to MCP Registry
-        run: ./mcp-publisher publish
+        run: |
+          for i in 1 2 3 4 5 6; do
+            ./mcp-publisher publish && exit 0
+            echo "Attempt $i failed, retrying in 30s..."
+            sleep 30
+          done
+          exit 1

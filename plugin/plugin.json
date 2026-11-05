@@ -1,0 +1,100 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "onlyoffice-apps",
+  "version": "3.4.0",
+  "description": "Manage rooms, folders, files, and people in ONLYOFFICE Apps.",
+  "author": {
+    "name": "Ascensio System SIA",
+    "email": "integration@onlyoffice.com",
+    "url": "https://onlyoffice.com/"
+  },
+  "homepage": "https://github.com/onlyoffice/docspace-mcp/",
+  "repository": "https://github.com/onlyoffice/docspace-mcp/",
+  "license": "MIT",
+  "keywords": [
+    "onlyoffice",
+    "docspace",
+    "onlyoffice-apps"
+  ],
+  "extensions": {
+    "com.openai": {
+      "interface": {
+        "displayName": "ONLYOFFICE Apps",
+        "shortDescription": "Manage rooms, files and docs",
+        "longDescription": "Connect ONLYOFFICE Apps, a room-based collaborative platform, to work with your portal in conversation.\n\nWhat you can do:\n- Create, update, and archive rooms, and invite or remove people with the right access levels.\n- Browse the Rooms and My Documents sections, create, rename, and delete folders.\n- Upload text and Markdown files, read documents as text, update, copy, move, and delete files.\n- Look up people on the portal.\n\nWho it is for: teams and individuals who keep their documents in ONLYOFFICE Apps and want to organize rooms and files without leaving the chat.\n\nLimitations: uploading supports only txt and md files. Documents are read as plain text, so formatting, images, and embedded objects are not available. All actions are performed with the permissions of the signed-in ONLYOFFICE Apps user.",
+        "developerName": "Ascensio System SIA",
+        "category": "Productivity",
+        "capabilities": [
+          "Read",
+          "Write"
+        ],
+        "websiteURL": "https://www.onlyoffice.com/",
+        "supportURL": "https://github.com/onlyoffice/docspace-mcp/issues/",
+        "privacyPolicyURL": "https://www.onlyoffice.com/privacy",
+        "termsOfServiceURL": "https://www.onlyoffice.com/legalterms",
+        "defaultPrompt": [
+          "Create a room for the marketing team and invite John Smith as an editor",
+          "Write meeting notes from my bullet points and save them to the Team room",
+          "Summarize the latest report in the Projects room"
+        ],
+        "composerIcon": "./assets/icon.png",
+        "logo": "./assets/icon.png"
+      },
+      "review": {
+        "commerce": false,
+        "commerce_description": "",
+        "test_cases": {
+          "positive": [
+            {
+              "description": "Create a room with folders",
+              "prompt": "Create a collaboration room in ONLYOFFICE Apps called \"Q4 Marketing\" and add two folders to it: \"Briefs\" and \"Assets\".",
+              "tools_triggered": "create_room, create_folder",
+              "expected_behavior": "Creates a collaboration room titled \"Q4 Marketing\", creates the \"Briefs\" and \"Assets\" folders inside it, and confirms the room title and the created folders."
+            },
+            {
+              "description": "Upload a Markdown file to a room",
+              "prompt": "In the \"Projects\" room in ONLYOFFICE Apps, create a file named kickoff-agenda.md with a short agenda for a project kickoff meeting.",
+              "tools_triggered": "get_rooms_folder, upload_file",
+              "expected_behavior": "Finds the \"Projects\" room, uploads kickoff-agenda.md with a Markdown agenda to it, and reports the created file name."
+            },
+            {
+              "description": "Summarize a document",
+              "prompt": "Summarize the \"Project Plan\" document from the \"Projects\" room in ONLYOFFICE Apps in five bullet points.",
+              "tools_triggered": "get_rooms_folder, get_folder_content, download_file_as_text",
+              "expected_behavior": "Finds the \"Project Plan\" document in the \"Projects\" room, reads it as text, and returns a five-bullet summary based on its content without modifying the file."
+            },
+            {
+              "description": "Organize personal files",
+              "prompt": "In my personal files in ONLYOFFICE Apps, create a folder called \"Archive 2025\" and move all files that have 2025 in their name into it.",
+              "tools_triggered": "get_my_folder, create_folder, move_batch_items",
+              "expected_behavior": "Creates the \"Archive 2025\" folder in the user's personal files, moves only the files whose names contain 2025 (Report 2025.docx and Budget 2025.xlsx on the test portal) into it, leaves other files such as Notes 2024.docx in place, and lists the moved files."
+            },
+            {
+              "description": "Copy a document from a room to personal files",
+              "prompt": "Copy the \"Project Plan\" document from the \"Projects\" room in ONLYOFFICE Apps to my personal files.",
+              "tools_triggered": "get_rooms_folder, get_folder_content, get_my_folder, copy_batch_items",
+              "expected_behavior": "Finds the \"Project Plan\" document in the \"Projects\" room, copies it to the user's personal files, leaves the original in the \"Projects\" room unchanged, and confirms where the copy was placed."
+            }
+          ],
+          "negative": [
+            {
+              "description": "Unsupported action: the ONLYOFFICE Apps tools cannot send email, so the assistant should explain this instead of pretending the message was sent",
+              "prompt": "Send an email from ONLYOFFICE Apps to everyone in the \"Projects\" room announcing the kickoff meeting."
+            },
+            {
+              "description": "Ambiguous destructive request: it is unclear which files are old, so the assistant should not delete anything and should ask the user which files to delete",
+              "prompt": "Delete the old files in ONLYOFFICE Apps."
+            },
+            {
+              "description": "Unsupported capability: the tools read documents only as plain text and cannot insert images, so the assistant should explain this and must not rename, overwrite, or upload a replacement for the document",
+              "prompt": "Add our company logo to the \"Project Plan\" document in the \"Projects\" room in ONLYOFFICE Apps."
+            }
+          ]
+        }
+      },
+      "publication": {
+        "release_notes": "Initial release of the ONLYOFFICE Apps plugin."
+      }
+    }
+  }
+}

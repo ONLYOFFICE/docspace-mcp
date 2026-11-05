@@ -36,7 +36,6 @@ Changelog] format and adhering to [Semantic Versioning].
 - Add the `offset` and `limit` parameters to the `download_file_as_text` tool
   and truncate large text, so the response does not exceed client size limits
   ([69cd570]).
-- Add the `title` annotation to all tools ([86bf18a]).
 
 ### Fixed
 
@@ -54,6 +53,33 @@ Changelog] format and adhering to [Semantic Versioning].
   A request signal that had already aborted was not passed on, so the call
   still reached the portal, and `run_builder_script` could start a script that
   nobody waited for ([5daa233]).
+
+## [3.4.0] - 2026-11-02
+
+- Add the `DOCSPACE_SERVER_OPENAI_APPS_CHALLENGE` option that serves the OpenAI
+  domain verification token at the `/.well-known/openai-apps-challenge`
+  endpoint ([f8f48ee]).
+- Add the `onlyoffice-apps` plugin in the `plugin/` directory, which connects
+  this server to Claude Code, Codex, and other clients that support Agent
+  Plugins ([2957e91]).
+
+### Changed
+
+- Add the `title` annotation to all tools ([cba703e]).
+- Add the top-level `title` field to all tools, alongside the `title`
+  annotation, for clients that read the display name from MCP 2025-06-18
+  ([b85f489]).
+- Mark the `create_room` tool as open-world, since it creates a public room by
+  default, and mark the `archive_room` tool as destructive, since this server
+  cannot unarchive a room ([02a41d7]).
+
+## [3.3.1] - 2026-10-30
+
+### Security
+
+- Update Node.js to v24.22.2 in the toolchain and OCI image to address the
+  Brotli decoder out-of-bounds write in Node.js, CVE-2026-111497, also known as
+  Node2Shell ([b9551bb]).
 
 ## [3.3.0] - 2026-10-09
 
@@ -391,7 +417,9 @@ There are no noticeable changes in version [3.0.1].
 [Keep a Changelog]: https://keepachangelog.com/en/1.1.0/
 [Semantic Versioning]: https://semver.org/spec/v2.0.0.html
 
-[Unreleased]: https://github.com/onlyoffice/docspace-mcp/compare/v3.3.0...HEAD/
+[Unreleased]: https://github.com/onlyoffice/docspace-mcp/compare/v3.4.0...HEAD/
+[3.4.0]: https://github.com/onlyoffice/docspace-mcp/compare/v3.3.1...v3.4.0/
+[3.3.1]: https://github.com/onlyoffice/docspace-mcp/compare/v3.3.0...v3.3.1/
 [3.3.0]: https://github.com/onlyoffice/docspace-mcp/compare/v3.2.0...v3.3.0/
 [3.2.0]: https://github.com/onlyoffice/docspace-mcp/compare/v3.1.0...v3.2.0/
 [3.1.0]: https://github.com/onlyoffice/docspace-mcp/compare/v3.0.1...v3.1.0/
@@ -409,7 +437,6 @@ There are no noticeable changes in version [3.0.1].
 [0.1.1]: https://github.com/onlyoffice/docspace-mcp/compare/v0.1.0...v0.1.1/
 [0.1.0]: https://github.com/onlyoffice/docspace-mcp/releases/tag/v0.1.0/
 
-[86bf18a]: https://github.com/onlyoffice/docspace-mcp/commit/86bf18ad820234f19e396a082ee7e464b63c6d9d/
 [5daa233]: https://github.com/onlyoffice/docspace-mcp/commit/5daa233e91eed96575829148e3e1de141381dad2/
 [e4b1fd9]: https://github.com/onlyoffice/docspace-mcp/commit/e4b1fd9e4c287bff61a0e03bac75392c1b2cfe07/
 [8f42745]: https://github.com/onlyoffice/docspace-mcp/commit/8f42745b20805e9913727e5e492098367012d19f/
@@ -426,6 +453,12 @@ There are no noticeable changes in version [3.0.1].
 [a1cdc95]: https://github.com/onlyoffice/docspace-mcp/commit/a1cdc957e4b82dcf2f38df38c7ff8e02e6bd1ca5/
 [084ab40]: https://github.com/onlyoffice/docspace-mcp/commit/084ab400bdd570002abb4dc6f03d1e33c6601ad9/
 [7444a56]: https://github.com/onlyoffice/docspace-mcp/commit/7444a56c8cc5b2d0693ab9f828425d731a71376a/
+[b85f489]: https://github.com/onlyoffice/docspace-mcp/commit/b85f489d4c57751046816c5d43e430a5a2146542/
+[2957e91]: https://github.com/onlyoffice/docspace-mcp/commit/2957e91658789c52b04f60eee0de04feeaa9e69d/
+[f8f48ee]: https://github.com/onlyoffice/docspace-mcp/commit/f8f48ee08ff4c0a31c7c4856aec5f2db6d1985fa/
+[02a41d7]: https://github.com/onlyoffice/docspace-mcp/commit/02a41d7e286fe4760f758c453bbd50d297af47a5/
+[cba703e]: https://github.com/onlyoffice/docspace-mcp/commit/cba703e4f0261c5c54d965cde4b601628af7727f/
+[b9551bb]: https://github.com/onlyoffice/docspace-mcp/commit/b9551bb7a3c8597178d260c5db2905b21fcce7c3/
 [d0d74ce]: https://github.com/onlyoffice/docspace-mcp/commit/d0d74ce1bbf46be2850e6d41b049b7e53583f859/
 [cd38376]: https://github.com/onlyoffice/docspace-mcp/commit/cd3837673680c79bea998ec287cceee07729a91f/
 [f7be9cc]: https://github.com/onlyoffice/docspace-mcp/commit/f7be9ccc0cb7708948a2d281b9f780e8ebc7f224/

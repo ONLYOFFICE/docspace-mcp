@@ -1,0 +1,24 @@
+{
+  "name": "onlyoffice-apps",
+  "displayName": "ONLYOFFICE Apps",
+  "version": "3.4.0",
+  "description": "Manage rooms, folders, files, and people in ONLYOFFICE Apps.",
+  "author": {
+    "name": "Ascensio System SIA",
+    "email": "integration@onlyoffice.com",
+    "url": "https://onlyoffice.com/"
+  },
+  "homepage": "https://github.com/onlyoffice/docspace-mcp/",
+  "repository": "https://github.com/onlyoffice/docspace-mcp/",
+  "license": "MIT",
+  "keywords": [
+    "onlyoffice",
+    "docspace",
+    "onlyoffice-apps"
+  ],
+  "icon": "./assets/icon.png",
+  "documentationUrl": "https://github.com/onlyoffice/docspace-mcp/blob/main/README.md",
+  "supportUrl": "https://github.com/onlyoffice/docspace-mcp/issues/",
+  "privacyPolicyUrl": "https://www.onlyoffice.com/privacy",
+  "termsOfServiceUrl": "https://www.onlyoffice.com/legalterms"
+}

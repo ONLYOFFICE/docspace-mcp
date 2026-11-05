@@ -56,6 +56,8 @@ Changelog] format and adhering to [Semantic Versioning].
 
 ## [3.4.0] - 2026-11-02
 
+### Added
+
 - Add the `DOCSPACE_SERVER_OPENAI_APPS_CHALLENGE` option that serves the OpenAI
   domain verification token at the `/.well-known/openai-apps-challenge`
   endpoint ([f8f48ee]).

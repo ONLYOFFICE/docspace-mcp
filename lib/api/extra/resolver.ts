@@ -133,14 +133,22 @@ export class Resolver {
     s.operations = operations
 
     const u: string[] = []
+    const ue: Error[] = []
 
     for (const s of states) {
       if (s.id === undefined) {
         continue
       }
 
-      if (s.error !== undefined && s.error !== "" || !s.done) {
+      if (s.error !== undefined && s.error !== "") {
         u.push(s.id)
+        ue.push(new Error(`Operation ${s.id}: ${s.error}`))
+        continue
+      }
+
+      if (!s.done) {
+        u.push(s.id)
+        ue.push(new Error(`Operation ${s.id} did not finish after ${this.limit} status checks. It may still be running on the portal.`))
       }
     }
 
@@ -152,8 +160,10 @@ export class Resolver {
     }
 
     if (u.length !== 0) {
+      // Keep the reason of each operation, such as the error message that the
+      // portal reports for a file it refuses to copy.
       const m = `${u.length} out of ${ops.length} operations are unresolved.`
-      const e = new ResolverResponseError(m)
+      const e = new ResolverResponseError(m, {cause: new AggregateError(ue)})
       e.response = s
       e.unresolved = u
       return error(e)

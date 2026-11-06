@@ -98,6 +98,12 @@ Changelog] format and adhering to [Semantic Versioning].
   of converting them to plain text. The conversion dropped the markup, such as
   the frontmatter of a skill. Documents, spreadsheets, presentations and PDF
   files are still converted ([ae6616a]).
+- Report why each file operation is unresolved in the tools that wait for
+  one, such as `copy_batch_items`, `move_batch_items` and `delete_ai_room`:
+  the error message that the portal sets on the operation, such as a file
+  that an instructions room refuses, or that the operation did not finish in
+  time and may still be running. Only the number of unresolved operations
+  was reported.
 
 ## [3.4.0] - 2026-11-02
 

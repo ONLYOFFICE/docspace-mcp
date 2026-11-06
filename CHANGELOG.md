@@ -40,7 +40,7 @@ Changelog] format and adhering to [Semantic Versioning].
   explain what it means ([7d7f7b6]).
 - Add the "Set up an AI project" tutorial, the AI rooms terms to the glossary,
   a troubleshooting entry for refused AI room tools, and mention AI rooms in
-  the README and the plugin description.
+  the README and the plugin description ([e37a4e6]).
 
 ### Changed
 
@@ -469,6 +469,7 @@ There are no noticeable changes in version [3.0.1].
 [0.1.1]: https://github.com/onlyoffice/docspace-mcp/compare/v0.1.0...v0.1.1/
 [0.1.0]: https://github.com/onlyoffice/docspace-mcp/releases/tag/v0.1.0/
 
+[e37a4e6]: https://github.com/onlyoffice/docspace-mcp/commit/e37a4e65589e8f0eaeb304c34f63b3e1384a6636/
 [7d7f7b6]: https://github.com/onlyoffice/docspace-mcp/commit/7d7f7b63017d992a7d8b4614c1b89599b21bf5ee/
 [41bf399]: https://github.com/onlyoffice/docspace-mcp/commit/41bf39914f50e39aad1c0d7020e8b03780f2c6ae/
 [bddbb63]: https://github.com/onlyoffice/docspace-mcp/commit/bddbb63aad8ce08e32a58b2baeae91773fb940b1/

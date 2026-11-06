@@ -483,8 +483,13 @@ const ErrorResponseSchema = z.
   transform((o) => {
     const t: {
       message: string
+      statusCode?: number
     } = {
       message: "",
+    }
+
+    if ("statusCode" in o) {
+      t.statusCode = o.statusCode
     }
 
     switch (true) {
@@ -532,7 +537,22 @@ export async function checkSharedResponse(req: Request, res: globalThis.Response
     }
 
     const r = new Response(req, res)
-    const m = `${req.method} ${req.url}: ${res.status} ${s.data.message}`
+
+    let st = String(res.status)
+
+    // An HTTP 2xx status does not describe an error in the body, so take the
+    // status from the response envelope, or say that the portal refused the
+    // request, as the chunked uploader does when it rejects a file.
+    if (res.status >= 200 && res.status <= 299) {
+      const sc = s.data.statusCode
+      if (sc !== undefined && sc >= 400) {
+        st = String(sc)
+      } else {
+        st = "refused by the portal:"
+      }
+    }
+
+    const m = `${req.method} ${req.url}: ${st} ${s.data.message}`
     const e = new ResponseError(r, m)
 
     return e

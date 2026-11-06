@@ -51,6 +51,18 @@ void test.suite("upload_file", () => {
     assert.equal(texts(v).length, 1)
   })
 
+  void test("reports a file that the portal refuses without the http status", async(t) => {
+    const [v] = await callMockedTool(t, () => [
+      routes("skill.md")[0],
+      {method: "POST", path: "/ChunkedUploader.ashx", status: 200, json: {success: false, message: "The skill file must start with a YAML frontmatter block"}},
+    ], "upload_file", {parentId: 7, filename: "skill.md", content: "# No frontmatter\n"})
+
+    assert.ok(v.isError)
+    const [m] = texts(v)
+    assert.ok(m.includes(": refused by the portal: The skill file must start with a YAML frontmatter block"), m)
+    assert.ok(!m.includes(": 200 "), m)
+  })
+
   void test("warns when the portal uploads a new file instead of overwriting", async(t) => {
     const [v] = await callMockedTool(t, () => routes("skill (1).md"), "upload_file", {parentId: 7, filename: "skill.md", content: skill, overwrite: true})
 

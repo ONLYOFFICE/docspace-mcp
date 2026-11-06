@@ -104,6 +104,10 @@ Changelog] format and adhering to [Semantic Versioning].
   that an instructions room refuses, or that the operation did not finish in
   time and may still be running. Only the number of unresolved operations
   was reported ([5aab993]).
+- Do not report the HTTP status 200 in the error of a request that the portal
+  refuses in a successful response, such as an upload of a skill without the
+  frontmatter. The error takes the status from the response envelope when it
+  has one, and says that the portal refused the request otherwise.
 
 ## [3.4.0] - 2026-11-02
 

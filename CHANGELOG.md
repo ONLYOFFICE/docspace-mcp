@@ -65,6 +65,9 @@ Changelog] format and adhering to [Semantic Versioning].
 - Explain in the `delete_ai_room` error that a room which is not found may
   have been deleted already, such as by a former call whose operation did not
   finish in time, or that its ID may be wrong ([d578894]).
+- Refuse an empty title in `create_ai_room` before calling the portal, and
+  trim the spaces around the title. The input schema now declares a minimum
+  length, so clients can check the title too.
 
 - Refer to the "My documents" section as "Files" in the `get_my_folder` tool
   descriptions, mentioning the former name, and in the documentation. The tool

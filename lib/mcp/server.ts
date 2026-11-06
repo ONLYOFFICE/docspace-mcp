@@ -521,7 +521,7 @@ const AiProjectSourcesInputSchema = z.object({
 const AiProjectSourcesInputJsonSchema = z.toJSONSchema(AiProjectSourcesInputSchema, {io: "input"})
 
 const CreateAiRoomInputSchema = z.object({
-  title: z.string().max(170).describe("The title of the room to create."),
+  title: z.string().trim().min(1).max(170).describe("The title of the room to create."),
   roomType: unionToEnum(core.AiRoomTypeSchema, "The type of the AI room to create."),
   tags: z.array(z.string()).optional().describe("The tags of the room."),
   color: z.string().regex(/^[0-9a-fA-F]{6}$/).optional().describe("The color of the room logo, a hex code of six digits without #, such as 7757D9."),

@@ -655,6 +655,25 @@ void test.suite("ai rooms tools", () => {
     assert.deepEqual(s[0].body, {title: "Docs", roomType: 11, color: "70E096"})
   })
 
+  for (const title of ["", "   "]) {
+    void test(`refuses the title ${JSON.stringify(title)} in create_ai_room`, async(t) => {
+      const [v, s] = await callTool(t, [], "create_ai_room", {title, roomType: 10, filters: {fields: []}})
+
+      assert.ok(v.isError)
+      assert.match(text(v), /title/)
+      assert.ok(s.length === 0)
+    })
+  }
+
+  void test("trims the title in create_ai_room", async(t) => {
+    const [v, s] = await callTool(t, [
+      {method: "POST", path: "/api/2.0/files/rooms", status: 200, body: envelope({id: 11, title: "Docs", roomType: 10})},
+    ], "create_ai_room", {title: "  Docs ", roomType: 10, filters: {fields: []}})
+
+    assert.ok(!v.isError, text(v))
+    assert.deepEqual(s[0].body, {title: "Docs", roomType: 10})
+  })
+
   void test("explains a refused knowledge room", async(t) => {
     const [v] = await callTool(t, [
       {method: "POST", path: "/api/2.0/files/rooms", status: 403},

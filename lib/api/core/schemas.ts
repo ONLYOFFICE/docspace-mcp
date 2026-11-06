@@ -626,6 +626,14 @@ export const FileOperationDtoSchema = z.looseObject({
   error: z.string().optional(),
   finished: z.boolean().optional(),
   url: z.string().optional(),
+  files: z.array(z.looseObject({
+    id: z.union([z.number(), z.string()]).optional(),
+    title: z.string().optional(),
+  })).optional().describe("The files that the operation has processed so far, such as the copies it made."),
+  folders: z.array(z.looseObject({
+    id: z.union([z.number(), z.string()]).optional(),
+    title: z.string().optional(),
+  })).optional().describe("The folders that the operation has processed so far."),
 })
 
 /**

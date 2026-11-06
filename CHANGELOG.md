@@ -124,6 +124,12 @@ Changelog] format and adhering to [Semantic Versioning].
   that an instructions room refuses, or that the operation did not finish in
   time and may still be running. Only the number of unresolved operations
   was reported ([5aab993]).
+- Wait for a file operation to finish even after the portal reports an error
+  on it, and list the files and folders that the operation processed before
+  it stopped. The portal sets the error while the operation still runs, such
+  as when it refuses one of several files to copy and goes on copying the
+  rest, so the tools returned before the copy ended and reported nothing of
+  the files it had copied.
 - Do not report the HTTP status 200 in the error of a request that the portal
   refuses in a successful response, such as an upload of a skill without the
   frontmatter. The error takes the status from the response envelope when it

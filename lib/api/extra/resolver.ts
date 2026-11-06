@@ -140,15 +140,30 @@ export class Resolver {
         continue
       }
 
+      // The latest status of the operation, or the one it started with when the
+      // portal has not listed it since.
+      const lo = operations.find((x) => x.id === s.id) ?? ops.find((x) => x.id === s.id)
+      const pn = lo ? processedNote(lo) : ""
+
       if (s.error !== undefined && s.error !== "") {
+        let m = s.error
+
+        if (!s.done) {
+          m = `${sentence(m)} The operation did not finish after ${this.limit} status checks, so it may still be running on the portal.`
+        }
+
+        if (pn !== "") {
+          m = sentence(m) + pn
+        }
+
         u.push(s.id)
-        ue.push(new Error(`Operation ${s.id}: ${s.error}`))
+        ue.push(new Error(`Operation ${s.id}: ${m}`))
         continue
       }
 
       if (!s.done) {
         u.push(s.id)
-        ue.push(new Error(`Operation ${s.id} did not finish after ${this.limit} status checks. It may still be running on the portal.`))
+        ue.push(new Error(`Operation ${s.id} did not finish after ${this.limit} status checks. It may still be running on the portal.${pn}`))
       }
     }
 
@@ -188,12 +203,54 @@ export class ResolverResponseError extends Error {
   }
 }
 
-function isDone(o: Operation): boolean {
-  return hasError(o) || isFinished(o)
+const processedListLimit = 10
+
+/**
+ * Describes what an unresolved operation has done before it stopped, such as
+ * the files it copied before the portal refused another one, so that the
+ * caller does not repeat the call blindly.
+ */
+function processedNote(o: Operation): string {
+  const es: string[] = []
+
+  for (const [k, xs] of [["file", o.files], ["folder", o.folders]] as const) {
+    if (!xs || xs.length === 0) {
+      continue
+    }
+
+    const ns: string[] = []
+
+    for (const x of xs.slice(0, processedListLimit)) {
+      const t = x.title ?? "untitled"
+      ns.push(x.id === undefined ? t : `${t} (${String(x.id)})`)
+    }
+
+    let e = `${xs.length} ${k}${xs.length === 1 ? "" : "s"}: ${ns.join(", ")}`
+
+    if (xs.length > processedListLimit) {
+      e += ` and ${xs.length - processedListLimit} more`
+    }
+
+    es.push(e)
+  }
+
+  if (es.length === 0) {
+    return ""
+  }
+
+  return ` Before it stopped, the operation processed ${es.join("; and ")}. Check the destination before calling the tool again.`
 }
 
-function hasError(o: Operation): boolean {
-  return o.error !== undefined && o.error !== ""
+function sentence(s: string): string {
+  const t = s.trim()
+  return /[.!?]$/.test(t) ? t : `${t}.`
+}
+
+// The portal sets the error of an operation while the operation still runs,
+// such as when it refuses one of several files to copy and goes on copying the
+// rest, so an operation is done only when it finishes.
+function isDone(o: Operation): boolean {
+  return isFinished(o)
 }
 
 function isFinished(o: Operation): boolean {

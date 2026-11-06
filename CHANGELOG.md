@@ -58,6 +58,9 @@ Changelog] format and adhering to [Semantic Versioning].
   responses of the existing tools. `get_room_info`, `update_room` and the other
   tools that return a room failed to parse the response for an AI room
   ([b7d8883]).
+- Send the room templates search area as `Templates`, the name the portal
+  expects, in the `searchArea` filter of `get_rooms_folder` and
+  `get_folder_content`. The portal rejected the former value `Template`.
 
 ## [3.4.0] - 2026-11-02
 

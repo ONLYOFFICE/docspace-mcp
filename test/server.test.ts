@@ -378,3 +378,56 @@ function collectRequiredDefaults(a: string[], p: string, s: unknown): void {
     }
   }
 }
+
+void test.suite("search area", () => {
+  void test("passes the templates search area to the portal", async(t) => {
+    const [hs, ha] = await setupHttp(t)
+
+    const hl = test.mock.fn<AsyncRequestListener>(async(req, res) => {
+      assert.ok(req.method === "GET")
+      assert.ok(req.url)
+
+      const u = new URL(req.url, "http://localhost/")
+      assert.ok(u.pathname === "/api/2.0/files/rooms")
+      assert.ok(u.searchParams.get("searchArea") === "Templates")
+
+      const s = await sendJson(res, 200, body)
+      assert.ok(s.err === undefined)
+    })
+
+    const hp = onRequest(t, hs, hl)
+
+    const tf = async(): Promise<void> => {
+      const so: SetupMcpOptions = {
+        transport: "stdio",
+        host: "",
+        port: 0,
+        env: {
+          DOCSPACE_BASE_URL: `http://[${ha.address}]:${ha.port}/`,
+          DOCSPACE_API_KEY: "xxx",
+        },
+      }
+
+      const cl = await setupMcp(t, so)
+
+      const cp: types.CallToolRequest["params"] = {
+        name: "get_rooms_folder",
+        arguments: {
+          filters: {
+            searchArea: "Templates",
+            fields: [],
+          },
+        },
+      }
+
+      const cr = await r.safeAsync(cl.callTool.bind(cl), cp)
+      assert.ok(cr.err === undefined)
+
+      assert.ok(!cr.v.isError, JSON.stringify(cr.v.content))
+    }
+
+    await Promise.race([hp, tf()])
+
+    assert.ok(hl.mock.callCount() === 1)
+  })
+})

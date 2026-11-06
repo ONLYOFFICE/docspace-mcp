@@ -784,14 +784,14 @@ export const ShareFilterTypeSchema = z.union([
 ])
 
 /**
- * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.1.1-server/products/ASC.Files/Core/Core/VirtualRooms/SearchArea.cs/#L32 | ONLYOFFICE Apps Reference}
+ * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v4.1.0-server/products/ASC.Files/Core/Core/VirtualRooms/SearchArea.cs/#L41 | ONLYOFFICE Apps Reference}
  */
 export const SearchAreaSchema = z.union([
   z.literal("Active"),
   z.literal("Archive"),
   z.literal("Any"),
   z.literal("RecentByLinks"),
-  z.literal("Template"),
+  z.literal("Templates"),
 ])
 
 /**
@@ -938,7 +938,7 @@ export const GetRoomsFolderFiltersSortBySchema = z.union([
 export const GetRoomsFolderFiltersSchema = z.object({
   type: z.array(zod.unionToEnum(RoomTypeSchema, "The filter by room type.")).optional(),
   subjectId: z.string().optional().describe("The filter by user ID."),
-  searchArea: zod.unionToEnum(SearchAreaSchema, "The room search area (Active, Archive, Any, Recent by links).").optional(),
+  searchArea: zod.unionToEnum(SearchAreaSchema, "The room search area (Active, Archive, Any, RecentByLinks, Templates).").optional(),
   withoutTags: z.boolean().optional().describe("Specifies whether to search by tags or not."),
   tags: z.string().optional().describe("The tags in the serialized format."),
   excludeSubject: z.boolean().optional().describe("Specifies whether to exclude search by user or group ID."),

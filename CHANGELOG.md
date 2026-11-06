@@ -47,7 +47,7 @@ Changelog] format and adhering to [Semantic Versioning].
   as a new version of the file with the same name, keeping its ID, so that a
   skill can be changed. When the portal uploads a new file instead, because
   the file is locked, open in the editor or the user cannot edit it, the tool
-  says so.
+  says so ([f24155e]).
 - Add the "Set up an AI project" tutorial, the AI rooms terms to the glossary,
   a troubleshooting entry for refused AI room tools, and mention AI rooms in
   the README and the plugin description ([e37a4e6]).
@@ -484,6 +484,7 @@ There are no noticeable changes in version [3.0.1].
 [0.1.1]: https://github.com/onlyoffice/docspace-mcp/compare/v0.1.0...v0.1.1/
 [0.1.0]: https://github.com/onlyoffice/docspace-mcp/releases/tag/v0.1.0/
 
+[f24155e]: https://github.com/onlyoffice/docspace-mcp/commit/f24155e326cdb56cc414f458b0af2d637a1c49c3/
 [ae6616a]: https://github.com/onlyoffice/docspace-mcp/commit/ae6616ab524358476d6b7599608357406708902f/
 [23a7cd6]: https://github.com/onlyoffice/docspace-mcp/commit/23a7cd6b8034dce7420798b07562820a61a11aa4/
 [e37a4e6]: https://github.com/onlyoffice/docspace-mcp/commit/e37a4e65589e8f0eaeb304c34f63b3e1384a6636/

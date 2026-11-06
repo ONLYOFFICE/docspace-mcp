@@ -52,7 +52,8 @@ Changelog] format and adhering to [Semantic Versioning].
   `POST api/2.0/files/{folderId}/upload/check` before the upload, matching
   the name the way the portal does, and tells an overwrite by the version of
   the uploaded file. It no longer warns when the portal stores the file under
-  a name in another case or with the characters a title cannot hold replaced.
+  a name in another case or with the characters a title cannot hold replaced
+  ([c9379bc]).
 - Add the "Set up an AI project" tutorial, the AI rooms terms to the glossary,
   a troubleshooting entry for refused AI room tools, and mention AI rooms in
   the README and the plugin description ([e37a4e6]).
@@ -513,6 +514,7 @@ There are no noticeable changes in version [3.0.1].
 [0.1.1]: https://github.com/onlyoffice/docspace-mcp/compare/v0.1.0...v0.1.1/
 [0.1.0]: https://github.com/onlyoffice/docspace-mcp/releases/tag/v0.1.0/
 
+[c9379bc]: https://github.com/onlyoffice/docspace-mcp/commit/c9379bc97ab9e335507f03c1940c74e6d8b58d98/
 [bafe81f]: https://github.com/onlyoffice/docspace-mcp/commit/bafe81fce765ccdca34a8a7f3a23729c4af2b98c/
 [acc7caa]: https://github.com/onlyoffice/docspace-mcp/commit/acc7caa1d1bb66edafa6892f3d2ab0184bfcd515/
 [d578894]: https://github.com/onlyoffice/docspace-mcp/commit/d5788944909396de0be98bc865ab67a576c35854/

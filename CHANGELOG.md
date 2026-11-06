@@ -67,7 +67,7 @@ Changelog] format and adhering to [Semantic Versioning].
   finish in time, or that its ID may be wrong ([d578894]).
 - Refuse an empty title in `create_ai_room` before calling the portal, and
   trim the spaces around the title. The input schema now declares a minimum
-  length, so clients can check the title too.
+  length, so clients can check the title too ([acc7caa]).
 
 - Refer to the "My documents" section as "Files" in the `get_my_folder` tool
   descriptions, mentioning the former name, and in the documentation. The tool
@@ -505,6 +505,7 @@ There are no noticeable changes in version [3.0.1].
 [0.1.1]: https://github.com/onlyoffice/docspace-mcp/compare/v0.1.0...v0.1.1/
 [0.1.0]: https://github.com/onlyoffice/docspace-mcp/releases/tag/v0.1.0/
 
+[acc7caa]: https://github.com/onlyoffice/docspace-mcp/commit/acc7caa1d1bb66edafa6892f3d2ab0184bfcd515/
 [d578894]: https://github.com/onlyoffice/docspace-mcp/commit/d5788944909396de0be98bc865ab67a576c35854/
 [d03cdea]: https://github.com/onlyoffice/docspace-mcp/commit/d03cdea0475bb74dc8b08bfcca8af9203dd89829/
 [62635ad]: https://github.com/onlyoffice/docspace-mcp/commit/62635adaa31e53f20b8f1774f641c4b6bd2d4bb6/

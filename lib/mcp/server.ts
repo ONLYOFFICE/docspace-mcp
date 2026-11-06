@@ -1533,7 +1533,23 @@ export class Server {
 
     const ar = await this.client.files.archiveRoom(pr.data.roomId, {})
     if (ar.err) {
-      return fromError(new Error("Archiving room.", {cause: ar.err}))
+      const err = new Error("Archiving room.", {cause: ar.err})
+
+      // The portal refuses to archive an AI room with a bare 403, the same as
+      // for a user who lacks the rights, so tell the two apart by the room type.
+      if (responseStatus(ar.err) === 403) {
+        const gr = await this.client.files.getRoomInfo(pr.data.roomId)
+        if (!gr.err) {
+          const [gd] = gr.v
+          const n = gd.roomType === undefined ? undefined : aiRoomTypeNames[gd.roomType]
+          if (n) {
+            const h = `Room ${pr.data.roomId} is ${n}, and AI rooms cannot be archived. To remove it, use delete_ai_room, which deletes the room permanently without moving it to the trash, so confirm it with the user first.`
+            return fromError(new AggregateError([err, new Error(h)]))
+          }
+        }
+      }
+
+      return fromError(err)
     }
 
     const [ad] = ar.v
@@ -2746,18 +2762,32 @@ const aiNotFoundHint = "The room was not found, or it is not of the type the too
 // The AI service reports no details on most errors, only the status, so the
 // hints explain what the status means for each tool.
 function fromAiError(m: string, err: Error, hints: Partial<Record<number, string>>): types.CallToolResult {
+  const s = responseStatus(err)
+  const h = s === undefined ? undefined : hints[s]
+  if (h) {
+    return fromError(new Error(m, {cause: new AggregateError([err, new Error(h)])}))
+  }
+  return fromError(new Error(m, {cause: err}))
+}
+
+/**
+ * Finds the HTTP status of the response that caused the error.
+ */
+function responseStatus(err: Error): number | undefined {
   let e: unknown = err
   while (e instanceof Error) {
     if (e instanceof core.ResponseError) {
-      const h = hints[e.response.response.status]
-      if (h) {
-        return fromError(new Error(m, {cause: new AggregateError([err, new Error(h)])}))
-      }
-      break
+      return e.response.response.status
     }
     e = e.cause
   }
-  return fromError(new Error(m, {cause: err}))
+  return undefined
+}
+
+const aiRoomTypeNames: Partial<Record<number, string>> = {
+  10: "an instructions room",
+  11: "a knowledge room",
+  12: "an AI project",
 }
 
 function fromError(err: Error): types.CallToolResult {

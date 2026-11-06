@@ -694,6 +694,60 @@ void test.suite("ai rooms tools", () => {
     assert.deepEqual(s.map((x) => x.method), ["GET"])
   })
 
+  const accessDenied = {status: 1, statusCode: 403, error: {message: "Access denied", type: "x", stack: "", hresult: 0}}
+
+  for (const [roomType, name] of [
+    [10, "an instructions room"],
+    [11, "a knowledge room"],
+    [12, "an AI project"],
+  ] as const) {
+    void test(`explains that ${name} cannot be archived`, async(t) => {
+      const [v, s] = await callTool(t, [
+        {method: "PUT", path: "/api/2.0/files/rooms/7/archive", status: 403, body: accessDenied},
+        {method: "GET", path: "/api/2.0/files/rooms/7", status: 200, body: envelope({id: 7, roomType})},
+      ], "archive_room", {roomId: 7})
+
+      assert.ok(v.isError)
+      assert.ok(text(v).includes("403 Access denied"), text(v))
+      assert.ok(text(v).includes(`Room 7 is ${name}, and AI rooms cannot be archived.`), text(v))
+      assert.ok(text(v).includes("delete_ai_room, which deletes the room permanently"), text(v))
+      assert.deepEqual(s.map((x) => x.method), ["PUT", "GET"])
+    })
+  }
+
+  void test("does not explain a refused archive of a room that is not an ai room", async(t) => {
+    const [v] = await callTool(t, [
+      {method: "PUT", path: "/api/2.0/files/rooms/6/archive", status: 403, body: accessDenied},
+      {method: "GET", path: "/api/2.0/files/rooms/6", status: 200, body: envelope({id: 6, roomType: 6})},
+    ], "archive_room", {roomId: 6})
+
+    assert.ok(v.isError)
+    assert.ok(text(v).includes("403 Access denied"), text(v))
+    assert.ok(!text(v).includes("delete_ai_room"), text(v))
+  })
+
+  void test("keeps the archive error when the room info is refused too", async(t) => {
+    const [v] = await callTool(t, [
+      {method: "PUT", path: "/api/2.0/files/rooms/7/archive", status: 403, body: accessDenied},
+      {method: "GET", path: "/api/2.0/files/rooms/7", status: 403, body: accessDenied},
+    ], "archive_room", {roomId: 7})
+
+    assert.ok(v.isError)
+    assert.ok(text(v).startsWith("Archiving room."), text(v))
+    assert.ok(text(v).includes("403 Access denied"), text(v))
+    assert.ok(!text(v).includes("delete_ai_room"), text(v))
+  })
+
+  void test("does not look up the room when archiving fails for another reason", async(t) => {
+    const [v, s] = await callTool(t, [
+      {method: "PUT", path: "/api/2.0/files/rooms/7/archive", status: 404, body: {...accessDenied, statusCode: 404, error: {...accessDenied.error, message: "The required folder was not found"}}},
+    ], "archive_room", {roomId: 7})
+
+    assert.ok(v.isError)
+    assert.ok(text(v).includes("404 The required folder was not found"), text(v))
+    assert.deepEqual(s.map((x) => x.method), ["PUT"])
+  })
+
   for (const [tool, method, reply] of [
     ["link_ai_project_sources", "POST", "Rooms linked."],
     ["unlink_ai_project_sources", "DELETE", "Rooms unlinked."],

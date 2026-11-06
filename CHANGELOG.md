@@ -57,6 +57,11 @@ Changelog] format and adhering to [Semantic Versioning].
 - List the access levels of instructions rooms, knowledge rooms and AI projects
   in `get_room_access_levels`, and mention in the `archive_room` description
   that AI rooms cannot be archived ([7d7f7b6]).
+- Explain in the `archive_room` error that AI rooms cannot be archived when
+  the portal refuses to archive one. The portal answers with the same bare
+  403 as for a user who lacks the rights, so the tool looks up the room type
+  only then, and points to `delete_ai_room`, warning that it deletes the room
+  permanently.
 
 - Refer to the "My documents" section as "Files" in the `get_my_folder` tool
   descriptions, mentioning the former name, and in the documentation. The tool

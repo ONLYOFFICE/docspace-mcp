@@ -24,6 +24,9 @@ Changelog] format and adhering to [Semantic Versioning].
   classes, methods and enumerations of the Office JavaScript API that
   `run_builder_script` scripts are written against, reading the reference from
   api.onlyoffice.com and caching it in memory ([8f42745]).
+- Add the `vectorizationStatus` field to the files returned by `get_file_info`
+  and the folder listing tools. It reports whether a file in a knowledge room
+  is being vectorized (`0`), vectorized (`1`) or failed to vectorize (`2`).
 
 ### Changed
 

@@ -319,6 +319,37 @@ export const CreateRoomRequestDtoSchema = UpdateRoomRequestSchema.extend({
 })
 
 /**
+ * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v4.1.0-server/products/ASC.Files/Server/ApiModels/RequestDto/CreateRoomRequestDto.cs/#L39 | ONLYOFFICE Apps Reference}
+ */
+export const CreateAiRoomRequestDtoSchema = z.object({
+  title: z.string(),
+  roomType: zod.unionToEnum(AiRoomTypeSchema, ""),
+  tags: z.array(z.string()).optional(),
+  color: z.string().optional(),
+})
+
+/**
+ * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v4.1.0-server/products/ASC.Files/Server/ApiModels/RequestDto/LinkAiProjectSourcesRequestDto.cs/#L39 | ONLYOFFICE Apps Reference}
+ */
+export const AiProjectSourcesRequestSchema = z.object({
+  roomIds: z.array(z.number()),
+})
+
+/**
+ * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v4.1.0-server/products/ASC.Files/Server/ApiModels/RequestDto/UpdateAiProjectModelRequestDto.cs/#L39 | ONLYOFFICE Apps Reference}
+ */
+export const UpdateAiProjectModelRequestSchema = z.object({
+  profileId: z.string(),
+})
+
+/**
+ * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v4.1.0-server/products/ASC.AI/Server/Api/VectorizationController.cs/#L52 | ONLYOFFICE Apps Reference}
+ */
+export const VectorizationStartRequestSchema = z.object({
+  files: z.array(z.number()),
+})
+
+/**
  * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/products/ASC.Files/Core/ApiModels/RequestDto/DeleteFolderDto.cs/#L32 | ONLYOFFICE Apps Reference}
  */
 export const DeleteFolderSchema = z.object({
@@ -490,6 +521,15 @@ export const FileEntryDtoFieldSchema = z.union([
 ])
 
 /**
+ * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v4.1.0-server/products/ASC.Files/Core/Core/EF/DbFileVectorization.cs/#L55 | ONLYOFFICE Apps Reference}
+ */
+export const VectorizationStatusSchema = z.union([
+  z.literal(0).describe("In progress"),
+  z.literal(1).describe("Completed"),
+  z.literal(2).describe("Failed"),
+])
+
+/**
  * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.2.1-server/products/ASC.Files/Core/ApiModels/ResponseDto/FileDto.cs/#L32 | ONLYOFFICE Apps Reference}
  */
 export const FileDtoSchema = FileEntryDtoSchema.extend({
@@ -499,6 +539,7 @@ export const FileDtoSchema = FileEntryDtoSchema.extend({
   comment: z.string().optional().describe("The comment to the file."),
   encrypted: z.boolean().optional().describe("Specifies if the file is encrypted or not."),
   locked: z.boolean().optional().describe("Specifies if the file is locked or not."),
+  vectorizationStatus: zod.unionToEnum(VectorizationStatusSchema, "The vectorization status of a file in a knowledge room. It is null when the file has not been queued for vectorization.").nullable().optional(),
 })
 
 // /**
@@ -533,6 +574,7 @@ export const FileDtoFieldSchema = z.union([
   // z.literal("thumbnailUrl").describe("The thumbnail URL of the file."),
   // z.literal("thumbnailStatus").describe("The current thumbnail status of the file."),
   z.literal("locked").describe("Specifies if the file is locked or not."),
+  z.literal("vectorizationStatus").describe("The vectorization status of a file in a knowledge room."),
   // z.literal("lockedBy").describe("The user ID of the person who locked the file."),
   // z.literal("hasDraft").describe("Specifies if the file has a draft or not."),
   // z.literal("formFillingStatus").describe("The status of the form filling process."),
@@ -735,6 +777,107 @@ export const RoomSecurityDtoFieldSchema = z.union([
   z.literal("warning").describe("The warning message."),
   z.literal("error").describe("The error type."),
 ])
+
+/**
+ * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v4.1.0-server/products/ASC.Files/Core/ApiModels/ResponseDto/LogoDto.cs/#L39 | ONLYOFFICE Apps Reference}
+ */
+export const LogoDtoSchema = z.looseObject({
+  original: z.string().optional().describe("The original logo URL."),
+  large: z.string().optional().describe("The large logo URL."),
+  medium: z.string().optional().describe("The medium logo URL."),
+  small: z.string().optional().describe("The small logo URL."),
+  color: z.string().optional().describe("The logo color, a hex code without #."),
+  cover: z.unknown().optional().describe("The logo cover."),
+})
+
+/**
+ * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v4.1.0-server/products/ASC.Files/Server/ApiModels/ResponseDto/AiProjectSourcesDto.cs/#L57 | ONLYOFFICE Apps Reference}
+ */
+export const AiProjectSourceDtoSchema = z.looseObject({
+  id: z.number().optional().describe("The room ID."),
+  title: z.string().optional().describe("The room title."),
+  logo: LogoDtoSchema.optional().describe("The room logo."),
+})
+
+/**
+ * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v4.1.0-server/products/ASC.Files/Server/ApiModels/ResponseDto/AiProjectSourcesDto.cs/#L39 | ONLYOFFICE Apps Reference}
+ */
+export const AiProjectSourcesDtoSchema = z.looseObject({
+  instructionsRooms: z.array(AiProjectSourceDtoSchema).optional().describe("The instructions rooms linked to the AI project."),
+  knowledgeRooms: z.array(AiProjectSourceDtoSchema).optional().describe("The knowledge rooms linked to the AI project."),
+})
+
+/**
+ * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v4.1.0-server/products/ASC.Files/Server/ApiModels/ResponseDto/AiSkillsDto.cs/#L80 | ONLYOFFICE Apps Reference}
+ */
+export const AiSkillDtoSchema = z.looseObject({
+  id: z.string().optional().describe("The skill ID, which is the ID of the skill Markdown file."),
+  name: z.string().optional().describe("The skill name from the frontmatter."),
+  description: z.string().optional().describe("The skill description from the frontmatter."),
+})
+
+/**
+ * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v4.1.0-server/products/ASC.Files/Server/ApiModels/ResponseDto/AiSkillsDto.cs/#L51 | ONLYOFFICE Apps Reference}
+ */
+export const AiSkillsRoomDtoSchema = z.looseObject({
+  id: z.number().optional().describe("The instructions room ID."),
+  title: z.string().optional().describe("The instructions room title."),
+  logo: LogoDtoSchema.optional().describe("The instructions room logo."),
+  skills: z.array(AiSkillDtoSchema).optional().describe("The skills of the instructions room."),
+})
+
+/**
+ * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v4.1.0-server/products/ASC.Files/Server/ApiModels/ResponseDto/AiSkillsDto.cs/#L39 | ONLYOFFICE Apps Reference}
+ */
+export const AiSkillsDtoSchema = z.looseObject({
+  rooms: z.array(AiSkillsRoomDtoSchema).optional().describe("The instructions rooms with their skills."),
+})
+
+/**
+ * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v4.1.0-server/products/ASC.Files/Server/ApiModels/ResponseDto/AiProjectModelDto.cs/#L39 | ONLYOFFICE Apps Reference}
+ */
+export const AiProjectModelDtoSchema = z.looseObject({
+  profileId: z.string().nullable().optional().describe("The ID of the model profile of the AI project chat. It is null or missing when the project uses the default model of the portal."),
+})
+
+/**
+ * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v4.1.0-server/common/ASC.AI.Integration/Profiles/Capabilities.cs/#L37 | ONLYOFFICE Apps Reference}
+ */
+export const AiProfileCapabilitySchema = z.union([
+  z.literal(0x1).describe("Chat"),
+  z.literal(0x2).describe("Image"),
+  z.literal(0x4).describe("Embeddings"),
+  z.literal(0x8).describe("Audio"),
+  z.literal(0x80).describe("Vision"),
+  z.literal(0x100).describe("Tools"),
+])
+
+/**
+ * The model profile as GET api/2.0/ai/profiles/list returns it, without the
+ * response envelope.
+ *
+ * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v4.1.0-server/common/Tools/ASC.Api.Documentation/ASC.Api.Documentation/json/aichat_2.0.json | ONLYOFFICE Apps Reference}
+ */
+export const AiProfileSchema = z.looseObject({
+  id: z.string(),
+  name: z.string(),
+  providerType: z.string(),
+  modelId: z.string(),
+  capabilities: z.number().optional(),
+  canUseTool: z.boolean().optional(),
+  reasoning: z.boolean().optional(),
+})
+
+/**
+ * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v4.1.0-server/products/ASC.AI/Server/Models/ResponseDto/AiSettingsDto.cs/#L39 | ONLYOFFICE Apps Reference}
+ */
+export const AiSettingsDtoSchema = z.looseObject({
+  aiReady: z.boolean().optional().describe("Specifies if AI is enabled and configured on the portal."),
+  systemAiEnabled: z.boolean().optional().describe("Specifies if the AI provided by the portal is enabled."),
+  vectorizationEnabled: z.boolean().optional().describe("Specifies if vectorization is enabled. Knowledge rooms can be created and filled only while it is enabled."),
+  vectorizationNeedReset: z.boolean().optional().describe("Specifies if the vectorization settings must be reset."),
+  embeddingModel: z.string().optional().describe("The embedding model used for vectorization."),
+})
 
 /**
  * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.1.1-server/products/ASC.Files/Core/Core/ApplyFilterOption.cs/#L29 | ONLYOFFICE Apps Reference}
@@ -952,6 +1095,10 @@ export const GetRoomsFolderFiltersSchema = z.object({
   sortOrder: zod.unionToEnum(NumericSortOrderSchema, "The order in which the results are sorted.").optional(),
   filterValue: z.string().optional().describe("The text used for filtering or searching folder contents."),
   fields: z.array(zod.unionToEnum(FolderContentDtoFieldSchema, "The fields to include in the response.")),
+})
+
+export const GetAiRoomsFolderFiltersSchema = GetRoomsFolderFiltersSchema.omit({searchArea: true}).extend({
+  type: z.array(zod.unionToEnum(AiRoomTypeSchema, "The filter by AI room type.")).optional(),
 })
 
 export const GetFullByFilterFiltersSchema = z.object({

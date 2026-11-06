@@ -42,7 +42,7 @@ Changelog] format and adhering to [Semantic Versioning].
   them without an error, and the hints of `retry_vectorization` and
   `create_ai_room` match the statuses the portal returns: a file that has
   never been queued for vectorization is refused with 403, not 404, and
-  accounts of both the User and Guest types cannot create AI rooms.
+  accounts of both the User and Guest types cannot create AI rooms ([23a7cd6]).
 - Add the "Set up an AI project" tutorial, the AI rooms terms to the glossary,
   a troubleshooting entry for refused AI room tools, and mention AI rooms in
   the README and the plugin description ([e37a4e6]).
@@ -474,6 +474,7 @@ There are no noticeable changes in version [3.0.1].
 [0.1.1]: https://github.com/onlyoffice/docspace-mcp/compare/v0.1.0...v0.1.1/
 [0.1.0]: https://github.com/onlyoffice/docspace-mcp/releases/tag/v0.1.0/
 
+[23a7cd6]: https://github.com/onlyoffice/docspace-mcp/commit/23a7cd6b8034dce7420798b07562820a61a11aa4/
 [e37a4e6]: https://github.com/onlyoffice/docspace-mcp/commit/e37a4e65589e8f0eaeb304c34f63b3e1384a6636/
 [7d7f7b6]: https://github.com/onlyoffice/docspace-mcp/commit/7d7f7b63017d992a7d8b4614c1b89599b21bf5ee/
 [41bf399]: https://github.com/onlyoffice/docspace-mcp/commit/41bf39914f50e39aad1c0d7020e8b03780f2c6ae/

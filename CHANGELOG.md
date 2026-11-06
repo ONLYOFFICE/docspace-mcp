@@ -70,7 +70,7 @@ Changelog] format and adhering to [Semantic Versioning].
   length, so clients can check the title too ([acc7caa]).
 - Return `profileId: null` in `get_ai_project_model` when the project uses the
   default model of the portal. The portal omits the field instead, so the
-  tool returned an empty object.
+  tool returned an empty object ([bafe81f]).
 
 - Refer to the "My documents" section as "Files" in the `get_my_folder` tool
   descriptions, mentioning the former name, and in the documentation. The tool
@@ -508,6 +508,7 @@ There are no noticeable changes in version [3.0.1].
 [0.1.1]: https://github.com/onlyoffice/docspace-mcp/compare/v0.1.0...v0.1.1/
 [0.1.0]: https://github.com/onlyoffice/docspace-mcp/releases/tag/v0.1.0/
 
+[bafe81f]: https://github.com/onlyoffice/docspace-mcp/commit/bafe81fce765ccdca34a8a7f3a23729c4af2b98c/
 [acc7caa]: https://github.com/onlyoffice/docspace-mcp/commit/acc7caa1d1bb66edafa6892f3d2ab0184bfcd515/
 [d578894]: https://github.com/onlyoffice/docspace-mcp/commit/d5788944909396de0be98bc865ab67a576c35854/
 [d03cdea]: https://github.com/onlyoffice/docspace-mcp/commit/d03cdea0475bb74dc8b08bfcca8af9203dd89829/

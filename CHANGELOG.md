@@ -88,6 +88,11 @@ Changelog] format and adhering to [Semantic Versioning].
   expects, in the `searchArea` filter of `get_rooms_folder` and
   `get_folder_content`. The portal rejected the former value `Template`
   ([bddbb63]).
+- Return text, CSV, Markdown, JSON, XML and YAML files as they are in
+  `download_file_as_text`, downloading them through `filehandler.ashx` instead
+  of converting them to plain text. The conversion dropped the markup, such as
+  the frontmatter of a skill. Documents, spreadsheets, presentations and PDF
+  files are still converted.
 
 ## [3.4.0] - 2026-11-02
 

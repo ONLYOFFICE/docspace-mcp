@@ -1181,6 +1181,30 @@ export class FilesService {
   //
 
   /**
+   * Downloads the original content of a file, without converting it.
+   *
+   * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v4.1.0-server/products/ASC.Files/Core/HttpHandlers/FileHandler.ashx.cs/#L117 | ONLYOFFICE Apps Reference}
+   */
+  async downloadFile(id: number): Promise<Result<Response, Error>> {
+    const u = this.c.createUrl("filehandler.ashx", {action: "download", fileid: id})
+    if (u.err) {
+      return error(new Error("Creating URL.", {cause: u.err}))
+    }
+
+    const req = this.c.createRequest("GET", u.v)
+    if (req.err) {
+      return error(new Error("Creating request.", {cause: req.err}))
+    }
+
+    const f = await this.c.fileFetch(req.v)
+    if (f.err) {
+      return error(new Error("Fetching request.", {cause: f.err}))
+    }
+
+    return ok(f.v)
+  }
+
+  /**
    * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/products/ASC.Files/Server/Startup.cs/#L76 | ONLYOFFICE Apps Reference}
    */
   async uploadChunk(id: string, chunk: Blob): Promise<Result<[unknown, Response], Error>> {

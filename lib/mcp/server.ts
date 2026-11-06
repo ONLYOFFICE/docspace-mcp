@@ -178,6 +178,11 @@ const DeleteFolderInputJsonSchema = z.toJSONSchema(DeleteFolderInputSchema, {io:
 const downloadTextDefaultLimit = 100_000
 const downloadTextMaxLimit = 500_000
 
+// The files in these formats are already plain text, so they are downloaded as
+// they are, while the files in other formats are converted to plain text first.
+// The conversion would drop the markup, such as the frontmatter of a skill.
+const plainTextExts = new Set([".txt", ".csv", ".md", ".markdown", ".json", ".xml", ".yaml", ".yml"])
+
 const DownloadFileAsTextInputSchema = z.object({
   fileId: z.number().describe("The ID of the file to download as text."),
   offset: z.number().int().min(0).optional().describe("The character offset to start reading from. Defaults to 0."),
@@ -754,7 +759,7 @@ export const regularToolsets = [
       {
         name: "download_file_as_text",
         title: "Download File as Text",
-        description: "Download a file as text.",
+        description: "Download a file as text. Text, CSV, Markdown, JSON, XML and YAML files are returned as they are, with their markup, such as the frontmatter of a skill. Documents, spreadsheets, presentations and PDF files are converted to plain text, so their formatting, images and embedded objects are lost.",
         inputSchema: DownloadFileAsTextInputJsonSchema,
         annotations: {
           title: "Download File as Text",
@@ -1708,109 +1713,147 @@ export class Server {
       return fromError(new Error("File extension is not defined."))
     }
 
-    let ex: string | undefined
+    let tx: string
 
-    if (id.fileExst === ".csv" || id.fileExst === ".txt") {
-      ex = id.fileExst
+    if (plainTextExts.has(id.fileExst.toLowerCase())) {
+      const dr = await this.downloadPlainText(pr.data.fileId)
+      if (dr.err) {
+        return fromError(dr.err)
+      }
+      tx = dr.v
     } else {
-      const sr = await this.client.files.getFilesSettings()
-      if (sr.err) {
-        return fromError(new Error("Getting files settings.", {cause: sr.err}))
+      const dr = await this.downloadConvertedText(pr.data.fileId, id.fileExst)
+      if (dr.err) {
+        return fromError(dr.err)
       }
-
-      const [sd] = sr.v
-
-      if (!sd.extsConvertible) {
-        return fromError(new Error("Convertible file extensions are not defined."))
-      }
-
-      const fr = sd.extsConvertible[id.fileExst]
-
-      if (!fr) {
-        return fromError(new Error(`File extension ${id.fileExst} is not convertible.`))
-      }
-
-      for (const e of fr) {
-        if (e === ".csv" || e === ".txt") {
-          ex = e
-          break
-        }
-      }
-    }
-
-    if (!ex) {
-      return fromError(new Error(`No convertible extension found for ${id.fileExst}.`))
-    }
-
-    const bo: core.BulkDownloadOptions = {
-      fileConvertIds: [{key: pr.data.fileId, value: ex}],
-    }
-
-    const br = await this.client.files.bulkDownload(bo)
-    if (br.err) {
-      return fromError(new Error("Making bulk download.", {cause: br.err}))
-    }
-
-    const [bd] = br.v
-
-    const rr = await this.resolver.resolve(...bd)
-    if (rr.err) {
-      return fromError(new Error("Resolving bulk download operations.", {cause: rr.err}))
-    }
-
-    if (rr.v.operations.length === 0) {
-      return fromError(new Error("No resolved operations."))
-    }
-
-    if (rr.v.operations.length > 1) {
-      return fromError(new Error(`Expected 1 resolved operation, got ${rr.v.operations.length}.`))
-    }
-
-    const [rd] = rr.v.operations
-
-    if (rd.url === undefined) {
-      return fromError(new Error("Resolved operation has no URL."))
-    }
-
-    const dr = this.client.createRequest("GET", rd.url)
-    if (dr.err) {
-      return fromError(new Error("Creating download request.", {cause: dr.err}))
-    }
-
-    const hr = r.safeSync(dr.v.headers.set.bind(dr.v.headers), "Accept", "text/plain")
-    if (hr.err) {
-      return fromError(new Error("Setting header.", {cause: hr.err}))
-    }
-
-    const tr = await this.client.bareFetch(dr.v)
-    if (tr.err) {
-      return fromError(new Error("Downloading file.", {cause: tr.err}))
-    }
-
-    const tt = await r.safeAsync(tr.v.text.bind(tr.v))
-    if (tt.err) {
-      return fromError(new Error("Converting response to text.", {cause: tt.err}))
+      tx = dr.v
     }
 
     const of = pr.data.offset ?? 0
     const li = pr.data.limit ?? downloadTextDefaultLimit
     const en = of + li
 
-    if (of === 0 && tt.v.length <= li) {
-      return fromString(tt.v)
+    if (of === 0 && tx.length <= li) {
+      return fromString(tx)
     }
 
-    if (of >= tt.v.length) {
-      return fromError(new Error(`Offset ${of} is out of range, the text has ${tt.v.length} characters.`))
+    if (of >= tx.length) {
+      return fromError(new Error(`Offset ${of} is out of range, the text has ${tx.length} characters.`))
     }
 
-    const ch = tt.v.slice(of, en)
+    const ch = tx.slice(of, en)
 
-    if (en >= tt.v.length) {
+    if (en >= tx.length) {
       return fromString(ch)
     }
 
-    return fromString(`${ch}\n\n[Truncated: showing ${ch.length} characters starting at offset ${of} of ${tt.v.length} in total. To read the rest, call this tool again with offset=${en}.]`)
+    return fromString(`${ch}\n\n[Truncated: showing ${ch.length} characters starting at offset ${of} of ${tx.length} in total. To read the rest, call this tool again with offset=${en}.]`)
+  }
+
+  /**
+   * Downloads a file in a plain text format as it is, so the markup, such as
+   * the frontmatter of a skill, is kept.
+   */
+  private async downloadPlainText(fileId: number): Promise<r.Result<string, Error>> {
+    const dr = await this.client.files.downloadFile(fileId)
+    if (dr.err) {
+      return r.error(new Error("Downloading file.", {cause: dr.err}))
+    }
+
+    const tt = await r.safeAsync(dr.v.response.text.bind(dr.v.response))
+    if (tt.err) {
+      return r.error(new Error("Converting response to text.", {cause: tt.err}))
+    }
+
+    return r.ok(tt.v)
+  }
+
+  /**
+   * Converts a document, a spreadsheet, a presentation or a PDF file to plain
+   * text on the portal and downloads the result.
+   */
+  private async downloadConvertedText(fileId: number, fileExst: string): Promise<r.Result<string, Error>> {
+    const sr = await this.client.files.getFilesSettings()
+    if (sr.err) {
+      return r.error(new Error("Getting files settings.", {cause: sr.err}))
+    }
+
+    const [sd] = sr.v
+
+    if (!sd.extsConvertible) {
+      return r.error(new Error("Convertible file extensions are not defined."))
+    }
+
+    const fr = sd.extsConvertible[fileExst]
+
+    if (!fr) {
+      return r.error(new Error(`File extension ${fileExst} is not convertible.`))
+    }
+
+    let ex: string | undefined
+
+    for (const e of fr) {
+      if (e === ".csv" || e === ".txt") {
+        ex = e
+        break
+      }
+    }
+
+    if (!ex) {
+      return r.error(new Error(`No convertible extension found for ${fileExst}.`))
+    }
+
+    const bo: core.BulkDownloadOptions = {
+      fileConvertIds: [{key: fileId, value: ex}],
+    }
+
+    const br = await this.client.files.bulkDownload(bo)
+    if (br.err) {
+      return r.error(new Error("Making bulk download.", {cause: br.err}))
+    }
+
+    const [bd] = br.v
+
+    const rr = await this.resolver.resolve(...bd)
+    if (rr.err) {
+      return r.error(new Error("Resolving bulk download operations.", {cause: rr.err}))
+    }
+
+    if (rr.v.operations.length === 0) {
+      return r.error(new Error("No resolved operations."))
+    }
+
+    if (rr.v.operations.length > 1) {
+      return r.error(new Error(`Expected 1 resolved operation, got ${rr.v.operations.length}.`))
+    }
+
+    const [rd] = rr.v.operations
+
+    if (rd.url === undefined) {
+      return r.error(new Error("Resolved operation has no URL."))
+    }
+
+    const dr = this.client.createRequest("GET", rd.url)
+    if (dr.err) {
+      return r.error(new Error("Creating download request.", {cause: dr.err}))
+    }
+
+    const hr = r.safeSync(dr.v.headers.set.bind(dr.v.headers), "Accept", "text/plain")
+    if (hr.err) {
+      return r.error(new Error("Setting header.", {cause: hr.err}))
+    }
+
+    const tr = await this.client.bareFetch(dr.v)
+    if (tr.err) {
+      return r.error(new Error("Downloading file.", {cause: tr.err}))
+    }
+
+    const tt = await r.safeAsync(tr.v.text.bind(tr.v))
+    if (tt.err) {
+      return r.error(new Error("Converting response to text.", {cause: tt.err}))
+    }
+
+    return r.ok(tt.v)
   }
 
   private async handleGetAllPeople(req: types.CallToolRequest): Promise<types.CallToolResult> {

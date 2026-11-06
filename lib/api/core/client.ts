@@ -327,6 +327,40 @@ export class Client {
     return ok(new Response(req, f.v))
   }
 
+  /**
+   * Fetches a request whose response body is the content of a file. The
+   * content may itself look like an error response, such as a JSON file with
+   * an error field, so only the status code tells an error.
+   */
+  async fileFetch(req: Request): Promise<Result<Response, Error>> {
+    const f = await safeAsync(this.baseFetch, req.clone())
+    if (f.err) {
+      return error(new Error("Fetching request.", {cause: f.err}))
+    }
+
+    const r = new Response(req, f.v)
+
+    if (f.v.status >= 200 && f.v.status <= 299) {
+      return ok(r)
+    }
+
+    // The file handler answers an error with a short plain text message, but
+    // a proxy in front of it may answer with an HTML page.
+    let m = f.v.statusText
+
+    const t = await safeAsync(f.v.text.bind(f.v))
+    if (!t.err) {
+      const s = t.v.trim()
+      if (s !== "" && !s.startsWith("<")) {
+        m = s.slice(0, 500)
+      }
+    }
+
+    const e = new ResponseError(r, `${req.method} ${req.url}: ${f.v.status} ${m}`)
+
+    return error(new Error("Checking response.", {cause: e}))
+  }
+
   async bareFetch(req: Request): Promise<Result<globalThis.Response, Error>> {
     const f = await safeAsync(this.baseFetch, req.clone())
     if (f.err) {

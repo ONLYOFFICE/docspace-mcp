@@ -284,6 +284,27 @@ export const RoomTypeSchema = z.union([
 ])
 
 /**
+ * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v4.1.0-server/products/ASC.Files/Core/ApiModels/RequestDto/CreateRoomRequestDto.cs/#L39 | ONLYOFFICE Apps Reference}
+ */
+export const AiRoomTypeSchema = z.union([
+  z.literal(10).describe("Instructions room. Holds skills, Markdown files with name and description in the frontmatter, that AI projects use."),
+  z.literal(11).describe("Knowledge room. Holds files that are vectorized for retrieval by AI projects."),
+  z.literal(12).describe("AI project. Links instructions and knowledge rooms, sets the chat model and is shared with the team."),
+])
+
+/**
+ * The type of any room the server can return, including the types that cannot
+ * be created through the create_room tool.
+ *
+ * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v4.1.0-server/products/ASC.Files/Core/ApiModels/RequestDto/CreateRoomRequestDto.cs/#L39 | ONLYOFFICE Apps Reference}
+ */
+export const AnyRoomTypeSchema = z.union([
+  ...RoomTypeSchema.options,
+  z.literal(9).describe("AI agent. The legacy AI room replaced by the AI project."),
+  ...AiRoomTypeSchema.options,
+])
+
+/**
  * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/products/ASC.Files/Core/ApiModels/RequestDto/UpdateRoomRequestDto.cs/#L32 | ONLYOFFICE Apps Reference}
  */
 export const UpdateRoomRequestSchema = z.object({
@@ -314,7 +335,7 @@ export const FileEntityTypeSchema = z.union([
 ])
 
 /**
- * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.2.1-server/products/ASC.Files/Core/Core/Entries/Folder.cs/#L32 | ONLYOFFICE Apps Reference}
+ * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v4.1.0-server/products/ASC.Files/Core/Core/Entries/Folder.cs/#L41 | ONLYOFFICE Apps Reference}
  */
 export const FolderType = z.union([
   z.literal(0).describe("Default"),
@@ -341,6 +362,17 @@ export const FolderType = z.union([
   z.literal(28).describe("Form filling folder in progress"),
   z.literal(29).describe("Virtual Data Room"),
   z.literal(30).describe("Room templates folder"),
+  z.literal(31).describe("AI agent"),
+  z.literal(32).describe("AI agent knowledge folder"),
+  z.literal(33).describe("AI agent chat outputs folder"),
+  z.literal(34).describe("AI agents"),
+  z.literal(35).describe("Default templates folder"),
+  z.literal(36).describe("Forms folder"),
+  z.literal(37).describe("AI folder"),
+  z.literal(38).describe("Instructions room"),
+  z.literal(39).describe("Knowledge room"),
+  z.literal(40).describe("AI project"),
+  z.literal(41).describe("AI rooms"),
 ])
 
 /**
@@ -623,7 +655,7 @@ export const FolderDtoSchema = FileEntryDtoSchema.extend({
   isShareable: z.boolean().optional().describe("Specifies if the folder can be shared or not."),
   isFavorite: z.boolean().optional().describe("Specifies if the folder is favorite or not."),
   tags: z.array(z.string()).optional().describe("The list of tags of the folder."),
-  roomType: zod.unionToEnum(RoomTypeSchema, "The room type of the folder.").optional(),
+  roomType: zod.unionToEnum(AnyRoomTypeSchema, "The room type of the folder.").optional(),
   private: z.boolean().optional().describe("Specifies if the folder is private or not."),
   type: zod.unionToEnum(FolderType, "The folder type.").optional(),
   inRoom: z.boolean().optional().describe("Specifies if the folder is placed in the room or not."),

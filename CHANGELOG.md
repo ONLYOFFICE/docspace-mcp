@@ -53,6 +53,10 @@ Changelog] format and adhering to [Semantic Versioning].
   A request signal that had already aborted was not passed on, so the call
   still reached the portal, and `run_builder_script` could start a script that
   nobody waited for ([5daa233]).
+- Accept the AI room types (instructions room 10, knowledge room 11, AI
+  project 12 and the legacy AI agent 9) and the folder types 31–41 in the
+  responses of the existing tools. `get_room_info`, `update_room` and the other
+  tools that return a room failed to parse the response for an AI room.
 
 ## [3.4.0] - 2026-11-02
 

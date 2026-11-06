@@ -74,6 +74,7 @@ This calls `get_ai_skills` and lists the name and description of each skill.
 >
 > - An instructions room accepts only Markdown (`.md`) files, and each must start with the frontmatter. The skill name may contain only lowercase letters, digits and single hyphens, up to 64 characters; the description is up to 1024 characters. A room holds up to 100 skills.
 > - If a file is refused, the AI receives the reason from the portal, such as a missing frontmatter, and can fix the file and upload it again.
+> - To change a skill, ask the AI to rewrite it. The AI reads the skill with `download_file_as_text` and uploads the new text with `upload_file` under the same name with `overwrite` set, so the skill keeps its ID and the former text stays in the version history. Without `overwrite`, the upload adds a second skill.
 
 ### Step 3: Create a knowledge room with documents
 

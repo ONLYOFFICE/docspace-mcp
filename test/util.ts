@@ -18,6 +18,88 @@ import * as r from "../lib/util/result.ts"
 
 export type AsyncRequestListener = (...args: Parameters<http.RequestListener>) => PromiseLike<void> | void
 
+/**
+ * A route of the mock portal. It answers with the text as it is when the text
+ * is set, and with the JSON otherwise.
+ */
+export type MockRoute = {
+  method: string
+  path: string
+  status: number
+  json?: unknown
+  text?: string
+}
+
+export type MockServed = {
+  method: string
+  url: URL
+  body: string
+}
+
+/**
+ * Calls a tool of the MCP server over stdio against a mock portal. The routes
+ * receive the base URL of the mock portal, so that a route can answer with a
+ * URL that points back to it.
+ */
+export async function callMockedTool(t: test.TestContext, routes: (base: string) => MockRoute[], name: string, args: Record<string, unknown>): Promise<[types.CallToolResult, MockServed[]]> {
+  const [hs, ha] = await setupHttp(t)
+
+  const base = `http://[${ha.address}]:${ha.port}/`
+  const rs = routes(base)
+
+  const served: MockServed[] = []
+
+  const hl: AsyncRequestListener = async(req, res) => {
+    assert.ok(req.url && req.method)
+
+    const url = new URL(req.url, "http://localhost/")
+
+    const d = await readHttpData(req)
+    assert.ok(d.err === undefined)
+
+    served.push({method: req.method, url, body: Buffer.concat(d.v).toString("utf8")})
+
+    const rt = rs.find((x) => x.method === req.method && x.path === url.pathname)
+    assert.ok(rt, `unexpected request ${req.method} ${url.pathname}`)
+
+    if (rt.text !== undefined) {
+      res.statusCode = rt.status
+      res.setHeader("Content-Type", "application/octet-stream")
+      res.end(rt.text)
+      return
+    }
+
+    const sr = await sendJson(res, rt.status, rt.json)
+    assert.ok(sr.err === undefined)
+  }
+
+  const hp = onRequest(t, hs, hl)
+
+  const tf = async(): Promise<types.CallToolResult> => {
+    const so: SetupMcpOptions = {
+      transport: "stdio",
+      host: "",
+      port: 0,
+      env: {
+        DOCSPACE_BASE_URL: base,
+        DOCSPACE_API_KEY: "xxx",
+      },
+    }
+
+    const cl = await setupMcp(t, so)
+
+    const cr = await r.safeAsync(cl.callTool.bind(cl), {name, arguments: args})
+    assert.ok(cr.err === undefined, String(cr.err))
+
+    return cr.v as types.CallToolResult
+  }
+
+  const v = await Promise.race([hp.then(() => undefined), tf()])
+  assert.ok(v)
+
+  return [v, served]
+}
+
 export class Deferred {
   private p: Promise<void>
   private res: () => void = () => {}

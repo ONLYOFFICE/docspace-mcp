@@ -43,6 +43,11 @@ Changelog] format and adhering to [Semantic Versioning].
   `create_ai_room` match the statuses the portal returns: a file that has
   never been queued for vectorization is refused with 403, not 404, and
   accounts of both the User and Guest types cannot create AI rooms ([23a7cd6]).
+- Add the `overwrite` parameter to the `upload_file` tool. It saves the content
+  as a new version of the file with the same name, keeping its ID, so that a
+  skill can be changed. When the portal uploads a new file instead, because
+  the file is locked, open in the editor or the user cannot edit it, the tool
+  says so.
 - Add the "Set up an AI project" tutorial, the AI rooms terms to the glossary,
   a troubleshooting entry for refused AI room tools, and mention AI rooms in
   the README and the plugin description ([e37a4e6]).

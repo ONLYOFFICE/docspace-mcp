@@ -502,9 +502,14 @@ const UploadFileInputSchema = z.object({
   parentId: z.number().describe("The ID of the room or folder to upload the file to."),
   filename: z.string().describe("The file name with an extension to upload."),
   content: z.string().describe("The content of the file to upload."),
+  overwrite: z.boolean().optional().describe("Whether to save the content as a new version of the file with the same name in the room or folder, keeping its ID, such as to change a skill. The former versions stay in the version history. When false or omitted, the file is uploaded as a new file and gets a new name if the name is taken."),
 })
 
 const UploadFileInputJsonSchema = z.toJSONSchema(UploadFileInputSchema, {io: "input"})
+
+const UploadedFileSchema = z.looseObject({
+  title: z.string().optional(),
+})
 
 const aiProjectIdDescription = "The ID of the AI project."
 
@@ -771,7 +776,7 @@ export const regularToolsets = [
       {
         name: "upload_file",
         title: "Upload File",
-        description: "Upload a file.",
+        description: "Upload a file. To change the content of a file, such as a skill, upload it with the same name and overwrite set to true.",
         inputSchema: UploadFileInputJsonSchema,
         annotations: {
           title: "Upload File",
@@ -2316,7 +2321,9 @@ export class Server {
       fileName: pr.data.filename,
       fileSize: buf.length,
       createOn: new Date().toISOString(),
-      createNewIfExist: true,
+      // The portal saves the content as a new version of the file with the same
+      // name only when createNewIfExist is false.
+      createNewIfExist: !pr.data.overwrite,
     }
 
     const sr = await this.client.files.createUploadSession(pr.data.parentId, so)
@@ -2335,9 +2342,24 @@ export class Server {
       return fromError(new Error("Uploading file.", {cause: ur.err}))
     }
 
-    const [, res] = ur.v
+    const [ud, res] = ur.v
 
-    return await fromResponse(res)
+    const rs = await fromResponse(res)
+
+    if (pr.data.overwrite && !rs.isError) {
+      // The portal does not overwrite a file that is locked, open in the editor
+      // or that the user cannot edit, and silently uploads a new file with
+      // another name instead.
+      const up = UploadedFileSchema.safeParse(ud)
+      if (up.success && up.data.title !== undefined && up.data.title !== pr.data.filename) {
+        rs.content.push({
+          type: "text",
+          text: `The portal did not overwrite ${pr.data.filename} and uploaded a new file named ${up.data.title} instead. The file may be locked, open in the editor, or the user may lack the rights to edit it.`,
+        })
+      }
+    }
+
+    return rs
   }
 
   //

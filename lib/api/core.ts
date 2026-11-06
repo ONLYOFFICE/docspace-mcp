@@ -2,6 +2,7 @@
  * @module api/core
  */
 
+export * from "./core/ai-service.ts"
 export * from "./core/auth-service.ts"
 export * from "./core/client.ts"
 export * from "./core/files-service.ts"

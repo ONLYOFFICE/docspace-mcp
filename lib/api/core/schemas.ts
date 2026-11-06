@@ -54,6 +54,18 @@ export const ErrorApiResponseSchema = CommonApiResponseSchema.extend({
 })
 
 /**
+ * The error that the AI service of ONLYOFFICE Apps returns for the routes under
+ * api/2.0/ai/, without the response envelope.
+ *
+ * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v4.1.0-server/common/ASC.AI.Chat/app/controllers/_helpers.ts/#L247 | ONLYOFFICE Apps Reference}
+ */
+export const AiErrorResponseSchema = z.object({
+  error: z.string(),
+  code: z.string().optional(),
+  providerMessage: z.string().optional(),
+})
+
+/**
  * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/common/ASC.Api.Core/Middleware/CommonApiResponse.cs/#L153 | ONLYOFFICE Apps Reference}
  */
 export const LinkSchema = z.object({
@@ -194,6 +206,13 @@ export const EmployeeFullDtoFieldSchema = z.union([
  * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/products/ASC.Files/Core/ApiModels/RequestDto/ArchiveRoomRequestDto.cs/#L32 | ONLYOFFICE Apps Reference}
  */
 export const ArchiveRoomRequestSchema = z.object({
+  deleteAfter: z.boolean().optional(),
+})
+
+/**
+ * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v4.1.0-server/products/ASC.Files/Core/ApiModels/RequestDto/DeleteRoomRequestDto.cs/#L39 | ONLYOFFICE Apps Reference}
+ */
+export const DeleteRoomRequestSchema = z.object({
   deleteAfter: z.boolean().optional(),
 })
 

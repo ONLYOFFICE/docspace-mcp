@@ -283,3 +283,208 @@ void test.suite("ai room schemas", () => {
     assert.ok(!c.success)
   })
 })
+
+type Exchange = {
+  method: string
+  url: URL
+  body: unknown
+}
+
+function setupClient(status: number, body?: unknown): [core.Client, Exchange[]] {
+  const a: Exchange[] = []
+
+  const fetch: typeof globalThis.fetch = async(input) => {
+    assert.ok(input instanceof Request)
+
+    const t = await input.text()
+
+    a.push({
+      method: input.method,
+      url: new URL(input.url),
+      body: t === "" ? undefined : JSON.parse(t),
+    })
+
+    if (body === undefined) {
+      return new Response(null, {status})
+    }
+
+    return new Response(JSON.stringify(body), {
+      status,
+      headers: {"Content-Type": "application/json"},
+    })
+  }
+
+  const c = new core.Client({userAgent: "", baseUrl: "http://localhost/", fetch})
+
+  return [c, a]
+}
+
+function envelope(response: unknown): unknown {
+  return {response, count: 1, links: [], status: 0, statusCode: 200}
+}
+
+function messages(err: unknown): string {
+  const a: string[] = []
+  while (err instanceof Error) {
+    a.push(err.message)
+    err = err.cause
+  }
+  return a.join("\n")
+}
+
+void test.suite("ai rooms client", () => {
+  void test("gets the ai rooms section", async() => {
+    const [c, a] = setupClient(200, envelope({files: [], folders: [], current: {id: 1}, total: 0}))
+
+    const r = await c.files.getAiRoomsFolder({type: [10, 12], fields: []})
+    assert.ok(r.err === undefined)
+
+    assert.ok(a.length === 1)
+    assert.ok(a[0].method === "GET")
+    assert.ok(a[0].url.pathname === "/api/2.0/files/rooms")
+    assert.ok(a[0].url.searchParams.get("searchArea") === "AiHub")
+    assert.deepEqual(a[0].url.searchParams.getAll("type"), ["10", "12"])
+  })
+
+  void test("creates an ai room", async() => {
+    const [c, a] = setupClient(200, envelope({id: 1, title: "Project", roomType: 12}))
+
+    const r = await c.files.createAiRoom({title: "Project", roomType: 12, tags: ["a"], color: "7757D9"})
+    assert.ok(r.err === undefined)
+    assert.ok(r.v[0].roomType === 12)
+
+    assert.ok(a[0].method === "POST")
+    assert.ok(a[0].url.pathname === "/api/2.0/files/rooms")
+    assert.deepEqual(a[0].body, {title: "Project", roomType: 12, tags: ["a"], color: "7757D9"})
+  })
+
+  void test("deletes a room", async() => {
+    const [c, a] = setupClient(200, envelope({id: "op", progress: 0, finished: false}))
+
+    const r = await c.files.deleteRoom(1, {deleteAfter: false})
+    assert.ok(r.err === undefined)
+    assert.ok(r.v[0].id === "op")
+
+    assert.ok(a[0].method === "DELETE")
+    assert.ok(a[0].url.pathname === "/api/2.0/files/rooms/1")
+    assert.deepEqual(a[0].body, {deleteAfter: false})
+  })
+
+  void test("gets ai project sources", async() => {
+    const [c, a] = setupClient(200, envelope({instructionsRooms: [{id: 10}], knowledgeRooms: []}))
+
+    const r = await c.files.getAiProjectSources(12)
+    assert.ok(r.err === undefined)
+    assert.deepEqual(r.v[0], {instructionsRooms: [{id: 10}], knowledgeRooms: []})
+
+    assert.ok(a[0].method === "GET")
+    assert.ok(a[0].url.pathname === "/api/2.0/files/rooms/12/sources")
+  })
+
+  for (const [name, method] of [["links", "POST"], ["unlinks", "DELETE"]] as const) {
+    void test(`${name} ai project sources answered with no content`, async() => {
+      const [c, a] = setupClient(204)
+
+      const r = method === "POST" ?
+        await c.files.linkAiProjectSources(12, {roomIds: [10, 11]}) :
+        await c.files.unlinkAiProjectSources(12, {roomIds: [10, 11]})
+      assert.ok(r.err === undefined, messages(r.err))
+      assert.ok(r.v.response.status === 204)
+
+      assert.ok(a[0].method === method)
+      assert.ok(a[0].url.pathname === "/api/2.0/files/rooms/12/sources")
+      assert.deepEqual(a[0].body, {roomIds: [10, 11]})
+    })
+  }
+
+  void test("gets ai room skills", async() => {
+    const [c, a] = setupClient(200, envelope({rooms: [{id: 10, skills: [{id: "1", name: "a", description: "b"}]}]}))
+
+    const r = await c.files.getAiRoomSkills(12)
+    assert.ok(r.err === undefined)
+    assert.ok(r.v[0].rooms?.[0].skills?.[0].name === "a")
+
+    assert.ok(a[0].url.pathname === "/api/2.0/files/rooms/12/skills")
+  })
+
+  void test("gets an ai project model that is not set", async() => {
+    const [c, a] = setupClient(200, envelope({}))
+
+    const r = await c.files.getAiProjectModel(12)
+    assert.ok(r.err === undefined)
+    assert.deepEqual(r.v[0], {})
+
+    assert.ok(a[0].url.pathname === "/api/2.0/files/rooms/12/model")
+  })
+
+  void test("updates an ai project model", async() => {
+    const id = "019ed117-6bd3-7861-ab75-44f72d17d724"
+    const [c, a] = setupClient(200, envelope({profileId: id}))
+
+    const r = await c.files.updateAiProjectModel(12, {profileId: id})
+    assert.ok(r.err === undefined)
+    assert.ok(r.v[0].profileId === id)
+
+    assert.ok(a[0].method === "PUT")
+    assert.deepEqual(a[0].body, {profileId: id})
+  })
+
+  void test("gets the ai config inside the response envelope", async() => {
+    const [c, a] = setupClient(200, envelope({aiReady: true, vectorizationEnabled: false}))
+
+    const r = await c.ai.getConfig()
+    assert.ok(r.err === undefined)
+    assert.ok(r.v[0].aiReady === true)
+    assert.ok(r.v[0].vectorizationEnabled === false)
+
+    assert.ok(a[0].url.pathname === "/api/2.0/ai/config")
+  })
+
+  void test("gets ai profiles without the response envelope", async() => {
+    const [c, a] = setupClient(200, [
+      {id: "1", name: "Chat", providerType: "onlyoffice", baseUrl: "http://localhost/", modelId: "chat", capabilities: 385},
+    ])
+
+    const r = await c.ai.getProfiles()
+    assert.ok(r.err === undefined, messages(r.err))
+    assert.ok(r.v[0].length === 1)
+    assert.ok(r.v[0][0].name === "Chat")
+
+    assert.ok(a[0].url.pathname === "/api/2.0/ai/profiles/list")
+  })
+
+  void test("starts vectorization answered with null", async() => {
+    const [c, a] = setupClient(200, null)
+
+    const r = await c.ai.startVectorization({files: [1, 2]})
+    assert.ok(r.err === undefined, messages(r.err))
+
+    assert.ok(a[0].method === "POST")
+    assert.ok(a[0].url.pathname === "/api/2.0/ai/vectorization/tasks")
+    assert.deepEqual(a[0].body, {files: [1, 2]})
+  })
+
+  void test("reports the error message of the ai service", async() => {
+    const [c] = setupClient(403, {error: "The caller may not vectorize the file"})
+
+    const r = await c.ai.startVectorization({files: [1]})
+    assert.ok(r.err !== undefined)
+    assert.match(messages(r.err), /403 The caller may not vectorize the file/)
+  })
+
+  void test("reports the provider message of the ai service", async() => {
+    const [c] = setupClient(402, {error: "Payment required", code: "payment_required", providerMessage: "Out of credits"})
+
+    const r = await c.ai.getProfiles()
+    assert.ok(r.err !== undefined)
+    assert.match(messages(r.err), /402 Payment required: Out of credits/)
+  })
+
+  void test("reports a bare forbidden of the ai feature filter", async() => {
+    const [c] = setupClient(403)
+
+    const r = await c.files.getAiProjectSources(12)
+    assert.ok(r.err !== undefined)
+    assert.match(messages(r.err), /403/)
+  })
+})

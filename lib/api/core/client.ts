@@ -6,10 +6,12 @@
 import * as z from "zod"
 import type {Result} from "../../util/result.ts"
 import {error, ok, safeAsync, safeNew, safeSync} from "../../util/result.ts"
+import {AiService} from "./ai-service.ts"
 import {AuthService} from "./auth-service.ts"
 import {FilesService} from "./files-service.ts"
 import {PeopleService} from "./people-service.ts"
 import {
+  AiErrorResponseSchema,
   ErrorApiResponseSchema,
   SuccessApiResponseSchema,
   UploadChunkErrorResponseSchema,
@@ -37,6 +39,7 @@ export class Client {
   baseUrl: string
   baseFetch: typeof globalThis.fetch
 
+  ai: AiService
   auth: AuthService
   files: FilesService
   people: PeopleService
@@ -46,6 +49,7 @@ export class Client {
     this.baseUrl = config.baseUrl
     this.baseFetch = config.fetch
 
+    this.ai = new AiService(this)
     this.auth = new AuthService(this)
     this.files = new FilesService(this)
     this.people = new PeopleService(this)
@@ -293,6 +297,36 @@ export class Client {
     return ok(p.v)
   }
 
+  /**
+   * Fetches a request whose response body is JSON without the response
+   * envelope, as the routes of the AI service under api/2.0/ai/ return it.
+   */
+  async rawFetch(req: Request): Promise<Result<[unknown, Response], Error>> {
+    const f = await this.bareFetch(req)
+    if (f.err) {
+      return error(new Error("Making bare fetch.", {cause: f.err}))
+    }
+
+    const p = await parseRawResponse(req, f.v)
+    if (p.err) {
+      return error(new Error("Parsing response.", {cause: p.err}))
+    }
+
+    return ok(p.v)
+  }
+
+  /**
+   * Fetches a request whose response has no data, such as 204 No Content.
+   */
+  async emptyFetch(req: Request): Promise<Result<Response, Error>> {
+    const f = await this.bareFetch(req)
+    if (f.err) {
+      return error(new Error("Making bare fetch.", {cause: f.err}))
+    }
+
+    return ok(new Response(req, f.v))
+  }
+
   async bareFetch(req: Request): Promise<Result<globalThis.Response, Error>> {
     const f = await safeAsync(this.baseFetch, req.clone())
     if (f.err) {
@@ -410,6 +444,7 @@ const ErrorResponseSchema = z.
   union([
     ErrorApiResponseSchema,
     UploadChunkErrorResponseSchema,
+    AiErrorResponseSchema,
   ]).
   transform((o) => {
     const t: {
@@ -419,7 +454,14 @@ const ErrorResponseSchema = z.
     }
 
     switch (true) {
-    case "error" in o:
+    case "error" in o && typeof o.error === "string":
+      t.message = o.error
+      if ("providerMessage" in o && o.providerMessage) {
+        t.message += `: ${o.providerMessage}`
+      }
+      break
+
+    case "error" in o && typeof o.error === "object":
       t.message = o.error.message
       break
 
@@ -495,4 +537,19 @@ export async function parseSharedResponse(req: Request, res: globalThis.Response
 
   const r = new Response(req, res)
   return ok([s.data.data, r])
+}
+
+export async function parseRawResponse(req: Request, res: globalThis.Response): Promise<Result<[unknown, Response], Error>> {
+  const c = safeSync(res.clone.bind(res))
+  if (c.err) {
+    return error(new Error("Cloning response.", {cause: c.err}))
+  }
+
+  const b = await safeAsync(c.v.json.bind(c.v))
+  if (b.err) {
+    return error(new Error("Parsing response body.", {cause: b.err}))
+  }
+
+  const r = new Response(req, res)
+  return ok([b.v, r])
 }

@@ -8,16 +8,20 @@ import type {Result} from "../../util/result.ts"
 import {error, ok, safeNew} from "../../util/result.ts"
 import type {Client, Response} from "./client.ts"
 import type {
+  AiProjectSourcesRequestSchema,
   ArchiveRoomRequestSchema,
   BatchRequestDtoSchema,
+  CreateAiRoomRequestDtoSchema,
   CreateFolderFiltersSchema,
   CreateFolderSchema,
   CreateRoomFiltersSchema,
   CreateRoomRequestDtoSchema,
   DeleteFolderSchema,
+  DeleteRoomRequestSchema,
   DeleteSchema,
   DocsBuilderRequestDtoSchema,
   DownloadRequestDtoSchema,
+  GetAiRoomsFolderFiltersSchema,
   GetFileInfoFiltersSchema,
   GetFolderFiltersSchema,
   GetFolderInfoFiltersSchema,
@@ -29,11 +33,15 @@ import type {
   RoomInvitationRequestSchema,
   SessionRequestSchema,
   SetRoomSecurityFiltersSchema,
+  UpdateAiProjectModelRequestSchema,
   UpdateFileSchema,
   UpdateRoomFiltersSchema,
   UpdateRoomRequestSchema,
 } from "./schemas.ts"
 import {
+  AiProjectModelDtoSchema,
+  AiProjectSourcesDtoSchema,
+  AiSkillsDtoSchema,
   FileDtoSchema,
   FileOperationDtoSchema,
   FileShareDtoSchema,
@@ -43,6 +51,17 @@ import {
   RoomSecurityDtoSchema,
   UploadSessionObjectDataSchema,
 } from "./schemas.ts"
+
+// AiHubController: Options
+export type LinkAiProjectSourcesOptions = z.input<typeof AiProjectSourcesRequestSchema>
+export type UnlinkAiProjectSourcesOptions = z.input<typeof AiProjectSourcesRequestSchema>
+export type UpdateAiProjectModelOptions = z.input<typeof UpdateAiProjectModelRequestSchema>
+
+// AiHubController: Responses
+export type GetAiProjectSourcesResponse = z.output<typeof AiProjectSourcesDtoSchema>
+export type GetAiRoomSkillsResponse = z.output<typeof AiSkillsDtoSchema>
+export type GetAiProjectModelResponse = z.output<typeof AiProjectModelDtoSchema>
+export type UpdateAiProjectModelResponse = z.output<typeof AiProjectModelDtoSchema>
 
 // DocsController: Options
 export type RunBuilderScriptOptions = z.input<typeof DocsBuilderRequestDtoSchema>
@@ -107,6 +126,8 @@ export type CreateUploadSessionResponse = z.output<typeof UploadSessionObjectDat
 export type CreateRoomOptions = z.input<typeof CreateRoomRequestDtoSchema>
 export type UpdateRoomOptions = z.input<typeof UpdateRoomRequestSchema>
 export type ArchiveRoomOptions = z.input<typeof ArchiveRoomRequestSchema>
+export type CreateAiRoomOptions = z.input<typeof CreateAiRoomRequestDtoSchema>
+export type DeleteRoomOptions = z.input<typeof DeleteRoomRequestSchema>
 export type SetRoomSecurityOptions = z.input<typeof RoomInvitationRequestSchema>
 
 // VirtualRoomsController: Filters
@@ -116,15 +137,19 @@ export type UpdateRoomFilters = z.input<typeof UpdateRoomFiltersSchema>
 export type SetRoomSecurityFilters = z.input<typeof SetRoomSecurityFiltersSchema>
 export type GetRoomSecurityFilters = z.input<typeof GetRoomSecurityFiltersSchema>
 export type GetRoomsFolderFilters = z.input<typeof GetRoomsFolderFiltersSchema>
+export type GetAiRoomsFolderFilters = z.input<typeof GetAiRoomsFolderFiltersSchema>
 
 // VirtualRoomsController: Responses
 export type CreateRoomResponse = z.output<typeof FolderContentDtoSchema>
 export type GetRoomInfoResponse = z.output<typeof FolderDtoSchema>
 export type UpdateRoomResponse = z.output<typeof FolderDtoSchema>
 export type ArchiveRoomResponse = z.output<typeof FileOperationDtoSchema>
+export type CreateAiRoomResponse = z.output<typeof FolderDtoSchema>
+export type DeleteRoomResponse = z.output<typeof FileOperationDtoSchema>
 export type SetRoomSecurityResponse = z.output<typeof RoomSecurityDtoSchema>
 export type GetRoomSecurityInfoResponse = z.output<typeof FileShareDtoSchema>
 export type GetRoomFolderResponse = z.output<typeof FolderContentDtoSchema>
+export type GetAiRoomsFolderResponse = z.output<typeof FolderContentDtoSchema>
 
 /**
  * {@link https://github.com/ONLYOFFICE/DocSpace-server/tree/v3.0.4-server/products/ASC.Files/ | ONLYOFFICE Apps Reference}
@@ -134,6 +159,174 @@ export class FilesService {
 
   constructor(s: Client) {
     this.c = s
+  }
+
+  //
+  // AiHubController
+  //
+
+  /**
+   * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v4.1.0-server/products/ASC.Files/Server/Api/AiHubController.cs/#L56 | ONLYOFFICE Apps Reference}
+   */
+  async getAiProjectSources(id: number): Promise<Result<[GetAiProjectSourcesResponse, Response], Error>> {
+    const u = this.c.createUrl(`api/2.0/files/rooms/${id}/sources`)
+    if (u.err) {
+      return error(new Error("Creating URL.", {cause: u.err}))
+    }
+
+    const req = this.c.createRequest("GET", u.v)
+    if (req.err) {
+      return error(new Error("Creating request.", {cause: req.err}))
+    }
+
+    const f = await this.c.fetch(req.v)
+    if (f.err) {
+      return error(new Error("Fetching request.", {cause: f.err}))
+    }
+
+    const [p, res] = f.v
+
+    const e = AiProjectSourcesDtoSchema.safeParse(p)
+    if (!e.success) {
+      return error(new Error("Parsing response.", {cause: e.error}))
+    }
+
+    return ok([e.data, res])
+  }
+
+  /**
+   * The route returns 204 No Content.
+   *
+   * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v4.1.0-server/products/ASC.Files/Server/Api/AiHubController.cs/#L74 | ONLYOFFICE Apps Reference}
+   */
+  async linkAiProjectSources(id: number, o: LinkAiProjectSourcesOptions): Promise<Result<Response, Error>> {
+    const u = this.c.createUrl(`api/2.0/files/rooms/${id}/sources`)
+    if (u.err) {
+      return error(new Error("Creating URL.", {cause: u.err}))
+    }
+
+    const req = this.c.createRequest("POST", u.v, o)
+    if (req.err) {
+      return error(new Error("Creating request.", {cause: req.err}))
+    }
+
+    const f = await this.c.emptyFetch(req.v)
+    if (f.err) {
+      return error(new Error("Fetching request.", {cause: f.err}))
+    }
+
+    return ok(f.v)
+  }
+
+  /**
+   * The route returns 204 No Content.
+   *
+   * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v4.1.0-server/products/ASC.Files/Server/Api/AiHubController.cs/#L92 | ONLYOFFICE Apps Reference}
+   */
+  async unlinkAiProjectSources(id: number, o: UnlinkAiProjectSourcesOptions): Promise<Result<Response, Error>> {
+    const u = this.c.createUrl(`api/2.0/files/rooms/${id}/sources`)
+    if (u.err) {
+      return error(new Error("Creating URL.", {cause: u.err}))
+    }
+
+    const req = this.c.createRequest("DELETE", u.v, o)
+    if (req.err) {
+      return error(new Error("Creating request.", {cause: req.err}))
+    }
+
+    const f = await this.c.emptyFetch(req.v)
+    if (f.err) {
+      return error(new Error("Fetching request.", {cause: f.err}))
+    }
+
+    return ok(f.v)
+  }
+
+  /**
+   * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v4.1.0-server/products/ASC.Files/Server/Api/AiHubController.cs/#L109 | ONLYOFFICE Apps Reference}
+   */
+  async getAiRoomSkills(id: number): Promise<Result<[GetAiRoomSkillsResponse, Response], Error>> {
+    const u = this.c.createUrl(`api/2.0/files/rooms/${id}/skills`)
+    if (u.err) {
+      return error(new Error("Creating URL.", {cause: u.err}))
+    }
+
+    const req = this.c.createRequest("GET", u.v)
+    if (req.err) {
+      return error(new Error("Creating request.", {cause: req.err}))
+    }
+
+    const f = await this.c.fetch(req.v)
+    if (f.err) {
+      return error(new Error("Fetching request.", {cause: f.err}))
+    }
+
+    const [p, res] = f.v
+
+    const e = AiSkillsDtoSchema.safeParse(p)
+    if (!e.success) {
+      return error(new Error("Parsing response.", {cause: e.error}))
+    }
+
+    return ok([e.data, res])
+  }
+
+  /**
+   * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v4.1.0-server/products/ASC.Files/Server/Api/AiHubController.cs/#L143 | ONLYOFFICE Apps Reference}
+   */
+  async getAiProjectModel(id: number): Promise<Result<[GetAiProjectModelResponse, Response], Error>> {
+    const u = this.c.createUrl(`api/2.0/files/rooms/${id}/model`)
+    if (u.err) {
+      return error(new Error("Creating URL.", {cause: u.err}))
+    }
+
+    const req = this.c.createRequest("GET", u.v)
+    if (req.err) {
+      return error(new Error("Creating request.", {cause: req.err}))
+    }
+
+    const f = await this.c.fetch(req.v)
+    if (f.err) {
+      return error(new Error("Fetching request.", {cause: f.err}))
+    }
+
+    const [p, res] = f.v
+
+    const e = AiProjectModelDtoSchema.safeParse(p)
+    if (!e.success) {
+      return error(new Error("Parsing response.", {cause: e.error}))
+    }
+
+    return ok([e.data, res])
+  }
+
+  /**
+   * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v4.1.0-server/products/ASC.Files/Server/Api/AiHubController.cs/#L161 | ONLYOFFICE Apps Reference}
+   */
+  async updateAiProjectModel(id: number, o: UpdateAiProjectModelOptions): Promise<Result<[UpdateAiProjectModelResponse, Response], Error>> {
+    const u = this.c.createUrl(`api/2.0/files/rooms/${id}/model`)
+    if (u.err) {
+      return error(new Error("Creating URL.", {cause: u.err}))
+    }
+
+    const req = this.c.createRequest("PUT", u.v, o)
+    if (req.err) {
+      return error(new Error("Creating request.", {cause: req.err}))
+    }
+
+    const f = await this.c.fetch(req.v)
+    if (f.err) {
+      return error(new Error("Fetching request.", {cause: f.err}))
+    }
+
+    const [p, res] = f.v
+
+    const e = AiProjectModelDtoSchema.safeParse(p)
+    if (!e.success) {
+      return error(new Error("Parsing response.", {cause: e.error}))
+    }
+
+    return ok([e.data, res])
   }
 
   //
@@ -865,6 +1058,100 @@ export class FilesService {
    */
   async getRoomsFolder(filters?: GetRoomsFolderFilters): Promise<Result<[GetRoomFolderResponse, Response], Error>> {
     const u = this.c.createUrl("api/2.0/files/rooms", filters)
+    if (u.err) {
+      return error(new Error("Creating URL.", {cause: u.err}))
+    }
+
+    const req = this.c.createRequest("GET", u.v)
+    if (req.err) {
+      return error(new Error("Creating request.", {cause: req.err}))
+    }
+
+    const f = await this.c.fetch(req.v)
+    if (f.err) {
+      return error(new Error("Fetching request.", {cause: f.err}))
+    }
+
+    const [p, res] = f.v
+
+    const e = FolderContentDtoSchema.safeParse(p)
+    if (!e.success) {
+      return error(new Error("Parsing response.", {cause: e.error}))
+    }
+
+    return ok([e.data, res])
+  }
+
+  /**
+   * Creates an instructions room, a knowledge room or an AI project in the AI rooms
+   * section.
+   *
+   * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v4.1.0-server/products/ASC.Files/Server/Api/VirtualRoomsController.cs/#L107 | ONLYOFFICE Apps Reference}
+   */
+  async createAiRoom(o: CreateAiRoomOptions, filters?: CreateRoomFilters): Promise<Result<[CreateAiRoomResponse, Response], Error>> {
+    const u = this.c.createUrl("api/2.0/files/rooms", filters)
+    if (u.err) {
+      return error(new Error("Creating URL.", {cause: u.err}))
+    }
+
+    const req = this.c.createRequest("POST", u.v, o)
+    if (req.err) {
+      return error(new Error("Creating request.", {cause: req.err}))
+    }
+
+    const f = await this.c.fetch(req.v)
+    if (f.err) {
+      return error(new Error("Fetching request.", {cause: f.err}))
+    }
+
+    const [p, res] = f.v
+
+    const e = FolderDtoSchema.safeParse(p)
+    if (!e.success) {
+      return error(new Error("Parsing response.", {cause: e.error}))
+    }
+
+    return ok([e.data, res])
+  }
+
+  /**
+   * Deletes a room permanently, without moving it to the trash.
+   *
+   * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v4.1.0-server/products/ASC.Files/Server/Api/VirtualRoomsController.cs/#L617 | ONLYOFFICE Apps Reference}
+   */
+  async deleteRoom(id: number, o: DeleteRoomOptions): Promise<Result<[DeleteRoomResponse, Response], Error>> {
+    const u = this.c.createUrl(`api/2.0/files/rooms/${id}`)
+    if (u.err) {
+      return error(new Error("Creating URL.", {cause: u.err}))
+    }
+
+    const req = this.c.createRequest("DELETE", u.v, o)
+    if (req.err) {
+      return error(new Error("Creating request.", {cause: req.err}))
+    }
+
+    const f = await this.c.fetch(req.v)
+    if (f.err) {
+      return error(new Error("Fetching request.", {cause: f.err}))
+    }
+
+    const [p, res] = f.v
+
+    const e = FileOperationDtoSchema.safeParse(p)
+    if (!e.success) {
+      return error(new Error("Parsing response.", {cause: e.error}))
+    }
+
+    return ok([e.data, res])
+  }
+
+  /**
+   * Gets the AI rooms section.
+   *
+   * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v4.1.0-server/products/ASC.Files/Server/Api/VirtualRoomsController.cs/#L1363 | ONLYOFFICE Apps Reference}
+   */
+  async getAiRoomsFolder(filters?: GetAiRoomsFolderFilters): Promise<Result<[GetAiRoomsFolderResponse, Response], Error>> {
+    const u = this.c.createUrl("api/2.0/files/rooms", {...filters, searchArea: "AiHub"})
     if (u.err) {
       return error(new Error("Creating URL.", {cause: u.err}))
     }

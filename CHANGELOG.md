@@ -37,13 +37,13 @@ Changelog] format and adhering to [Semantic Versioning].
   project, set its chat model and list its skills. `delete_ai_room` deletes
   only AI rooms, since a room deletion is permanent and AI rooms cannot be
   archived. When the AI service reports only the status of an error, the tools
-  explain what it means.
+  explain what it means ([7d7f7b6]).
 
 ### Changed
 
 - List the access levels of instructions rooms, knowledge rooms and AI projects
   in `get_room_access_levels`, and mention in the `archive_room` description
-  that AI rooms cannot be archived.
+  that AI rooms cannot be archived ([7d7f7b6]).
 
 - Refer to the "My documents" section as "Files" in the `get_my_folder` tool
   descriptions, mentioning the former name, and in the documentation. The tool
@@ -466,6 +466,7 @@ There are no noticeable changes in version [3.0.1].
 [0.1.1]: https://github.com/onlyoffice/docspace-mcp/compare/v0.1.0...v0.1.1/
 [0.1.0]: https://github.com/onlyoffice/docspace-mcp/releases/tag/v0.1.0/
 
+[7d7f7b6]: https://github.com/onlyoffice/docspace-mcp/commit/7d7f7b63017d992a7d8b4614c1b89599b21bf5ee/
 [41bf399]: https://github.com/onlyoffice/docspace-mcp/commit/41bf39914f50e39aad1c0d7020e8b03780f2c6ae/
 [bddbb63]: https://github.com/onlyoffice/docspace-mcp/commit/bddbb63aad8ce08e32a58b2baeae91773fb940b1/
 [b7d8883]: https://github.com/onlyoffice/docspace-mcp/commit/b7d88836eeb451a7811ae28979e5b596c57dbd31/

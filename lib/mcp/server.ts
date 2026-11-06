@@ -88,6 +88,24 @@ const VirtualDataRoomInvitationAccessSchema = z.union([
   RoomInvitationAccessSchema._zod.def.options[7],
 ])
 
+const InstructionsRoomInvitationAccessSchema = z.union([
+  RoomInvitationAccessSchema._zod.def.options[1],
+  RoomInvitationAccessSchema._zod.def.options[5],
+  RoomInvitationAccessSchema._zod.def.options[6],
+  RoomInvitationAccessSchema._zod.def.options[7],
+])
+
+const KnowledgeRoomInvitationAccessSchema = z.union([
+  RoomInvitationAccessSchema._zod.def.options[1],
+  RoomInvitationAccessSchema._zod.def.options[5],
+  RoomInvitationAccessSchema._zod.def.options[7],
+])
+
+const AiProjectInvitationAccessSchema = z.union([
+  z.literal(2).describe("Member. Members chat in the project and read the linked instructions and knowledge rooms."),
+  z.literal(9).describe("Project manager (Paid). Project managers also change the project, its linked rooms and its model, and invite new users."),
+])
+
 const ArchiveRoomInputSchema = z.object({
   roomId: z.number().describe("The ID of the room to archive."),
 })
@@ -483,6 +501,124 @@ const UploadFileInputSchema = z.object({
 
 const UploadFileInputJsonSchema = z.toJSONSchema(UploadFileInputSchema, {io: "input"})
 
+const aiProjectIdDescription = "The ID of the AI project."
+
+const AiProjectSourcesInputSchema = z.object({
+  roomId: z.number().describe(aiProjectIdDescription),
+  roomIds: z.array(z.number()).min(1).max(40).describe("The IDs of the instructions and knowledge rooms."),
+})
+
+const AiProjectSourcesInputJsonSchema = z.toJSONSchema(AiProjectSourcesInputSchema, {io: "input"})
+
+const CreateAiRoomInputSchema = z.object({
+  title: z.string().max(170).describe("The title of the room to create."),
+  roomType: unionToEnum(core.AiRoomTypeSchema, "The type of the AI room to create."),
+  tags: z.array(z.string()).optional().describe("The tags of the room."),
+  color: z.string().regex(/^[0-9a-fA-F]{6}$/).optional().describe("The color of the room logo, a hex code of six digits without #, such as 7757D9."),
+  filters: core.CreateRoomFiltersSchema.describe("The filters to apply to the room creation."),
+})
+
+const CreateAiRoomInputJsonSchema = z.toJSONSchema(CreateAiRoomInputSchema, {io: "input"})
+
+const CreateAiRoomOutputSchema = core.SuccessApiResponseSchema.extend({
+  response: core.FolderDtoSchema.describe("The created room."),
+})
+
+const CreateAiRoomOutputJsonSchema = z.toJSONSchema(CreateAiRoomOutputSchema)
+
+const DeleteAiRoomInputSchema = z.object({
+  roomId: z.number().describe("The ID of the instructions room, knowledge room or AI project to delete."),
+})
+
+const DeleteAiRoomInputJsonSchema = z.toJSONSchema(DeleteAiRoomInputSchema, {io: "input"})
+
+const GetAiConfigOutputSchema = z.object({
+  aiReady: z.boolean().describe("Specifies if AI is enabled and configured on the portal. AI rooms are available only when it is true."),
+  vectorizationEnabled: z.boolean().describe("Specifies if vectorization is enabled. Knowledge rooms can be created and filled only when it is true."),
+})
+
+const GetAiConfigOutputJsonSchema = z.toJSONSchema(GetAiConfigOutputSchema)
+
+const GetAiProfilesOutputSchema = z.object({
+  profiles: z.array(z.object({
+    id: z.string().describe("The profile ID to pass to set_ai_project_model."),
+    name: z.string().describe("The profile name."),
+    providerType: z.string().describe("The provider of the model."),
+    modelId: z.string().describe("The model ID at the provider."),
+    tools: z.boolean().describe("Specifies if the model can call tools."),
+    vision: z.boolean().describe("Specifies if the model can read images."),
+  })).describe("The chat model profiles of the portal."),
+})
+
+const GetAiProfilesOutputJsonSchema = z.toJSONSchema(GetAiProfilesOutputSchema)
+
+const GetAiProjectModelInputSchema = z.object({
+  roomId: z.number().describe(aiProjectIdDescription),
+})
+
+const GetAiProjectModelInputJsonSchema = z.toJSONSchema(GetAiProjectModelInputSchema, {io: "input"})
+
+const GetAiProjectModelOutputSchema = core.SuccessApiResponseSchema.extend({
+  response: core.AiProjectModelDtoSchema.describe("The model of the AI project chat."),
+})
+
+const GetAiProjectModelOutputJsonSchema = z.toJSONSchema(GetAiProjectModelOutputSchema)
+
+const GetAiProjectSourcesInputSchema = z.object({
+  roomId: z.number().describe(aiProjectIdDescription),
+})
+
+const GetAiProjectSourcesInputJsonSchema = z.toJSONSchema(GetAiProjectSourcesInputSchema, {io: "input"})
+
+const GetAiProjectSourcesOutputSchema = core.SuccessApiResponseSchema.extend({
+  response: core.AiProjectSourcesDtoSchema.describe("The rooms linked to the AI project."),
+})
+
+const GetAiProjectSourcesOutputJsonSchema = z.toJSONSchema(GetAiProjectSourcesOutputSchema)
+
+const GetAiRoomsFolderInputSchema = z.object({
+  filters: core.GetAiRoomsFolderFiltersSchema.describe("The filters to apply to the AI rooms section."),
+})
+
+const GetAiRoomsFolderInputJsonSchema = z.toJSONSchema(GetAiRoomsFolderInputSchema, {io: "input"})
+
+const GetAiRoomsFolderOutputSchema = core.SuccessApiResponseSchema.extend({
+  response: core.FolderContentDtoSchema.describe("The contents of the AI rooms section."),
+})
+
+const GetAiRoomsFolderOutputJsonSchema = z.toJSONSchema(GetAiRoomsFolderOutputSchema)
+
+const GetAiSkillsInputSchema = z.object({
+  roomId: z.number().describe("The ID of the instructions room or the AI project."),
+})
+
+const GetAiSkillsInputJsonSchema = z.toJSONSchema(GetAiSkillsInputSchema, {io: "input"})
+
+const GetAiSkillsOutputSchema = core.SuccessApiResponseSchema.extend({
+  response: core.AiSkillsDtoSchema.describe("The instructions rooms with their skills."),
+})
+
+const GetAiSkillsOutputJsonSchema = z.toJSONSchema(GetAiSkillsOutputSchema)
+
+const RetryVectorizationInputSchema = z.object({
+  fileIds: z.array(z.number()).min(1).describe("The IDs of the files in a knowledge room to vectorize again."),
+})
+
+const RetryVectorizationInputJsonSchema = z.toJSONSchema(RetryVectorizationInputSchema, {io: "input"})
+
+const SetAiProjectModelInputSchema = z.object({
+  roomId: z.number().describe(aiProjectIdDescription),
+  profileId: z.uuid().describe("The ID of a chat model profile from get_ai_profiles."),
+})
+
+const SetAiProjectModelInputJsonSchema = z.toJSONSchema(SetAiProjectModelInputSchema, {io: "input"})
+
+const SetAiProjectModelOutputSchema = core.SuccessApiResponseSchema.extend({
+  response: core.AiProjectModelDtoSchema.describe("The model of the AI project chat."),
+})
+
+const SetAiProjectModelOutputJsonSchema = z.toJSONSchema(SetAiProjectModelOutputSchema)
+
 // todo: remove export
 export const metaTools = [
   {
@@ -795,7 +931,7 @@ export const regularToolsets = [
       {
         name: "archive_room",
         title: "Archive Room",
-        description: "Archive a room.",
+        description: "Archive a room. AI rooms cannot be archived; delete them with delete_ai_room.",
         inputSchema: ArchiveRoomInputJsonSchema,
         annotations: {
           title: "Archive Room",
@@ -870,6 +1006,164 @@ export const regularToolsets = [
     ],
   },
   {
+    name: "ai_rooms",
+    description: "Operations for working with AI rooms: instructions rooms with skills, knowledge rooms with files for retrieval, and AI projects that link them, set the chat model and are shared with a team. Requires ONLYOFFICE Apps 4.1 or later with AI enabled on the portal.",
+    tools: [
+      {
+        name: "get_ai_config",
+        title: "Get AI Config",
+        description: "Get whether AI and vectorization are enabled on the portal. Call it before working with AI rooms: when aiReady is false, the other AI room tools are refused, and when vectorizationEnabled is false, knowledge rooms cannot be created or filled.",
+        inputSchema: z.toJSONSchema(z.object({}), {io: "input"}),
+        outputSchema: GetAiConfigOutputJsonSchema,
+        annotations: {
+          title: "Get AI Config",
+          readOnlyHint: true,
+          destructiveHint: false,
+          openWorldHint: false,
+        },
+      },
+      {
+        name: "get_ai_rooms_folder",
+        title: "Get AI Rooms Folder",
+        description: "Get the AI rooms section with instructions rooms, knowledge rooms and AI projects. These rooms are not listed by get_rooms_folder.",
+        inputSchema: GetAiRoomsFolderInputJsonSchema,
+        outputSchema: GetAiRoomsFolderOutputJsonSchema,
+        annotations: {
+          title: "Get AI Rooms Folder",
+          readOnlyHint: true,
+          destructiveHint: false,
+          openWorldHint: false,
+        },
+      },
+      {
+        name: "create_ai_room",
+        title: "Create AI Room",
+        description: "Create an AI room. An instructions room (10) holds skills: Markdown files uploaded with upload_file into the room itself, each starting with a YAML frontmatter between two --- lines with name (lowercase letters, digits and single hyphens, up to 64 characters) and description (up to 1024 characters); a room holds up to 100 skills. A knowledge room (11) holds files that are vectorized for retrieval, such as txt, md, docx, xlsx, pptx and pdf up to 30 MB: upload text with upload_file or copy documents into it with copy_batch_items; it can be created and filled only while vectorization is enabled. An AI project (12) holds no files: link instructions and knowledge rooms to it with link_ai_project_sources, choose its chat model with set_ai_project_model and invite the team with set_room_security.",
+        inputSchema: CreateAiRoomInputJsonSchema,
+        outputSchema: CreateAiRoomOutputJsonSchema,
+        annotations: {
+          title: "Create AI Room",
+          readOnlyHint: false,
+          destructiveHint: false,
+          openWorldHint: false,
+        },
+      },
+      {
+        name: "delete_ai_room",
+        title: "Delete AI Room",
+        description: "Delete an instructions room, a knowledge room or an AI project with all its files. The deletion is permanent: the room does not go to the trash, and AI rooms cannot be archived. Rooms of other types are refused.",
+        inputSchema: DeleteAiRoomInputJsonSchema,
+        annotations: {
+          title: "Delete AI Room",
+          readOnlyHint: false,
+          destructiveHint: true,
+          openWorldHint: false,
+        },
+      },
+      {
+        name: "get_ai_project_sources",
+        title: "Get AI Project Sources",
+        description: "Get the instructions and knowledge rooms linked to an AI project.",
+        inputSchema: GetAiProjectSourcesInputJsonSchema,
+        outputSchema: GetAiProjectSourcesOutputJsonSchema,
+        annotations: {
+          title: "Get AI Project Sources",
+          readOnlyHint: true,
+          destructiveHint: false,
+          openWorldHint: false,
+        },
+      },
+      {
+        name: "link_ai_project_sources",
+        title: "Link AI Project Sources",
+        description: "Link instructions and knowledge rooms to an AI project. Every member of the project gets read access to the linked rooms. A project links up to 20 rooms of each type; rooms already linked are skipped. Linking needs the right to edit the project and each room.",
+        inputSchema: AiProjectSourcesInputJsonSchema,
+        annotations: {
+          title: "Link AI Project Sources",
+          readOnlyHint: false,
+          destructiveHint: false,
+          openWorldHint: false,
+        },
+      },
+      {
+        name: "unlink_ai_project_sources",
+        title: "Unlink AI Project Sources",
+        description: "Unlink instructions and knowledge rooms from an AI project. The project members who are not members of a room lose access to it. Rooms that are not linked are ignored.",
+        inputSchema: AiProjectSourcesInputJsonSchema,
+        annotations: {
+          title: "Unlink AI Project Sources",
+          readOnlyHint: false,
+          destructiveHint: true,
+          openWorldHint: false,
+        },
+      },
+      {
+        name: "get_ai_project_model",
+        title: "Get AI Project Model",
+        description: "Get the chat model of an AI project. A missing or null profileId means that the project uses the default model of the portal.",
+        inputSchema: GetAiProjectModelInputJsonSchema,
+        outputSchema: GetAiProjectModelOutputJsonSchema,
+        annotations: {
+          title: "Get AI Project Model",
+          readOnlyHint: true,
+          destructiveHint: false,
+          openWorldHint: false,
+        },
+      },
+      {
+        name: "set_ai_project_model",
+        title: "Set AI Project Model",
+        description: "Set the chat model of an AI project to a profile from get_ai_profiles. The model can be replaced but not reset to the default model of the portal.",
+        inputSchema: SetAiProjectModelInputJsonSchema,
+        outputSchema: SetAiProjectModelOutputJsonSchema,
+        annotations: {
+          title: "Set AI Project Model",
+          readOnlyHint: false,
+          destructiveHint: true,
+          openWorldHint: false,
+        },
+      },
+      {
+        name: "get_ai_profiles",
+        title: "Get AI Profiles",
+        description: "Get the chat model profiles of the portal that an AI project can use.",
+        inputSchema: z.toJSONSchema(z.object({}), {io: "input"}),
+        outputSchema: GetAiProfilesOutputJsonSchema,
+        annotations: {
+          title: "Get AI Profiles",
+          readOnlyHint: true,
+          destructiveHint: false,
+          openWorldHint: false,
+        },
+      },
+      {
+        name: "get_ai_skills",
+        title: "Get AI Skills",
+        description: "Get the skills of an instructions room, or of all instructions rooms linked to an AI project. A skill ID is the ID of its Markdown file, which get_file_info and download_file_as_text accept.",
+        inputSchema: GetAiSkillsInputJsonSchema,
+        outputSchema: GetAiSkillsOutputJsonSchema,
+        annotations: {
+          title: "Get AI Skills",
+          readOnlyHint: true,
+          destructiveHint: false,
+          openWorldHint: false,
+        },
+      },
+      {
+        name: "retry_vectorization",
+        title: "Retry Vectorization",
+        description: "Vectorize files of a knowledge room again, such as files whose vectorizationStatus is 2 (failed). Only room managers can do it, and only for files whose security.Vectorization is true. Check the progress with the vectorizationStatus field of get_file_info.",
+        inputSchema: RetryVectorizationInputJsonSchema,
+        annotations: {
+          title: "Retry Vectorization",
+          readOnlyHint: false,
+          destructiveHint: false,
+          openWorldHint: false,
+        },
+      },
+    ],
+  },
+  {
     name: "people",
     description: "Operations for working with users.",
     tools: [
@@ -936,11 +1230,19 @@ export class Server {
   private callRegularToolHandlers: Record<string, CallToolHandler | undefined> = {
     archive_room: this.handleArchiveRoom.bind(this),
     copy_batch_items: this.handleCopyBatchItems.bind(this),
+    create_ai_room: this.handleCreateAiRoom.bind(this),
     create_folder: this.handleCreateFolder.bind(this),
     create_room: this.handleCreateRoom.bind(this),
+    delete_ai_room: this.handleDeleteAiRoom.bind(this),
     delete_file: this.handleDeleteFile.bind(this),
     delete_folder: this.handleDeleteFolder.bind(this),
     download_file_as_text: this.handleDownloadFileAsText.bind(this),
+    get_ai_config: this.handleGetAiConfig.bind(this),
+    get_ai_profiles: this.handleGetAiProfiles.bind(this),
+    get_ai_project_model: this.handleGetAiProjectModel.bind(this),
+    get_ai_project_sources: this.handleGetAiProjectSources.bind(this),
+    get_ai_rooms_folder: this.handleGetAiRoomsFolder.bind(this),
+    get_ai_skills: this.handleGetAiSkills.bind(this),
     get_all_people: this.handleGetAllPeople.bind(this),
     get_file_info: this.handleGetFileInfo.bind(this),
     get_folder_content: this.handleGetFolderContent.bind(this),
@@ -952,10 +1254,14 @@ export class Server {
     get_room_security_info: this.handleGetRoomSecurityInfo.bind(this),
     get_room_types: this.handleGetRoomTypes.bind(this),
     get_rooms_folder: this.handleGetRoomsFolder.bind(this),
+    link_ai_project_sources: this.handleLinkAiProjectSources.bind(this),
     move_batch_items: this.handleMoveBatchItems.bind(this),
     rename_folder: this.handleRenameFolder.bind(this),
+    retry_vectorization: this.handleRetryVectorization.bind(this),
     run_builder_script: this.handleRunBuilderScript.bind(this),
+    set_ai_project_model: this.handleSetAiProjectModel.bind(this),
     set_room_security: this.handleSetRoomSecurity.bind(this),
+    unlink_ai_project_sources: this.handleUnlinkAiProjectSources.bind(this),
     update_file: this.handleUpdateFile.bind(this),
     update_room: this.handleUpdateRoom.bind(this),
     upload_file: this.handleUploadFile.bind(this),
@@ -1720,6 +2026,15 @@ export class Server {
     case 8:
       sh = VirtualDataRoomInvitationAccessSchema
       break
+    case 10:
+      sh = InstructionsRoomInvitationAccessSchema
+      break
+    case 11:
+      sh = KnowledgeRoomInvitationAccessSchema
+      break
+    case 12:
+      sh = AiProjectInvitationAccessSchema
+      break
     default:
       sh = RoomInvitationAccessSchema
       break
@@ -1981,6 +2296,248 @@ export class Server {
 
     return await fromResponse(res)
   }
+
+  //
+  // AI rooms
+  //
+
+  private async handleCreateAiRoom(req: types.CallToolRequest): Promise<types.CallToolResult> {
+    const pr = CreateAiRoomInputSchema.safeParse(req.params.arguments)
+    if (!pr.success) {
+      return fromError(new Error("Parsing input.", {cause: pr.error}))
+    }
+
+    const co: core.CreateAiRoomOptions = {
+      title: pr.data.title,
+      roomType: pr.data.roomType,
+      tags: pr.data.tags,
+      color: pr.data.color,
+    }
+
+    const cr = await this.client.files.createAiRoom(co, pr.data.filters)
+    if (cr.err) {
+      return fromAiError("Creating AI room.", cr.err, {
+        403: "The portal refused to create the room. A knowledge room can be created only while vectorization is enabled, and no AI room can be created while AI is turned off; get_ai_config shows both. Guests cannot create AI rooms.",
+      })
+    }
+
+    const [, res] = cr.v
+
+    return await fromResponse(res, CreateAiRoomOutputJsonSchema)
+  }
+
+  private async handleDeleteAiRoom(req: types.CallToolRequest): Promise<types.CallToolResult> {
+    const pr = DeleteAiRoomInputSchema.safeParse(req.params.arguments)
+    if (!pr.success) {
+      return fromError(new Error("Parsing input.", {cause: pr.error}))
+    }
+
+    const gr = await this.client.files.getRoomInfo(pr.data.roomId)
+    if (gr.err) {
+      return fromAiError("Getting room info.", gr.err, {403: aiForbiddenHint})
+    }
+
+    const [gd] = gr.v
+
+    // Deleting a room is permanent, so do not let this tool delete the rooms
+    // that are meant to be archived first.
+    if (gd.roomType !== 10 && gd.roomType !== 11 && gd.roomType !== 12) {
+      return fromError(new Error(`Room ${pr.data.roomId} is not an AI room. Archive it with archive_room instead.`))
+    }
+
+    const dr = await this.client.files.deleteRoom(pr.data.roomId, {deleteAfter: false})
+    if (dr.err) {
+      return fromAiError("Deleting AI room.", dr.err, {403: aiForbiddenHint})
+    }
+
+    const [dd] = dr.v
+
+    const rr = await this.resolver.resolve(dd)
+    if (rr.err) {
+      return fromError(new Error("Resolving delete room operations.", {cause: rr.err}))
+    }
+
+    return fromString("Room deleted.")
+  }
+
+  private async handleGetAiConfig(): Promise<types.CallToolResult> {
+    const gr = await this.client.ai.getConfig()
+    if (gr.err) {
+      return fromError(new Error("Getting AI config.", {cause: gr.err}))
+    }
+
+    const [gd] = gr.v
+
+    const o: z.output<typeof GetAiConfigOutputSchema> = {
+      aiReady: gd.aiReady ?? false,
+      vectorizationEnabled: gd.vectorizationEnabled ?? false,
+    }
+
+    return fromObject(o, GetAiConfigOutputJsonSchema)
+  }
+
+  private async handleGetAiProfiles(): Promise<types.CallToolResult> {
+    const gr = await this.client.ai.getProfiles()
+    if (gr.err) {
+      return fromAiError("Getting AI profiles.", gr.err, {403: aiForbiddenHint})
+    }
+
+    const [gd] = gr.v
+
+    const o: z.output<typeof GetAiProfilesOutputSchema> = {
+      profiles: [],
+    }
+
+    for (const p of gd) {
+      const c = p.capabilities ?? 0
+
+      // A profile without capabilities predates them and is treated as a chat
+      // model, as the portal does when it sets the model of a project.
+      if (c !== 0 && (c & 0x1) === 0) {
+        continue
+      }
+
+      o.profiles.push({
+        id: p.id,
+        name: p.name,
+        providerType: p.providerType,
+        modelId: p.modelId,
+        tools: (c & 0x100) !== 0 || p.canUseTool === true,
+        vision: (c & 0x80) !== 0,
+      })
+    }
+
+    return fromObject(o, GetAiProfilesOutputJsonSchema)
+  }
+
+  private async handleGetAiProjectModel(req: types.CallToolRequest): Promise<types.CallToolResult> {
+    const pr = GetAiProjectModelInputSchema.safeParse(req.params.arguments)
+    if (!pr.success) {
+      return fromError(new Error("Parsing input.", {cause: pr.error}))
+    }
+
+    const gr = await this.client.files.getAiProjectModel(pr.data.roomId)
+    if (gr.err) {
+      return fromAiError("Getting AI project model.", gr.err, {403: aiForbiddenHint, 404: aiNotFoundHint})
+    }
+
+    const [, res] = gr.v
+
+    return await fromResponse(res, GetAiProjectModelOutputJsonSchema)
+  }
+
+  private async handleGetAiProjectSources(req: types.CallToolRequest): Promise<types.CallToolResult> {
+    const pr = GetAiProjectSourcesInputSchema.safeParse(req.params.arguments)
+    if (!pr.success) {
+      return fromError(new Error("Parsing input.", {cause: pr.error}))
+    }
+
+    const gr = await this.client.files.getAiProjectSources(pr.data.roomId)
+    if (gr.err) {
+      return fromAiError("Getting AI project sources.", gr.err, {403: aiForbiddenHint, 404: aiNotFoundHint})
+    }
+
+    const [, res] = gr.v
+
+    return await fromResponse(res, GetAiProjectSourcesOutputJsonSchema)
+  }
+
+  private async handleGetAiRoomsFolder(req: types.CallToolRequest): Promise<types.CallToolResult> {
+    const pr = GetAiRoomsFolderInputSchema.safeParse(req.params.arguments)
+    if (!pr.success) {
+      return fromError(new Error("Parsing input.", {cause: pr.error}))
+    }
+
+    const gr = await this.client.files.getAiRoomsFolder(pr.data.filters)
+    if (gr.err) {
+      return fromAiError("Getting AI rooms folder.", gr.err, {403: aiForbiddenHint})
+    }
+
+    const [, res] = gr.v
+
+    return await fromResponse(res, GetAiRoomsFolderOutputJsonSchema)
+  }
+
+  private async handleGetAiSkills(req: types.CallToolRequest): Promise<types.CallToolResult> {
+    const pr = GetAiSkillsInputSchema.safeParse(req.params.arguments)
+    if (!pr.success) {
+      return fromError(new Error("Parsing input.", {cause: pr.error}))
+    }
+
+    const gr = await this.client.files.getAiRoomSkills(pr.data.roomId)
+    if (gr.err) {
+      return fromAiError("Getting AI skills.", gr.err, {403: aiForbiddenHint, 404: aiNotFoundHint})
+    }
+
+    const [, res] = gr.v
+
+    return await fromResponse(res, GetAiSkillsOutputJsonSchema)
+  }
+
+  private async handleLinkAiProjectSources(req: types.CallToolRequest): Promise<types.CallToolResult> {
+    const pr = AiProjectSourcesInputSchema.safeParse(req.params.arguments)
+    if (!pr.success) {
+      return fromError(new Error("Parsing input.", {cause: pr.error}))
+    }
+
+    const lr = await this.client.files.linkAiProjectSources(pr.data.roomId, {roomIds: pr.data.roomIds})
+    if (lr.err) {
+      return fromAiError("Linking AI project sources.", lr.err, {403: aiForbiddenHint, 404: aiNotFoundHint})
+    }
+
+    return fromString("Rooms linked.")
+  }
+
+  private async handleRetryVectorization(req: types.CallToolRequest): Promise<types.CallToolResult> {
+    const pr = RetryVectorizationInputSchema.safeParse(req.params.arguments)
+    if (!pr.success) {
+      return fromError(new Error("Parsing input.", {cause: pr.error}))
+    }
+
+    const sr = await this.client.ai.startVectorization({files: pr.data.fileIds})
+    if (sr.err) {
+      return fromAiError("Retrying vectorization.", sr.err, {
+        403: "The user may not vectorize one of the files. Only room managers can, only for files whose security.Vectorization is true, and only while vectorization is enabled, which get_ai_config shows.",
+        404: "One of the files does not exist or has never been queued for vectorization. Only the files of knowledge rooms are vectorized.",
+      })
+    }
+
+    return fromString("Vectorization started.")
+  }
+
+  private async handleSetAiProjectModel(req: types.CallToolRequest): Promise<types.CallToolResult> {
+    const pr = SetAiProjectModelInputSchema.safeParse(req.params.arguments)
+    if (!pr.success) {
+      return fromError(new Error("Parsing input.", {cause: pr.error}))
+    }
+
+    const ur = await this.client.files.updateAiProjectModel(pr.data.roomId, {profileId: pr.data.profileId})
+    if (ur.err) {
+      return fromAiError("Setting AI project model.", ur.err, {
+        400: "The profile does not exist or is not a chat model. Pick a profile from get_ai_profiles.",
+        403: aiForbiddenHint,
+        404: aiNotFoundHint,
+      })
+    }
+
+    const [, res] = ur.v
+
+    return await fromResponse(res, SetAiProjectModelOutputJsonSchema)
+  }
+
+  private async handleUnlinkAiProjectSources(req: types.CallToolRequest): Promise<types.CallToolResult> {
+    const pr = AiProjectSourcesInputSchema.safeParse(req.params.arguments)
+    if (!pr.success) {
+      return fromError(new Error("Parsing input.", {cause: pr.error}))
+    }
+
+    const ur = await this.client.files.unlinkAiProjectSources(pr.data.roomId, {roomIds: pr.data.roomIds})
+    if (ur.err) {
+      return fromAiError("Unlinking AI project sources.", ur.err, {403: aiForbiddenHint, 404: aiNotFoundHint})
+    }
+
+    return fromString("Rooms unlinked.")
+  }
 }
 
 export class ErroredServer {
@@ -2115,6 +2672,27 @@ function builderErrorHint(err: unknown): string | undefined {
   }
 
   return
+}
+
+const aiForbiddenHint = "The portal refused the call. AI may be turned off on the portal, which get_ai_config shows, or the user may lack the rights for the room."
+
+const aiNotFoundHint = "The room was not found, or it is not of the type the tool expects. Find the AI rooms with get_ai_rooms_folder."
+
+// The AI service reports no details on most errors, only the status, so the
+// hints explain what the status means for each tool.
+function fromAiError(m: string, err: Error, hints: Partial<Record<number, string>>): types.CallToolResult {
+  let e: unknown = err
+  while (e instanceof Error) {
+    if (e instanceof core.ResponseError) {
+      const h = hints[e.response.response.status]
+      if (h) {
+        return fromError(new Error(m, {cause: new AggregateError([err, new Error(h)])}))
+      }
+      break
+    }
+    e = e.cause
+  }
+  return fromError(new Error(m, {cause: err}))
 }
 
 function fromError(err: Error): types.CallToolResult {

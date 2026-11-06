@@ -267,6 +267,10 @@ function createNpxConfig(e: ConfigEnv): Config {
   }
 }
 
+const toolsetTitles: Record<string, string> = {
+  ai_rooms: "AI rooms",
+}
+
 const toolsetNotes: Record<string, string> = {
   files: "> **Note:** Supported file formats for uploading: `txt`, `md`.",
 }
@@ -298,7 +302,7 @@ function createToolsTable(toolsets: utilMcp.Toolset[]): string {
     }
 
     if (r.length !== 0) {
-      const n = s.name[0].toUpperCase() + s.name.slice(1)
+      const n = toolsetTitles[s.name] ?? s.name[0].toUpperCase() + s.name.slice(1)
       let b = `### ${n} toolset\n\n${createMarkdownTable(["#", "Tool Name", "Tool Description"], r)}`
 
       const o = toolsetNotes[s.name]

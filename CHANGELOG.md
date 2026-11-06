@@ -28,8 +28,22 @@ Changelog] format and adhering to [Semantic Versioning].
   and the folder listing tools. It reports whether a file in a knowledge room
   is being vectorized (`0`), vectorized (`1`) or failed to vectorize (`2`)
   ([41bf399]).
+- Add the `ai_rooms` toolset for the AI rooms of ONLYOFFICE Apps 4.1:
+  `get_ai_config`, `get_ai_rooms_folder`, `create_ai_room`, `delete_ai_room`,
+  `get_ai_project_sources`, `link_ai_project_sources`,
+  `unlink_ai_project_sources`, `get_ai_project_model`, `set_ai_project_model`,
+  `get_ai_profiles`, `get_ai_skills` and `retry_vectorization`. They create
+  instructions rooms, knowledge rooms and AI projects, link the rooms to a
+  project, set its chat model and list its skills. `delete_ai_room` deletes
+  only AI rooms, since a room deletion is permanent and AI rooms cannot be
+  archived. When the AI service reports only the status of an error, the tools
+  explain what it means.
 
 ### Changed
+
+- List the access levels of instructions rooms, knowledge rooms and AI projects
+  in `get_room_access_levels`, and mention in the `archive_room` description
+  that AI rooms cannot be archived.
 
 - Refer to the "My documents" section as "Files" in the `get_my_folder` tool
   descriptions, mentioning the former name, and in the documentation. The tool

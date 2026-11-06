@@ -61,7 +61,7 @@ Changelog] format and adhering to [Semantic Versioning].
   the portal refuses to archive one. The portal answers with the same bare
   403 as for a user who lacks the rights, so the tool looks up the room type
   only then, and points to `delete_ai_room`, warning that it deletes the room
-  permanently.
+  permanently ([d03cdea]).
 
 - Refer to the "My documents" section as "Files" in the `get_my_folder` tool
   descriptions, mentioning the former name, and in the documentation. The tool
@@ -499,6 +499,7 @@ There are no noticeable changes in version [3.0.1].
 [0.1.1]: https://github.com/onlyoffice/docspace-mcp/compare/v0.1.0...v0.1.1/
 [0.1.0]: https://github.com/onlyoffice/docspace-mcp/releases/tag/v0.1.0/
 
+[d03cdea]: https://github.com/onlyoffice/docspace-mcp/commit/d03cdea0475bb74dc8b08bfcca8af9203dd89829/
 [62635ad]: https://github.com/onlyoffice/docspace-mcp/commit/62635adaa31e53f20b8f1774f641c4b6bd2d4bb6/
 [5aab993]: https://github.com/onlyoffice/docspace-mcp/commit/5aab99369d77686d4d88ad6515fb759466cd9cf6/
 [f24155e]: https://github.com/onlyoffice/docspace-mcp/commit/f24155e326cdb56cc414f458b0af2d637a1c49c3/

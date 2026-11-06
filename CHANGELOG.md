@@ -62,6 +62,9 @@ Changelog] format and adhering to [Semantic Versioning].
   403 as for a user who lacks the rights, so the tool looks up the room type
   only then, and points to `delete_ai_room`, warning that it deletes the room
   permanently ([d03cdea]).
+- Explain in the `delete_ai_room` error that a room which is not found may
+  have been deleted already, such as by a former call whose operation did not
+  finish in time, or that its ID may be wrong.
 
 - Refer to the "My documents" section as "Files" in the `get_my_folder` tool
   descriptions, mentioning the former name, and in the documentation. The tool

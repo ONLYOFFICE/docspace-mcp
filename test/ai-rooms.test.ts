@@ -695,6 +695,29 @@ void test.suite("ai rooms tools", () => {
   })
 
   const accessDenied = {status: 1, statusCode: 403, error: {message: "Access denied", type: "x", stack: "", hresult: 0}}
+  const notFound = {status: 1, statusCode: 404, error: {message: "The required folder was not found", type: "x", stack: "", hresult: 0}}
+
+  void test("explains a missing room before deleting it", async(t) => {
+    const [v, s] = await callTool(t, [
+      {method: "GET", path: "/api/2.0/files/rooms/12", status: 404, body: notFound},
+    ], "delete_ai_room", {roomId: 12})
+
+    assert.ok(v.isError)
+    assert.ok(text(v).includes("404 The required folder was not found"), text(v))
+    assert.ok(text(v).includes("Room 12 was not found. It may have been deleted already"), text(v))
+    assert.deepEqual(s.map((x) => x.method), ["GET"])
+  })
+
+  void test("explains a room that is gone when deleting it", async(t) => {
+    const [v] = await callTool(t, [
+      {method: "GET", path: "/api/2.0/files/rooms/12", status: 200, body: envelope({id: 12, roomType: 12})},
+      {method: "DELETE", path: "/api/2.0/files/rooms/12", status: 404, body: notFound},
+    ], "delete_ai_room", {roomId: 12})
+
+    assert.ok(v.isError)
+    assert.ok(text(v).startsWith("Deleting AI room."), text(v))
+    assert.ok(text(v).includes("Room 12 was not found. It may have been deleted already"), text(v))
+  })
 
   for (const [roomType, name] of [
     [10, "an instructions room"],

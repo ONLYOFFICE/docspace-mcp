@@ -2415,7 +2415,7 @@ export class Server {
 
     const gr = await this.client.files.getRoomInfo(pr.data.roomId)
     if (gr.err) {
-      return fromAiError("Getting room info.", gr.err, {403: aiForbiddenHint})
+      return fromAiError("Getting room info.", gr.err, {403: aiForbiddenHint, 404: deletedRoomHint(pr.data.roomId)})
     }
 
     const [gd] = gr.v
@@ -2428,7 +2428,7 @@ export class Server {
 
     const dr = await this.client.files.deleteRoom(pr.data.roomId, {deleteAfter: false})
     if (dr.err) {
-      return fromAiError("Deleting AI room.", dr.err, {403: aiForbiddenHint})
+      return fromAiError("Deleting AI room.", dr.err, {403: aiForbiddenHint, 404: deletedRoomHint(pr.data.roomId)})
     }
 
     const [dd] = dr.v
@@ -2758,6 +2758,12 @@ function builderErrorHint(err: unknown): string | undefined {
 const aiForbiddenHint = "The portal refused the call. AI may be turned off on the portal, which get_ai_config shows, or the user may lack the rights for the room."
 
 const aiNotFoundHint = "The room was not found, or it is not of the type the tool expects. Find the AI rooms with get_ai_rooms_folder."
+
+// The tool checks the room type before deleting the room, so a 404 means that
+// the room does not exist, such as when a former call has deleted it already.
+function deletedRoomHint(id: number): string {
+  return `Room ${id} was not found. It may have been deleted already, since a deletion is permanent, or the ID may be wrong. Find the AI rooms with get_ai_rooms_folder.`
+}
 
 // The AI service reports no details on most errors, only the status, so the
 // hints explain what the status means for each tool.

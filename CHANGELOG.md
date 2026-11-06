@@ -92,7 +92,7 @@ Changelog] format and adhering to [Semantic Versioning].
   `download_file_as_text`, downloading them through `filehandler.ashx` instead
   of converting them to plain text. The conversion dropped the markup, such as
   the frontmatter of a skill. Documents, spreadsheets, presentations and PDF
-  files are still converted.
+  files are still converted ([ae6616a]).
 
 ## [3.4.0] - 2026-11-02
 
@@ -479,6 +479,7 @@ There are no noticeable changes in version [3.0.1].
 [0.1.1]: https://github.com/onlyoffice/docspace-mcp/compare/v0.1.0...v0.1.1/
 [0.1.0]: https://github.com/onlyoffice/docspace-mcp/releases/tag/v0.1.0/
 
+[ae6616a]: https://github.com/onlyoffice/docspace-mcp/commit/ae6616ab524358476d6b7599608357406708902f/
 [23a7cd6]: https://github.com/onlyoffice/docspace-mcp/commit/23a7cd6b8034dce7420798b07562820a61a11aa4/
 [e37a4e6]: https://github.com/onlyoffice/docspace-mcp/commit/e37a4e65589e8f0eaeb304c34f63b3e1384a6636/
 [7d7f7b6]: https://github.com/onlyoffice/docspace-mcp/commit/7d7f7b63017d992a7d8b4614c1b89599b21bf5ee/

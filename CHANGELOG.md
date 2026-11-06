@@ -26,7 +26,8 @@ Changelog] format and adhering to [Semantic Versioning].
   api.onlyoffice.com and caching it in memory ([8f42745]).
 - Add the `vectorizationStatus` field to the files returned by `get_file_info`
   and the folder listing tools. It reports whether a file in a knowledge room
-  is being vectorized (`0`), vectorized (`1`) or failed to vectorize (`2`).
+  is being vectorized (`0`), vectorized (`1`) or failed to vectorize (`2`)
+  ([41bf399]).
 
 ### Changed
 
@@ -63,7 +64,8 @@ Changelog] format and adhering to [Semantic Versioning].
   ([b7d8883]).
 - Send the room templates search area as `Templates`, the name the portal
   expects, in the `searchArea` filter of `get_rooms_folder` and
-  `get_folder_content`. The portal rejected the former value `Template`.
+  `get_folder_content`. The portal rejected the former value `Template`
+  ([bddbb63]).
 
 ## [3.4.0] - 2026-11-02
 
@@ -450,6 +452,8 @@ There are no noticeable changes in version [3.0.1].
 [0.1.1]: https://github.com/onlyoffice/docspace-mcp/compare/v0.1.0...v0.1.1/
 [0.1.0]: https://github.com/onlyoffice/docspace-mcp/releases/tag/v0.1.0/
 
+[41bf399]: https://github.com/onlyoffice/docspace-mcp/commit/41bf39914f50e39aad1c0d7020e8b03780f2c6ae/
+[bddbb63]: https://github.com/onlyoffice/docspace-mcp/commit/bddbb63aad8ce08e32a58b2baeae91773fb940b1/
 [b7d8883]: https://github.com/onlyoffice/docspace-mcp/commit/b7d88836eeb451a7811ae28979e5b596c57dbd31/
 [5daa233]: https://github.com/onlyoffice/docspace-mcp/commit/5daa233e91eed96575829148e3e1de141381dad2/
 [e4b1fd9]: https://github.com/onlyoffice/docspace-mcp/commit/e4b1fd9e4c287bff61a0e03bac75392c1b2cfe07/

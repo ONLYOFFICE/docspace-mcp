@@ -38,6 +38,9 @@ Changelog] format and adhering to [Semantic Versioning].
   only AI rooms, since a room deletion is permanent and AI rooms cannot be
   archived. When the AI service reports only the status of an error, the tools
   explain what it means ([7d7f7b6]).
+- Add the "Set up an AI project" tutorial, the AI rooms terms to the glossary,
+  a troubleshooting entry for refused AI room tools, and mention AI rooms in
+  the README and the plugin description.
 
 ### Changed
 

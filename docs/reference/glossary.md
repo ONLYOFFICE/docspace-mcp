@@ -39,7 +39,7 @@ MCP Server supports three transports: `stdio`, `sse`, and `streamable-http`.
 ### Tool
 A callable function used in MCP terminology and exposed by an MCP server. When a user prompts the LLM to perform an action, like create a room or fetch a file, it
 invokes a tool by name with a set of parameters. The ONLYOFFICE Apps MCP Server exposes
-[tools organized into toolsets](tools.md#regular-tools) such as `files`, `rooms`, `folders` and `people`.
+[tools organized into toolsets](tools.md#regular-tools) such as `files`, `rooms`, `folders`, `people` and `ai_rooms`.
 
 ### Toolset
 A named group of related tools. Toolsets let you enable or disable a whole
@@ -61,6 +61,31 @@ users. The `DOCSPACE_BASE_URL` environment variable points to your workspace.
 
 ### Room
 A room is a shared space where users work together on files. Rooms have types (e.g. collaboration room, public room), configurable access levels, and their own membership lists. Rooms are distinct from folders as they sit at the top level of the ONLYOFFICE Apps hierarchy.
+
+### AI rooms
+Rooms that give a team an AI assistant, listed in their own **AI rooms** section
+rather than in the **Rooms** section. They require ONLYOFFICE Apps 4.1 or later
+with AI enabled on the portal, and come in three types:
+
+| Type | Description |
+|---|---|
+| Instructions room | Holds skills, Markdown files that tell the assistant how to do a task. |
+| Knowledge room | Holds documents that are vectorized, so the assistant can find answers in them. |
+| AI project | Links instructions and knowledge rooms, sets the chat model, and is shared with the team. |
+
+→ See [How to set up an AI project](../tutorials/setup-ai-project.md)
+
+### Skill
+A Markdown file in an instructions room that tells the AI assistant how to do a
+task. It starts with a YAML frontmatter between two `---` lines with a `name`
+and a `description`; the assistant reads the description to decide when the
+skill applies.
+
+### Vectorization
+The processing of the files in a knowledge room into a form that the AI
+assistant can search by meaning. Each file reports its progress in the
+`vectorizationStatus` field: `0` while in progress, `1` when completed and
+`2` when failed.
 
 ### API key
 A credential generated in ONLYOFFICE Apps Developer Tools. API keys are used to

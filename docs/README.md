@@ -19,6 +19,7 @@ Welcome to the documentation for the ONLYOFFICE Apps MCP Server.
   - [Glossary](./reference/glossary.md)
 - [Tutorials](./tutorials/README.md)
   - [Set up a project room](./tutorials/setup-project-room.md)
+  - [Set up an AI project](./tutorials/setup-ai-project.md)
   - [Onboard a distributed team](./tutorials/onboarding.md)
   - [Manage document lifecycle](./tutorials/doc-lifecycle-management.md)
   - [Archive projects and offboard team members](./tutorials/project-archival.md)

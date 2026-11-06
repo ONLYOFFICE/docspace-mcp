@@ -25,6 +25,7 @@ The ONLYOFFICE Apps MCP Server connects AI tools directly to ONLYOFFICE Apps. Th
 - **Folder & File Operations**: Create folders, upload documents, copy or move items in batches, rename or delete content, and check file or folder details.
 - **Collaboration & Permissions**: Invite or remove users, adjust security settings, and review current access rights for rooms and shared spaces.
 - **Content Access**: Retrieve "Files" or "Rooms" folders, get folder contents, download files as text, and monitor ongoing file operations.
+- **AI Rooms**: Create instructions rooms with skills and knowledge rooms with documents for retrieval, link them to AI projects, choose the chat model, and share projects with the team.
 - **People Directory**: List all people in the workspace to streamline invitations and access management.
 
 ## Connecting Clients to ONLYOFFICE Apps MCP Server

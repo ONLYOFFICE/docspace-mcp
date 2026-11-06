@@ -99,7 +99,7 @@ export class AiService {
   //
 
   /**
-   * The route returns no data.
+   * The route returns the response envelope with a null response.
    *
    * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v4.1.0-server/products/ASC.AI/Server/Api/VectorizationController.cs/#L52 | ONLYOFFICE Apps Reference}
    */

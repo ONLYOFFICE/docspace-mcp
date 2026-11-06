@@ -130,4 +130,4 @@ The AI room tools return a `403` error, or the AI cannot find a room that is vis
 - **Vectorization is turned off:** Knowledge rooms can be created and filled only while `vectorizationEnabled` is `true` in `get_ai_config`. Ask the portal administrator to enable vectorization.
 - **The `ai_rooms` toolset is not enabled:** If `DOCSPACE_TOOLSETS` or the `X-Mcp-Toolsets` header lists toolsets explicitly, add `ai_rooms` to the list.
 - **The AI looks in the wrong section:** AI rooms are not listed by `get_rooms_folder`. Ask the AI to look in the AI rooms section, which it reads with `get_ai_rooms_folder`.
-- **The account lacks rights:** Guests cannot create AI rooms, and changing the linked rooms or the model of an AI project requires the project manager role.
+- **The account lacks rights:** Accounts of the User and Guest types cannot create AI rooms, and changing the linked rooms or the model of an AI project requires the project manager role.

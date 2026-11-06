@@ -37,7 +37,12 @@ Changelog] format and adhering to [Semantic Versioning].
   project, set its chat model and list its skills. `delete_ai_room` deletes
   only AI rooms, since a room deletion is permanent and AI rooms cannot be
   archived. When the AI service reports only the status of an error, the tools
-  explain what it means ([7d7f7b6]).
+  explain what it means ([7d7f7b6]). `retry_vectorization` says that the files
+  already vectorized or being vectorized are skipped, since the portal skips
+  them without an error, and the hints of `retry_vectorization` and
+  `create_ai_room` match the statuses the portal returns: a file that has
+  never been queued for vectorization is refused with 403, not 404, and
+  accounts of both the User and Guest types cannot create AI rooms.
 - Add the "Set up an AI project" tutorial, the AI rooms terms to the glossary,
   a troubleshooting entry for refused AI room tools, and mention AI rooms in
   the README and the plugin description ([e37a4e6]).

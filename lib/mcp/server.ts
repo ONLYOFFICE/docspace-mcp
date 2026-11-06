@@ -1152,7 +1152,7 @@ export const regularToolsets = [
       {
         name: "retry_vectorization",
         title: "Retry Vectorization",
-        description: "Vectorize files of a knowledge room again, such as files whose vectorizationStatus is 2 (failed). Only room managers can do it, and only for files whose security.Vectorization is true. Check the progress with the vectorizationStatus field of get_file_info.",
+        description: "Vectorize files of a knowledge room again, such as files whose vectorizationStatus is 2 (failed). Only room managers can do it, and only for files whose security.Vectorization is true. Files that are already vectorized or being vectorized are skipped without an error. Check the progress with the vectorizationStatus field of get_file_info.",
         inputSchema: RetryVectorizationInputJsonSchema,
         annotations: {
           title: "Retry Vectorization",
@@ -2317,7 +2317,7 @@ export class Server {
     const cr = await this.client.files.createAiRoom(co, pr.data.filters)
     if (cr.err) {
       return fromAiError("Creating AI room.", cr.err, {
-        403: "The portal refused to create the room. A knowledge room can be created only while vectorization is enabled, and no AI room can be created while AI is turned off; get_ai_config shows both. Guests cannot create AI rooms.",
+        403: "The portal refused to create the room. A knowledge room can be created only while vectorization is enabled, and no AI room can be created while AI is turned off; get_ai_config shows both. Accounts of the User and Guest types cannot create AI rooms.",
       })
     }
 
@@ -2497,12 +2497,12 @@ export class Server {
     const sr = await this.client.ai.startVectorization({files: pr.data.fileIds})
     if (sr.err) {
       return fromAiError("Retrying vectorization.", sr.err, {
-        403: "The user may not vectorize one of the files. Only room managers can, only for files whose security.Vectorization is true, and only while vectorization is enabled, which get_ai_config shows.",
-        404: "One of the files does not exist or has never been queued for vectorization. Only the files of knowledge rooms are vectorized.",
+        403: "The user may not vectorize one of the files. Only room managers can, only for files of knowledge rooms that have been queued for vectorization before and whose security.Vectorization is true, and only while vectorization is enabled, which get_ai_config shows.",
+        404: "One of the files does not exist.",
       })
     }
 
-    return fromString("Vectorization started.")
+    return fromString("Vectorization requested. Files that are already vectorized or being vectorized are skipped; check vectorizationStatus with get_file_info.")
   }
 
   private async handleSetAiProjectModel(req: types.CallToolRequest): Promise<types.CallToolResult> {

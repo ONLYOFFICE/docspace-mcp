@@ -760,13 +760,32 @@ void test.suite("ai rooms tools", () => {
     assert.deepEqual(s[0].body, {files: [1, 2]})
   })
 
+  void test("says that vectorized files are skipped", async(t) => {
+    const [v] = await callTool(t, [
+      {method: "POST", path: "/api/2.0/ai/vectorization/tasks", status: 200, body: {response: null, count: 0, status: 0, statusCode: 200}},
+    ], "retry_vectorization", {fileIds: [1]})
+
+    assert.ok(!v.isError, text(v))
+    assert.match(text(v), /already vectorized or being vectorized are skipped/)
+  })
+
   void test("explains a file that was never queued for vectorization", async(t) => {
+    const [v] = await callTool(t, [
+      {method: "POST", path: "/api/2.0/ai/vectorization/tasks", status: 403, body: {error: "Forbidden"}},
+    ], "retry_vectorization", {fileIds: [1]})
+
+    assert.ok(v.isError)
+    assert.match(text(v), /queued for vectorization before/)
+  })
+
+  void test("explains a file that does not exist", async(t) => {
     const [v] = await callTool(t, [
       {method: "POST", path: "/api/2.0/ai/vectorization/tasks", status: 404, body: {error: "Not Found"}},
     ], "retry_vectorization", {fileIds: [1]})
 
     assert.ok(v.isError)
-    assert.match(text(v), /never been queued for vectorization/)
+    assert.match(text(v), /One of the files does not exist./)
+    assert.doesNotMatch(text(v), /queued/)
   })
 
   for (const [roomType, levels] of [[10, [2, 9, 10, 11]], [11, [2, 9, 11]], [12, [2, 9]]] as const) {

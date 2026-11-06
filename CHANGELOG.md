@@ -68,6 +68,9 @@ Changelog] format and adhering to [Semantic Versioning].
 - Refuse an empty title in `create_ai_room` before calling the portal, and
   trim the spaces around the title. The input schema now declares a minimum
   length, so clients can check the title too ([acc7caa]).
+- Return `profileId: null` in `get_ai_project_model` when the project uses the
+  default model of the portal. The portal omits the field instead, so the
+  tool returned an empty object.
 
 - Refer to the "My documents" section as "Files" in the `get_my_folder` tool
   descriptions, mentioning the former name, and in the documentation. The tool

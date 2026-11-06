@@ -574,6 +574,8 @@ const GetAiProjectModelOutputSchema = core.SuccessApiResponseSchema.extend({
 
 const GetAiProjectModelOutputJsonSchema = z.toJSONSchema(GetAiProjectModelOutputSchema)
 
+const ResponseEnvelopeSchema = z.looseObject({})
+
 const GetAiProjectSourcesInputSchema = z.object({
   roomId: z.number().describe(aiProjectIdDescription),
 })
@@ -1110,7 +1112,7 @@ export const regularToolsets = [
       {
         name: "get_ai_project_model",
         title: "Get AI Project Model",
-        description: "Get the chat model of an AI project. A missing or null profileId means that the project uses the default model of the portal.",
+        description: "Get the chat model of an AI project. A null profileId means that the project uses the default model of the portal.",
         inputSchema: GetAiProjectModelInputJsonSchema,
         outputSchema: GetAiProjectModelOutputJsonSchema,
         annotations: {
@@ -2502,9 +2504,23 @@ export class Server {
       return fromAiError("Getting AI project model.", gr.err, {403: aiForbiddenHint, 404: aiNotFoundHint})
     }
 
-    const [, res] = gr.v
+    const [gd, res] = gr.v
 
-    return await fromResponse(res, GetAiProjectModelOutputJsonSchema)
+    const jr = await r.safeAsync(res.response.json.bind(res.response))
+    if (jr.err) {
+      return fromError(new Error("Parsing json response.", {cause: jr.err}))
+    }
+
+    const er = ResponseEnvelopeSchema.safeParse(jr.v)
+    if (!er.success) {
+      return fromError(new Error("Parsing response envelope.", {cause: er.error}))
+    }
+
+    // The portal omits profileId instead of returning null when the project
+    // uses the default model of the portal, so name the default explicitly.
+    const o = {...er.data, response: {...gd, profileId: gd.profileId ?? null}}
+
+    return fromObject(o, GetAiProjectModelOutputJsonSchema)
   }
 
   private async handleGetAiProjectSources(req: types.CallToolRequest): Promise<types.CallToolResult> {

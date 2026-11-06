@@ -827,6 +827,17 @@ void test.suite("ai rooms tools", () => {
     ], "get_ai_project_model", {roomId: 12})
 
     assert.ok(!v.isError, text(v))
+    assert.deepEqual(v.structuredContent, {...(envelope({}) as object), response: {profileId: null}})
+    assert.deepEqual(JSON.parse(text(v)), v.structuredContent)
+  })
+
+  void test("gets an ai project model that is set", async(t) => {
+    const [v] = await callTool(t, [
+      {method: "GET", path: "/api/2.0/files/rooms/12/model", status: 200, body: envelope({profileId})},
+    ], "get_ai_project_model", {roomId: 12})
+
+    assert.ok(!v.isError, text(v))
+    assert.deepEqual(v.structuredContent, envelope({profileId}))
   })
 
   void test("sets an ai project model", async(t) => {

@@ -129,7 +129,7 @@ Changelog] format and adhering to [Semantic Versioning].
   it stopped. The portal sets the error while the operation still runs, such
   as when it refuses one of several files to copy and goes on copying the
   rest, so the tools returned before the copy ended and reported nothing of
-  the files it had copied.
+  the files it had copied ([96e1381]).
 - Do not report the HTTP status 200 in the error of a request that the portal
   refuses in a successful response, such as an upload of a skill without the
   frontmatter. The error takes the status from the response envelope when it
@@ -520,6 +520,7 @@ There are no noticeable changes in version [3.0.1].
 [0.1.1]: https://github.com/onlyoffice/docspace-mcp/compare/v0.1.0...v0.1.1/
 [0.1.0]: https://github.com/onlyoffice/docspace-mcp/releases/tag/v0.1.0/
 
+[96e1381]: https://github.com/onlyoffice/docspace-mcp/commit/96e138104bc162077eb2b25b405c8c515301ee34/
 [c9379bc]: https://github.com/onlyoffice/docspace-mcp/commit/c9379bc97ab9e335507f03c1940c74e6d8b58d98/
 [bafe81f]: https://github.com/onlyoffice/docspace-mcp/commit/bafe81fce765ccdca34a8a7f3a23729c4af2b98c/
 [acc7caa]: https://github.com/onlyoffice/docspace-mcp/commit/acc7caa1d1bb66edafa6892f3d2ab0184bfcd515/

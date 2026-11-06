@@ -472,6 +472,13 @@ export const SessionRequestSchema = z.object({
 })
 
 /**
+ * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v4.1.0-server/products/ASC.Files/Server/ApiModels/RequestDto/CheckUploadRequestDto.cs/#L39 | ONLYOFFICE Apps Reference}
+ */
+export const CheckUploadRequestSchema = z.object({
+  filesTitle: z.array(z.string()),
+})
+
+/**
  * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/products/ASC.Files/Core/ApiModels/RequestDto/UpdateFileRequestDto.cs/#L32 | ONLYOFFICE Apps Reference}
  */
 export const UpdateFileSchema = z.object({

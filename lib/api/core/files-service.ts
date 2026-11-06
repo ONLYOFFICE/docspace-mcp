@@ -11,6 +11,7 @@ import type {
   AiProjectSourcesRequestSchema,
   ArchiveRoomRequestSchema,
   BatchRequestDtoSchema,
+  CheckUploadRequestSchema,
   CreateAiRoomRequestDtoSchema,
   CreateFolderFiltersSchema,
   CreateFolderSchema,
@@ -117,9 +118,11 @@ export type TerminateOperationResponseItem = z.output<typeof FileOperationDtoSch
 export type GetFilesSettingsResponse = z.output<typeof FilesSettingsDtoSchema>
 
 // UploadController: Options
+export type CheckUploadOptions = z.input<typeof CheckUploadRequestSchema>
 export type CreateUploadSessionOptions = z.output<typeof SessionRequestSchema>
 
 // UploadController: Responses
+export type CheckUploadResponse = string[]
 export type CreateUploadSessionResponse = z.output<typeof UploadSessionObjectDataSchema>
 
 // VirtualRoomsController: Options
@@ -845,6 +848,39 @@ export class FilesService {
   //
   // UploadController
   //
+
+  /**
+   * Reports which of the titles already belong to a file in the folder. The
+   * portal matches the titles ignoring case, as an upload does, but does not
+   * replace the characters that a title cannot hold.
+   *
+   * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v4.1.0-server/products/ASC.Files/Server/Api/UploadController.cs/#L439 | ONLYOFFICE Apps Reference}
+   */
+  async checkUpload(id: number, o: CheckUploadOptions): Promise<Result<[CheckUploadResponse, Response], Error>> {
+    const u = this.c.createUrl(`api/2.0/files/${id}/upload/check`)
+    if (u.err) {
+      return error(new Error("Creating URL.", {cause: u.err}))
+    }
+
+    const req = this.c.createRequest("POST", u.v, o)
+    if (req.err) {
+      return error(new Error("Creating request.", {cause: req.err}))
+    }
+
+    const f = await this.c.fetch(req.v)
+    if (f.err) {
+      return error(new Error("Fetching request.", {cause: f.err}))
+    }
+
+    const [p, res] = f.v
+
+    const e = z.array(z.string()).safeParse(p)
+    if (!e.success) {
+      return error(new Error("Parsing response.", {cause: e.error}))
+    }
+
+    return ok([e.data, res])
+  }
 
   /**
    * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v3.0.4-server/products/ASC.Files/Server/Api/UploadController.cs/#L76 | ONLYOFFICE Apps Reference}

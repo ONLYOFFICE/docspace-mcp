@@ -502,14 +502,41 @@ const UploadFileInputSchema = z.object({
   parentId: z.number().describe("The ID of the room or folder to upload the file to."),
   filename: z.string().describe("The file name with an extension to upload."),
   content: z.string().describe("The content of the file to upload."),
-  overwrite: z.boolean().optional().describe("Whether to save the content as a new version of the file with the same name in the room or folder, keeping its ID, such as to change a skill. The former versions stay in the version history. When false or omitted, the file is uploaded as a new file and gets a new name if the name is taken."),
+  overwrite: z.boolean().optional().describe("Whether to save the content as a new version of the file with the same name in the room or folder, keeping its ID, such as to change a skill. The former versions stay in the version history. A file that the user cannot edit, such as a file in a knowledge room, is not overwritten: delete it and upload it again instead. When false or omitted, the file is uploaded as a new file and gets a new name if the name is taken."),
 })
 
 const UploadFileInputJsonSchema = z.toJSONSchema(UploadFileInputSchema, {io: "input"})
 
 const UploadedFileSchema = z.looseObject({
+  id: z.number().optional(),
   title: z.string().optional(),
+  version: z.number().optional(),
 })
+
+const portalTitleMaxLength = 170
+
+/**
+ * Makes the title that the portal stores a file under, the way the portal does
+ * it before an upload: trims the spaces, truncates the title keeping the
+ * extension, and replaces the characters that a title cannot hold. The portal
+ * replaces each half of a surrogate pair, so do not use the u flag.
+ *
+ * {@link https://github.com/ONLYOFFICE/DocSpace-server/blob/v4.1.0-server/products/ASC.Files/Core/Helpers/Global.cs/#L219 | ONLYOFFICE Apps Reference}
+ */
+function portalFileTitle(s: string): string {
+  let t = s.trim()
+
+  if (t.length > portalTitleMaxLength) {
+    const p = t.lastIndexOf(".")
+    if (p > portalTitleMaxLength - 20) {
+      t = t.slice(0, portalTitleMaxLength - (t.length - p)) + t.slice(p)
+    } else {
+      t = t.slice(0, portalTitleMaxLength)
+    }
+  }
+
+  return t.replace(/[\t*+:"<>?|\\/\uD800-\uDFFF]/g, "_")
+}
 
 const aiProjectIdDescription = "The ID of the AI project."
 
@@ -2335,6 +2362,22 @@ export class Server {
 
     const buf = te.encode(pr.data.content)
 
+    // Whether the folder already has a file with this name, which the portal
+    // overwrites when it can. The check does not replace the characters that a
+    // title cannot hold, so pass the name the portal stores the file under.
+    let exists = false
+
+    if (pr.data.overwrite) {
+      const cr = await this.client.files.checkUpload(pr.data.parentId, {filesTitle: [portalFileTitle(pr.data.filename)]})
+      if (cr.err) {
+        return fromError(new Error("Checking upload conflicts.", {cause: cr.err}))
+      }
+
+      const [cd] = cr.v
+
+      exists = cd.length !== 0
+    }
+
     const so: core.CreateUploadSessionOptions = {
       fileName: pr.data.filename,
       fileSize: buf.length,
@@ -2364,15 +2407,17 @@ export class Server {
 
     const rs = await fromResponse(res)
 
-    if (pr.data.overwrite && !rs.isError) {
-      // The portal does not overwrite a file that is locked, open in the editor
-      // or that the user cannot edit, and silently uploads a new file with
-      // another name instead.
+    if (exists && !rs.isError) {
+      // An overwritten file gets a new version, while a new file starts with
+      // the first one. The portal does not overwrite a file that is locked,
+      // open in the editor or that the user cannot edit, such as a file in a
+      // knowledge room, and adds a second file with the same name instead.
       const up = UploadedFileSchema.safeParse(ud)
-      if (up.success && up.data.title !== undefined && up.data.title !== pr.data.filename) {
+      if (up.success && up.data.version === 1) {
+        const id = up.data.id === undefined ? "" : ` (file ${String(up.data.id)})`
         rs.content.push({
           type: "text",
-          text: `The portal did not overwrite ${pr.data.filename} and uploaded a new file named ${up.data.title} instead. The file may be locked, open in the editor, or the user may lack the rights to edit it.`,
+          text: `The portal did not overwrite ${up.data.title ?? pr.data.filename} and added a new file${id} with the same name, so the folder now has two files with this name. The existing file may be locked, open in the editor, or the user may lack the rights to edit it; the files of a knowledge room cannot be edited at all. Delete the new file with delete_file if it is not needed.`,
         })
       }
     }

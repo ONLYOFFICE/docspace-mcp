@@ -107,7 +107,7 @@ Changelog] format and adhering to [Semantic Versioning].
 - Do not report the HTTP status 200 in the error of a request that the portal
   refuses in a successful response, such as an upload of a skill without the
   frontmatter. The error takes the status from the response envelope when it
-  has one, and says that the portal refused the request otherwise.
+  has one, and says that the portal refused the request otherwise ([62635ad]).
 
 ## [3.4.0] - 2026-11-02
 
@@ -494,6 +494,7 @@ There are no noticeable changes in version [3.0.1].
 [0.1.1]: https://github.com/onlyoffice/docspace-mcp/compare/v0.1.0...v0.1.1/
 [0.1.0]: https://github.com/onlyoffice/docspace-mcp/releases/tag/v0.1.0/
 
+[62635ad]: https://github.com/onlyoffice/docspace-mcp/commit/62635adaa31e53f20b8f1774f641c4b6bd2d4bb6/
 [5aab993]: https://github.com/onlyoffice/docspace-mcp/commit/5aab99369d77686d4d88ad6515fb759466cd9cf6/
 [f24155e]: https://github.com/onlyoffice/docspace-mcp/commit/f24155e326cdb56cc414f458b0af2d637a1c49c3/
 [ae6616a]: https://github.com/onlyoffice/docspace-mcp/commit/ae6616ab524358476d6b7599608357406708902f/

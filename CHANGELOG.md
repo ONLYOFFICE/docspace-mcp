@@ -40,7 +40,7 @@ Changelog] format and adhering to [Semantic Versioning].
   than 100 MiB are refused. In the Docker image the tools are available only
   when a host directory is mounted as the uploads directory and its host path
   is passed in the new `DOCSPACE_LOCAL_DIRECTORY_CLIENT` option, under which
-  `prepare_local_upload` returns the file paths.
+  `prepare_local_upload` returns the file paths ([6b23e2e]).
 
 ### Changed
 
@@ -54,7 +54,7 @@ Changelog] format and adhering to [Semantic Versioning].
   and truncate large text, so the response does not exceed client size limits
   ([69cd570]).
 - Send upload chunks as `application/octet-stream` instead of `text/plain`,
-  since they may now carry binary content.
+  since they may now carry binary content ([6b23e2e]).
 
 ### Fixed
 
@@ -460,6 +460,7 @@ There are no noticeable changes in version [3.0.1].
 
 [5daa233]: https://github.com/onlyoffice/docspace-mcp/commit/5daa233e91eed96575829148e3e1de141381dad2/
 [e4b1fd9]: https://github.com/onlyoffice/docspace-mcp/commit/e4b1fd9e4c287bff61a0e03bac75392c1b2cfe07/
+[6b23e2e]: https://github.com/onlyoffice/docspace-mcp/commit/6b23e2e7d3c3ca0b4c21d43ad88e67c47f17c3d9/
 [8f42745]: https://github.com/onlyoffice/docspace-mcp/commit/8f42745b20805e9913727e5e492098367012d19f/
 [cca18f4]: https://github.com/onlyoffice/docspace-mcp/commit/cca18f404ca34909a9af6a2a393607f2e5ee24e6/
 [41ea974]: https://github.com/onlyoffice/docspace-mcp/commit/41ea974dac25f184ac8cd3e7cd79da126f384dac/

@@ -3,6 +3,7 @@
  * @mergeModuleWith config
  */
 
+import path from "node:path"
 import * as z from "zod"
 import * as zod from "../util/zod.ts"
 import * as spec from "./spec.ts"
@@ -128,6 +129,10 @@ export const EnvSchema = z.
       prefault(prefault(spec.fileOperationTimeout.default)).
       transform(zod.envNumber()).
       pipe(z.number().min(0)),
+    [`${envPrefix}${spec.localDirectoryClient.env}`]: z.
+      string().
+      trim().
+      prefault(prefault(spec.localDirectoryClient.default)),
     [`${envPrefix}${spec.serverBaseUrl.env}`]: z.
       string().
       prefault(prefault(spec.serverBaseUrl.default)).
@@ -322,6 +327,9 @@ export const EnvSchema = z.
       interval: o[`${envPrefix}${spec.fileOperationInterval.env}`] as number,
       timeout: o[`${envPrefix}${spec.fileOperationTimeout.env}`] as number,
     },
+    local: {
+      client: o[`${envPrefix}${spec.localDirectoryClient.env}`] as string,
+    },
     proxy: {
       hops: o[`${envPrefix}${spec.proxyHops.env}`] as number,
     },
@@ -432,6 +440,9 @@ export const EnvSchema = z.
         fileOperation: {
           interval: o.fileOperation.interval,
           timeout: o.fileOperation.timeout,
+        },
+        local: {
+          client: "",
         },
         proxy: {
           hops: 0,
@@ -684,6 +695,19 @@ export const EnvSchema = z.
       const i: z.core.$ZodSuperRefineIssue = {
         code: "custom",
         message: "No server base URL",
+      }
+      c.addIssue(i)
+    }
+
+    if (
+      o.mcp.transport === "stdio" &&
+      o.local.client &&
+      !path.posix.isAbsolute(o.local.client) &&
+      !path.win32.isAbsolute(o.local.client)
+    ) {
+      const i: z.core.$ZodSuperRefineIssue = {
+        code: "custom",
+        message: "Local directory client path is not an absolute path",
       }
       c.addIssue(i)
     }

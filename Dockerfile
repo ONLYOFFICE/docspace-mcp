@@ -9,7 +9,7 @@ COPY tsconfig.json tsconfig.json
 RUN \
   npm install --global pnpm@10.11.0 && \
   pnpm install --frozen-lockfile && \
-  pnpm build-app
+  pnpm build-app --distribution oci
 
 FROM node:24.22.2-alpine3.23
 LABEL org.opencontainers.image.authors="Ascensio System SIA <integration@onlyoffice.com>"

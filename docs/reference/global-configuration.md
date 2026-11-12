@@ -338,6 +338,44 @@ The maximum time to wait for a file operation to complete in milliseconds. Set t
 | **Attributes** | trimmable |
 | **Transports** | all |
 
+## Local file options
+
+The `prepare_local_upload` and `upload_local_file` tools upload files of any format, including DOCX, XLSX, PPTX and PDF, which the `upload_file` tool cannot pass as text. They work with the `onlyoffice-apps-mcp/uploads` directory in the temporary directory of the system, for example `C:\Users\me\AppData\Local\Temp\onlyoffice-apps-mcp\uploads` on Windows or `/tmp/onlyoffice-apps-mcp/uploads` on Linux.
+
+Every upload gets a file name of its own, so that conversations that run at the same time, even through one server, never upload each other's files, while the directory stays the same and the AI client has to be given access to it only once:
+
+1. `prepare_local_upload` returns a new file ID and the path to save the file to, which is the directory and the ID as the file name.
+2. The AI saves or copies the file to that path.
+3. `upload_local_file` takes the ID of the room or folder, the file ID and the name to give the file on the portal, uploads the file and removes it from the directory.
+
+Files left by uploads that never happened or failed are removed a day after their last change. The tools refuse links that lead outside the directory and files larger than 100 MiB.
+
+The tools are available only on the `stdio` transport, so a server shared over HTTP never reads local files and does not offer them. To turn the tools off, list them in [`DOCSPACE_DISABLED_TOOLS`](#docspace_disabled_tools).
+
+### DOCSPACE_LOCAL_DIRECTORY_CLIENT
+
+The absolute path, as the AI client sees it, of the host directory mounted into the Docker container as the exchange directory. A server in a container cannot share its own temporary directory with the AI client, so in the Docker image the local file tools are available only when this option is set.
+
+Mount a separate directory for exchanging files at `/tmp/onlyoffice-apps-mcp/uploads` and pass its path on the host in this option:
+
+```sh
+docker run --interactive --rm \
+  --volume "C:\Users\me\Documents\DocSpace:/tmp/onlyoffice-apps-mcp/uploads" \
+  --env DOCSPACE_LOCAL_DIRECTORY_CLIENT="C:\Users\me\Documents\DocSpace" \
+  onlyoffice/docspace-mcp
+```
+
+The `prepare_local_upload` tool returns file paths under this path instead of the paths inside the container. The server removes uploaded files from the mounted directory, so mount a separate directory for exchanging files.
+
+| | |
+|---|---|
+| **Type** | absolute path, Windows or POSIX |
+| **Default** | none, the local file tools are off in the Docker image |
+| **Example** | `C:\Users\me\Documents\DocSpace` |
+| **Attributes** | trimmable |
+| **Transports** | `stdio` |
+| **Distributions** | Docker image |
+
 ## Server options
 
 The following options are used to configure the behavior of the HTTP server.

@@ -18,6 +18,7 @@ import * as errors from "../lib/util/errors.ts"
 import * as utilExpress from "../lib/util/express.ts"
 import * as utilFetch from "../lib/util/fetch.ts"
 import * as utilForwarded from "../lib/util/forwarded.ts"
+import * as utilLocal from "../lib/util/local.ts"
 import * as utilLogger from "../lib/util/logger.ts"
 import * as utilMcp from "../lib/util/mcp.ts"
 import * as r from "../lib/util/result.ts"
@@ -216,6 +217,7 @@ function startStdio(env: z.ZodSafeParseResult<config.Env>): r.Result<Start, Erro
         uploader: new apiExtra.Uploader(c),
         fileOperationCaller: fc,
         officeApiReference: new officeApi.Reference(orc),
+        localDirectory: utilLocal.directoryConfig(meta.distribution, env.data.local.client),
       }
 
       const cs = new mcp.Server(csc)
@@ -571,6 +573,10 @@ function startHttp(env: config.Env, logger: utilLogger.Logger): r.Result<Start, 
       uploader: new apiExtra.Uploader(c),
       fileOperationCaller: fc,
       officeApiReference: or,
+      localDirectory: {
+        path: "",
+        client: "",
+      },
     }
 
     const cs = new mcp.Server(csc)

@@ -381,6 +381,20 @@ export const fileOperationTimeout: Item = {
   header: "",
 }
 
+export const localDirectoryClient: Item = {
+  title: "Local Directory Client Path",
+  description: "The absolute path, as the AI client sees it, of the host directory mounted into the container at /tmp/onlyoffice-apps-mcp/uploads. The prepare_local_upload and upload_local_file tools are available in the container only when it is set. Each uploaded file is removed from the directory once it is uploaded.",
+  distributions: ["oci"],
+  transports: ["stdio"],
+  type: "string",
+  choices: [],
+  default: "",
+  sensitive: false,
+  env: "LOCAL_DIRECTORY_CLIENT",
+  query: "",
+  header: "",
+}
+
 export const serverBaseUrl: Item = {
   title: "Server Base URL",
   description: "The base URL of the server.",

@@ -36,7 +36,7 @@ export class Uploader {
       const s = i * maxChunkSize
       const e = (i + 1) * maxChunkSize
       const c = buf.slice(s, e)
-      const b = new Blob([c], {type: "text/plain"})
+      const b = new Blob([c], {type: "application/octet-stream"})
 
       const cr = await this.client.files.uploadChunk(id, b)
       if (cr.err) {

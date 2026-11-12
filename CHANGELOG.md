@@ -24,6 +24,23 @@ Changelog] format and adhering to [Semantic Versioning].
   classes, methods and enumerations of the Office JavaScript API that
   `run_builder_script` scripts are written against, reading the reference from
   api.onlyoffice.com and caching it in memory ([8f42745]).
+- Add the `prepare_local_upload` and `upload_local_file` tools to the `files`
+  toolset. They upload a file of any format, including binary, from the
+  computer the server runs on through a chunked upload session, so files no
+  longer have to pass through the model as text. The tools are available only
+  on the stdio transport. `prepare_local_upload` returns a new file ID and
+  the path to save the file to in `onlyoffice-apps-mcp/uploads` in the
+  temporary directory of the system, with the ID as the file name, so
+  conversations that run at the same time never upload each other's files,
+  and the AI client is given access to one directory only once.
+  `upload_local_file` takes the folder ID, the file ID and the name to give
+  the file, like `upload_file` takes the folder ID and the file name, and
+  removes the local file once it is uploaded. Files of abandoned uploads are
+  removed after a day. Links that lead outside the directory and files larger
+  than 100 MiB are refused. In the Docker image the tools are available only
+  when a host directory is mounted as the uploads directory and its host path
+  is passed in the new `DOCSPACE_LOCAL_DIRECTORY_CLIENT` option, under which
+  `prepare_local_upload` returns the file paths.
 
 ### Changed
 
@@ -36,6 +53,8 @@ Changelog] format and adhering to [Semantic Versioning].
 - Add the `offset` and `limit` parameters to the `download_file_as_text` tool
   and truncate large text, so the response does not exceed client size limits
   ([69cd570]).
+- Send upload chunks as `application/octet-stream` instead of `text/plain`,
+  since they may now carry binary content.
 
 ### Fixed
 

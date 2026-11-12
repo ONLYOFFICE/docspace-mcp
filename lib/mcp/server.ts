@@ -11,6 +11,7 @@ import * as core from "../api/core.ts"
 import type * as apiExtra from "../api/extra.ts"
 import * as officeApi from "../office-api.ts"
 import * as errors from "../util/errors.ts"
+import * as utilLocal from "../util/local.ts"
 import type * as mcp from "../util/mcp.ts"
 import * as r from "../util/result.ts"
 import {unionToEnum} from "../util/zod.ts"
@@ -483,6 +484,25 @@ const UploadFileInputSchema = z.object({
 
 const UploadFileInputJsonSchema = z.toJSONSchema(UploadFileInputSchema, {io: "input"})
 
+const PrepareLocalUploadInputSchema = z.object({})
+
+const PrepareLocalUploadInputJsonSchema = z.toJSONSchema(PrepareLocalUploadInputSchema, {io: "input"})
+
+const PrepareLocalUploadOutputSchema = z.object({
+  fileId: z.string().describe("The ID to pass to upload_local_file."),
+  path: z.string().describe("The absolute path to save the file to, exactly as it is, without adding an extension."),
+})
+
+const PrepareLocalUploadOutputJsonSchema = z.toJSONSchema(PrepareLocalUploadOutputSchema)
+
+const UploadLocalFileInputSchema = z.object({
+  parentId: z.number().describe("The ID of the room or folder to upload the file to."),
+  fileId: z.string().describe("The file ID returned by prepare_local_upload. The file must be saved to the path returned with it first."),
+  filename: z.string().min(1).describe("The file name with an extension to give the uploaded file."),
+})
+
+const UploadLocalFileInputJsonSchema = z.toJSONSchema(UploadLocalFileInputSchema, {io: "input"})
+
 // todo: remove export
 export const metaTools = [
   {
@@ -634,6 +654,31 @@ export const regularToolsets = [
         inputSchema: UploadFileInputJsonSchema,
         annotations: {
           title: "Upload File",
+          readOnlyHint: false,
+          destructiveHint: false,
+          openWorldHint: false,
+        },
+      },
+      {
+        name: "prepare_local_upload",
+        title: "Prepare Local Upload",
+        description: "Reserve a local file path for one upload_local_file call. Save the file to the returned path exactly as it is, without adding an extension, then pass the returned fileId and the file name to upload_local_file. Call it before every upload: each path is used once. All paths are in the same directory.",
+        inputSchema: PrepareLocalUploadInputJsonSchema,
+        outputSchema: PrepareLocalUploadOutputJsonSchema,
+        annotations: {
+          title: "Prepare Local Upload",
+          readOnlyHint: false,
+          destructiveHint: false,
+          openWorldHint: false,
+        },
+      },
+      {
+        name: "upload_local_file",
+        title: "Upload Local File",
+        description: "Upload a file of any format, including binary, saved to the path that prepare_local_upload returned, under the given file name. The local file is removed once it is uploaded.",
+        inputSchema: UploadLocalFileInputJsonSchema,
+        annotations: {
+          title: "Upload Local File",
           readOnlyHint: false,
           destructiveHint: false,
           openWorldHint: false,
@@ -910,6 +955,7 @@ export type ServerConfig = {
   uploader: apiExtra.Uploader
   fileOperationCaller: apiExtra.FileOperationCaller
   officeApiReference: officeApi.Reference
+  localDirectory: utilLocal.LocalDirectoryConfig
 }
 
 export type ServerElicitation = {
@@ -953,12 +999,14 @@ export class Server {
     get_room_types: this.handleGetRoomTypes.bind(this),
     get_rooms_folder: this.handleGetRoomsFolder.bind(this),
     move_batch_items: this.handleMoveBatchItems.bind(this),
+    prepare_local_upload: this.handlePrepareLocalUpload.bind(this),
     rename_folder: this.handleRenameFolder.bind(this),
     run_builder_script: this.handleRunBuilderScript.bind(this),
     set_room_security: this.handleSetRoomSecurity.bind(this),
     update_file: this.handleUpdateFile.bind(this),
     update_room: this.handleUpdateRoom.bind(this),
     upload_file: this.handleUploadFile.bind(this),
+    upload_local_file: this.handleUploadLocalFile.bind(this),
   }
 
   private dynamic: boolean
@@ -971,6 +1019,7 @@ export class Server {
   private uploader: apiExtra.Uploader
   private fileOperationCaller: apiExtra.FileOperationCaller
   private officeApiReference: officeApi.Reference
+  private localDirectory: utilLocal.LocalDirectory
 
   constructor(config: ServerConfig) {
     this.dynamic = config.dynamic
@@ -983,6 +1032,10 @@ export class Server {
       }
 
       for (const a of x.tools) {
+        if (!config.localDirectory.path && localTools.includes(a.name)) {
+          continue
+        }
+
         for (const b of config.tools) {
           if (a.name === b) {
             y.tools.push(a)
@@ -1018,6 +1071,7 @@ export class Server {
     this.uploader = config.uploader
     this.fileOperationCaller = config.fileOperationCaller
     this.officeApiReference = config.officeApiReference
+    this.localDirectory = new utilLocal.LocalDirectory(config.localDirectory)
   }
 
   router(): mcp.Router {
@@ -1981,7 +2035,81 @@ export class Server {
 
     return await fromResponse(res)
   }
+
+  private async handlePrepareLocalUpload(req: types.CallToolRequest): Promise<types.CallToolResult> {
+    const pr = PrepareLocalUploadInputSchema.safeParse(req.params.arguments ?? {})
+    if (!pr.success) {
+      return fromError(new Error("Parsing input.", {cause: pr.error}))
+    }
+
+    const cr = await this.localDirectory.create()
+    if (cr.err) {
+      return fromError(new Error("Preparing local upload.", {cause: cr.err}))
+    }
+
+    return fromObject(cr.v, PrepareLocalUploadOutputJsonSchema)
+  }
+
+  private async handleUploadLocalFile(req: types.CallToolRequest): Promise<types.CallToolResult> {
+    const pr = UploadLocalFileInputSchema.safeParse(req.params.arguments)
+    if (!pr.success) {
+      return fromError(new Error("Parsing input.", {cause: pr.error}))
+    }
+
+    const fp = path.parse(pr.data.filename)
+
+    if (!fp.ext) {
+      return fromError(new Error("File extension is missing in the filename."))
+    }
+
+    const fr = await this.localDirectory.read(pr.data.fileId)
+    if (fr.err) {
+      return fromError(new Error("Reading local file.", {cause: fr.err}))
+    }
+
+    const so: core.CreateUploadSessionOptions = {
+      fileName: pr.data.filename,
+      fileSize: fr.v.data.length,
+      createOn: new Date().toISOString(),
+      createNewIfExist: true,
+    }
+
+    const sr = await this.client.files.createUploadSession(pr.data.parentId, so)
+    if (sr.err) {
+      return fromError(new Error("Creating upload session.", {cause: sr.err}))
+    }
+
+    const [sd] = sr.v
+
+    if (sd.id === undefined) {
+      return fromError(new Error("Upload session ID is not defined."))
+    }
+
+    const ur = await this.uploader.upload(sd.id, fr.v.data)
+    if (ur.err) {
+      return fromError(new Error("Uploading file.", {cause: ur.err}))
+    }
+
+    const [, res] = ur.v
+
+    const c = await fromResponse(res)
+
+    if (!c.isError) {
+      const rr = await this.localDirectory.remove(fr.v)
+      if (rr.err) {
+        const t: types.TextContent = {
+          type: "text",
+          text: `The file was uploaded, but removing the local file failed: ${errors.format(rr.err)}`,
+        }
+        c.content.push(t)
+      }
+    }
+
+    return c
+  }
 }
+
+const localTools: string[] = ["prepare_local_upload", "upload_local_file"]
 
 export class ErroredServer {
   private err: Error

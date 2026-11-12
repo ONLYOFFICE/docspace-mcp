@@ -268,7 +268,7 @@ function createNpxConfig(e: ConfigEnv): Config {
 }
 
 const toolsetNotes: Record<string, string> = {
-  files: "> **Note:** Supported file formats for uploading: `txt`, `md`.",
+  files: "> **Note:** The `upload_file` tool supports only text formats, such as `txt` and `md`. The `upload_local_file` tool uploads files of any format, including binary, through a local exchange directory and is available only on the stdio transport.",
 }
 
 function createToolsetsTable(toolsets: utilMcp.Toolset[]): string {

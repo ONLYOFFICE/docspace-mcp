@@ -3,10 +3,12 @@
  */
 
 import assert from "node:assert/strict"
+import childProcess from "node:child_process"
 import fs from "node:fs/promises"
 import os from "node:os"
 import path from "node:path"
 import test from "node:test"
+import util from "node:util"
 import type * as types from "@modelcontextprotocol/sdk/types.js"
 import * as utilLocal from "../lib/util/local.ts"
 import * as r from "../lib/util/result.ts"
@@ -16,6 +18,8 @@ import {onRequest, readHttpData, sendJson, setupHttp, setupMcp} from "./util.ts"
 // Bytes that are not valid UTF-8, so that a text round trip would corrupt
 // them.
 const binary = new Uint8Array([0x50, 0x4b, 0x03, 0x04, 0x00, 0xff, 0xfe, 0x80, 0xc3, 0x28])
+
+const execFile = util.promisify(childProcess.execFile)
 
 const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/
 
@@ -179,6 +183,27 @@ void test.suite("local directory", () => {
     const fr = await ld.read(u.fileId)
     assert.ok(fr.err !== undefined)
     assert.match(fr.err.message, /hard links/)
+  })
+
+  void test("refuses a FIFO without waiting for a writer", {timeout: 5000}, async(t) => {
+    const [, d] = await setupDirs(t)
+
+    const ld = new utilLocal.LocalDirectory({path: d, client: ""})
+
+    const u = await createUpload(ld)
+
+    // Git for Windows ships an mkfifo that emulates FIFOs with ordinary files.
+    const m = process.platform === "win32" ?
+      r.error(new Error("FIFOs are not available.")) :
+      await r.safeAsync(() => execFile("mkfifo", [u.path]))
+    if (m.err) {
+      t.skip("FIFOs are not available")
+      return
+    }
+
+    const fr = await ld.read(u.fileId)
+    assert.ok(fr.err !== undefined)
+    assert.match(fr.err.message, /not a file/)
   })
 
   void test("refuses a directory as a file", async(t) => {

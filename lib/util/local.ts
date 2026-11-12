@@ -103,8 +103,11 @@ export class LocalDirectory {
     // The file can be replaced with a link after the check above, so it is
     // opened without following links and then read only through the handle.
     // Windows has no O_NOFOLLOW, but creating links there needs elevated
-    // privileges or the developer mode.
-    const fl = fs.constants.O_RDONLY | (fs.constants.O_NOFOLLOW ?? 0)
+    // privileges or the developer mode. O_NONBLOCK keeps opening a FIFO from
+    // waiting for a writer, so it is refused as not a file instead.
+    const fl = fs.constants.O_RDONLY |
+      (fs.constants.O_NOFOLLOW ?? 0) |
+      (fs.constants.O_NONBLOCK ?? 0)
 
     const hr = await r.safeAsync(() => fs.open(tr.v, fl))
     if (hr.err) {

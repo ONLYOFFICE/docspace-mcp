@@ -100,30 +100,37 @@ export class LocalDirectory {
       return r.error(new Error("The file leads outside the local directory."))
     }
 
-    const sr = await r.safeAsync(() => fs.stat(tr.v))
-    if (sr.err) {
-      return r.error(new Error("Reading file information.", {cause: sr.err}))
+    // The file can be replaced with a link after the check above, so it is
+    // opened without following links and then read only through the handle.
+    // Windows has no O_NOFOLLOW, but creating links there needs elevated
+    // privileges or the developer mode.
+    const fl = fs.constants.O_RDONLY | (fs.constants.O_NOFOLLOW ?? 0)
+
+    const hr = await r.safeAsync(() => fs.open(tr.v, fl))
+    if (hr.err) {
+      if (isLinkError(hr.err)) {
+        return r.error(new Error("The file leads outside the local directory."))
+      }
+      return r.error(new Error("Opening file.", {cause: hr.err}))
     }
 
-    if (!sr.v.isFile()) {
-      return r.error(new Error("The path is not a file."))
-    }
+    const h = hr.v
 
-    if (sr.v.size > maxFileSize) {
-      return r.error(new Error(`The file is ${sr.v.size} bytes, larger than the limit of ${maxFileSize} bytes.`))
-    }
+    try {
+      const dr = await readHandle(h)
+      if (dr.err) {
+        return r.error(dr.err)
+      }
 
-    const fr = await r.safeAsync(() => fs.readFile(tr.v))
-    if (fr.err) {
-      return r.error(new Error("Reading file.", {cause: fr.err}))
-    }
+      const f: LocalFile = {
+        path: tr.v,
+        data: dr.v,
+      }
 
-    const f: LocalFile = {
-      path: tr.v,
-      data: new Uint8Array(fr.v.buffer, fr.v.byteOffset, fr.v.byteLength),
+      return r.ok(f)
+    } finally {
+      await r.safeAsync(() => h.close())
     }
-
-    return r.ok(f)
   }
 
   async remove(f: LocalFile): Promise<r.Result<void, Error>> {
@@ -186,6 +193,59 @@ export class LocalDirectory {
 
     return `${this.client.replace(/[\\/]+$/, "")}${s}${id}`
   }
+}
+
+async function readHandle(h: fs.FileHandle): Promise<r.Result<Uint8Array, Error>> {
+  const sr = await r.safeAsync(() => h.stat())
+  if (sr.err) {
+    return r.error(new Error("Reading file information.", {cause: sr.err}))
+  }
+
+  const s = sr.v
+
+  if (!s.isFile()) {
+    return r.error(new Error("The path is not a file."))
+  }
+
+  // A hard link passes the path check, yet it may be the same file as one
+  // outside the directory.
+  if (s.nlink > 1) {
+    return r.error(new Error("The file has hard links that may lead outside the local directory."))
+  }
+
+  if (s.size > maxFileSize) {
+    return r.error(new Error(`The file is ${s.size} bytes, larger than the limit of ${maxFileSize} bytes.`))
+  }
+
+  // One byte more than the size shows that the file grew after the check.
+  const b = new Uint8Array(s.size + 1)
+  let n = 0
+
+  while (n < b.byteLength) {
+    const rr = await r.safeAsync(() => h.read(b, n, b.byteLength - n, n))
+    if (rr.err) {
+      return r.error(new Error("Reading file.", {cause: rr.err}))
+    }
+
+    if (rr.v.bytesRead === 0) {
+      break
+    }
+
+    n += rr.v.bytesRead
+  }
+
+  if (n !== s.size) {
+    return r.error(new Error("The file changed while it was read."))
+  }
+
+  return r.ok(b.subarray(0, n))
+}
+
+function isLinkError(err: Error): boolean {
+  // Linux reports ELOOP for a link opened with O_NOFOLLOW, FreeBSD reports
+  // EMLINK.
+  const c = (err as NodeJS.ErrnoException).code
+  return c === "ELOOP" || c === "EMLINK"
 }
 
 function isWindowsPath(p: string): boolean {

@@ -36,8 +36,9 @@ Changelog] format and adhering to [Semantic Versioning].
   `upload_local_file` takes the folder ID, the file ID and the name to give
   the file, like `upload_file` takes the folder ID and the file name, and
   removes the local file once it is uploaded. Files of abandoned uploads are
-  removed after a day. Links that lead outside the directory and files larger
-  than 100 MiB are refused. In the Docker image the tools are available only
+  removed after a day. Symbolic links that lead outside the directory, hard
+  links and files larger than 100 MiB are refused, even when the file is
+  replaced with a link after the check. In the Docker image the tools are available only
   when a host directory is mounted as the uploads directory and its host path
   is passed in the new `DOCSPACE_LOCAL_DIRECTORY_CLIENT` option, under which
   `prepare_local_upload` returns the file paths ([6b23e2e]).

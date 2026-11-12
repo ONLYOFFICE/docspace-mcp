@@ -163,6 +163,24 @@ void test.suite("local directory", () => {
     assert.match(fr.err.message, /outside the local directory/)
   })
 
+  void test("refuses hard links to files outside the directory", async(t) => {
+    const [, d, o] = await setupDirs(t)
+
+    const ld = new utilLocal.LocalDirectory({path: d, client: ""})
+
+    const u = await createUpload(ld)
+
+    const l = await r.safeAsync(() => fs.link(path.join(o, "secret.txt"), u.path))
+    if (l.err) {
+      t.skip("hard links are not available")
+      return
+    }
+
+    const fr = await ld.read(u.fileId)
+    assert.ok(fr.err !== undefined)
+    assert.match(fr.err.message, /hard links/)
+  })
+
   void test("refuses a directory as a file", async(t) => {
     const [, d] = await setupDirs(t)
 

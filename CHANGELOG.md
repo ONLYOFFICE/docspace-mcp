@@ -8,7 +8,7 @@ Changelog] format and adhering to [Semantic Versioning].
 ### Changed
 
 - Clarify the descriptions of the `update_room` and `update_file` tools, which
-  only rename the item.
+  only rename the item ([07a4fa8]).
 
 ## [3.4.0] - 2026-11-02
 
@@ -395,6 +395,7 @@ There are no noticeable changes in version [3.0.1].
 [0.1.1]: https://github.com/onlyoffice/docspace-mcp/compare/v0.1.0...v0.1.1/
 [0.1.0]: https://github.com/onlyoffice/docspace-mcp/releases/tag/v0.1.0/
 
+[07a4fa8]: https://github.com/onlyoffice/docspace-mcp/commit/07a4fa87d0124a904bc7729556a21d637822517b/
 [b85f489]: https://github.com/onlyoffice/docspace-mcp/commit/b85f489d4c57751046816c5d43e430a5a2146542/
 [2957e91]: https://github.com/onlyoffice/docspace-mcp/commit/2957e91658789c52b04f60eee0de04feeaa9e69d/
 [f8f48ee]: https://github.com/onlyoffice/docspace-mcp/commit/f8f48ee08ff4c0a31c7c4856aec5f2db6d1985fa/

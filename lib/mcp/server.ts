@@ -491,7 +491,7 @@ export const regularToolsets = [
       {
         name: "update_file",
         title: "Update File",
-        description: "Update a file.",
+        description: "Rename a file by setting a new title. The file content is not changed.",
         inputSchema: UpdateFileInputJsonSchema,
         outputSchema: UpdateFileOutputJsonSchema,
         annotations: {
@@ -667,7 +667,7 @@ export const regularToolsets = [
       {
         name: "update_room",
         title: "Update Room",
-        description: "Update a room.",
+        description: "Rename a room by setting a new title. Only the title can be changed; use set_room_security to change access rights and archive_room to archive the room.",
         inputSchema: UpdateRoomInputJsonSchema,
         outputSchema: UpdateRoomOutputJsonSchema,
         annotations: {

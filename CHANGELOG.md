@@ -3,6 +3,13 @@
 This document records all notable changes to the project, following the [Keep a
 Changelog] format and adhering to [Semantic Versioning].
 
+## [Unreleased]
+
+### Changed
+
+- Clarify the descriptions of the `update_room` and `update_file` tools, which
+  only rename the item.
+
 ## [3.4.0] - 2026-11-02
 
 ### Added

@@ -28,15 +28,15 @@ ONLYOFFICE Apps operation.
 
 ### Files toolset
 
-| #   | Tool Name               | Tool Description         |
-| --- | ----------------------- | ------------------------ |
-| 1   | `copy_batch_items`      | Copy to a folder.        |
-| 2   | `delete_file`           | Delete a file.           |
-| 3   | `download_file_as_text` | Download a file as text. |
-| 4   | `get_file_info`         | Get file information.    |
-| 5   | `move_batch_items`      | Move to a folder.        |
-| 6   | `update_file`           | Update a file.           |
-| 7   | `upload_file`           | Upload a file.           |
+| #   | Tool Name               | Tool Description                                                       |
+| --- | ----------------------- | ---------------------------------------------------------------------- |
+| 1   | `copy_batch_items`      | Copy to a folder.                                                      |
+| 2   | `delete_file`           | Delete a file.                                                         |
+| 3   | `download_file_as_text` | Download a file as text.                                               |
+| 4   | `get_file_info`         | Get file information.                                                  |
+| 5   | `move_batch_items`      | Move to a folder.                                                      |
+| 6   | `update_file`           | Rename a file by setting a new title. The file content is not changed. |
+| 7   | `upload_file`           | Upload a file.                                                         |
 
 > **Note:** Supported file formats for uploading: `txt`, `md`.
 
@@ -59,17 +59,17 @@ ONLYOFFICE Apps operation.
 
 ### Rooms toolset
 
-| #   | Tool Name                | Tool Description                                        |
-| --- | ------------------------ | ------------------------------------------------------- |
-| 15  | `archive_room`           | Archive a room.                                         |
-| 16  | `create_room`            | Create a room.                                          |
-| 17  | `get_room_access_levels` | Get a list of available room invitation access levels.  |
-| 18  | `get_room_info`          | Get room information.                                   |
-| 19  | `get_room_security_info` | Get a list of users with their access levels to a room. |
-| 20  | `get_room_types`         | Get a list of available room types.                     |
-| 21  | `get_rooms_folder`       | Get the 'Rooms' folder.                                 |
-| 22  | `set_room_security`      | Invite or remove users from a room.                     |
-| 23  | `update_room`            | Update a room.                                          |
+| #   | Tool Name                | Tool Description                                                                                                                                         |
+| --- | ------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 15  | `archive_room`           | Archive a room.                                                                                                                                          |
+| 16  | `create_room`            | Create a room.                                                                                                                                           |
+| 17  | `get_room_access_levels` | Get a list of available room invitation access levels.                                                                                                   |
+| 18  | `get_room_info`          | Get room information.                                                                                                                                    |
+| 19  | `get_room_security_info` | Get a list of users with their access levels to a room.                                                                                                  |
+| 20  | `get_room_types`         | Get a list of available room types.                                                                                                                      |
+| 21  | `get_rooms_folder`       | Get the 'Rooms' folder.                                                                                                                                  |
+| 22  | `set_room_security`      | Invite or remove users from a room.                                                                                                                      |
+| 23  | `update_room`            | Rename a room by setting a new title. Only the title can be changed; use set_room_security to change access rights and archive_room to archive the room. |
 
 <!--generate tools-end-->
 

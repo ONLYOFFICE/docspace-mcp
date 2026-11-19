@@ -55,7 +55,7 @@ ONLYOFFICE Apps operation.
 | 17  | `get_office_api_reference` | Look up the Office JavaScript API that run_builder_script scripts are written against. Use it before every run_builder_script call to check the methods the script uses, since the API changes between versions and remembered signatures may be outdated. Without class and query, returns an overview of the editor API with the list of its classes and enumerations; with query, finds classes, methods and enumerations; with class, returns the methods of a class or the values of an enumeration; with class and method, returns the syntax, parameters and an example of a method. The reference is read from api.onlyoffice.com. |
 | 18  | `move_batch_items`         | Move to a folder.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
 | 19  | `run_builder_script`       | Run an ONLYOFFICE Document Builder script to create or edit documents, spreadsheets, presentations or PDFs, and wait for it to finish. The Office JavaScript API changes between versions (since 9.4.0, for example, Api.CreateTable takes rows before columns), so do not write the script from memory: look up every class and method it uses with the get_office_api_reference tool first. Returns the saved files in the files field; a file may get a different title than the name passed to builder.SaveFile when the folder already has a file with that name.                                                                     |
-| 20  | `update_file`              | Update a file.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| 20  | `update_file`              | Rename a file by setting a new title. The file content is not changed.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | 21  | `upload_file`              | Upload a file. To change the content of a file, such as a skill, upload it with the same name and overwrite set to true.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 
 > **Note:** Supported file formats for uploading: `txt`, `md`.
@@ -79,17 +79,17 @@ ONLYOFFICE Apps operation.
 
 ### Rooms toolset
 
-| #   | Tool Name                | Tool Description                                                              |
-| --- | ------------------------ | ----------------------------------------------------------------------------- |
-| 29  | `archive_room`           | Archive a room. AI rooms cannot be archived; delete them with delete_ai_room. |
-| 30  | `create_room`            | Create a room.                                                                |
-| 31  | `get_room_access_levels` | Get a list of available room invitation access levels.                        |
-| 32  | `get_room_info`          | Get room information.                                                         |
-| 33  | `get_room_security_info` | Get a list of users with their access levels to a room.                       |
-| 34  | `get_room_types`         | Get a list of available room types.                                           |
-| 35  | `get_rooms_folder`       | Get the 'Rooms' folder.                                                       |
-| 36  | `set_room_security`      | Invite or remove users from a room.                                           |
-| 37  | `update_room`            | Update a room.                                                                |
+| #   | Tool Name                | Tool Description                                                                                                                                         |
+| --- | ------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 29  | `archive_room`           | Archive a room. AI rooms cannot be archived; delete them with delete_ai_room.                                                                            |
+| 30  | `create_room`            | Create a room.                                                                                                                                           |
+| 31  | `get_room_access_levels` | Get a list of available room invitation access levels.                                                                                                   |
+| 32  | `get_room_info`          | Get room information.                                                                                                                                    |
+| 33  | `get_room_security_info` | Get a list of users with their access levels to a room.                                                                                                  |
+| 34  | `get_room_types`         | Get a list of available room types.                                                                                                                      |
+| 35  | `get_rooms_folder`       | Get the 'Rooms' folder.                                                                                                                                  |
+| 36  | `set_room_security`      | Invite or remove users from a room.                                                                                                                      |
+| 37  | `update_room`            | Rename a room by setting a new title. Only the title can be changed; use set_room_security to change access rights and archive_room to archive the room. |
 
 <!--generate tools-end-->
 

@@ -135,6 +135,13 @@ Changelog] format and adhering to [Semantic Versioning].
   frontmatter. The error takes the status from the response envelope when it
   has one, and says that the portal refused the request otherwise ([62635ad]).
 
+## [3.4.1] - 2026-11-19
+
+### Changed
+
+- Clarify the descriptions of the `update_room` and `update_file` tools, which
+  only rename the item ([07a4fa8]).
+
 ## [3.4.0] - 2026-11-02
 
 ### Added
@@ -500,7 +507,8 @@ There are no noticeable changes in version [3.0.1].
 [Keep a Changelog]: https://keepachangelog.com/en/1.1.0/
 [Semantic Versioning]: https://semver.org/spec/v2.0.0.html
 
-[Unreleased]: https://github.com/onlyoffice/docspace-mcp/compare/v3.4.0...HEAD/
+[Unreleased]: https://github.com/onlyoffice/docspace-mcp/compare/v3.4.1...HEAD/
+[3.4.1]: https://github.com/onlyoffice/docspace-mcp/compare/v3.4.0...v3.4.1/
 [3.4.0]: https://github.com/onlyoffice/docspace-mcp/compare/v3.3.1...v3.4.0/
 [3.3.1]: https://github.com/onlyoffice/docspace-mcp/compare/v3.3.0...v3.3.1/
 [3.3.0]: https://github.com/onlyoffice/docspace-mcp/compare/v3.2.0...v3.3.0/
@@ -552,6 +560,7 @@ There are no noticeable changes in version [3.0.1].
 [a1cdc95]: https://github.com/onlyoffice/docspace-mcp/commit/a1cdc957e4b82dcf2f38df38c7ff8e02e6bd1ca5/
 [084ab40]: https://github.com/onlyoffice/docspace-mcp/commit/084ab400bdd570002abb4dc6f03d1e33c6601ad9/
 [7444a56]: https://github.com/onlyoffice/docspace-mcp/commit/7444a56c8cc5b2d0693ab9f828425d731a71376a/
+[07a4fa8]: https://github.com/onlyoffice/docspace-mcp/commit/07a4fa87d0124a904bc7729556a21d637822517b/
 [b85f489]: https://github.com/onlyoffice/docspace-mcp/commit/b85f489d4c57751046816c5d43e430a5a2146542/
 [2957e91]: https://github.com/onlyoffice/docspace-mcp/commit/2957e91658789c52b04f60eee0de04feeaa9e69d/
 [f8f48ee]: https://github.com/onlyoffice/docspace-mcp/commit/f8f48ee08ff4c0a31c7c4856aec5f2db6d1985fa/

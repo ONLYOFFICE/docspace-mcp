@@ -1,7 +1,8 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-10-17/server.schema.json",
   "name": "io.github.ONLYOFFICE/docspace",
-  "description": "A room-based collaborative platform",
+  "title": "ONLYOFFICE Apps",
+  "description": "Manage rooms, folders, files, and people in ONLYOFFICE Apps.",
   "status": "active",
   "repository": {
     "url": "https://github.com/ONLYOFFICE/docspace-mcp",
@@ -9,7 +10,7 @@
     "id": "962498237"
   },
   "version": "",
-  "websiteUrl": "https://ONLYOFFICE.github.io/",
+  "websiteUrl": "https://www.onlyoffice.com/",
   "packages": [
     {
       "registryType": "mcpb",

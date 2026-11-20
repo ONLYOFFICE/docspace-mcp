@@ -36,6 +36,11 @@ Changelog] format and adhering to [Semantic Versioning].
 - Add the `offset` and `limit` parameters to the `download_file_as_text` tool
   and truncate large text, so the response does not exceed client size limits
   ([69cd570]).
+- Add the "ONLYOFFICE Apps" title to the MCP Registry entry, so the registry
+  shows the server under the product name rather than its
+  `io.github.ONLYOFFICE/docspace` identifier, which remains unchanged. The
+  entry and the MCP bundle now share the plugin description, and the entry
+  links to the ONLYOFFICE website.
 
 ### Fixed
 

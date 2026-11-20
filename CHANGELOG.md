@@ -40,7 +40,7 @@ Changelog] format and adhering to [Semantic Versioning].
   shows the server under the product name rather than its
   `io.github.ONLYOFFICE/docspace` identifier, which remains unchanged. The
   entry and the MCP bundle now share the plugin description, and the entry
-  links to the ONLYOFFICE website.
+  links to the ONLYOFFICE website ([3dbe135]).
 
 ### Fixed
 
@@ -452,6 +452,7 @@ There are no noticeable changes in version [3.0.1].
 [0.1.1]: https://github.com/onlyoffice/docspace-mcp/compare/v0.1.0...v0.1.1/
 [0.1.0]: https://github.com/onlyoffice/docspace-mcp/releases/tag/v0.1.0/
 
+[3dbe135]: https://github.com/onlyoffice/docspace-mcp/commit/3dbe1355b347ec374c8a23a3ddc06ca584998e23/
 [5daa233]: https://github.com/onlyoffice/docspace-mcp/commit/5daa233e91eed96575829148e3e1de141381dad2/
 [e4b1fd9]: https://github.com/onlyoffice/docspace-mcp/commit/e4b1fd9e4c287bff61a0e03bac75392c1b2cfe07/
 [8f42745]: https://github.com/onlyoffice/docspace-mcp/commit/8f42745b20805e9913727e5e492098367012d19f/
